@@ -1,0 +1,52 @@
+import { createContext, useEffect, useState, useCallback } from 'react'
+import { fetchMe } from '../api/auth.api'
+import { getToken, setToken, removeToken } from '../utils/token'
+
+export const AuthContext = createContext(null)
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  // При запуске — если есть токен, подгружаем профиль
+  useEffect(() => {
+    const init = async () => {
+      const token = getToken()
+      if (!token) {
+        setLoading(false)
+        return
+      }
+      try {
+        const me = await fetchMe()
+        setUser(me)
+      } catch {
+        removeToken()
+      } finally {
+        setLoading(false)
+      }
+    }
+    init()
+  }, [])
+
+  const login = useCallback((token, userData) => {
+    setToken(token)
+    setUser(userData)
+  }, [])
+
+  const logout = useCallback(() => {
+    removeToken()
+    setUser(null)
+  }, [])
+
+  // Слушаем событие от axios-интерцептора (401 → сброс сессии)
+  useEffect(() => {
+    window.addEventListener('auth:logout', logout)
+    return () => window.removeEventListener('auth:logout', logout)
+  }, [logout])
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}

@@ -1,111 +1,219 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import "tailwindcss";
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+/* Цвета бренда (фиолетово-розовый градиент) */
+@theme {
+  --color-brand-50:  #FAF5FF;
+  --color-brand-100: #F3E8FF;
+  --color-brand-200: #E9D5FF;
+  --color-brand-300: #D8B4FE;
+  --color-brand-400: #C084FC;
+  --color-brand-500: #A855F7;
+  --color-brand-600: #8B5CF6;
+  --color-brand-700: #7C3AED;
+  --color-brand-800: #6D28D9;
+  --color-brand-900: #4C1D95;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --color-pink-accent: #EC4899;
+  --color-ink:      #EEF2FF;
+  --color-ink-soft: #C5D0E8;
+  --color-ink-muted: #6B7FA3;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+/* Базовая типографика */
+html, body {
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--color-ink);
+  background: #0F1629;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  min-height: 100vh;
+  isolation: isolate;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+/* Градиентный текст */
+.text-gradient {
+  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+/* Анимированный blur-blob фон */
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.45;
+  pointer-events: none;
+  will-change: transform;
+}
+
+@keyframes blob-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(40px, -60px) scale(1.15); }
+  66%      { transform: translate(-30px, 30px) scale(0.95); }
+}
+
+@keyframes blob-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-50px, 40px) scale(1.1); }
+}
+
+.blob-1 { animation: blob-float-1 18s ease-in-out infinite; }
+.blob-2 { animation: blob-float-2 22s ease-in-out infinite; }
+
+/* Кастомные тени бренда */
+.shadow-brand {
+  box-shadow:
+    0 20px 40px -15px rgba(139, 92, 246, 0.35),
+    0 8px 16px -8px rgba(236, 72, 153, 0.25);
+}
+
+.shadow-brand-sm {
+  box-shadow: 0 8px 20px -8px rgba(139, 92, 246, 0.4);
+}
+
+/* Скрытие скроллбара при модалке */
+.no-scroll {
+  overflow: hidden;
+}
+
+/* Сглаживание появления модалки */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+.animate-modal-in   { animation: modal-in 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+.animate-overlay-in { animation: overlay-in 0.25s ease-out; }
+
+/* Кнопка-река: плавный бесконечный перелив + диагональные полоски */
+
+/* Основной поток: градиент symmetric (purple→pink→purple),
+   анимируется на -200% — при переходе начало совпадает с концом, стыка нет */
+@keyframes river-flow {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: -200% 50%; }
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* Полоски: repeating-gradient сдвигается на ровно один тайл → бесшовная петля */
+@keyframes river-streaks {
+  0%   { background-position: 0 0; }
+  100% { background-position: 80px 0; }
+}
+
+.btn-river {
+  position: relative;
+  overflow: hidden;
+  /* symmetric: start = end → петля без стыка */
+  background: linear-gradient(90deg, #8B5CF6 0%, #EC4899 50%, #8B5CF6 100%);
+  background-size: 200% auto;
+  animation: river-flow 3.5s linear infinite;
+}
+
+/* Диагональные полоски — «прожилки реки» */
+.btn-river::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  /* три группы полосок разной ширины — имитация ламинарного течения */
+  background: repeating-linear-gradient(
+    72deg,
+    transparent         0px,
+    transparent         11px,
+    rgba(255,255,255,0.07) 11px,
+    rgba(255,255,255,0.07) 14px,
+    transparent         14px,
+    transparent         30px,
+    rgba(255,255,255,0.12) 30px,
+    rgba(255,255,255,0.12) 33px,
+    transparent         33px,
+    transparent         50px,
+    rgba(255,255,255,0.05) 50px,
+    rgba(255,255,255,0.05) 52px,
+    transparent         52px,
+    transparent         80px
+  );
+  background-size: 80px 80px;
+  animation: river-streaks 2.5s linear infinite;
+  pointer-events: none;
+}
+
+/* Селекция текста */
+/* FullCalendar — тёмная тема */
+.fc {
+  --fc-border-color: rgba(255,255,255,0.08);
+  --fc-button-bg-color: rgba(255,255,255,0.07);
+  --fc-button-border-color: rgba(255,255,255,0.15);
+  --fc-button-hover-bg-color: rgba(255,255,255,0.12);
+  --fc-button-hover-border-color: rgba(255,255,255,0.25);
+  --fc-button-active-bg-color: #7C3AED;
+  --fc-button-active-border-color: #7C3AED;
+  --fc-today-bg-color: rgba(139,92,246,0.12);
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: transparent;
+}
+.fc .fc-toolbar-title       { color: #EEF2FF; font-size: 1.1rem; font-weight: 600; }
+.fc .fc-button              { color: #C5D0E8; font-size: 0.8rem; border-radius: 8px; padding: 5px 10px; }
+.fc .fc-button:focus        { box-shadow: 0 0 0 2px rgba(139,92,246,0.4); }
+.fc .fc-col-header-cell-cushion { color: #6B7FA3; font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 4px; }
+.fc .fc-daygrid-day-number  { color: #C5D0E8; font-size: 0.82rem; padding: 4px 8px; }
+.fc .fc-day-other .fc-daygrid-day-number { color: rgba(255,255,255,0.2); }
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number { color: #C084FC; font-weight: 600; }
+.fc .fc-event               { border-radius: 5px; font-size: 0.75rem; padding: 1px 4px; border: none; }
+.fc .fc-event:hover         { opacity: 0.85; cursor: pointer; }
+.fc .fc-more-link           { color: #C084FC; font-size: 0.75rem; }
+.fc-theme-standard td, .fc-theme-standard th { border-color: rgba(255,255,255,0.06); }
+
+::selection {
+  background: rgba(139, 92, 246, 0.40);
+  color: #EEF2FF;
+}
+
+/* Выпадающие списки — тёмная тема */
+select {
+  background-color: #131c35;
+  color: #EEF2FF;
+  appearance: auto;
+}
+select:focus {
+  outline: none;
+}
+select option {
+  background-color: #131c35;
+  color: #EEF2FF;
+}
+select option:checked,
+select option:hover {
+  background-color: #1e2d55;
+  color: #ffffff;
+}
+
+/* Дата/время/месяц — тёмный пикер браузера */
+input[type="date"],
+input[type="time"],
+input[type="month"] {
+  color-scheme: dark;
 }

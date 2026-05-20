@@ -1,122 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import LandingPage        from './pages/landing/LandingPage'
+import WelcomePage        from './pages/welcome/WelcomePage'
+import TeacherLoginPage   from './pages/auth/TeacherLoginPage'
+import AppLayout          from './components/layout/AppLayout'
+import PrivateRoute       from './components/layout/PrivateRoute'
+import RoleRoute          from './components/layout/RoleRoute'
+import CalendarPage       from './pages/calendar/CalendarPage'
+import GroupsPage         from './pages/groups/GroupsPage'
+import GroupDetailPage    from './pages/groups/GroupDetailPage'
+import StudentsPage       from './pages/students/StudentsPage'
+import HomeworkPage       from './pages/homework/HomeworkPage'
+import AttendancePage     from './pages/attendance/AttendancePage'
+import PaymentsPage       from './pages/payments/PaymentsPage'
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <BrowserRouter>
+      <Routes>
+        {/* Публичные */}
+        <Route path="/"               element={<LandingPage />} />
+        <Route path="/teacher-login"  element={<TeacherLoginPage />} />
 
-      <div className="ticks"></div>
+        {/* После входа */}
+        <Route path="/welcome" element={<PrivateRoute><WelcomePage /></PrivateRoute>} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {/* Кабинет — все страницы через AppLayout */}
+        <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+          {/* Общие — оба роля видят (внутри страница отличается по role) */}
+          <Route path="/calendar"    element={<CalendarPage />} />
+          <Route path="/dashboard"   element={<Navigate to="/calendar" replace />} />
+          <Route path="/groups"      element={<GroupsPage />} />
+          <Route path="/groups/:id"  element={<GroupDetailPage />} />
+          <Route path="/homework"    element={<HomeworkPage />} />
+          <Route path="/attendance"  element={<AttendancePage />} />
+          <Route path="/payments"    element={<PaymentsPage />} />
+
+          {/* Только учитель */}
+          <Route path="/students"
+            element={<RoleRoute role="teacher"><StudentsPage /></RoleRoute>} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App
