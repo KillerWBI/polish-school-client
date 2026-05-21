@@ -23,3 +23,15 @@ export const fetchMe = async () => {
   const { data } = await client.get('/auth/me')
   return data.data
 }
+
+// PUT /users/:id — обновить имя
+export const updateUserName = async (id, name) => {
+  const { data } = await client.put(`/users/${id}`, { name })
+  return data.data
+}
+
+// PUT /auth/password — сменить пароль
+export const changePassword = async (currentPassword, newPassword) => {
+  const { data } = await client.put('/auth/password', { currentPassword, newPassword })
+  return data.data
+}

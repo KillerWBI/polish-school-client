@@ -3,6 +3,7 @@ import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
 import { getHomework, createHomework, deleteHomework, submitHomework, getSubmissions, gradeSubmission } from '../../api/homework.api'
 import { getLessons } from '../../api/lessons.api'
+import { getIndividualLessons } from '../../api/individualLessons.api'
 import { uploadToCloudinary } from '../../utils/uploadToCloudinary'
 import { formatDate } from '../../utils/formatDate'
 import Button from '../../components/ui/Button'
@@ -281,8 +282,9 @@ function StatusBadge({ submission, isOverdue }) {
 
 /* ── Создание ДЗ (только teacher) ───────────────────────────── */
 function CreateHWModal({ open, onClose, onCreated }) {
-  const { data: lessons } = useFetch(getLessons, [])
-  const [form, setForm] = useState({ description: '', deadline: '', lessonId: '' })
+  const { data: lessons }    = useFetch(getLessons, [])
+  const { data: indLessons } = useFetch(getIndividualLessons, [])
+  const [form, setForm] = useState({ description: '', deadline: '', lessonType: 'group', lessonId: '', individualLessonId: '' })
   const [saving, setSaving] = useState(false)
   const [error,  setError]  = useState('')
 
@@ -291,16 +293,19 @@ function CreateHWModal({ open, onClose, onCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.description.trim()) return setError('Введите описание')
-    if (!form.lessonId)          return setError('Выберите урок')
+    const isGroup = form.lessonType === 'group'
+    if (isGroup && !form.lessonId)               return setError('Выберите групповой урок')
+    if (!isGroup && !form.individualLessonId)     return setError('Выберите индивидуальный урок')
     setSaving(true); setError('')
     try {
       await createHomework({
-        description: form.description.trim(),
-        deadline:    form.deadline || null,
-        lessonId:    form.lessonId,
+        description:        form.description.trim(),
+        deadline:           form.deadline || null,
+        lessonId:           isGroup ? form.lessonId : null,
+        individualLessonId: isGroup ? null : form.individualLessonId,
       })
       onCreated(); onClose()
-      setForm({ description: '', deadline: '', lessonId: '' })
+      setForm({ description: '', deadline: '', lessonType: 'group', lessonId: '', individualLessonId: '' })
     } catch (e) {
       setError(e.response?.data?.error || 'Ошибка создания')
     } finally {
@@ -324,21 +329,54 @@ function CreateHWModal({ open, onClose, onCreated }) {
             />
           </div>
 
-          <div>
-            <label className="text-xs text-slate-400 block mb-1">Урок</label>
-            <select
-              value={form.lessonId}
-              onChange={e => set('lessonId', e.target.value)}
-              className="w-full h-11 px-3 rounded-xl bg-[#131c35] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400"
-            >
-              <option value="">Выберите урок</option>
-              {(lessons || []).map(l => (
-                <option key={l.id} value={l.id}>
-                  {formatDate(l.date)} {l.time} — {l.topic || l.Group?.name || 'Урок'}
-                </option>
-              ))}
-            </select>
+          {/* Тип урока */}
+          <div className="flex gap-2">
+            {['group', 'individual'].map(t => (
+              <button key={t} type="button"
+                onClick={() => set('lessonType', t)}
+                className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-all ${
+                  form.lessonType === t
+                    ? 'bg-brand-600/25 border-brand-500/50 text-brand-300'
+                    : 'bg-white/[0.04] border-white/[0.10] text-slate-400 hover:text-white'
+                }`}>
+                {t === 'group' ? 'Групповой урок' : 'Инд. урок'}
+              </button>
+            ))}
           </div>
+
+          {form.lessonType === 'group' ? (
+            <div>
+              <label className="text-xs text-slate-400 block mb-1">Урок</label>
+              <select
+                value={form.lessonId}
+                onChange={e => set('lessonId', e.target.value)}
+                className="w-full h-11 px-3 rounded-xl bg-[#131c35] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400"
+              >
+                <option value="">Выберите групповой урок</option>
+                {(lessons || []).map(l => (
+                  <option key={l.id} value={l.id}>
+                    {formatDate(l.date)} {l.time} — {l.topic || l.Group?.name || 'Урок'}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <div>
+              <label className="text-xs text-slate-400 block mb-1">Индивидуальный урок</label>
+              <select
+                value={form.individualLessonId}
+                onChange={e => set('individualLessonId', e.target.value)}
+                className="w-full h-11 px-3 rounded-xl bg-[#131c35] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400"
+              >
+                <option value="">Выберите урок</option>
+                {(indLessons || []).map(l => (
+                  <option key={l.id} value={l.id}>
+                    {formatDate(l.date)} {l.time} — {l.topic || l.student?.name || 'Урок'}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div>
             <label className="text-xs text-slate-400 block mb-1">Дедлайн (необязательно)</label>
@@ -388,7 +426,7 @@ function SubmissionsModal({ hw, onClose }) {
             {subs.map(s => (
               <div key={s.id} className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.07]">
                 <div className="flex items-start justify-between gap-3 mb-2">
-                  <span className="text-sm font-medium text-white truncate">{s.studentId}</span>
+                  <span className="text-sm font-medium text-white truncate">{s.student?.name ?? s.studentId}</span>
                   {s.status === 'graded'
                     ? <span className="text-sm font-semibold text-brand-300">{s.grade}/100</span>
                     : <span className="text-xs text-slate-500 px-2 py-0.5 rounded-full bg-white/[0.07]">Не проверено</span>

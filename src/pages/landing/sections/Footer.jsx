@@ -4,11 +4,13 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Button from '../../../components/ui/Button'
 import Logo from '../../../components/ui/Logo'
+import useAuth from '../../../hooks/useAuth'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Footer({ onPrimary }) {
   const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
   const rootRef = useRef(null)
 
   useEffect(() => {
@@ -39,18 +41,23 @@ export default function Footer({ onPrimary }) {
           <div aria-hidden className="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-white/10 blur-2xl" />
 
           <h2 className="relative text-3xl sm:text-5xl font-semibold tracking-tight text-white mb-4">
-            Готов начать говорить<br />на польском?
+            {isAuthenticated
+              ? <>Добро пожаловать<br />обратно!</>
+              : <>Готов начать говорить<br />на польском?</>
+            }
           </h2>
           <p className="relative text-white/90 max-w-xl mx-auto mb-8">
-            Создай аккаунт и записывайся на первый урок. Бесплатное знакомство —
-            обсудим цели и подберём программу.
+            {isAuthenticated
+              ? 'Все твои уроки, материалы и задания — в личном кабинете.'
+              : 'Создай аккаунт и записывайся на первый урок. Бесплатное знакомство — обсудим цели и подберём программу.'
+            }
           </p>
           <div className="relative inline-flex">
             <button
-              onClick={onPrimary}
+              onClick={() => isAuthenticated ? navigate('/calendar') : onPrimary()}
               className="h-14 px-8 rounded-2xl bg-white text-brand-700 font-semibold hover:bg-slate-50 active:scale-[0.98] transition-all duration-200 shadow-2xl cursor-pointer"
             >
-              Записаться на урок →
+              {isAuthenticated ? 'В кабинет →' : 'Записаться на урок →'}
             </button>
           </div>
         </div>
@@ -60,14 +67,18 @@ export default function Footer({ onPrimary }) {
       <div className="max-w-7xl mx-auto px-5 sm:px-8 mt-14 pb-10 flex flex-col sm:flex-row items-center justify-between gap-5 text-sm text-ink-muted">
         <Logo size="sm" />
         <div className="flex items-center gap-6">
-          <button
-            type="button"
-            onClick={() => navigate('/teacher-login')}
-            className="hover:text-brand-700 transition-colors cursor-pointer"
-          >
-            Я преподаватель
-          </button>
-          <span className="text-white/20">·</span>
+          {!isAuthenticated && (
+            <>
+              <button
+                type="button"
+                onClick={() => navigate('/teacher-login')}
+                className="hover:text-brand-700 transition-colors cursor-pointer"
+              >
+                Я преподаватель
+              </button>
+              <span className="text-white/20">·</span>
+            </>
+          )}
           <span>© {new Date().getFullYear()} PLatform</span>
         </div>
       </div>

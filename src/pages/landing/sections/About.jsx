@@ -1,11 +1,15 @@
 import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Button from '../../../components/ui/Button'
+import useAuth from '../../../hooks/useAuth'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function About({ onPrimary }) {
+  const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
   const rootRef = useRef(null)
 
   useEffect(() => {
@@ -60,7 +64,10 @@ export default function About({ onPrimary }) {
           </p>
 
           <div data-about-text className="flex flex-wrap gap-3">
-            <Button onClick={onPrimary}>Начать обучение</Button>
+            {isAuthenticated
+              ? <Button onClick={() => navigate('/calendar')}>Перейти в кабинет</Button>
+              : <Button onClick={onPrimary}>Начать обучение</Button>
+            }
           </div>
         </div>
 

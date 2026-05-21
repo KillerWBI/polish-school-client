@@ -19,6 +19,9 @@
 | AuthContext, useAuth, PrivateRoute, RoleRoute | ✅ |
 | AppLayout + Sidebar (desktop + mobile drawer) | ✅ |
 | Роутинг: все рабочие страницы подключены | ✅ |
+| **ErrorBoundary** (fallback вместо белого экрана) | ✅ 2026-05-21 |
+| **sonner Toaster** (success/error глобально) | ✅ 2026-05-21 |
+| **Axios interceptor → toast** на 5xx и network-ошибках | ✅ 2026-05-21 |
 
 ---
 
@@ -34,8 +37,8 @@
 | `homework.api.js` | 🟡 | нет `submitHomework` |
 | `attendance.api.js` | ✅ | get, save, update |
 | `payments.api.js` | ✅ | get, calculate, update |
-| `individualLessons.api.js` | ✅ | CRUD + params |
-| `individualCourses.api.js` | ❌ | не создан |
+| `individualLessons.api.js` | ✅ | CRUD + params (включая `?individualCourseId=`) |
+| `individualCourses.api.js` | ✅ | CRUD + `generateIndividualLessons` (2026-05-21) |
 
 ---
 
@@ -46,40 +49,48 @@
 | LandingPage | `/` | ✅ | — |
 | TeacherLoginPage | `/teacher-login` | ✅ | — |
 | WelcomePage | `/welcome` | ✅ | — |
-| CalendarPage | `/calendar` | 🟡 | Нет ru locale FullCalendar; нет обработки ошибки загрузки |
+| CalendarPage | `/calendar` | ✅ | — |
 | GroupsPage | `/groups` | 🟡 | Форма не сбрасывается при закрытии с ошибкой |
-| GroupDetailPage | `/groups/:id` | 🟡 | Нет ручного создания урока; уроки не кликабельны |
-| HomeworkPage (teacher) | `/homework` | 🟡 | UUID вместо имени студента в сдачах; нет инд. уроков |
-| HomeworkPage (student) | `/homework` | 🔴 | **Нельзя сдать ДЗ** |
-| AttendancePage (teacher) | `/attendance` | 🟡 | State не сбрасывается; нет инд. уроков |
-| AttendancePage (student) | `/attendance` | 🟡 | Нет инд. посещений |
+| GroupDetailPage | `/groups/:id` | ✅ | — |
+| HomeworkPage (teacher) | `/homework` | ✅ | — |
+| HomeworkPage (student) | `/homework` | ✅ | Форма + Cloudinary upload + статус |
+| AttendancePage (teacher) | `/attendance` | ✅ | Выбор группы → урока → галочки, тосты, key-remount на смене урока |
+| AttendancePage (student) | `/attendance` | ✅ | Карточки с тостами; expandable → ДЗ урока |
 | PaymentsPage | `/payments` | 🟡 | Клиентская фильтрация, может не показать все записи |
 | StudentsPage | `/students` | 🟡 | Нет клика → профиль; нет пагинации |
-| IndividualCoursesPage | `/individual-courses` | ❌ | — |
-| IndividualLessonsPage | `/individual-lessons` | ❌ | — |
-| ProfilePage | `/profile` | ❌ | — |
+| IndividualCoursesPage | `/individual-courses` | ✅ | CRUD + список карточек + модалка создания (2026-05-21) |
+| IndividualCourseDetailPage | `/individual-courses/:id` | ✅ | Детали, редактирование, генерация уроков, удаление (2026-05-21) |
+| IndividualLessonsPage | `/individual-lessons` | 🟡 | Read-only список |
+| ProfilePage | `/profile` | ✅ | Смена имени + пароля |
 
 ---
 
 ## Что делать (по приоритету)
 
-### 🔴 Срочно
-- [ ] `HomeworkPage` — форма сдачи ДЗ для студента (Cloudinary + `submitHomework`)
-- [ ] `HomeworkPage` — имя студента в SubmissionsModal (после фикса бэкенда)
+### ✅ Выполнено
+- [x] `HomeworkPage` — форма сдачи ДЗ для студента (Cloudinary + `submitHomework`)
+- [x] `HomeworkPage` — имя студента в SubmissionsModal
+- [x] `AttendancePage` — сброс present при смене урока
+- [x] `AttendancePage` — поддержка индивидуальных уроков (переключатель + форма)
+- [x] `GroupDetailPage` — кнопка ручного создания урока
+- [x] `GroupDetailPage` — клик на урок → детали/редактирование
+- [x] `HomeworkPage` — создание ДЗ для инд. уроков (переключатель типа урока)
+- [x] `CalendarPage` — ru locale для FullCalendar
+- [x] `Sidebar` — ссылки на профиль, инд. курсы/уроки
 
-### 🟡 Важно
-- [ ] `AttendancePage` — сброс present при смене урока
-- [ ] `AttendancePage` — поддержка индивидуальных уроков
-- [ ] `GroupDetailPage` — кнопка ручного создания урока
-- [ ] `GroupDetailPage` — клик на урок → детали
-- [ ] `HomeworkPage` — создание ДЗ для инд. уроков
-- [ ] `CalendarPage` — ru locale для FullCalendar
-- [ ] `Sidebar` — ссылки на профиль и инд. курсы/уроки
+### ✅ Новые страницы (минимальные реализации)
+- [x] `ProfilePage` — смена имени + смена пароля
+- [x] `IndividualLessonsPage` — список инд. уроков (read-only)
+- [x] `IndividualCoursesPage` — заглушка «скоро»
 
-### ❌ Новые страницы
-- [ ] `IndividualCoursesPage` + `IndividualCourseDetailPage` + `individualCourses.api.js`
-- [ ] `IndividualLessonsPage`
-- [ ] `ProfilePage` (имя + смена пароля)
+### ❌ Остаётся
+- [ ] `IndividualLessonsPage` — расширить (сейчас read-only): редактирование, удаление, фильтры
+- [ ] `StudentsPage` — клик → профиль студента + пагинация
+- [ ] `PaymentsPage` — серверная фильтрация по month вместо клиентской
+- [ ] **TanStack Query** вместо `useFetch` (кэш, optimistic updates, retry, dedupe)
+- [ ] `httpOnly` cookie для JWT вместо `localStorage` (XSS защита)
+- [ ] `confirm()` → `<ConfirmDialog />` компонент (платформенная модалка)
+- [ ] Skeleton loaders вместо `<PageSpinner />`
 
 ---
 
@@ -94,3 +105,9 @@
 | 2026-05-20 | GroupsPage, GroupDetailPage, HomeworkPage, AttendancePage, PaymentsPage, StudentsPage, CalendarPage |
 | 2026-05-20 | 401 → CustomEvent → AuthContext.logout() |
 | 2026-05-20 | Полное ревью: обнаружены проблемы (см. REVIEW.md) |
+| 2026-05-20 | Закрыты все критические и важные задачи (см. REVIEW.md → ИТОГ) |
+| 2026-05-20 | ProfilePage (имя+пароль), IndividualLessonsPage, IndividualCoursesPage — заглушки, чтобы Sidebar-ссылки не выкидывали на лендинг |
+| 2026-05-20 | Лендинг auth-aware: Header/Hero/About/Footer показывают «В кабинет» если залогинен |
+| 2026-05-21 | AttendancePage полная переработка: выбор группы → урока → галочки, key-remount, тосты вместо локальных setError. Студент видит карточки с привязанным ДЗ |
+| 2026-05-21 | **ErrorBoundary** + **sonner Toaster** глобально. Axios interceptor показывает toast на 5xx/network |
+| 2026-05-21 | **IndividualCoursesPage** переписан с CRUD + создан **IndividualCourseDetailPage** + `individualCourses.api.js`. Закрыт пункт #18 из CLAUDE.md |

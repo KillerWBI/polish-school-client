@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Logo from '../../../components/ui/Logo'
 import Button from '../../../components/ui/Button'
+import useAuth from '../../../hooks/useAuth'
 
 export default function Header({ onLogin, onRegister }) {
   const [scrolled, setScrolled] = useState(false)
+  const { isAuthenticated, user, logout } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -39,12 +43,26 @@ export default function Header({ onLogin, onRegister }) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={onLogin} className="hidden sm:inline-flex">
-            Войти
-          </Button>
-          <Button variant="primary" size="sm" onClick={onRegister}>
-            Начать
-          </Button>
+          {isAuthenticated ? (
+            <>
+              <Button variant="ghost" size="sm" onClick={() => logout()} className="hidden sm:inline-flex">
+                Выйти
+              </Button>
+              <Button variant="primary" size="sm" onClick={() => navigate('/calendar')}>
+                <span className="hidden sm:inline">В кабинет, {user?.name?.split(' ')[0]}</span>
+                <span className="sm:hidden">В кабинет</span>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" onClick={onLogin} className="hidden sm:inline-flex">
+                Войти
+              </Button>
+              <Button variant="primary" size="sm" onClick={onRegister}>
+                Начать
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

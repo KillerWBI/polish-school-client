@@ -1,0 +1,241 @@
+import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
+import useFetch from '../../hooks/useFetch'
+import useAuth from '../../hooks/useAuth'
+import { getIndividualCourses, createIndividualCourse, generateIndividualLessons } from '../../api/individualCourses.api'
+import { getStudents } from '../../api/students.api'
+import { dayLabel } from '../../utils/formatDate'
+import { toast, errMsg } from '../../utils/toast'
+import Button from '../../components/ui/Button'
+import Modal from '../../components/ui/Modal'
+import Input from '../../components/ui/Input'
+import { PageSpinner } from '../../components/ui/Spinner'
+import EmptyState from '../../components/ui/EmptyState'
+
+const DAYS = [
+  { value: 1, label: 'Пн' }, { value: 2, label: 'Вт' },
+  { value: 3, label: 'Ср' }, { value: 4, label: 'Чт' },
+  { value: 5, label: 'Пт' }, { value: 6, label: 'Сб' },
+  { value: 0, label: 'Вс' },
+]
+
+export default function IndividualCoursesPage() {
+  const navigate = useNavigate()
+  const { isTeacher } = useAuth()
+
+  const { data: courses,  loading,        reload } = useFetch(getIndividualCourses)
+  const { data: students }                          = useFetch(
+    () => isTeacher ? getStudents() : Promise.resolve([]),
+    [isTeacher]
+  )
+
+  // Карта studentId -> User для отображения имени
+  const studentsMap = useMemo(() => {
+    const m = new Map()
+    ;(students || []).forEach(s => m.set(s.id, s))
+    return m
+  }, [students])
+
+  const [modal, setModal] = useState(false)
+
+  return (
+    <div className="p-5 sm:p-8">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">
+            {isTeacher ? 'Индивидуальные курсы' : 'Мои курсы'}
+          </h1>
+          <p className="text-sm text-slate-400 mt-0.5">
+            {isTeacher
+              ? 'Контракты-расписание с конкретным студентом'
+              : 'Ваши индивидуальные занятия с преподавателем'}
+          </p>
+        </div>
+        {isTeacher && (
+          <Button size="sm" onClick={() => setModal(true)}>+ Создать курс</Button>
+        )}
+      </div>
+
+      {loading ? <PageSpinner /> : !courses?.length ? (
+        <EmptyState
+          emoji="👤"
+          title={isTeacher ? 'Курсов пока нет' : 'У вас нет индивидуальных курсов'}
+          text={isTeacher
+            ? 'Создайте курс с конкретным студентом и сгенерируйте уроки по расписанию.'
+            : 'Преподаватель создаст для вас курс — он появится здесь.'}
+          action={isTeacher
+            ? <Button size="sm" onClick={() => setModal(true)}>Создать курс</Button>
+            : null}
+        />
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {courses.map(c => (
+            <CourseCard
+              key={c.id}
+              course={c}
+              student={studentsMap.get(c.studentId)}
+              onClick={() => navigate(`/individual-courses/${c.id}`)}
+            />
+          ))}
+        </div>
+      )}
+
+      {isTeacher && (
+        <CreateCourseModal
+          open={modal}
+          onClose={() => setModal(false)}
+          onCreated={reload}
+          students={students || []}
+        />
+      )}
+    </div>
+  )
+}
+
+function CourseCard({ course, student, onClick }) {
+  const schedule = (course.schedule || [])
+    .map(s => `${dayLabel(s.day)} ${s.time}`)
+    .join(', ')
+
+  return (
+    <button
+      onClick={onClick}
+      className="text-left p-5 rounded-2xl border border-white/[0.09] bg-white/[0.05] hover:bg-white/[0.09] hover:border-brand-500/40 transition-all duration-200 group">
+      <div className="flex items-start justify-between gap-2 mb-3">
+        <h3 className="font-semibold text-white group-hover:text-brand-300 transition-colors">
+          {course.name || (student?.name ? `Курс — ${student.name}` : 'Без названия')}
+        </h3>
+        <svg className="w-4 h-4 text-slate-500 group-hover:text-brand-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+      {student?.name && <p className="text-xs text-slate-400 mb-1">👤 {student.name}</p>}
+      {schedule && <p className="text-xs text-slate-400 mb-1">📅 {schedule}</p>}
+      <p className="text-xs text-slate-400">💰 {course.pricePerLesson || 0} / урок</p>
+    </button>
+  )
+}
+
+function CreateCourseModal({ open, onClose, onCreated, students }) {
+  const [form, setForm]         = useState({ studentId: '', name: '', pricePerLesson: '', lessonLink: '' })
+  const [schedule, setSchedule] = useState([])
+  const [saving, setSaving]     = useState(false)
+  const [error, setError]       = useState('')
+
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  const addSlot    = () => setSchedule(s => [...s, { day: 1, time: '18:00' }])
+  const removeSlot = (i) => setSchedule(s => s.filter((_, idx) => idx !== i))
+  const updateSlot = (i, key, val) =>
+    setSchedule(s => s.map((sl, idx) => idx === i ? { ...sl, [key]: key === 'day' ? Number(val) : val } : sl))
+
+  const reset = () => {
+    setForm({ studentId: '', name: '', pricePerLesson: '', lessonLink: '' })
+    setSchedule([])
+    setError('')
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!form.studentId) return setError('Выберите студента')
+    setSaving(true); setError('')
+    try {
+      const newCourse = await createIndividualCourse({
+        studentId: form.studentId,
+        name: form.name.trim() || null,
+        schedule,
+        lessonLink: form.lessonLink.trim() || null,
+        pricePerLesson: parseFloat(form.pricePerLesson) || 0,
+      })
+
+      // Авто-генерация уроков на 3 мес. если есть расписание
+      if (schedule.length > 0 && newCourse?.id) {
+        const today = new Date().toISOString().slice(0, 10)
+        const end   = new Date(); end.setMonth(end.getMonth() + 3)
+        const to    = end.toISOString().slice(0, 10)
+        await generateIndividualLessons(newCourse.id, today, to)
+      }
+
+      toast.success('Курс создан')
+      onCreated()
+      onClose()
+      reset()
+    } catch (e) {
+      const msg = errMsg(e, 'Ошибка создания курса')
+      setError(msg)
+      toast.error(msg)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <Modal open={open} onClose={onClose} maxWidth="max-w-md">
+      <div className="p-6 sm:p-7">
+        <h2 className="text-xl font-semibold text-white mb-5">Новый инд. курс</h2>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Студент */}
+          <div>
+            <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">
+              Студент
+            </label>
+            <select
+              value={form.studentId}
+              onChange={e => set('studentId', e.target.value)}
+              className="w-full h-11 px-3 rounded-xl bg-[#131c35] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400">
+              <option value="">— выбрать —</option>
+              {students.map(s => (
+                <option key={s.id} value={s.id}>{s.name} ({s.email})</option>
+              ))}
+            </select>
+          </div>
+
+          <Input label="Название (необязательно)" value={form.name}
+            onChange={e => set('name', e.target.value)} />
+          <Input label="Цена за урок" type="number" value={form.pricePerLesson}
+            onChange={e => set('pricePerLesson', e.target.value)} />
+          <Input label="Ссылка Zoom/Meet (необязательно)" value={form.lessonLink}
+            onChange={e => set('lessonLink', e.target.value)} />
+
+          {/* Расписание */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-slate-400 uppercase tracking-wider">Расписание</span>
+              <button type="button" onClick={addSlot}
+                className="text-xs text-brand-400 hover:text-brand-300 cursor-pointer">
+                + Добавить слот
+              </button>
+            </div>
+            <div className="space-y-2">
+              {schedule.map((sl, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <select
+                    value={sl.day}
+                    onChange={e => updateSlot(i, 'day', e.target.value)}
+                    className="flex-1 h-10 px-3 rounded-xl bg-[#131c35] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400">
+                    {DAYS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+                  </select>
+                  <input
+                    type="time"
+                    value={sl.time}
+                    onChange={e => updateSlot(i, 'time', e.target.value)}
+                    className="flex-1 h-10 px-3 rounded-xl bg-white/[0.07] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400"
+                  />
+                  <button type="button" onClick={() => removeSlot(i)}
+                    className="text-slate-500 hover:text-red-400 cursor-pointer p-1">✕</button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {error && <p className="text-sm text-red-400">{error}</p>}
+
+          <div className="flex gap-2 pt-1">
+            <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>Отмена</Button>
+            <Button type="submit" loading={saving} className="flex-1">Создать</Button>
+          </div>
+        </form>
+      </div>
+    </Modal>
+  )
+}

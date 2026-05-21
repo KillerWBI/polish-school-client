@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getToken, removeToken } from '../utils/token'
+import { toast } from '../utils/toast'
 
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -13,13 +14,18 @@ client.interceptors.request.use((cfg) => {
   return cfg
 })
 
-// При 401 — выкидываем токен и уведомляем AuthContext через событие
+// 401 → выход. 5xx и сетевые ошибки → toast (компоненты могут показать локально, но это безопасный fallback).
 client.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const status = err.response?.status
+    if (status === 401) {
       removeToken()
       window.dispatchEvent(new CustomEvent('auth:logout'))
+    } else if (!err.response) {
+      toast.error('Нет связи с сервером')
+    } else if (status >= 500) {
+      toast.error(err.response?.data?.error || 'Ошибка сервера')
     }
     return Promise.reject(err)
   }

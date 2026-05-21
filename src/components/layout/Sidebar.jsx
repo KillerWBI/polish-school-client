@@ -3,20 +3,24 @@ import Logo from '../ui/Logo'
 import useAuth from '../../hooks/useAuth'
 
 const TEACHER_NAV = [
-  { path: '/calendar',    label: 'Расписание',        icon: IconCalendar },
-  { path: '/groups',      label: 'Группы',             icon: IconGroups },
-  { path: '/students',    label: 'Студенты',           icon: IconStudents },
-  { path: '/homework',    label: 'Домашние задания',   icon: IconHomework },
-  { path: '/attendance',  label: 'Посещаемость',       icon: IconCheck },
-  { path: '/payments',    label: 'Оплата',             icon: IconPayment },
+  { path: '/calendar',             label: 'Расписание',          icon: IconCalendar },
+  { path: '/groups',               label: 'Группы',              icon: IconGroups },
+  { path: '/individual-courses',   label: 'Инд. курсы',          icon: IconIndividual },
+  { path: '/students',             label: 'Студенты',            icon: IconStudents },
+  { path: '/homework',             label: 'Домашние задания',    icon: IconHomework },
+  { path: '/attendance',           label: 'Посещаемость',        icon: IconCheck },
+  { path: '/payments',             label: 'Оплата',              icon: IconPayment },
+  { path: '/profile',              label: 'Профиль',             icon: IconProfile },
 ]
 
 const STUDENT_NAV = [
-  { path: '/calendar',    label: 'Расписание',         icon: IconCalendar },
-  { path: '/groups',      label: 'Мои группы',         icon: IconGroups },
-  { path: '/homework',    label: 'Домашние задания',   icon: IconHomework },
-  { path: '/attendance',  label: 'Посещаемость',       icon: IconCheck },
-  { path: '/payments',    label: 'Оплата',             icon: IconPayment },
+  { path: '/calendar',             label: 'Расписание',          icon: IconCalendar },
+  { path: '/groups',               label: 'Мои группы',          icon: IconGroups },
+  { path: '/individual-courses',   label: 'Инд. курсы',          icon: IconIndividual },
+  { path: '/homework',             label: 'Домашние задания',    icon: IconHomework },
+  { path: '/attendance',           label: 'Посещаемость',        icon: IconCheck },
+  { path: '/payments',             label: 'Оплата',              icon: IconPayment },
+  { path: '/profile',              label: 'Профиль',             icon: IconProfile },
 ]
 
 export default function Sidebar({ onClose }) {
@@ -101,4 +105,10 @@ function IconPayment() {
 }
 function IconLogout() {
   return <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round"/></svg>
+}
+function IconIndividual() {
+  return <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+}
+function IconProfile() {
+  return <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"/><path d="M20 21a8 8 0 1 0-16 0" strokeLinecap="round"/></svg>
 }

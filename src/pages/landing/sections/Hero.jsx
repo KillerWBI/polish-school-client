@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Button from '../../../components/ui/Button'
+import useAuth from '../../../hooks/useAuth'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const ROTATING_WORDS = ['Polski', 'польский', 'Polnisch', 'Polish']
 
 export default function Hero({ onPrimary, onSecondary }) {
+  const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
   const rootRef = useRef(null)
   const wordRef = useRef(null)
   const fogRef  = useRef(null)
@@ -138,15 +142,26 @@ export default function Hero({ onPrimary, onSecondary }) {
         </p>
 
         <div data-hero-anim className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Button size="lg" onClick={onPrimary}>
-            Начать учиться
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M1 8h13M9 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Button>
-          <Button size="lg" variant="secondary" onClick={onSecondary}>
-            У меня уже есть аккаунт
-          </Button>
+          {isAuthenticated ? (
+            <Button size="lg" onClick={() => navigate('/calendar')}>
+              Перейти в кабинет
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M1 8h13M9 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Button>
+          ) : (
+            <>
+              <Button size="lg" onClick={onPrimary}>
+                Начать учиться
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M1 8h13M9 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </Button>
+              <Button size="lg" variant="secondary" onClick={onSecondary}>
+                У меня уже есть аккаунт
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Stat-полоса */}

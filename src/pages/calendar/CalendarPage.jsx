@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import ruLocale from '@fullcalendar/core/locales/ru'
 import { getLessons } from '../../api/lessons.api'
 import { getIndividualLessons } from '../../api/individualLessons.api'
 import { formatDate } from '../../utils/formatDate'
@@ -85,6 +86,7 @@ export default function CalendarPage() {
           ref={calRef}
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
+          locales={[ruLocale]}
           locale="ru"
           firstDay={1}
           headerToolbar={{ left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' }}
