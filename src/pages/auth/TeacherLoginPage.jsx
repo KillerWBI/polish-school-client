@@ -10,7 +10,7 @@ export default function TeacherLoginPage() {
   const { login, user } = useAuth()
 
   useEffect(() => {
-    if (user?.role === 'teacher') navigate('/calendar', { replace: true })
+    if (user?.role === 'teacher') navigate('/dashboard', { replace: true })
   }, [user, navigate])
 
   const [tab, setTab]           = useState('login')  // 'login' | 'register'
@@ -84,7 +84,7 @@ export default function TeacherLoginPage() {
     const tl = gsap.timeline()
     tl.from('[data-success-line]', { y: 60, opacity: 0, duration: 0.7, ease: 'power3.out', stagger: 0.15 })
     tl.from('[data-success-bar]',  { scaleX: 0, duration: 1.2, ease: 'power2.inOut', transformOrigin: 'left' }, '-=0.3')
-    tl.call(() => setTimeout(() => navigate('/calendar', { replace: true }), 600), null, '+=0.8')
+    tl.call(() => setTimeout(() => navigate('/dashboard', { replace: true }), 600), null, '+=0.8')
   }, [success, navigate])
 
   const handleSuccess = async (token) => {
@@ -238,7 +238,7 @@ function LoginForm({ onSuccess }) {
 
 /* ── Форма регистрации ──────────────────────────────────────── */
 function RegisterForm({ onSuccess }) {
-  const [form, setForm]     = useState({ name: '', email: '', password: '', teacherSecret: '' })
+  const [form, setForm]     = useState({ name: '', email: '', password: '' })
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
 
@@ -247,7 +247,6 @@ function RegisterForm({ onSuccess }) {
     if (form.name.trim().length < 2)                          e.name = 'Введите имя'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))      e.email = 'Неверный email'
     if (form.password.length < 6)                             e.password = 'Минимум 6 символов'
-    if (!form.teacherSecret.trim())                           e.teacherSecret = 'Обязательное поле'
     setErrors(e)
     return !Object.keys(e).length
   }
@@ -278,12 +277,6 @@ function RegisterForm({ onSuccess }) {
       <DarkInput label="Пароль" type="password" value={form.password}
         onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
         error={errors.password} autoComplete="new-password" />
-      <DarkInput label="Секретный ключ" type="password" value={form.teacherSecret}
-        onChange={e => setForm(f => ({ ...f, teacherSecret: e.target.value }))}
-        error={errors.teacherSecret} autoComplete="off" />
-      <p className="text-xs text-slate-500 -mt-1 ml-1">
-        Ключ выдаёт администратор платформы
-      </p>
       {errors.form && <ErrorBanner>{errors.form}</ErrorBanner>}
       <SubmitBtn loading={loading}>Создать аккаунт</SubmitBtn>
     </form>

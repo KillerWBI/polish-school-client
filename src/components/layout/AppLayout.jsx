@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, Link } from 'react-router-dom'
 import Sidebar from './Sidebar'
+import EmailVerificationBanner from '../auth/EmailVerificationBanner'
 
 export default function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -39,8 +40,12 @@ export default function AppLayout() {
               <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round"/>
             </svg>
           </button>
-          <span className="text-sm font-medium text-white">PLatform</span>
+          <Link to="/dashboard" className="text-sm font-semibold text-white tracking-tight">
+            Lingua<span className="text-brand-400">Flow</span>
+          </Link>
         </header>
+
+        <EmailVerificationBanner />
 
         <main className="flex-1 overflow-y-auto">
           <Outlet />

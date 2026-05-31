@@ -13,6 +13,7 @@ import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { PageSpinner } from '../../components/ui/Spinner'
 import EmptyState from '../../components/ui/EmptyState'
 
@@ -38,9 +39,10 @@ export default function IndividualCourseDetailPage() {
     [id]
   )
 
-  const [editOpen, setEditOpen] = useState(false)
-  const [genOpen,  setGenOpen]  = useState(false)
-  const [delBusy,  setDelBusy]  = useState(false)
+  const [editOpen,    setEditOpen]    = useState(false)
+  const [genOpen,     setGenOpen]     = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [delBusy,     setDelBusy]     = useState(false)
 
   if (loading) return <PageSpinner />
   if (!course) {
@@ -52,7 +54,6 @@ export default function IndividualCourseDetailPage() {
   }
 
   const handleDelete = async () => {
-    if (!confirm('Удалить курс? Все его уроки также будут удалены.')) return
     setDelBusy(true)
     try {
       await deleteIndividualCourse(id)
@@ -91,7 +92,7 @@ export default function IndividualCourseDetailPage() {
             <Button size="sm" variant="secondary" onClick={() => setEditOpen(true)}>
               Редактировать
             </Button>
-            <Button size="sm" variant="ghost" onClick={handleDelete} loading={delBusy}>
+            <Button size="sm" variant="ghost" onClick={() => setConfirmOpen(true)}>
               <span className="text-red-400">Удалить</span>
             </Button>
           </div>
@@ -158,6 +159,14 @@ export default function IndividualCourseDetailPage() {
             onClose={() => setGenOpen(false)}
             courseId={id}
             onGenerated={reloadLessons}
+          />
+          <ConfirmDialog
+            open={confirmOpen}
+            onClose={() => setConfirmOpen(false)}
+            onConfirm={handleDelete}
+            title="Удалить курс?"
+            message="Все уроки курса также будут удалены. Это действие нельзя отменить."
+            busy={delBusy}
           />
         </>
       )}

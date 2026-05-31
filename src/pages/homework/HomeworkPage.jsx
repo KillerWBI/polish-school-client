@@ -9,6 +9,7 @@ import { formatDate } from '../../utils/formatDate'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { PageSpinner } from '../../components/ui/Spinner'
 import EmptyState from '../../components/ui/EmptyState'
 
@@ -65,11 +66,10 @@ export default function HomeworkPage() {
 
 /* ── Карточка ДЗ для учителя ────────────────────────────────── */
 function TeacherHWCard({ hw, onView, onDelete }) {
-  const [deleting, setDeleting] = useState(false)
+  const [deleting,     setDeleting]     = useState(false)
+  const [confirmOpen,  setConfirmOpen]  = useState(false)
 
-  const handleDelete = async (e) => {
-    e.stopPropagation()
-    if (!confirm('Удалить задание?')) return
+  const handleDelete = async () => {
     setDeleting(true)
     try { await deleteHomework(hw.id); onDelete() }
     catch (e) { console.error(e) }
@@ -90,7 +90,7 @@ function TeacherHWCard({ hw, onView, onDelete }) {
       <div className="flex items-center gap-2 shrink-0">
         <span className="text-xs text-slate-400 hidden sm:block">Просмотр сдач</span>
         <button
-          onClick={handleDelete}
+          onClick={(e) => { e.stopPropagation(); setConfirmOpen(true) }}
           disabled={deleting}
           className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 transition-all cursor-pointer p-1 disabled:opacity-50"
         >
@@ -102,6 +102,14 @@ function TeacherHWCard({ hw, onView, onDelete }) {
           <path d="M9 18l6-6-6-6" strokeLinecap="round"/>
         </svg>
       </div>
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        title="Удалить задание?"
+        message="Это удалит задание и все сданные работы студентов."
+        busy={deleting}
+      />
     </div>
   )
 }

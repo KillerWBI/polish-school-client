@@ -18,6 +18,7 @@ export default function Button({
   variant = 'primary',
   size = 'md',
   className = '',
+  type = 'button',
   disabled,
   loading,
   children,
@@ -25,6 +26,7 @@ export default function Button({
 }) {
   return (
     <button
+      type={type}
       disabled={disabled || loading}
       className={`inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed select-none cursor-pointer ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
       {...rest}

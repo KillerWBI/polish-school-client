@@ -6,9 +6,9 @@ export const register = async ({ name, email, password }) => {
   return data.data
 }
 
-// POST /auth/register-teacher — регистрация учителя (требует teacherSecret)
-export const registerTeacher = async ({ name, email, password, teacherSecret }) => {
-  const { data } = await client.post('/auth/register-teacher', { name, email, password, teacherSecret })
+// POST /auth/register-teacher — открытая регистрация учителя
+export const registerTeacher = async ({ name, email, password }) => {
+  const { data } = await client.post('/auth/register-teacher', { name, email, password })
   return data.data
 }
 
@@ -33,5 +33,17 @@ export const updateUserName = async (id, name) => {
 // PUT /auth/password — сменить пароль
 export const changePassword = async (currentPassword, newPassword) => {
   const { data } = await client.put('/auth/password', { currentPassword, newPassword })
+  return data.data
+}
+
+// GET /auth/verify-email?token=... — подтвердить email
+export const verifyEmail = async (token) => {
+  const { data } = await client.get('/auth/verify-email', { params: { token } })
+  return data.data
+}
+
+// POST /auth/resend-verification — повторно отправить письмо
+export const resendVerification = async () => {
+  const { data } = await client.post('/auth/resend-verification')
   return data.data
 }

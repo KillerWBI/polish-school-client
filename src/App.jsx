@@ -2,9 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage        from './pages/landing/LandingPage'
 import WelcomePage        from './pages/welcome/WelcomePage'
 import TeacherLoginPage   from './pages/auth/TeacherLoginPage'
+import VerifyEmailPage    from './pages/auth/VerifyEmailPage'
 import AppLayout          from './components/layout/AppLayout'
 import PrivateRoute       from './components/layout/PrivateRoute'
 import RoleRoute          from './components/layout/RoleRoute'
+import DashboardPage      from './pages/dashboard/DashboardPage'
 import CalendarPage       from './pages/calendar/CalendarPage'
 import GroupsPage         from './pages/groups/GroupsPage'
 import GroupDetailPage    from './pages/groups/GroupDetailPage'
@@ -24,6 +26,7 @@ export default function App() {
         {/* Публичные */}
         <Route path="/"               element={<LandingPage />} />
         <Route path="/teacher-login"  element={<TeacherLoginPage />} />
+        <Route path="/verify-email"   element={<VerifyEmailPage />} />
 
         {/* После входа */}
         <Route path="/welcome" element={<PrivateRoute><WelcomePage /></PrivateRoute>} />
@@ -32,8 +35,8 @@ export default function App() {
         <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
 
           {/* Общие — оба роля видят (внутри страница отличается по role) */}
+          <Route path="/dashboard"   element={<DashboardPage />} />
           <Route path="/calendar"    element={<CalendarPage />} />
-          <Route path="/dashboard"   element={<Navigate to="/calendar" replace />} />
           <Route path="/groups"      element={<GroupsPage />} />
           <Route path="/groups/:id"  element={<GroupDetailPage />} />
           <Route path="/homework"            element={<HomeworkPage />} />

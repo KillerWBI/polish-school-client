@@ -83,13 +83,38 @@
 - [x] `IndividualLessonsPage` — список инд. уроков (read-only)
 - [x] `IndividualCoursesPage` — заглушка «скоро»
 
-### ❌ Остаётся
-- [ ] `IndividualLessonsPage` — расширить (сейчас read-only): редактирование, удаление, фильтры
-- [ ] `StudentsPage` — клик → профиль студента + пагинация
-- [ ] `PaymentsPage` — серверная фильтрация по month вместо клиентской
-- [ ] **TanStack Query** вместо `useFetch` (кэш, optimistic updates, retry, dedupe)
-- [ ] `httpOnly` cookie для JWT вместо `localStorage` (XSS защита)
-- [ ] `confirm()` → `<ConfirmDialog />` компонент (платформенная модалка)
+### 🟡 Следующий блок — Профиль + Аналитика + Лендинг
+
+> ⚠️ **Перед публичным запуском** — закрыть 4 multi-tenancy бага на backend (см. [REVIEW.md раздел 3](../../REVIEW.md#3-критичные-баги)). Фронт работает корректно, баги на backend.
+
+#### Профиль (Instagram-style)
+- [x] **Sprint C (2026-05-27):** `ProfilePage` редизайн: обложка-баннер + круглый аватар (Cloudinary), bio (300 симв.), соцсети (TG/WhatsApp/LinkedIn), языки-теги, прогресс-бар заполнения, табы Профиль/Аналитика/Безопасность
+- [x] **Sprint C:** компоненты `pages/profile/components/` — Tabs, AvatarUpload, CoverUpload, LanguagesEditor (с CEFR для студента), SocialsEditor
+- [x] **Sprint C:** Recharts установлен. `TeacherCharts.jsx` — Line (paid+charged 2-line), Area (студенты/месяц), плашка avgAttendance + сегментный фильтр period day/week/month
+- [x] **Sprint C:** `StudentCharts.jsx` — Area посещаемость, Line оценки timeline, progress bar выполнения ДЗ
+- [x] **Sprint C:** `constants/languages.js` — 13 языков + CEFR уровни
+- [x] **Sprint C:** `api/profile.api.js` + `api/analytics.api.js`
+
+#### Sprint D — UserProfilePage (1 день, следующий шаг)
+- [ ] `UserProfilePage` (`/@:username`) — просмотр профиля по username; read-only; backend готов (Sprint A); компоненты уже с `readOnly` режимом
+- [ ] Роут `/@:username` в `App.jsx`
+- [ ] `StudentsPage` — клик на студента → `/@username`
+- [ ] `GroupDetailPage` — клик на студента в списке → `/@username`
+- [ ] Sidebar для студента: ссылка «Профиль учителя» → `/@teacher_username`
+
+#### Sprint E — Редизайн лендинга под мульти-сервис
+- [ ] `Hero.jsx` — rotating-слово: заменить на названия языков в их написании (Polski / Français / Español / Deutsch / Italiano / 日本語 / Português / Русский / العربية); только текст, без флагов
+- [ ] `Hero.jsx` — подзаголовок: переориентировать с «учитель польского» на «платформа для языковых преподавателей и их студентов»
+- [ ] `About.jsx` (или аналог) — убрать «карточку одного учителя», заменить на two-column блок: для учителей (автоматизация / аналитика / материалы) / для студентов (расписание / ДЗ / прогресс)
+- [ ] `Features.jsx` — карточки: переформулировать текст с первого лица на платформенный («Управляйте студентами», «Отслеживайте посещаемость»)
+- [ ] `FAQ.jsx` — обновить вопросы под SaaS: «Сколько учителей работает на платформе?», «Как студент попадает к учителю?», «Есть ли бесплатный план?»
+- [ ] `Header` + `Footer` — CTA разделить: «Я преподаватель» → `/teacher-login`, «Найти учителя» → `/` (или будущий каталог)
+
+#### Остальное
+- [ ] `IndividualLessonsPage` — расширить (редактирование, удаление, фильтры)
+- [ ] `PaymentsPage` — серверная фильтрация по month
+- [ ] **TanStack Query** вместо `useFetch`
+- [ ] `httpOnly` cookie вместо `localStorage`
 - [ ] Skeleton loaders вместо `<PageSpinner />`
 
 ---
@@ -111,3 +136,6 @@
 | 2026-05-21 | AttendancePage полная переработка: выбор группы → урока → галочки, key-remount, тосты вместо локальных setError. Студент видит карточки с привязанным ДЗ |
 | 2026-05-21 | **ErrorBoundary** + **sonner Toaster** глобально. Axios interceptor показывает toast на 5xx/network |
 | 2026-05-21 | **IndividualCoursesPage** переписан с CRUD + создан **IndividualCourseDetailPage** + `individualCourses.api.js`. Закрыт пункт #18 из CLAUDE.md |
+| 2026-05-27 | **Sprint C:** ProfilePage полный редизайн (Instagram-style). recharts установлен. 5 UI компонентов (Tabs/AvatarUpload/CoverUpload/LanguagesEditor/SocialsEditor) + 2 chart компонента (TeacherCharts/StudentCharts) + constants/languages.js. api/profile.api.js + api/analytics.api.js. ProfilePage: cover+avatar поверх обложки, статы, прогресс-бар, табы Профиль/Аналитика/Безопасность, sticky кнопка Сохранить, dirty-tracking через JSON-сравнение. |
+| 2026-05-27 | **Fix:** recharts@3.8.1 → recharts@2.15.4 (3.x несовместим с Vite 8 pre-bundling: `require_isUnsafeProperty is not a function`). API идентичен — код графиков не правился. Charts вынесены в lazy chunks: TeacherCharts/StudentCharts грузятся только при открытии таба «Аналитика». |
+| 2026-05-27 | **Fix:** CORS на бэке расширен — в dev принимает любой `localhost:*` (Vite автоматически переходит на 5174 если 5173 занят); production остаётся строгим по `CLIENT_URL`. |
