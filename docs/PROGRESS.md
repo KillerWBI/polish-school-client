@@ -95,12 +95,15 @@
 - [x] **Sprint C:** `constants/languages.js` — 13 языков + CEFR уровни
 - [x] **Sprint C:** `api/profile.api.js` + `api/analytics.api.js`
 
-#### Sprint D — UserProfilePage (1 день, следующий шаг)
-- [ ] `UserProfilePage` (`/@:username`) — просмотр профиля по username; read-only; backend готов (Sprint A); компоненты уже с `readOnly` режимом
-- [ ] Роут `/@:username` в `App.jsx`
-- [ ] `StudentsPage` — клик на студента → `/@username`
-- [ ] `GroupDetailPage` — клик на студента в списке → `/@username`
-- [ ] Sidebar для студента: ссылка «Профиль учителя» → `/@teacher_username`
+#### Sprint D — UserProfilePage ✅ ГОТОВО (2026-06-17, кроме ленты)
+- [x] `UserProfilePage` (`/@:username`) — профиль учителя/студента, контакты, follow, аналитика, кнопка заявки
+- [x] Роут `/@:username` в `App.jsx` (свой → redirect `/profile`)
+- [x] `RequestModal` — заявка (язык/уровень/сообщение/контакт с автоподстановкой)
+- [x] `StudentsPage` — вкладки «Мои ученики / Заявки (N)» + accept/decline, клик → `/@username`
+- [x] `GroupDetailPage` — клик на студента → `/@username`; picker на `getMyStudents`
+- [x] Sidebar — «Студенты» → «Ученики» + бейдж заявок (`requests:changed` event)
+- [ ] Sidebar студента «Мой учитель» — отложено (нужен источник username)
+- [ ] Лента постов — §2.5.4 ROADMAP, отложена в конец Sprint D
 
 #### Sprint E — Редизайн лендинга под мульти-сервис
 - [ ] `Hero.jsx` — rotating-слово: заменить на названия языков в их написании (Polski / Français / Español / Deutsch / Italiano / 日本語 / Português / Русский / العربية); только текст, без флагов
@@ -130,6 +133,8 @@
 | 2026-05-20 | GroupsPage, GroupDetailPage, HomeworkPage, AttendancePage, PaymentsPage, StudentsPage, CalendarPage |
 | 2026-05-20 | 401 → CustomEvent → AuthContext.logout() |
 | 2026-05-20 | Полное ревью: обнаружены проблемы (см. REVIEW.md) |
+| 2026-06-17 | **Sprint D фронт:** UserProfilePage `/@:username`, RequestModal, follow, StudentsPage вкладки, Sidebar бейдж, точки входа на профиль |
+| 2026-06-17 | **Ревью-4 фиксы:** Calendar infinite-loop (гард по диапазону + статич. пропсы), follow-гонка (busy-флаг), viewerContext параллелизация. Детали — REVIEW.md «Ревью 4» |
 | 2026-05-20 | Закрыты все критические и важные задачи (см. REVIEW.md → ИТОГ) |
 | 2026-05-20 | ProfilePage (имя+пароль), IndividualLessonsPage, IndividualCoursesPage — заглушки, чтобы Sidebar-ссылки не выкидывали на лендинг |
 | 2026-05-20 | Лендинг auth-aware: Header/Hero/About/Footer показывают «В кабинет» если залогинен |

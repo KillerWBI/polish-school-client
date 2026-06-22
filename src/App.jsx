@@ -15,6 +15,7 @@ import HomeworkPage       from './pages/homework/HomeworkPage'
 import AttendancePage     from './pages/attendance/AttendancePage'
 import PaymentsPage       from './pages/payments/PaymentsPage'
 import ProfilePage        from './pages/profile/ProfilePage'
+import UserProfilePage     from './pages/profile/UserProfilePage'
 import IndividualCoursesPage      from './pages/individual-courses/IndividualCoursesPage'
 import IndividualCourseDetailPage from './pages/individual-courses/IndividualCourseDetailPage'
 import IndividualLessonsPage      from './pages/individual-lessons/IndividualLessonsPage'
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/individual-courses/:id"  element={<IndividualCourseDetailPage />} />
           <Route path="/individual-lessons"      element={<IndividualLessonsPage />} />
           <Route path="/profile"             element={<ProfilePage />} />
+          <Route path="/@:username"          element={<UserProfilePage />} />
 
           {/* Только учитель */}
           <Route path="/students"

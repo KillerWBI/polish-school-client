@@ -4,7 +4,7 @@ import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
 import { getGroup, updateGroup, deleteGroup, addStudent, removeStudent, generateLessons } from '../../api/groups.api'
 import { getLessons, createLesson, updateLesson, deleteLesson } from '../../api/lessons.api'
-import { getStudents } from '../../api/students.api'
+import { getMyStudents } from '../../api/students.api'
 import { formatDate, dayLabel } from '../../utils/formatDate'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
@@ -75,6 +75,7 @@ export default function GroupDetailPage() {
 
 /* ── Студенты ──────────────────────────────────────────────── */
 function StudentsTab({ group, reload, isTeacher }) {
+  const navigate = useNavigate()
   const [addModal, setAddModal] = useState(false)
   const [removing, setRemoving] = useState(null)
 
@@ -101,13 +102,18 @@ function StudentsTab({ group, reload, isTeacher }) {
           {group.students.map(s => (
             <div key={s.id}
               className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.07]">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-pink-accent flex items-center justify-center text-white text-sm font-semibold shrink-0">
-                {s.name[0].toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-white">{s.name}</div>
-                {isTeacher && <div className="text-xs text-slate-400 truncate">{s.email}</div>}
-              </div>
+              <button
+                onClick={() => s.username && navigate(`/@${s.username}`)}
+                disabled={!s.username}
+                className="flex items-center gap-3 flex-1 min-w-0 text-left enabled:hover:opacity-80 transition-opacity disabled:cursor-default">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-pink-accent flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
+                  {s.avatar ? <img src={s.avatar} alt={s.name} className="w-full h-full object-cover" /> : s.name[0].toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-white">{s.name}</div>
+                  {isTeacher && <div className="text-xs text-slate-400 truncate">{s.email}</div>}
+                </div>
+              </button>
               {isTeacher && (
                 <button onClick={() => handleRemove(s.id)} disabled={removing === s.id}
                   className="text-slate-500 hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50 p-1">
@@ -130,7 +136,7 @@ function StudentsTab({ group, reload, isTeacher }) {
 }
 
 function AddStudentModal({ open, onClose, groupId, existing, onAdded }) {
-  const { data: all } = useFetch(getStudents, [])
+  const { data: all } = useFetch(getMyStudents, [])
   const [search, setSearch] = useState('')
   const [adding, setAdding] = useState(null)
   const [error, setError]   = useState('')
@@ -247,7 +253,7 @@ function LessonsTab({ group, isTeacher }) {
 }
 
 /* ── Карточка урока ─────────────────────────────────────────── */
-function LessonSection({ title, lessons, onSelect, isTeacher, muted }) {
+function LessonSection({ title, lessons, onSelect, muted }) {
   return (
     <div>
       <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">{title}</p>

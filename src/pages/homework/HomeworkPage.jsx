@@ -409,15 +409,19 @@ function SubmissionsModal({ hw, onClose }) {
     useCallback(() => hw ? getSubmissions(hw.id) : Promise.resolve([]), [hw?.id]),
     [hw?.id]
   )
-  const [grades, setGrades] = useState({})
-  const [saving, setSaving] = useState(null)
+  const [grades, setGrades]   = useState({})
+  const [saving, setSaving]   = useState(null)
+  const [editing, setEditing] = useState({}) // subId → правка уже выставленной оценки
 
   const handleGrade = async (subId) => {
     const grade = parseInt(grades[subId])
     if (isNaN(grade) || grade < 0 || grade > 100) return
     setSaving(subId)
-    try { await gradeSubmission(hw.id, subId, grade); reload() }
-    catch (e) { console.error(e) }
+    try {
+      await gradeSubmission(hw.id, subId, grade)
+      setEditing(e => ({ ...e, [subId]: false }))
+      reload()
+    } catch (e) { console.error(e) }
     finally { setSaving(null) }
   }
 
@@ -431,35 +435,59 @@ function SubmissionsModal({ hw, onClose }) {
           <EmptyState emoji="📭" title="Сдач пока нет" />
         ) : (
           <div className="space-y-3">
-            {subs.map(s => (
-              <div key={s.id} className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.07]">
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <span className="text-sm font-medium text-white truncate">{s.student?.name ?? s.studentId}</span>
-                  {s.status === 'graded'
-                    ? <span className="text-sm font-semibold text-brand-300">{s.grade}/100</span>
-                    : <span className="text-xs text-slate-500 px-2 py-0.5 rounded-full bg-white/[0.07]">Не проверено</span>
-                  }
-                </div>
-                {s.comment && <p className="text-xs text-slate-400 mb-2">{s.comment}</p>}
-                <a href={s.fileUrl} target="_blank" rel="noopener noreferrer"
-                  className="text-xs text-brand-400 hover:text-brand-300 underline break-all">
-                  Открыть файл
-                </a>
-                {s.status !== 'graded' && (
-                  <div className="flex items-center gap-2 mt-3">
-                    <input
-                      type="number" min="0" max="100" placeholder="Оценка"
-                      value={grades[s.id] || ''}
-                      onChange={e => setGrades(g => ({ ...g, [s.id]: e.target.value }))}
-                      className="w-28 h-8 px-3 rounded-lg bg-white/[0.07] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400"
-                    />
-                    <Button size="sm" loading={saving === s.id} onClick={() => handleGrade(s.id)}>
-                      Поставить
-                    </Button>
+            {subs.map(s => {
+              const isGraded  = s.status === 'graded'
+              const isEditing = !isGraded || editing[s.id] // ввод виден: не оценено ИЛИ режим правки
+              return (
+                <div key={s.id} className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.07]">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <span className="text-sm font-medium text-white truncate">{s.student?.name ?? s.studentId}</span>
+                    {isGraded ? (
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-sm font-semibold text-brand-300">{s.grade}/100</span>
+                        {!editing[s.id] && (
+                          <button
+                            onClick={() => {
+                              setEditing(e => ({ ...e, [s.id]: true }))
+                              setGrades(g => ({ ...g, [s.id]: String(s.grade) })) // префилл текущей
+                            }}
+                            className="text-xs text-slate-400 hover:text-white underline cursor-pointer">
+                            Изменить
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-slate-500 px-2 py-0.5 rounded-full bg-white/[0.07]">Не проверено</span>
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+                  {s.comment && <p className="text-xs text-slate-400 mb-2">{s.comment}</p>}
+                  <a href={s.fileUrl} target="_blank" rel="noopener noreferrer"
+                    className="text-xs text-brand-400 hover:text-brand-300 underline break-all">
+                    Открыть файл
+                  </a>
+                  {isEditing && (
+                    <div className="flex items-center gap-2 mt-3">
+                      <input
+                        type="number" min="0" max="100" placeholder="Оценка"
+                        value={grades[s.id] || ''}
+                        onChange={e => setGrades(g => ({ ...g, [s.id]: e.target.value }))}
+                        className="w-28 h-8 px-3 rounded-lg bg-white/[0.07] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400"
+                      />
+                      <Button size="sm" loading={saving === s.id} onClick={() => handleGrade(s.id)}>
+                        {isGraded ? 'Сохранить' : 'Поставить'}
+                      </Button>
+                      {isGraded && (
+                        <button
+                          onClick={() => setEditing(e => ({ ...e, [s.id]: false }))}
+                          className="text-xs text-slate-400 hover:text-white cursor-pointer">
+                          Отмена
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
         )}
       </div>

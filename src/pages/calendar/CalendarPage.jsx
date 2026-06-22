@@ -7,21 +7,34 @@ import { getLessons } from '../../api/lessons.api'
 import { getIndividualLessons } from '../../api/individualLessons.api'
 import { formatDate } from '../../utils/formatDate'
 import Modal from '../../components/ui/Modal'
-import useAuth from '../../hooks/useAuth'
+
+// Статические пропсы FullCalendar — на уровне модуля, чтобы их ссылки не менялись
+// на каждый рендер. Иначе обёртка @fullcalendar/react видит «пропсы изменились» →
+// resetOptions() → повторный datesSet → бесконечная петля запросов.
+const CAL_PLUGINS = [dayGridPlugin, interactionPlugin]
+const CAL_LOCALES = [ruLocale]
+const CAL_HEADER  = { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' }
+const CAL_BUTTONS = { today: 'Сегодня', month: 'Месяц', week: 'Неделя' }
 
 export default function CalendarPage() {
-  const { isTeacher } = useAuth()
   const calRef  = useRef(null)
+  const lastRange = useRef('')                     // последний загруженный диапазон from|to
   const [events, setEvents]       = useState([])
   const [selected, setSelected]   = useState(null) // выбранное событие
   const [loading, setLoading]     = useState(false)
 
-  // FullCalendar вызывает datesSet при смене месяца → загружаем уроки за период
+  // FullCalendar вызывает datesSet при смене месяца → загружаем уроки за период.
+  // ГАРД: если диапазон тот же — выходим без запроса. Это разрывает петлю,
+  // даже если datesSet пере-стреливает из-за внутренних ре-рендеров FullCalendar.
   const handleDatesSet = useCallback(async ({ startStr, endStr }) => {
+    const from = startStr.slice(0, 10)
+    const to   = endStr.slice(0, 10)
+    const key  = `${from}|${to}`
+    if (key === lastRange.current) return
+    lastRange.current = key
+
     setLoading(true)
     try {
-      const from = startStr.slice(0, 10)
-      const to   = endStr.slice(0, 10)
       const [group, indiv] = await Promise.all([
         getLessons({ from, to }),
         getIndividualLessons({ from, to }),
@@ -84,13 +97,13 @@ export default function CalendarPage() {
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 sm:p-6">
         <FullCalendar
           ref={calRef}
-          plugins={[dayGridPlugin, interactionPlugin]}
+          plugins={CAL_PLUGINS}
           initialView="dayGridMonth"
-          locales={[ruLocale]}
+          locales={CAL_LOCALES}
           locale="ru"
           firstDay={1}
-          headerToolbar={{ left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' }}
-          buttonText={{ today: 'Сегодня', month: 'Месяц', week: 'Неделя' }}
+          headerToolbar={CAL_HEADER}
+          buttonText={CAL_BUTTONS}
           events={events}
           datesSet={handleDatesSet}
           eventClick={handleEventClick}

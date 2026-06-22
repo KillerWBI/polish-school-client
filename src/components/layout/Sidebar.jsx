@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
+import { getLessonRequests } from '../../api/lessonRequests.api'
 
 // Навигация учителя — сгруппированная
 const TEACHER_SECTIONS = [
@@ -15,7 +17,7 @@ const TEACHER_SECTIONS = [
     items: [
       { path: '/groups',             label: 'Группы',           icon: IconGroups },
       { path: '/individual-courses', label: 'Инд. курсы',       icon: IconIndividual },
-      { path: '/students',           label: 'Студенты',         icon: IconStudents },
+      { path: '/students',           label: 'Ученики',          icon: IconStudents },
       { path: '/homework',           label: 'Домашние задания', icon: IconHomework },
       { path: '/attendance',         label: 'Посещаемость',     icon: IconCheck },
     ],
@@ -57,6 +59,17 @@ export default function Sidebar({ onClose }) {
   const { user, logout, isTeacher } = useAuth()
   const navigate = useNavigate()
   const sections = isTeacher ? TEACHER_SECTIONS : STUDENT_SECTIONS
+
+  // Бейдж непринятых заявок (только учитель). Обновляется по событию requests:changed,
+  // которое StudentsPage шлёт после accept/decline — дешёвая синхронизация без глоб. стейта.
+  const [pending, setPending] = useState(0)
+  useEffect(() => {
+    if (!isTeacher) return
+    const load = () => getLessonRequests('pending').then(r => setPending(r.length)).catch(() => {})
+    load()
+    window.addEventListener('requests:changed', load)
+    return () => window.removeEventListener('requests:changed', load)
+  }, [isTeacher])
 
   const handleLogout = () => { logout(); navigate('/') }
 
@@ -118,7 +131,12 @@ export default function Sidebar({ onClose }) {
                   }
                 >
                   <Icon />
-                  <span className="truncate">{label}</span>
+                  <span className="truncate flex-1">{label}</span>
+                  {path === '/students' && pending > 0 && (
+                    <span className="text-[10px] font-semibold text-white bg-brand-500 rounded-full px-1.5 py-0.5 leading-none shrink-0">
+                      {pending}
+                    </span>
+                  )}
                 </NavLink>
               ))}
             </div>

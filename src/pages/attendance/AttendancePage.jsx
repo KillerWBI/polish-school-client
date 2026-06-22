@@ -1,10 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
 import { getGroups, getGroup } from '../../api/groups.api'
 import { getLessons } from '../../api/lessons.api'
 import { getIndividualLessons } from '../../api/individualLessons.api'
-import { getAttendance, saveAttendance } from '../../api/attendance.api'
+import {
+  getAttendance,
+  getPendingAttendance,
+  saveAttendance,
+  confirmAttendance,
+  resolveAttendanceDispute,
+} from '../../api/attendance.api'
 import { getHomework } from '../../api/homework.api'
 import { formatDate } from '../../utils/formatDate'
 import { toast, errMsg } from '../../utils/toast'
@@ -12,25 +18,357 @@ import Button from '../../components/ui/Button'
 import { PageSpinner } from '../../components/ui/Spinner'
 import EmptyState from '../../components/ui/EmptyState'
 
+/* ─── Статусы ──────────────────────────────────────────────── */
+const STATUS_BADGE = {
+  confirmed:       { label: 'Подтверждено',     cls: 'bg-green-500/15 text-green-400' },
+  pending_student: { label: 'Ждёт подтверждения', cls: 'bg-yellow-500/15 text-yellow-400' },
+  disputed:        { label: 'Спор',             cls: 'bg-red-500/15 text-red-400' },
+}
+
+// Бейдж реального статуса записи (НЕ из галочки учителя, а из сохранённой записи).
+// confirmed показывает фактический present (был/не был); остальное — статус подтверждения.
+function ConfirmBadge({ rec }) {
+  if (!rec) return null
+  if (rec.status === 'confirmed') {
+    return rec.present
+      ? <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/15 text-green-400 shrink-0">✓ Был · подтв.</span>
+      : <span className="text-xs px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-400 shrink-0">Не был · подтв.</span>
+  }
+  const b = STATUS_BADGE[rec.status]
+  return b ? <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${b.cls}`}>{b.label}</span> : null
+}
+
+/* ─── Корневой компонент ────────────────────────────────────── */
 export default function AttendancePage() {
   const { isTeacher } = useAuth()
+  const [mode, setMode] = useState('journal') // 'journal' | 'pending' | 'disputed'
+
+  const { data: pending, loading: pendingLoading, reload: reloadPending } =
+    useFetch(getPendingAttendance)
+
+  const pendingItems   = (pending || []).filter(r => r.status === 'pending_student')
+  const disputedItems  = (pending || []).filter(r => r.status === 'disputed')
+  const pendingCount   = pendingItems.length
+  const disputedCount  = disputedItems.length
+
   return (
     <div className="p-5 sm:p-8">
+      {/* Заголовок */}
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-white">Посещаемость</h1>
         <p className="text-sm text-slate-400 mt-0.5">
           {isTeacher
-            ? 'Выберите группу и урок, затем отметьте присутствие'
-            : 'История ваших посещений'}
+            ? 'Отметьте присутствие — студент подтвердит свою сторону'
+            : 'Ваши посещения и запросы на подтверждение'}
         </p>
       </div>
-      {isTeacher ? <TeacherView /> : <StudentView />}
+
+      {/* Режим-вкладки верхнего уровня */}
+      <ModeBar
+        mode={mode}
+        onChange={setMode}
+        pendingCount={isTeacher ? pendingCount : pendingCount}
+        disputedCount={disputedCount}
+        isTeacher={isTeacher}
+      />
+
+      {/* Содержимое по режиму */}
+      {mode === 'journal' && (
+        isTeacher
+          ? <TeacherView onSaved={reloadPending} />
+          : <StudentView onDisputed={reloadPending} />
+      )}
+      {mode === 'pending' && (
+        <PendingView
+          items={pendingItems}
+          loading={pendingLoading}
+          isTeacher={isTeacher}
+          reload={reloadPending}
+        />
+      )}
+      {mode === 'disputed' && (
+        <DisputedView
+          items={disputedItems}
+          loading={pendingLoading}
+          isTeacher={isTeacher}
+          reload={reloadPending}
+        />
+      )}
     </div>
   )
 }
 
-/* ─── Переключатель типа урока ─────────────────────────────── */
-function TabSwitcher({ tab, onChange }) {
+/* ─── Верхние вкладки режима ────────────────────────────────── */
+function ModeBar({ mode, onChange, pendingCount, disputedCount, isTeacher }) {
+  const tabs = [
+    {
+      key: 'journal',
+      label: isTeacher ? 'Журнал' : 'История',
+    },
+    {
+      key: 'pending',
+      label: isTeacher ? 'Ожидают студентов' : 'Подтвердить',
+      count: pendingCount,
+    },
+    {
+      key: 'disputed',
+      label: 'Спорные',
+      count: disputedCount,
+    },
+  ]
+
+  return (
+    <div className="flex gap-1 p-1 bg-white/[0.05] rounded-xl w-fit mb-6">
+      {tabs.map(t => (
+        <button
+          key={t.key}
+          onClick={() => onChange(t.key)}
+          className={`relative px-4 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+            mode === t.key
+              ? 'bg-brand-600/30 text-brand-300'
+              : 'text-slate-400 hover:text-white'
+          }`}>
+          {t.label}
+          {t.count > 0 && (
+            <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-xs font-semibold ${
+              mode === t.key ? 'bg-brand-500/40 text-brand-200' : 'bg-white/10 text-slate-300'
+            }`}>
+              {t.count}
+            </span>
+          )}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+/* ─── Вкладка: Ожидают подтверждения ───────────────────────── */
+function PendingView({ items, loading, isTeacher, reload }) {
+  const [busy, setBusy] = useState({})
+
+  const handleStudentConfirm = async (id, present) => {
+    setBusy(b => ({ ...b, [id]: true }))
+    try {
+      await confirmAttendance(id, present)
+      toast.success(present ? 'Посещение подтверждено' : 'Отмечено как отсутствие')
+      reload()
+    } catch (e) {
+      toast.error(errMsg(e, 'Ошибка'))
+    } finally {
+      setBusy(b => ({ ...b, [id]: false }))
+    }
+  }
+
+  if (loading) return <PageSpinner />
+  if (!items.length) return (
+    <EmptyState
+      emoji="✅"
+      title="Всё подтверждено"
+      text={isTeacher
+        ? 'Нет записей, ожидающих подтверждения от студентов.'
+        : 'Нет уроков, требующих вашего подтверждения.'}
+    />
+  )
+
+  return (
+    <div className="space-y-3 max-w-2xl">
+      <p className="text-sm text-slate-400 mb-4">
+        {isTeacher
+          ? `${items.length} урок(ов) ждут подтверждения от студентов. Через 3 дня подтвердятся автоматически.`
+          : `Подтвердите или оспорьте своё присутствие на ${items.length} уроке(ах).`}
+      </p>
+      {items.map(r => {
+        const lesson = r.Lesson || r.IndividualLesson
+        return (
+          <div
+            key={r.id}
+            className="rounded-xl border border-yellow-500/20 bg-yellow-500/[0.04] p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-sm font-medium text-white">
+                  {lesson?.topic || (r.lessonId ? 'Групповой урок' : 'Инд. урок')}
+                </div>
+                <div className="text-xs text-slate-400 mt-0.5">
+                  {lesson?.date ? formatDate(lesson.date) : '—'}
+                  {lesson?.time ? ` · ${lesson.time}` : ''}
+                  {r.Lesson?.Group?.name ? ` · ${r.Lesson.Group.name}` : ''}
+                </div>
+                {isTeacher && r.student && (
+                  <div className="text-xs text-slate-500 mt-1">Студент: {r.student.name}</div>
+                )}
+                <div className="text-xs text-yellow-400/80 mt-1">
+                  Учитель отметил: {r.teacherMarked ? '✓ Присутствовал' : '✗ Отсутствовал'}
+                </div>
+              </div>
+
+              {/* Кнопки студента */}
+              {!isTeacher && (
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    disabled={busy[r.id]}
+                    onClick={() => handleStudentConfirm(r.id, true)}
+                    className="px-3 py-1.5 rounded-lg bg-green-600/20 text-green-400 text-xs font-medium
+                               hover:bg-green-600/30 transition-colors cursor-pointer disabled:opacity-50">
+                    Был
+                  </button>
+                  <button
+                    disabled={busy[r.id]}
+                    onClick={() => handleStudentConfirm(r.id, false)}
+                    className="px-3 py-1.5 rounded-lg bg-red-600/20 text-red-400 text-xs font-medium
+                               hover:bg-red-600/30 transition-colors cursor-pointer disabled:opacity-50">
+                    Не был
+                  </button>
+                </div>
+              )}
+
+              {/* Учитель — только инфо, кнопок нет (студент должен ответить) */}
+              {isTeacher && (
+                <span className="text-xs text-yellow-400/70 shrink-0 mt-1">
+                  Ждём ответа
+                </span>
+              )}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/* ─── Вкладка: Спорные ──────────────────────────────────────── */
+function DisputedView({ items, loading, isTeacher, reload }) {
+  const [busy, setBusy] = useState({})
+
+  const handleResolve = async (id, accept) => {
+    setBusy(b => ({ ...b, [id]: true }))
+    try {
+      await resolveAttendanceDispute(id, accept)
+      toast.success(accept ? 'Принята версия студента' : 'Подтверждена версия учителя')
+      reload()
+    } catch (e) {
+      toast.error(errMsg(e, 'Ошибка'))
+    } finally {
+      setBusy(b => ({ ...b, [id]: false }))
+    }
+  }
+
+  const handleStudentUpdate = async (id, present) => {
+    setBusy(b => ({ ...b, [id]: true }))
+    try {
+      await confirmAttendance(id, present)
+      toast.success('Ответ обновлён')
+      reload()
+    } catch (e) {
+      toast.error(errMsg(e, 'Ошибка'))
+    } finally {
+      setBusy(b => ({ ...b, [id]: false }))
+    }
+  }
+
+  if (loading) return <PageSpinner />
+  if (!items.length) return (
+    <EmptyState
+      emoji="🤝"
+      title="Споров нет"
+      text="Все посещения согласованы между учителем и студентами."
+    />
+  )
+
+  return (
+    <div className="space-y-3 max-w-2xl">
+      <p className="text-sm text-slate-400 mb-4">
+        {isTeacher
+          ? `${items.length} спорных записей — ответы учителя и студента расходятся. Посещение не засчитывается до разрешения.`
+          : `${items.length} спорных записей — ваш ответ расходится с отметкой учителя.`}
+      </p>
+      {items.map(r => {
+        const lesson = r.Lesson || r.IndividualLesson
+        return (
+          <div
+            key={r.id}
+            className="rounded-xl border border-red-500/20 bg-red-500/[0.04] p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-white">
+                  {lesson?.topic || (r.lessonId ? 'Групповой урок' : 'Инд. урок')}
+                </div>
+                <div className="text-xs text-slate-400 mt-0.5">
+                  {lesson?.date ? formatDate(lesson.date) : '—'}
+                  {lesson?.time ? ` · ${lesson.time}` : ''}
+                  {r.Lesson?.Group?.name ? ` · ${r.Lesson.Group.name}` : ''}
+                </div>
+                {isTeacher && r.student && (
+                  <div className="text-xs text-slate-500 mt-1">Студент: {r.student.name}</div>
+                )}
+
+                {/* Кто что сказал */}
+                <div className="flex gap-4 mt-2">
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                    r.teacherMarked ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'
+                  }`}>
+                    Учитель: {r.teacherMarked ? 'был' : 'не был'}
+                  </span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                    r.studentMarked ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'
+                  }`}>
+                    Студент: {r.studentMarked ? 'был' : 'не был'}
+                  </span>
+                </div>
+
+                <p className="text-xs text-red-400/70 mt-1">
+                  Посещение не засчитывается до разрешения спора
+                </p>
+              </div>
+
+              {/* Кнопки разрешения */}
+              <div className="flex flex-col gap-2 shrink-0">
+                {isTeacher ? (
+                  <>
+                    <button
+                      disabled={busy[r.id]}
+                      onClick={() => handleResolve(r.id, true)}
+                      className="px-3 py-1.5 rounded-lg bg-blue-600/20 text-blue-300 text-xs font-medium
+                                 hover:bg-blue-600/30 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap">
+                      Принять студента
+                    </button>
+                    <button
+                      disabled={busy[r.id]}
+                      onClick={() => handleResolve(r.id, false)}
+                      className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-white text-xs font-medium
+                                 hover:bg-white/[0.10] transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap">
+                      Настоять на своём
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {/* Студент может изменить свой ответ */}
+                    <button
+                      disabled={busy[r.id]}
+                      onClick={() => handleStudentUpdate(r.id, true)}
+                      className="px-3 py-1.5 rounded-lg bg-green-600/20 text-green-400 text-xs font-medium
+                                 hover:bg-green-600/30 transition-colors cursor-pointer disabled:opacity-50">
+                      Был
+                    </button>
+                    <button
+                      disabled={busy[r.id]}
+                      onClick={() => handleStudentUpdate(r.id, false)}
+                      className="px-3 py-1.5 rounded-lg bg-red-600/20 text-red-400 text-xs font-medium
+                                 hover:bg-red-600/30 transition-colors cursor-pointer disabled:opacity-50">
+                      Не был
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/* ─── Переключатель типа урока (группа/инд.) ────────────────── */
+function LessonTypeSwitcher({ tab, onChange }) {
   return (
     <div className="flex gap-1 p-1 bg-white/[0.05] rounded-xl w-fit mb-5">
       {[['group', 'Групповые'], ['individual', 'Индивидуальные']].map(([val, label]) => (
@@ -49,8 +387,8 @@ function TabSwitcher({ tab, onChange }) {
   )
 }
 
-/* ─── Учитель ──────────────────────────────────────────────── */
-function TeacherView() {
+/* ─── Учитель — журнал ──────────────────────────────────────── */
+function TeacherView({ onSaved }) {
   const [tab,            setTab]           = useState('group')
   const [selectedGroup,  setSelectedGroup] = useState(null)
   const [selectedLesson, setSelectedLesson]= useState(null)
@@ -82,11 +420,10 @@ function TeacherView() {
 
   return (
     <div>
-      <TabSwitcher tab={tab} onChange={handleTabChange} />
+      <LessonTypeSwitcher tab={tab} onChange={handleTabChange} />
 
       {tab === 'group' ? (
         <div className={`grid gap-5 ${cols}`}>
-          {/* Колонка 1: Группы */}
           <Column label="Группа">
             {groupsLoading ? <PageSpinner /> : !groups?.length ? (
               <EmptyState emoji="👥" title="Групп нет" text="Сначала создайте группу." />
@@ -109,7 +446,6 @@ function TeacherView() {
             )}
           </Column>
 
-          {/* Колонка 2: Уроки группы */}
           {selectedGroup && (
             <Column label="Урок">
               {lessonsLoading ? <PageSpinner /> : !groupLessons?.length ? (
@@ -130,13 +466,16 @@ function TeacherView() {
             </Column>
           )}
 
-          {/* Колонка 3: Форма посещаемости */}
           {selectedLesson && (
-            <AttendanceForm key={selectedLesson.id} lesson={selectedLesson} lessonType="group" />
+            <AttendanceForm
+              key={selectedLesson.id}
+              lesson={selectedLesson}
+              lessonType="group"
+              onSaved={onSaved}
+            />
           )}
         </div>
       ) : (
-        /* Индивидуальные уроки */
         <div className={`grid gap-5 ${selectedLesson ? 'lg:grid-cols-2' : ''}`}>
           <Column label="Урок">
             {indivLoading ? <PageSpinner /> : !indivLessons?.length ? (
@@ -149,11 +488,7 @@ function TeacherView() {
                     active={selectedLesson?.id === l.id}
                     onClick={() => setSelectedLesson(l)}
                     primary={l.topic || 'Без темы'}
-                    secondary={[
-                      formatDate(l.date),
-                      l.time,
-                      l.student?.name,
-                    ].filter(Boolean).join(' · ')}
+                    secondary={[formatDate(l.date), l.time, l.student?.name].filter(Boolean).join(' · ')}
                   />
                 ))}
               </div>
@@ -161,7 +496,12 @@ function TeacherView() {
           </Column>
 
           {selectedLesson && (
-            <AttendanceForm key={selectedLesson.id} lesson={selectedLesson} lessonType="individual" />
+            <AttendanceForm
+              key={selectedLesson.id}
+              lesson={selectedLesson}
+              lessonType="individual"
+              onSaved={onSaved}
+            />
           )}
         </div>
       )}
@@ -169,8 +509,8 @@ function TeacherView() {
   )
 }
 
-/* ─── Форма посещаемости ───────────────────────────────────── */
-function AttendanceForm({ lesson, lessonType }) {
+/* ─── Форма посещаемости (учитель заполняет) ────────────────── */
+function AttendanceForm({ lesson, lessonType, onSaved }) {
   const isGroup = lessonType === 'group'
 
   const { data: group, loading: groupLoading } = useFetch(
@@ -187,11 +527,11 @@ function AttendanceForm({ lesson, lessonType }) {
   const [present, setPresent] = useState({})
   const [saving,  setSaving]  = useState(false)
 
-  // Заполнение из сохранённых записей
   useEffect(() => {
     if (!existing) return
     const init = {}
-    existing.forEach(r => { init[r.studentId] = r.present })
+    // Показываем teacherMarked если есть, иначе present (старые записи)
+    existing.forEach(r => { init[r.studentId] = r.teacherMarked ?? r.present ?? false })
     setPresent(init)
   }, [existing])
 
@@ -217,8 +557,9 @@ function AttendanceForm({ lesson, lessonType }) {
         const records = [{ studentId, present: !!present[studentId] }]
         await saveAttendance(null, records, lesson.id)
       }
-      toast.success('Посещаемость сохранена')
+      toast.success('Посещаемость отмечена — студенты получат запрос на подтверждение')
       reloadExisting()
+      onSaved?.()
     } catch (e) {
       console.error(e)
       toast.error(errMsg(e, 'Ошибка сохранения'))
@@ -228,11 +569,7 @@ function AttendanceForm({ lesson, lessonType }) {
   }
 
   if (isGroup && groupLoading) {
-    return (
-      <Column label="Посещаемость">
-        <PageSpinner />
-      </Column>
-    )
+    return <Column label="Посещаемость"><PageSpinner /></Column>
   }
 
   // Индивидуальный урок — один студент
@@ -255,15 +592,15 @@ function AttendanceForm({ lesson, lessonType }) {
           sublabel={student.email}
           checked={!!present[student.id]}
           onChange={() => toggle(student.id)}
+          rightSlot={(() => { const rec = existing?.find(r => r.studentId === student.id); return rec ? <ConfirmBadge rec={rec} /> : undefined })()}
         />
         <Button onClick={handleSave} loading={saving} className="w-full mt-3">
-          Сохранить
+          Отметить и отправить студенту
         </Button>
       </Column>
     )
   }
 
-  // Групповой урок
   if (!group?.students?.length) {
     return (
       <Column label="Посещаемость">
@@ -274,54 +611,95 @@ function AttendanceForm({ lesson, lessonType }) {
 
   const total   = group.students.length
   const checked = Object.values(present).filter(Boolean).length
+  const recByStudent     = new Map((existing || []).map(r => [r.studentId, r]))
+  // «Присутствует» = только подтверждённые присутствия, а не галочки учителя
+  const confirmedPresent = (existing || []).filter(r => r.status === 'confirmed' && r.present).length
 
   return (
     <Column label={lesson.topic || `Урок ${formatDate(lesson.date)}`}>
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs text-slate-500">
-          {formatDate(lesson.date)}{lesson.time ? ` · ${lesson.time}` : ''} · {checked}/{total}
+          {formatDate(lesson.date)}{lesson.time ? ` · ${lesson.time}` : ''} · отмечено {checked}/{total} · присутствует (подтв.) {confirmedPresent}
         </p>
         <div className="flex gap-2">
-          <button
-            onClick={() => setAll(true)}
-            className="text-xs text-brand-400 hover:text-brand-300 cursor-pointer">
-            Все
-          </button>
+          <button onClick={() => setAll(true)}  className="text-xs text-brand-400 hover:text-brand-300 cursor-pointer">Все</button>
           <span className="text-slate-600">·</span>
-          <button
-            onClick={() => setAll(false)}
-            className="text-xs text-slate-400 hover:text-white cursor-pointer">
-            Никого
-          </button>
+          <button onClick={() => setAll(false)} className="text-xs text-slate-400 hover:text-white cursor-pointer">Никого</button>
         </div>
       </div>
 
-      <div className="space-y-2 max-h-[45vh] overflow-y-auto pr-1 mb-3">
-        {group.students.map(s => (
-          <CheckRow
-            key={s.id}
-            label={s.name}
-            sublabel={s.email}
-            checked={!!present[s.id]}
-            onChange={() => toggle(s.id)}
-          />
-        ))}
+      {/* Статусы уже отмеченных студентов */}
+      {existing?.length > 0 && (
+        <div className="mb-3 p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+          <p className="text-xs text-slate-500 mb-1.5">Статус подтверждений</p>
+          <div className="space-y-1">
+            {group.students.map(s => {
+              const rec = existing.find(r => r.studentId === s.id)
+              const badge = rec && STATUS_BADGE[rec.status]
+              if (!badge) return null   // нет записи/неизвестный статус → не угадываем
+              return (
+                <div key={s.id} className="flex items-center justify-between">
+                  <span className="text-xs text-slate-300">{s.name}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${badge.cls}`}>
+                    {badge.label}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-2 max-h-[35vh] overflow-y-auto pr-1 mb-3">
+        {group.students.map(s => {
+          const rec = recByStudent.get(s.id)
+          return (
+            <CheckRow
+              key={s.id}
+              label={s.name}
+              sublabel={s.email}
+              checked={!!present[s.id]}
+              onChange={() => toggle(s.id)}
+              rightSlot={rec ? <ConfirmBadge rec={rec} /> : undefined}
+            />
+          )
+        })}
       </div>
 
       <Button onClick={handleSave} loading={saving} className="w-full">
-        Сохранить посещаемость
+        Отметить посещаемость
       </Button>
+      <p className="text-xs text-slate-500 mt-2 text-center">
+        Студенты получат запрос на подтверждение
+      </p>
     </Column>
   )
 }
 
-/* ─── Студент ──────────────────────────────────────────────── */
-function StudentView() {
+/* ─── Студент — история ─────────────────────────────────────── */
+function StudentView({ onDisputed }) {
   const [tab,        setTab]        = useState('group')
   const [expandedId, setExpandedId] = useState(null)
+  const [busy,       setBusy]       = useState({})
 
-  const { data: attendance, loading: attLoading } = useFetch(getAttendance)
-  const { data: homework }                         = useFetch(getHomework)
+  const { data: attendance, loading: attLoading, reload } = useFetch(getAttendance)
+  const { data: homework }                                = useFetch(getHomework)
+
+  // Студент передумал по подтверждённой записи: шлём противоположный ответ →
+  // расходится с отметкой учителя → запись становится спорной (disputed).
+  const handleDispute = async (id, currentPresent) => {
+    setBusy(b => ({ ...b, [id]: true }))
+    try {
+      await confirmAttendance(id, !currentPresent)
+      toast.success('Отправлено в спор — учитель рассмотрит во вкладке «Спорные»')
+      reload()
+      onDisputed?.()
+    } catch (e) {
+      toast.error(errMsg(e, 'Ошибка'))
+    } finally {
+      setBusy(b => ({ ...b, [id]: false }))
+    }
+  }
 
   const all = attendance || []
   const hw  = homework   || []
@@ -333,30 +711,31 @@ function StudentView() {
       return db.localeCompare(da)
     })
 
-  const groupRecs = sortByDate(all.filter(r => r.lessonId))
-  const indivRecs = sortByDate(all.filter(r => r.individualLessonId))
+  // История — только подтверждённые записи
+  const confirmed = all.filter(r => r.status === 'confirmed')
+  const groupRecs = sortByDate(confirmed.filter(r => r.lessonId))
+  const indivRecs = sortByDate(confirmed.filter(r => r.individualLessonId))
   const records   = tab === 'group' ? groupRecs : indivRecs
 
-  const total    = all.length
-  const attended = all.filter(r => r.present).length
+  const total    = confirmed.length
+  const attended = confirmed.filter(r => r.present).length
   const percent  = total > 0 ? Math.round((attended / total) * 100) : 0
 
   return (
     <div>
-      {/* Статистика */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <Stat label="Всего уроков" value={total} />
         <Stat label="Посещено"     value={attended} color="text-green-400" />
         <Stat label="Процент"      value={`${percent}%`} color="text-brand-300" />
       </div>
 
-      <TabSwitcher tab={tab} onChange={(t) => { setTab(t); setExpandedId(null) }} />
+      <LessonTypeSwitcher tab={tab} onChange={(t) => { setTab(t); setExpandedId(null) }} />
 
       {attLoading ? <PageSpinner /> : !records.length ? (
         <EmptyState
           emoji="📋"
           title="Записей нет"
-          text="Здесь появятся уроки после того, как преподаватель отметит посещаемость."
+          text="Здесь появятся подтверждённые уроки."
         />
       ) : (
         <div className="space-y-2">
@@ -375,12 +754,9 @@ function StudentView() {
                 <button
                   onClick={() => setExpandedId(expanded ? null : r.id)}
                   className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-white/[0.03] transition-colors cursor-pointer">
-                  {/* Цветная точка — присутствие */}
                   <div className={`w-2 h-2 rounded-full shrink-0 ${
                     r.present ? 'bg-green-400' : 'bg-red-400/70'
                   }`} />
-
-                  {/* Дата и тема */}
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-white">
                       {lesson?.topic || (r.lessonId ? 'Групповой урок' : 'Инд. урок')}
@@ -391,8 +767,6 @@ function StudentView() {
                       {r.Lesson?.Group?.name ? ` · ${r.Lesson.Group.name}` : ''}
                     </div>
                   </div>
-
-                  {/* Бейджи справа */}
                   <div className="flex items-center gap-2 shrink-0">
                     {lessonHw.length > 0 && (
                       <span className="text-xs bg-brand-600/20 text-brand-300 px-2 py-0.5 rounded-full">
@@ -400,46 +774,40 @@ function StudentView() {
                       </span>
                     )}
                     {r.present
-                      ? <span className="text-xs bg-green-500/15 text-green-400 px-2.5 py-1 rounded-full">
-                          Присутствовал
-                        </span>
-                      : <span className="text-xs bg-red-500/15 text-red-400 px-2.5 py-1 rounded-full">
-                          Отсутствовал
-                        </span>
+                      ? <span className="text-xs bg-green-500/15 text-green-400 px-2.5 py-1 rounded-full">Присутствовал</span>
+                      : <span className="text-xs bg-red-500/15 text-red-400 px-2.5 py-1 rounded-full">Отсутствовал</span>
                     }
-                    {/* Стрелка раскрытия */}
-                    <svg
-                      className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+                    <svg className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
                       fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
                 </button>
 
-                {/* Раскрытая секция: ДЗ */}
                 {expanded && (
                   <div className="px-4 pb-4 border-t border-white/[0.05]">
+                    <div className="pt-3 flex items-center justify-between gap-3">
+                      <span className="text-xs text-slate-400">
+                        Ваш ответ: {r.present ? 'был' : 'не был'}
+                      </span>
+                      <button
+                        disabled={busy[r.id]}
+                        onClick={() => handleDispute(r.id, r.present)}
+                        className="text-xs px-3 py-1.5 rounded-lg bg-red-600/15 text-red-400 hover:bg-red-600/25 transition-colors cursor-pointer disabled:opacity-50">
+                        Оспорить (считаю иначе)
+                      </button>
+                    </div>
                     {lessonHw.length === 0 ? (
-                      <p className="text-sm text-slate-500 pt-3">
-                        Домашних заданий к этому уроку нет.
-                      </p>
+                      <p className="text-sm text-slate-500 pt-3">Домашних заданий к этому уроку нет.</p>
                     ) : (
                       <div className="pt-3">
-                        <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">
-                          Домашние задания
-                        </p>
+                        <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Домашние задания</p>
                         <div className="space-y-2">
                           {lessonHw.map(h => (
-                            <div
-                              key={h.id}
-                              className="flex items-start justify-between gap-3 text-sm">
-                              <span className="text-slate-300">
-                                {h.title || h.description || 'Задание'}
-                              </span>
+                            <div key={h.id} className="flex items-start justify-between gap-3 text-sm">
+                              <span className="text-slate-300">{h.title || h.description || 'Задание'}</span>
                               {h.deadline && (
-                                <span className="text-xs text-slate-500 shrink-0">
-                                  до {formatDate(h.deadline)}
-                                </span>
+                                <span className="text-xs text-slate-500 shrink-0">до {formatDate(h.deadline)}</span>
                               )}
                             </div>
                           ))}
@@ -457,9 +825,7 @@ function StudentView() {
   )
 }
 
-/* ─── UI-компоненты ────────────────────────────────────────── */
-
-// Колонка с заголовком
+/* ─── UI-атомы ──────────────────────────────────────────────── */
 function Column({ label, children }) {
   return (
     <div>
@@ -469,7 +835,6 @@ function Column({ label, children }) {
   )
 }
 
-// Карточка-кнопка для выбора группы / урока
 function SelectCard({ active, onClick, primary, secondary }) {
   return (
     <button
@@ -489,8 +854,9 @@ function SelectCard({ active, onClick, primary, secondary }) {
   )
 }
 
-// Строка с чекбоксом (студент)
-function CheckRow({ label, sublabel, checked, onChange }) {
+// rightSlot — что показать справа. Если передан (есть сохранённая запись) —
+// показываем реальный статус подтверждения. Иначе (новая отметка) — состояние галочки.
+function CheckRow({ label, sublabel, checked, onChange, rightSlot }) {
   return (
     <label className="flex items-center gap-3 px-4 py-3 rounded-xl border border-white/[0.07] bg-white/[0.04] hover:bg-white/[0.07] cursor-pointer transition-colors">
       <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${
@@ -507,15 +873,15 @@ function CheckRow({ label, sublabel, checked, onChange }) {
         <div className="text-sm font-medium text-white">{label}</div>
         {sublabel && <div className="text-xs text-slate-400 truncate">{sublabel}</div>}
       </div>
-      {checked
-        ? <span className="text-xs text-green-400 shrink-0">Присутствует</span>
-        : <span className="text-xs text-slate-600 shrink-0">Отсутствует</span>
-      }
+      {rightSlot !== undefined
+        ? rightSlot
+        : (checked
+            ? <span className="text-xs text-green-400 shrink-0">Присутствует</span>
+            : <span className="text-xs text-slate-600 shrink-0">Отсутствует</span>)}
     </label>
   )
 }
 
-// Карточка статистики
 function Stat({ label, value, color = 'text-white' }) {
   return (
     <div className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.07]">
