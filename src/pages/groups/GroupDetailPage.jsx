@@ -5,6 +5,7 @@ import useAuth from '../../hooks/useAuth'
 import { getGroup, updateGroup, deleteGroup, addStudent, addPlaceholder, removeStudent, generateLessons } from '../../api/groups.api'
 import { getLessons, createLesson, updateLesson, deleteLesson } from '../../api/lessons.api'
 import { getMyStudents, mergeStudent, deletePlaceholder } from '../../api/students.api'
+import { searchStudent, inviteToGroup } from '../../api/invitations.api'
 import { toast } from 'sonner'
 import { formatDate, dayLabel } from '../../utils/formatDate'
 import Button from '../../components/ui/Button'
@@ -79,6 +80,7 @@ export default function GroupDetailPage() {
 function StudentsTab({ group, reload, isTeacher }) {
   const [addModal, setAddModal] = useState(false)
   const [phModal, setPhModal]   = useState(false)
+  const [inviteModal, setInviteModal] = useState(false)
   const [mergeSource, setMergeSource] = useState(null) // заглушка, которую переносим
   const [removing, setRemoving] = useState(null)
   const [confirmRemove, setConfirmRemove] = useState(null) // заглушка, ждущая подтверждения удаления
@@ -105,6 +107,7 @@ function StudentsTab({ group, reload, isTeacher }) {
         {isTeacher && (
           <div className="flex gap-2">
             <Button size="sm" variant="secondary" onClick={() => setPhModal(true)}>+ Заглушка</Button>
+            <Button size="sm" variant="secondary" onClick={() => setInviteModal(true)}>+ Пригласить</Button>
             <Button size="sm" onClick={() => setAddModal(true)}>+ Добавить</Button>
           </div>
         )}
@@ -165,6 +168,8 @@ function StudentsTab({ group, reload, isTeacher }) {
           <AddStudentModal open={addModal} onClose={() => setAddModal(false)}
             groupId={group.id} existing={group.students} onAdded={reload} />
           <AddPlaceholderModal open={phModal} onClose={() => setPhModal(false)}
+            groupId={group.id} onAdded={reload} />
+          <InviteModal open={inviteModal} onClose={() => setInviteModal(false)}
             groupId={group.id} onAdded={reload} />
           <MergeModal key={mergeSource?.id} open={!!mergeSource} onClose={() => setMergeSource(null)}
             source={mergeSource} students={group.students}
@@ -269,6 +274,93 @@ function AddPlaceholderModal({ open, onClose, groupId, onAdded }) {
             <Button type="submit" loading={saving} className="flex-1">Добавить</Button>
           </div>
         </form>
+      </div>
+    </Modal>
+  )
+}
+
+/* ── Пригласить студента в группу (C3, по нику) ────────────── */
+function InviteModal({ open, onClose, groupId, onAdded }) {
+  const [username, setUsername] = useState('')
+  const [searching, setSearching] = useState(false)
+  const [found, setFound]   = useState(null)   // найденный студент { id, name, username, avatar, alreadyMine }
+  const [sending, setSending] = useState(false)
+  const [error, setError]   = useState('')
+
+  const handleClose = () => {
+    setUsername(''); setFound(null); setError(''); onClose()
+  }
+
+  const handleSearch = async (e) => {
+    e.preventDefault()
+    const u = username.trim()
+    if (u.length < 3) return setError('Ник минимум 3 символа')
+    setSearching(true); setError(''); setFound(null)
+    try {
+      setFound(await searchStudent(u))
+    } catch (e) {
+      setError(e.response?.data?.error || 'Студент не найден')
+    } finally {
+      setSearching(false)
+    }
+  }
+
+  const handleInvite = async () => {
+    setSending(true); setError('')
+    try {
+      const r = await inviteToGroup(groupId, found.id)
+      if (r.directAdd) {
+        toast.success('Студент уже ваш — добавлен в группу')
+        onAdded()           // он сразу в группе → обновляем список
+      } else {
+        toast.success('Приглашение отправлено')
+      }
+      handleClose()
+    } catch (e) {
+      setError(e.response?.data?.error || 'Ошибка отправки')
+      setSending(false)
+    }
+  }
+
+  return (
+    <Modal open={open} onClose={handleClose} maxWidth="max-w-sm">
+      <div className="p-6">
+        <h3 className="text-lg font-semibold text-white mb-1">Пригласить студента</h3>
+        <p className="text-xs text-slate-400 mb-4">
+          Найдите зарегистрированного ученика по нику. Он получит приглашение и сам подтвердит вступление.
+        </p>
+
+        <form onSubmit={handleSearch} className="flex gap-2 mb-3">
+          <Input value={username} onChange={e => setUsername(e.target.value)}
+            placeholder="ник студента" className="flex-1" />
+          <Button type="submit" loading={searching}>Найти</Button>
+        </form>
+
+        {error && <p className="text-sm text-red-400 mb-2">{error}</p>}
+
+        {found && (
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] mb-3">
+            <div className="w-8 h-8 rounded-full bg-brand-700/40 flex items-center justify-center text-brand-300 text-sm font-semibold shrink-0 overflow-hidden">
+              {found.avatar ? <img src={found.avatar} alt={found.name} className="w-full h-full object-cover" /> : found.name[0].toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm text-white truncate">{found.name}</div>
+              <div className="text-xs text-slate-400 truncate">@{found.username}</div>
+            </div>
+            {found.alreadyMine && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 border border-green-500/20 shrink-0">
+                ваш ученик
+              </span>
+            )}
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <Button variant="secondary" className="flex-1" onClick={handleClose}>Отмена</Button>
+          <Button className="flex-1" loading={sending} disabled={!found} onClick={handleInvite}>
+            {found?.alreadyMine ? 'Добавить в группу' : 'Пригласить'}
+          </Button>
+        </div>
       </div>
     </Modal>
   )

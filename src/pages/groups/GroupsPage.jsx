@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
 import { getGroups, createGroup, generateLessons } from '../../api/groups.api'
+import { getInvitations, respondInvitation } from '../../api/invitations.api'
 import { dayLabel } from '../../utils/formatDate'
+import { toast } from 'sonner'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
@@ -39,6 +41,8 @@ export default function GroupsPage() {
         )}
       </div>
 
+      {!isTeacher && <StudentInvitations onAccepted={reload} />}
+
       {loading ? <PageSpinner /> : (
         !groups?.length ? (
           <EmptyState
@@ -63,6 +67,56 @@ export default function GroupsPage() {
       {isTeacher && (
         <CreateGroupModal open={modal} onClose={() => setModal(false)} onCreated={reload} />
       )}
+    </div>
+  )
+}
+
+/* ── Входящие приглашения ученика (C3) ─────────────────────── */
+function StudentInvitations({ onAccepted }) {
+  const { data: invites, loading, reload } = useFetch(() => getInvitations('pending'))
+  const [busy, setBusy] = useState(null) // id обрабатываемого приглашения
+
+  const respond = async (inv, status) => {
+    setBusy(inv.id)
+    try {
+      await respondInvitation(inv.id, status)
+      toast.success(status === 'accepted' ? 'Вы вступили в группу' : 'Приглашение отклонено')
+      reload()
+      if (status === 'accepted') onAccepted() // обновляем список групп — появится новая
+    } catch (e) {
+      toast.error(e.response?.data?.error || 'Ошибка')
+      setBusy(null)
+    }
+  }
+
+  if (loading || !invites?.length) return null
+
+  return (
+    <div className="mb-6 p-4 rounded-2xl border border-brand-500/25 bg-brand-600/10">
+      <h2 className="text-sm font-semibold text-brand-200 mb-3">
+        Приглашения в группы ({invites.length})
+      </h2>
+      <div className="space-y-2">
+        {invites.map(inv => (
+          <div key={inv.id}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08]">
+            <div className="flex-1 min-w-0">
+              <div className="text-sm text-white truncate">
+                <span className="font-medium">{inv.Group?.name || 'Группа'}</span>
+              </div>
+              <div className="text-xs text-slate-400 truncate">
+                от {inv.teacher?.name || 'преподавателя'}
+              </div>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <Button size="sm" variant="secondary" loading={busy === inv.id}
+                onClick={() => respond(inv, 'declined')}>Отклонить</Button>
+              <Button size="sm" loading={busy === inv.id}
+                onClick={() => respond(inv, 'accepted')}>Принять</Button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
