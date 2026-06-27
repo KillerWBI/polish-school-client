@@ -30,6 +30,12 @@ export const addStudent = async (groupId, studentId) => {
   return data.data
 }
 
+// Добавить заглушку — ученика без аккаунта (только для учителя)
+export const addPlaceholder = async (groupId, { name, contact }) => {
+  const { data } = await client.post(`/groups/${groupId}/placeholder`, { name, contact })
+  return data.data
+}
+
 export const removeStudent = async (groupId, studentId) => {
   const { data } = await client.delete(`/groups/${groupId}/students/${studentId}`)
   return data.data

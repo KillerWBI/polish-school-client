@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
-import { getLessonRequests } from '../../api/lessonRequests.api'
 
 // Навигация учителя — сгруппированная
 const TEACHER_SECTIONS = [
@@ -59,17 +57,6 @@ export default function Sidebar({ onClose }) {
   const { user, logout, isTeacher } = useAuth()
   const navigate = useNavigate()
   const sections = isTeacher ? TEACHER_SECTIONS : STUDENT_SECTIONS
-
-  // Бейдж непринятых заявок (только учитель). Обновляется по событию requests:changed,
-  // которое StudentsPage шлёт после accept/decline — дешёвая синхронизация без глоб. стейта.
-  const [pending, setPending] = useState(0)
-  useEffect(() => {
-    if (!isTeacher) return
-    const load = () => getLessonRequests('pending').then(r => setPending(r.length)).catch(() => {})
-    load()
-    window.addEventListener('requests:changed', load)
-    return () => window.removeEventListener('requests:changed', load)
-  }, [isTeacher])
 
   const handleLogout = () => { logout(); navigate('/') }
 
@@ -132,11 +119,6 @@ export default function Sidebar({ onClose }) {
                 >
                   <Icon />
                   <span className="truncate flex-1">{label}</span>
-                  {path === '/students' && pending > 0 && (
-                    <span className="text-[10px] font-semibold text-white bg-brand-500 rounded-full px-1.5 py-0.5 leading-none shrink-0">
-                      {pending}
-                    </span>
-                  )}
                 </NavLink>
               ))}
             </div>

@@ -11,9 +11,9 @@ src/
 ├── api/
 │   ├── client.js                  # axios instance: baseURL, JWT interceptor, 401 → auth:logout event
 │   ├── auth.api.js                # login(), register(), fetchMe()
-│   ├── groups.api.js              # CRUD + addStudent + removeStudent + generateLessons
+│   ├── groups.api.js              # CRUD + addStudent + addPlaceholder + removeStudent + generateLessons
 │   ├── lessons.api.js             # CRUD + params (groupId, from, to, date)
-│   ├── students.api.js            # getStudents, getStudent
+│   ├── students.api.js            # getMyStudents + mergeStudent + deletePlaceholder (заглушки C2)
 │   ├── homework.api.js            # getHomework, createHomework, deleteHomework, getSubmissions, gradeSubmission
 │   │                              # ❌ нет: submitHomework
 │   ├── attendance.api.js          # getAttendance, saveAttendance, updateAttendance

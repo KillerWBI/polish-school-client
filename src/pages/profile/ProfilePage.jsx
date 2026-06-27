@@ -161,7 +161,7 @@ function ProfileTab({ user, isTeacher, updateUser }) {
           <Input label="Username" value={form.username} onChange={e => set({ username: e.target.value.toLowerCase() })} />
         </div>
         <p className="text-[11px] text-slate-600 mt-2">
-          Username — это ссылка на твой профиль: <code className="text-brand-400">/@{form.username || 'username'}</code>
+          Username — уникальный ник для поиска и приглашений: <code className="text-brand-400">@{form.username || 'username'}</code>
         </p>
       </Section>
 

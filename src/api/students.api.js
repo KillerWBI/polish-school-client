@@ -15,3 +15,15 @@ export const getMyStudents = async () => {
   const { data } = await client.get('/users/me/students')
   return data.data
 }
+
+// POST /students/:id/merge — перенести заглушку (sourceId) на реального ученика (targetStudentId)
+export const mergeStudent = async (sourceId, targetStudentId) => {
+  const { data } = await client.post(`/students/${sourceId}/merge`, { targetStudentId })
+  return data.data
+}
+
+// DELETE /students/:id — полностью удалить заглушку из ростера (вместе с историей)
+export const deletePlaceholder = async (id) => {
+  const { data } = await client.delete(`/students/${id}`)
+  return data.data
+}

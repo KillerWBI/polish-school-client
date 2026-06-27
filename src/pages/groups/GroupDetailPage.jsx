@@ -2,13 +2,15 @@ import { useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
-import { getGroup, updateGroup, deleteGroup, addStudent, removeStudent, generateLessons } from '../../api/groups.api'
+import { getGroup, updateGroup, deleteGroup, addStudent, addPlaceholder, removeStudent, generateLessons } from '../../api/groups.api'
 import { getLessons, createLesson, updateLesson, deleteLesson } from '../../api/lessons.api'
-import { getMyStudents } from '../../api/students.api'
+import { getMyStudents, mergeStudent, deletePlaceholder } from '../../api/students.api'
+import { toast } from 'sonner'
 import { formatDate, dayLabel } from '../../utils/formatDate'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { PageSpinner } from '../../components/ui/Spinner'
 import EmptyState from '../../components/ui/EmptyState'
 
@@ -75,52 +77,83 @@ export default function GroupDetailPage() {
 
 /* ── Студенты ──────────────────────────────────────────────── */
 function StudentsTab({ group, reload, isTeacher }) {
-  const navigate = useNavigate()
   const [addModal, setAddModal] = useState(false)
+  const [phModal, setPhModal]   = useState(false)
+  const [mergeSource, setMergeSource] = useState(null) // заглушка, которую переносим
   const [removing, setRemoving] = useState(null)
+  const [confirmRemove, setConfirmRemove] = useState(null) // заглушка, ждущая подтверждения удаления
 
-  const handleRemove = async (studentId) => {
-    setRemoving(studentId)
-    try { await removeStudent(group.id, studentId); reload() }
+  // Реальный ученик: убрать из группы (аккаунт остаётся). Заглушка: удалить целиком (с историей) — через подтверждение.
+  const handleRemove = (s) => {
+    if (s.isPlaceholder) { setConfirmRemove(s); return }
+    setRemoving(s.id)
+    removeStudent(group.id, s.id).then(reload).catch(console.error).finally(() => setRemoving(null))
+  }
+
+  const confirmDeletePlaceholder = async () => {
+    const s = confirmRemove
+    setRemoving(s.id)
+    try { await deletePlaceholder(s.id); reload() }
     catch (e) { console.error(e) }
-    finally   { setRemoving(null) }
+    finally   { setRemoving(null); setConfirmRemove(null) }
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-sm font-medium text-slate-400">{group.students?.length ?? 0} студентов</h2>
-        {isTeacher && <Button size="sm" onClick={() => setAddModal(true)}>+ Добавить</Button>}
+        {isTeacher && (
+          <div className="flex gap-2">
+            <Button size="sm" variant="secondary" onClick={() => setPhModal(true)}>+ Заглушка</Button>
+            <Button size="sm" onClick={() => setAddModal(true)}>+ Добавить</Button>
+          </div>
+        )}
       </div>
 
       {!group.students?.length ? (
         <EmptyState emoji="👤" title="Студентов пока нет"
-          text={isTeacher ? 'Добавьте первого студента в группу.' : 'В группе пока никого нет.'}
+          text={isTeacher ? 'Добавьте ученика по аккаунту или заглушку (без регистрации).' : 'В группе пока никого нет.'}
           action={isTeacher ? <Button size="sm" onClick={() => setAddModal(true)}>Добавить студента</Button> : null} />
       ) : (
         <div className="space-y-2">
           {group.students.map(s => (
             <div key={s.id}
               className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.07]">
-              <button
-                onClick={() => s.username && navigate(`/@${s.username}`)}
-                disabled={!s.username}
-                className="flex items-center gap-3 flex-1 min-w-0 text-left enabled:hover:opacity-80 transition-opacity disabled:cursor-default">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-pink-accent flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
                   {s.avatar ? <img src={s.avatar} alt={s.name} className="w-full h-full object-cover" /> : s.name[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-white">{s.name}</div>
-                  {isTeacher && <div className="text-xs text-slate-400 truncate">{s.email}</div>}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-white truncate">{s.name}</span>
+                    {s.isPlaceholder && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20 shrink-0">
+                        заглушка
+                      </span>
+                    )}
+                  </div>
+                  {isTeacher && (
+                    <div className="text-xs text-slate-400 truncate">
+                      {s.isPlaceholder ? (s.contact || 'без контакта') : s.email}
+                    </div>
+                  )}
                 </div>
-              </button>
+              </div>
               {isTeacher && (
-                <button onClick={() => handleRemove(s.id)} disabled={removing === s.id}
-                  className="text-slate-500 hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50 p-1">
-                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
+                <div className="flex items-center gap-1 shrink-0">
+                  {s.isPlaceholder && (
+                    <button onClick={() => setMergeSource(s)}
+                      className="text-xs text-brand-400 hover:text-brand-300 px-2 py-1 cursor-pointer">
+                      Перенести
+                    </button>
+                  )}
+                  <button onClick={() => handleRemove(s)} disabled={removing === s.id}
+                    className="text-slate-500 hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50 p-1">
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
               )}
             </div>
           ))}
@@ -128,8 +161,20 @@ function StudentsTab({ group, reload, isTeacher }) {
       )}
 
       {isTeacher && (
-        <AddStudentModal open={addModal} onClose={() => setAddModal(false)}
-          groupId={group.id} existing={group.students} onAdded={reload} />
+        <>
+          <AddStudentModal open={addModal} onClose={() => setAddModal(false)}
+            groupId={group.id} existing={group.students} onAdded={reload} />
+          <AddPlaceholderModal open={phModal} onClose={() => setPhModal(false)}
+            groupId={group.id} onAdded={reload} />
+          <MergeModal key={mergeSource?.id} open={!!mergeSource} onClose={() => setMergeSource(null)}
+            source={mergeSource} students={group.students}
+            onMerged={() => { setMergeSource(null); reload() }} />
+          <ConfirmDialog open={!!confirmRemove} onClose={() => setConfirmRemove(null)}
+            onConfirm={confirmDeletePlaceholder} busy={removing === confirmRemove?.id}
+            title="Удалить заглушку?"
+            message={`«${confirmRemove?.name}» и её посещаемость/долг будут удалены безвозвратно. Чтобы сохранить историю — сначала перенесите на реального ученика.`}
+            confirmLabel="Удалить" />
+        </>
       )}
     </div>
   )
@@ -179,6 +224,118 @@ function AddStudentModal({ open, onClose, groupId, existing, onAdded }) {
                 </div>
               ))}
         </div>
+      </div>
+    </Modal>
+  )
+}
+
+/* ── Добавление заглушки (ученик без аккаунта) ─────────────── */
+function AddPlaceholderModal({ open, onClose, groupId, onAdded }) {
+  const [name, setName]       = useState('')
+  const [contact, setContact] = useState('')
+  const [saving, setSaving]   = useState(false)
+  const [error, setError]     = useState('')
+
+  const handleClose = () => { setName(''); setContact(''); setError(''); onClose() }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!name.trim()) return setError('Введите имя')
+    setSaving(true); setError('')
+    try {
+      await addPlaceholder(groupId, { name: name.trim(), contact: contact.trim() || undefined })
+      onAdded(); handleClose()
+    } catch (e) {
+      setError(e.response?.data?.error || 'Ошибка добавления')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <Modal open={open} onClose={handleClose} maxWidth="max-w-sm">
+      <div className="p-6">
+        <h3 className="text-lg font-semibold text-white mb-1">Добавить заглушку</h3>
+        <p className="text-xs text-slate-400 mb-4">
+          Ученик без аккаунта — для ваших заметок. Долг и посещаемость считаются как у обычного. Позже можно перенести на реального ученика.
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <Input label="Имя" value={name} onChange={e => setName(e.target.value)} />
+          <Input label="Контакт (необязательно)" value={contact}
+            onChange={e => setContact(e.target.value)} placeholder="телефон / @ник / заметка" />
+          {error && <p className="text-sm text-red-400">{error}</p>}
+          <div className="flex gap-2 pt-1">
+            <Button type="button" variant="secondary" className="flex-1" onClick={handleClose}>Отмена</Button>
+            <Button type="submit" loading={saving} className="flex-1">Добавить</Button>
+          </div>
+        </form>
+      </div>
+    </Modal>
+  )
+}
+
+/* ── Перенос заглушки на реального ученика (merge) ─────────── */
+function MergeModal({ open, onClose, source, students, onMerged }) {
+  const [targetId, setTargetId] = useState('')
+  const [busy, setBusy]   = useState(false)
+  const [error, setError] = useState('')
+
+  // Переносить можно только на реального ученика этой же группы
+  const reals = (students || []).filter(s => !s.isPlaceholder)
+
+  const handleMerge = async () => {
+    if (!targetId) return setError('Выберите ученика')
+    setBusy(true); setError('')
+    try {
+      const r = await mergeStudent(source.id, targetId)
+      toast.success(`Перенесено записей: ${r.moved}${r.skipped ? `, пропущено дублей: ${r.skipped}` : ''}`)
+      onMerged()
+    } catch (e) {
+      setError(e.response?.data?.error || 'Ошибка переноса')
+      setBusy(false)
+    }
+  }
+
+  if (!source) return null
+
+  return (
+    <Modal open={open} onClose={onClose} maxWidth="max-w-sm">
+      <div className="p-6">
+        <h3 className="text-lg font-semibold text-white mb-1">Перенести заглушку</h3>
+        <p className="text-xs text-slate-400 mb-4">
+          Вся история «{source.name}» (посещаемость, оплаты, ДЗ) перейдёт на выбранного ученика, а заглушка удалится.
+        </p>
+
+        {reals.length === 0 ? (
+          <>
+            <p className="text-sm text-amber-400 mb-4">В этой группе нет реальных учеников (с аккаунтом), на кого перенести.</p>
+            <Button variant="secondary" className="w-full" onClick={onClose}>Закрыть</Button>
+          </>
+        ) : (
+          <>
+            <div className="space-y-2 max-h-60 overflow-y-auto mb-3">
+              {reals.map(s => (
+                <button key={s.id} type="button" onClick={() => setTargetId(s.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-colors text-left ${
+                    targetId === s.id ? 'bg-brand-600/20 border-brand-500/40' : 'bg-white/[0.04] border-white/[0.07] hover:bg-white/[0.07]'
+                  }`}>
+                  <div className="w-7 h-7 rounded-full bg-brand-700/40 flex items-center justify-center text-brand-300 text-xs font-semibold shrink-0">
+                    {s.name[0].toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm text-white truncate">{s.name}</div>
+                    <div className="text-xs text-slate-400 truncate">{s.email}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+            {error && <p className="text-sm text-red-400 mb-2">{error}</p>}
+            <div className="flex gap-2">
+              <Button variant="secondary" className="flex-1" onClick={onClose}>Отмена</Button>
+              <Button className="flex-1" loading={busy} disabled={!targetId} onClick={handleMerge}>Перенести</Button>
+            </div>
+          </>
+        )}
       </div>
     </Modal>
   )
