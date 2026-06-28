@@ -122,6 +122,7 @@ export default function CalendarPage() {
 
 function LessonDetail({ props: { type, lesson }, onClose }) {
   const linkUrl = lesson.lessonLink || lesson.Group?.lessonLink
+  const chatUrl = lesson.Group?.chatLink
 
   return (
     <div className="p-6">
@@ -167,6 +168,18 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round"/>
           </svg>
           Перейти на урок
+        </a>
+      )}
+
+      {chatUrl && (
+        <a
+          href={chatUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full h-10 mt-2 rounded-xl bg-white/[0.05] border border-white/[0.10] text-slate-300 text-sm font-medium hover:bg-white/[0.08] transition-colors"
+        >
+          <span>💬</span>
+          Чат группы
         </a>
       )}
     </div>

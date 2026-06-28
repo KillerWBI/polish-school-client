@@ -55,6 +55,12 @@ export default function GroupDetailPage() {
           {schedule && <span>📅 {schedule}</span>}
           <span>💰 {group.pricePerLesson} zł / урок</span>
           <span>👥 {group.students?.length ?? 0} студентов</span>
+          {group.chatLink && (
+            <a href={group.chatLink} target="_blank" rel="noopener noreferrer"
+              className="text-brand-400 hover:text-brand-300 transition-colors">
+              💬 Чат группы
+            </a>
+          )}
         </div>
       </div>
 
@@ -575,6 +581,7 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
   }
 
   const linkUrl = lesson.lessonLink || lesson.Group?.lessonLink
+  const chatUrl = lesson.Group?.chatLink
 
   return (
     <Modal open onClose={onClose} maxWidth="max-w-md">
@@ -607,6 +614,15 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round"/>
             </svg>
             Перейти на урок
+          </a>
+        )}
+
+        {/* Ссылка на чат группы */}
+        {chatUrl && (
+          <a href={chatUrl} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.10] text-slate-300 text-sm hover:bg-white/[0.08] transition-colors mb-4">
+            <span>💬</span>
+            Чат группы
           </a>
         )}
 
@@ -984,6 +1000,7 @@ function SettingsTab({ group, reload, onDeleted }) {
     name:           group.name,
     pricePerLesson: String(group.pricePerLesson || ''),
     lessonLink:     group.lessonLink || '',
+    chatLink:       group.chatLink || '',
   })
   const [schedule,   setSchedule]   = useState(group.schedule || [])
   const [saving,     setSaving]     = useState(false)
@@ -1007,6 +1024,7 @@ function SettingsTab({ group, reload, onDeleted }) {
         name:           form.name.trim(),
         schedule,
         lessonLink:     form.lessonLink.trim() || null,
+        chatLink:       form.chatLink.trim() || null,
         pricePerLesson: parseFloat(form.pricePerLesson) || 0,
       })
       reload(); setOk(true)
@@ -1032,6 +1050,8 @@ function SettingsTab({ group, reload, onDeleted }) {
           onChange={e => set('pricePerLesson', e.target.value)} />
         <Input label="Постоянная ссылка Zoom/Meet (необязательно)" value={form.lessonLink}
           onChange={e => set('lessonLink', e.target.value)} />
+        <Input label="Ссылка группового чата (необязательно)" value={form.chatLink}
+          onChange={e => set('chatLink', e.target.value)} />
 
         {/* Расписание */}
         <div>

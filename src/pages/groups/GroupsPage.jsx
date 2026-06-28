@@ -148,7 +148,7 @@ function GroupCard({ group, onClick }) {
 }
 
 function CreateGroupModal({ open, onClose, onCreated }) {
-  const [form, setForm]       = useState({ name: '', pricePerLesson: '', lessonLink: '' })
+  const [form, setForm]       = useState({ name: '', pricePerLesson: '', lessonLink: '', chatLink: '' })
   const [schedule, setSchedule] = useState([]) // [{day, time}]
   const [saving, setSaving]   = useState(false)
   const [error, setError]     = useState('')
@@ -170,6 +170,7 @@ function CreateGroupModal({ open, onClose, onCreated }) {
         name: form.name.trim(),
         schedule,
         lessonLink: form.lessonLink.trim() || null,
+        chatLink: form.chatLink.trim() || null,
         pricePerLesson: parseFloat(form.pricePerLesson) || 0,
       })
 
@@ -184,7 +185,7 @@ function CreateGroupModal({ open, onClose, onCreated }) {
 
       onCreated()
       onClose()
-      setForm({ name: '', pricePerLesson: '', lessonLink: '' })
+      setForm({ name: '', pricePerLesson: '', lessonLink: '', chatLink: '' })
       setSchedule([])
     } catch (e) {
       setError(e.response?.data?.error || 'Ошибка создания')
@@ -204,6 +205,8 @@ function CreateGroupModal({ open, onClose, onCreated }) {
             onChange={e => set('pricePerLesson', e.target.value)} />
           <Input label="Ссылка Zoom/Meet (необязательно)" value={form.lessonLink}
             onChange={e => set('lessonLink', e.target.value)} />
+          <Input label="Ссылка группового чата (необязательно)" value={form.chatLink}
+            onChange={e => set('chatLink', e.target.value)} />
 
           {/* Расписание */}
           <div>
