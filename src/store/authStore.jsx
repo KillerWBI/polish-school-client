@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, useCallback } from 'react'
-import { fetchMe } from '../api/auth.api'
+import { fetchMe, logoutServer } from '../api/auth.api'
 import { getToken, setToken, removeToken } from '../utils/token'
 
 export const AuthContext = createContext(null)
@@ -34,6 +34,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   const logout = useCallback(() => {
+    logoutServer()   // гасим refresh-cookie на сервере (best-effort)
     removeToken()
     setUser(null)
   }, [])

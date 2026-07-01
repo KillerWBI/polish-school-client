@@ -1,24 +1,55 @@
 import axios from 'axios'
-import { getToken, removeToken } from '../utils/token'
+import { getToken, setToken, removeToken } from '../utils/token'
 import { toast } from '../utils/toast'
 
+const baseURL = import.meta.env.VITE_API_URL
+
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL,
   timeout: 15000,
+  withCredentials: true, // чтобы браузер слал httpOnly refresh-cookie на /auth/refresh
 })
 
-// Подставляем токен в каждый запрос
+// Подставляем access-токен в каждый запрос
 client.interceptors.request.use((cfg) => {
   const token = getToken()
   if (token) cfg.headers.Authorization = `Bearer ${token}`
   return cfg
 })
 
-// 401 → выход. 5xx и сетевые ошибки → toast (компоненты могут показать локально, но это безопасный fallback).
+// Один общий промис refresh — чтобы параллельные 401 не дёргали /refresh пачкой.
+let refreshing = null
+const doRefresh = () => {
+  if (!refreshing) {
+    refreshing = axios
+      .post(`${baseURL}/auth/refresh`, {}, { withCredentials: true })
+      .then((r) => { setToken(r.data.data.token); return r.data.data.token })
+      .finally(() => { refreshing = null })
+  }
+  return refreshing
+}
+
+// Ответы: access истёк (401) → пробуем refresh → повторяем запрос. Не вышло → logout.
 client.interceptors.response.use(
   (res) => res,
-  (err) => {
+  async (err) => {
     const status = err.response?.status
+    const original = err.config
+    const isAuthCall = original?.url?.includes('/auth/refresh') || original?.url?.includes('/auth/login')
+
+    if (status === 401 && original && !original._retry && !isAuthCall) {
+      original._retry = true
+      try {
+        const token = await doRefresh()          // refresh-cookie → новый access
+        original.headers.Authorization = `Bearer ${token}`
+        return client(original)                  // повторяем исходный запрос
+      } catch {
+        removeToken()
+        window.dispatchEvent(new CustomEvent('auth:logout'))
+        return Promise.reject(err)
+      }
+    }
+
     if (status === 401) {
       removeToken()
       window.dispatchEvent(new CustomEvent('auth:logout'))

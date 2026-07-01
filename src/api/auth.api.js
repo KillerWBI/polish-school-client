@@ -24,6 +24,11 @@ export const fetchMe = async () => {
   return data.data
 }
 
+// POST /auth/logout — гасит refresh-cookie на сервере (best-effort)
+export const logoutServer = async () => {
+  try { await client.post('/auth/logout') } catch { /* уже разлогинен — не мешаем */ }
+}
+
 // PUT /users/:id — обновить имя
 export const updateUserName = async (id, name) => {
   const { data } = await client.put(`/users/${id}`, { name })
