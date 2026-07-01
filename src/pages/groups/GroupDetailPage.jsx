@@ -287,44 +287,42 @@ function AddPlaceholderModal({ open, onClose, groupId, onAdded }) {
 
 /* ── Пригласить студента в группу (C3, по нику) ────────────── */
 function InviteModal({ open, onClose, groupId, onAdded }) {
-  const [username, setUsername] = useState('')
+  const [query, setQuery]       = useState('')
   const [searching, setSearching] = useState(false)
-  const [found, setFound]   = useState(null)   // найденный студент { id, name, username, avatar, alreadyMine }
-  const [sending, setSending] = useState(false)
-  const [error, setError]   = useState('')
+  const [results, setResults]   = useState(null) // массив похожих учеников или null (ещё не искали)
+  const [sending, setSending]   = useState(null)  // id ученика, которого приглашаем
+  const [error, setError]       = useState('')
 
   const handleClose = () => {
-    setUsername(''); setFound(null); setError(''); onClose()
+    setQuery(''); setResults(null); setError(''); onClose()
   }
 
   const handleSearch = async (e) => {
     e.preventDefault()
-    const u = username.trim()
-    if (u.length < 3) return setError('Ник минимум 3 символа')
-    setSearching(true); setError(''); setFound(null)
+    const q = query.trim()
+    if (q.length < 3) return setError('Минимум 3 символа')
+    setSearching(true); setError(''); setResults(null)
     try {
-      setFound(await searchStudent(u))
+      setResults(await searchStudent(q)) // массив [{id,name,username,avatar,alreadyMine}]
     } catch (e) {
-      setError(e.response?.data?.error || 'Студент не найден')
+      setError(e.response?.data?.error || 'Ошибка поиска')
     } finally {
       setSearching(false)
     }
   }
 
-  const handleInvite = async () => {
-    setSending(true); setError('')
+  const handleInvite = async (u) => {
+    setSending(u.id); setError('')
     try {
-      const r = await inviteToGroup(groupId, found.id)
-      if (r.directAdd) {
-        toast.success('Студент уже ваш — добавлен в группу')
-        onAdded()           // он сразу в группе → обновляем список
-      } else {
-        toast.success('Приглашение отправлено')
-      }
-      handleClose()
+      const r = await inviteToGroup(groupId, u.id)
+      if (r.directAdd) { toast.success(`${u.name} — уже ваш, добавлен в группу`); onAdded() }
+      else             { toast.success(`Приглашение отправлено: ${u.name}`) }
+      // убираем из списка, чтобы можно было пригласить других
+      setResults(rs => (rs || []).filter(x => x.id !== u.id))
     } catch (e) {
-      setError(e.response?.data?.error || 'Ошибка отправки')
-      setSending(false)
+      toast.error(e.response?.data?.error || 'Ошибка отправки')
+    } finally {
+      setSending(null)
     }
   }
 
@@ -333,39 +331,46 @@ function InviteModal({ open, onClose, groupId, onAdded }) {
       <div className="p-6">
         <h3 className="text-lg font-semibold text-white mb-1">Пригласить студента</h3>
         <p className="text-xs text-slate-400 mb-4">
-          Найдите зарегистрированного ученика по нику. Он получит приглашение и сам подтвердит вступление.
+          Найдите ученика по нику или имени (по похожим). Он получит приглашение и сам подтвердит вступление.
         </p>
 
         <form onSubmit={handleSearch} className="flex gap-2 mb-3">
-          <Input value={username} onChange={e => setUsername(e.target.value)}
-            placeholder="ник студента" className="flex-1" />
+          <Input value={query} onChange={e => setQuery(e.target.value)}
+            placeholder="ник или имя" className="flex-1" />
           <Button type="submit" loading={searching}>Найти</Button>
         </form>
 
         {error && <p className="text-sm text-red-400 mb-2">{error}</p>}
 
-        {found && (
-          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07] mb-3">
-            <div className="w-8 h-8 rounded-full bg-brand-700/40 flex items-center justify-center text-brand-300 text-sm font-semibold shrink-0 overflow-hidden">
-              {found.avatar ? <img src={found.avatar} alt={found.name} className="w-full h-full object-cover" /> : found.name[0].toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm text-white truncate">{found.name}</div>
-              <div className="text-xs text-slate-400 truncate">@{found.username}</div>
-            </div>
-            {found.alreadyMine && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 border border-green-500/20 shrink-0">
-                ваш ученик
-              </span>
-            )}
+        {results && (
+          <div className="space-y-2 max-h-64 overflow-y-auto mb-1">
+            {!results.length
+              ? <p className="text-sm text-slate-400 text-center py-4">Никого не нашли</p>
+              : results.map(u => (
+                  <div key={u.id}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.07]">
+                    <div className="w-8 h-8 rounded-full bg-brand-700/40 flex items-center justify-center text-brand-300 text-sm font-semibold shrink-0 overflow-hidden">
+                      {u.avatar ? <img src={u.avatar} alt={u.name} className="w-full h-full object-cover" /> : u.name[0].toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-white truncate">{u.name}</div>
+                      <div className="text-xs text-slate-400 truncate">@{u.username}</div>
+                    </div>
+                    {u.alreadyMine && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 border border-green-500/20 shrink-0">
+                        ваш
+                      </span>
+                    )}
+                    <Button size="sm" loading={sending === u.id} onClick={() => handleInvite(u)}>
+                      {u.alreadyMine ? 'Добавить' : 'Пригласить'}
+                    </Button>
+                  </div>
+                ))}
           </div>
         )}
 
-        <div className="flex gap-2">
-          <Button variant="secondary" className="flex-1" onClick={handleClose}>Отмена</Button>
-          <Button className="flex-1" loading={sending} disabled={!found} onClick={handleInvite}>
-            {found?.alreadyMine ? 'Добавить в группу' : 'Пригласить'}
-          </Button>
+        <div className="pt-2">
+          <Button variant="secondary" className="w-full" onClick={handleClose}>Закрыть</Button>
         </div>
       </div>
     </Modal>

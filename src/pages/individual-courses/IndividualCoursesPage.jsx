@@ -185,7 +185,7 @@ function CreateCourseModal({ open, onClose, onCreated, students }) {
               className="w-full h-11 px-3 rounded-xl bg-[#131c35] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400">
               <option value="">— выбрать —</option>
               {students.map(s => (
-                <option key={s.id} value={s.id}>{s.name} ({s.email})</option>
+                <option key={s.id} value={s.id}>{s.name}{s.username ? ` (@${s.username})` : ''}</option>
               ))}
             </select>
           </div>
