@@ -9,8 +9,8 @@ src/
 ├── index.css                      # @import "tailwindcss"; тёмная палитра #0F1629
 │
 ├── api/
-│   ├── client.js                  # axios instance: baseURL, JWT interceptor, 401 → auth:logout event
-│   ├── auth.api.js                # login(), register(), fetchMe()
+│   ├── client.js                  # axios: baseURL, withCredentials, Bearer-access; 401 → /auth/refresh → повтор; не вышло → auth:logout
+│   ├── auth.api.js                # login(), register(), fetchMe(), logoutServer()
 │   ├── groups.api.js              # CRUD + addStudent + addPlaceholder + removeStudent + generateLessons
 │   ├── lessons.api.js             # CRUD + params (groupId, from, to, date)
 │   ├── students.api.js            # getMyStudents + mergeStudent + deletePlaceholder (заглушки C2)
