@@ -26,6 +26,16 @@ export default function PaymentsPage() {
   )
 }
 
+/* Ячейка сводки (на уровне модуля — не пересоздаётся на каждый рендер) */
+function SummaryCell({ label, value, accent }) {
+  return (
+    <div className="flex-1 p-4">
+      <div className="text-xs text-slate-500 mb-1">{label}</div>
+      <div className={`text-xl font-semibold ${accent}`}>{fmt(value)}</div>
+    </div>
+  )
+}
+
 /* Сводка сверху: начислено / оплачено / остаток */
 function Summary({ rows }) {
   const t = useMemo(() => rows.reduce((a, r) => ({
@@ -34,17 +44,11 @@ function Summary({ rows }) {
     debt:    a.debt + Math.max(0, Number(r.balance || 0)),
   }), { charged: 0, paid: 0, debt: 0 }), [rows])
 
-  const Cell = ({ label, value, accent }) => (
-    <div className="flex-1 p-4">
-      <div className="text-xs text-slate-500 mb-1">{label}</div>
-      <div className={`text-xl font-semibold ${accent}`}>{fmt(value)}</div>
-    </div>
-  )
   return (
     <div className="flex rounded-2xl border border-slate-200 bg-white divide-x divide-slate-100 mb-5">
-      <Cell label="Начислено" value={t.charged} accent="text-slate-900" />
-      <Cell label="Оплачено"  value={t.paid}    accent="text-emerald-600" />
-      <Cell label="Остаток"   value={t.debt}    accent={t.debt > 0 ? 'text-amber-600' : 'text-slate-400'} />
+      <SummaryCell label="Начислено" value={t.charged} accent="text-slate-900" />
+      <SummaryCell label="Оплачено"  value={t.paid}    accent="text-emerald-600" />
+      <SummaryCell label="Остаток"   value={t.debt}    accent={t.debt > 0 ? 'text-amber-600' : 'text-slate-400'} />
     </div>
   )
 }
