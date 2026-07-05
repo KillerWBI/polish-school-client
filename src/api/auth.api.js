@@ -52,3 +52,15 @@ export const resendVerification = async () => {
   const { data } = await client.post('/auth/resend-verification')
   return data.data
 }
+
+// POST /auth/forgot-password — запросить ссылку на сброс пароля
+export const forgotPassword = async (email) => {
+  const { data } = await client.post('/auth/forgot-password', { email })
+  return data.data
+}
+
+// POST /auth/reset-password — задать новый пароль по токену из письма
+export const resetPassword = async (token, password) => {
+  const { data } = await client.post('/auth/reset-password', { token, password })
+  return data.data
+}

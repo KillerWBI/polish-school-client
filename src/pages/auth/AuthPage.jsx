@@ -100,6 +100,14 @@ export default function AuthPage({ mode = 'login' }) {
               <Field label="Email" type="email" value={form.email} onChange={(v) => set('email', v)} error={errors.email} autoComplete="email" placeholder="you@mail.com" />
               <Field label="Пароль" type="password" value={form.password} onChange={(v) => set('password', v)} error={errors.password} autoComplete={isRegister ? 'new-password' : 'current-password'} placeholder="Минимум 6 символов" />
 
+              {!isRegister && (
+                <div className="text-right -mt-1">
+                  <Link to="/forgot-password" className="text-xs text-[#64748B] hover:text-brand-600">
+                    Забыли пароль?
+                  </Link>
+                </div>
+              )}
+
               {errors.form && (
                 <div className="text-sm text-[#DC2626] bg-[#FEF2F2] border border-[#FECACA] rounded-lg px-3 py-2">{errors.form}</div>
               )}

@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage        from './pages/landing/LandingPage'
 import AuthPage           from './pages/auth/AuthPage'
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
+import ResetPasswordPage  from './pages/auth/ResetPasswordPage'
 import VerifyEmailPage    from './pages/auth/VerifyEmailPage'
 import AppLayout          from './components/layout/AppLayout'
 import PrivateRoute       from './components/layout/PrivateRoute'
@@ -24,9 +26,11 @@ export default function App() {
       <Routes>
         {/* Публичные */}
         <Route path="/"               element={<LandingPage />} />
-        <Route path="/login"          element={<AuthPage mode="login" />} />
-        <Route path="/register"       element={<AuthPage mode="register" />} />
-        <Route path="/verify-email"   element={<VerifyEmailPage />} />
+        <Route path="/login"           element={<AuthPage mode="login" />} />
+        <Route path="/register"        element={<AuthPage mode="register" />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password"  element={<ResetPasswordPage />} />
+        <Route path="/verify-email"    element={<VerifyEmailPage />} />
 
         {/* Кабинет — все страницы через AppLayout */}
         <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
