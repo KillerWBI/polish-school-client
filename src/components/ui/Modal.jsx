@@ -22,11 +22,11 @@ export default function Modal({ open, onClose, children, maxWidth = 'max-w-md' }
       onMouseDown={(e) => e.target === e.currentTarget && onClose?.()}
     >
       {/* Затемнение */}
-      <div className="absolute inset-0 bg-[#020408]/70 backdrop-blur-md" />
+      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
 
       {/* Контент */}
       <div
-        className={`relative w-full ${maxWidth} bg-[#141D35] border border-white/[0.12] rounded-3xl shadow-[0_24px_64px_rgba(0,0,0,0.6)] animate-modal-in`}
+        className={`relative w-full ${maxWidth} bg-white border border-slate-200 rounded-2xl shadow-[0_24px_64px_rgba(15,23,42,0.18)] animate-modal-in`}
       >
         {children}
       </div>

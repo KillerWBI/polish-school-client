@@ -31,7 +31,7 @@ export default function CoverUpload({ url, editable = false, onChange }) {
     <div className="relative w-full h-40 sm:h-56 rounded-2xl overflow-hidden">
       {url
         ? <img src={url} alt="" className="w-full h-full object-cover" />
-        : <div className="w-full h-full bg-gradient-to-br from-brand-700 via-purple-700 to-pink-accent opacity-60" />
+        : <div className="w-full h-full bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600" />
       }
       {/* Затемнение снизу — чтобы лучше читалось имя/аватар, наложенные сверху */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#0b1019]/80 to-transparent" />

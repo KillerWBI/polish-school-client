@@ -42,7 +42,7 @@ export default function StudentCharts({ studentId }) {
                 <stop offset="100%" stopColor="#10b981" stopOpacity={0}   />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#EEF1F4" />
             <XAxis dataKey="bucket" stroke="#64748b" fontSize={11} />
             <YAxis stroke="#64748b" fontSize={11} domain={[0, 100]} unit="%" />
             <Tooltip {...tooltipStyle} formatter={(v) => `${v}%`} />
@@ -58,7 +58,7 @@ export default function StudentCharts({ studentId }) {
         ) : (
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={gradesChart}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#EEF1F4" />
               <XAxis dataKey="date" stroke="#64748b" fontSize={11} />
               <YAxis stroke="#64748b" fontSize={11} domain={[0, 5]} allowDecimals={false} />
               <Tooltip {...tooltipStyle} labelFormatter={(_, p) => p?.[0]?.payload?.hw || ''} />
@@ -69,17 +69,17 @@ export default function StudentCharts({ studentId }) {
       </ChartPanel>
 
       {/* ДЗ — горизонтальный progress bar (вручную, без Recharts) */}
-      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h3 className="text-sm font-semibold text-white">Выполнение ДЗ</h3>
+            <h3 className="text-sm font-semibold text-slate-900">Выполнение ДЗ</h3>
             <p className="text-xs text-slate-500">Учитываются только ДЗ с прошедшим дедлайном</p>
           </div>
-          <div className="text-2xl font-bold text-white">{data.homeworkStats?.percent ?? 0}%</div>
+          <div className="text-2xl font-bold text-slate-900">{data.homeworkStats?.percent ?? 0}%</div>
         </div>
-        <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
+        <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-brand-500 to-emerald-500 transition-all"
+            className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all"
             style={{ width: `${data.homeworkStats?.percent ?? 0}%` }}
           />
         </div>
@@ -93,9 +93,9 @@ export default function StudentCharts({ studentId }) {
 
 function ChartPanel({ title, subtitle, children }) {
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4">
       <div className="mb-3">
-        <h3 className="text-sm font-semibold text-white">{title}</h3>
+        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
         {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
       </div>
       {children}
@@ -105,10 +105,10 @@ function ChartPanel({ title, subtitle, children }) {
 
 const tooltipStyle = {
   contentStyle: {
-    background: '#111827',
-    border: '1px solid #1f2937',
+    background: "#ffffff",
+    border: "1px solid #E2E8F0",
     borderRadius: 8,
     fontSize: 12,
   },
-  labelStyle: { color: '#94a3b8' },
+  labelStyle: { color: "#64748b" },
 }

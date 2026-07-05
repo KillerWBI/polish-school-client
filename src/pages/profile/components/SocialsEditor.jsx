@@ -30,7 +30,7 @@ export default function SocialsEditor({ values, onChange, readOnly = false }) {
             value={values[f.key] || ''}
             onChange={(e) => onChange({ ...values, [f.key]: e.target.value })}
             placeholder={f.placeholder}
-            className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-500/50"
+            className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
           />
         </div>
       ))}
@@ -48,7 +48,7 @@ function SocialChip({ field, value }) {
   return (
     <a
       href={href} target="_blank" rel="noreferrer"
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/[0.10] text-xs text-slate-200 hover:bg-white/[0.10] transition-colors"
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200 text-xs text-slate-700 hover:bg-slate-100 transition-colors"
     >
       <span>{field.icon}</span>
       <span>{field.prefix}{value}</span>

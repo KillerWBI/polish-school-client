@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage        from './pages/landing/LandingPage'
-import WelcomePage        from './pages/welcome/WelcomePage'
-import TeacherLoginPage   from './pages/auth/TeacherLoginPage'
+import AuthPage           from './pages/auth/AuthPage'
 import VerifyEmailPage    from './pages/auth/VerifyEmailPage'
 import AppLayout          from './components/layout/AppLayout'
 import PrivateRoute       from './components/layout/PrivateRoute'
@@ -25,11 +24,9 @@ export default function App() {
       <Routes>
         {/* Публичные */}
         <Route path="/"               element={<LandingPage />} />
-        <Route path="/teacher-login"  element={<TeacherLoginPage />} />
+        <Route path="/login"          element={<AuthPage mode="login" />} />
+        <Route path="/register"       element={<AuthPage mode="register" />} />
         <Route path="/verify-email"   element={<VerifyEmailPage />} />
-
-        {/* После входа */}
-        <Route path="/welcome" element={<PrivateRoute><WelcomePage /></PrivateRoute>} />
 
         {/* Кабинет — все страницы через AppLayout */}
         <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>

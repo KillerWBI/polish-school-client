@@ -1,0 +1,147 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import useAuth from '../../hooks/useAuth'
+import { login as apiLogin, register as apiRegister, fetchMe } from '../../api/auth.api'
+import { setToken } from '../../utils/token'
+
+// Отдельная страница авторизации (не модалка). Split-экран:
+// слева тёмная бренд-панель (как лендинг), справа светлая форма (как аппа).
+// mode: 'login' | 'register'
+export default function AuthPage({ mode = 'login' }) {
+  const isRegister = mode === 'register'
+  const [form, setForm] = useState({ name: '', email: '', password: '' })
+  const [errors, setErrors] = useState({})
+  const [submitting, setSubmitting] = useState(false)
+  const navigate = useNavigate()
+  const { login } = useAuth()
+
+  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
+
+  const validate = () => {
+    const e = {}
+    if (isRegister && form.name.trim().length < 2) e.name = 'Введите имя'
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Неверный email'
+    if (form.password.length < 6) e.password = 'Минимум 6 символов'
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!validate()) return
+    setSubmitting(true)
+    try {
+      const data = isRegister
+        ? await apiRegister(form)
+        : await apiLogin({ email: form.email, password: form.password })
+      setToken(data.token)
+      const me = await fetchMe()
+      login(data.token, me)
+      navigate('/dashboard')
+    } catch (err) {
+      setErrors({ form: err.response?.data?.error || 'Что-то пошло не так' })
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex bg-[#F7F8FA]">
+      {/* ЛЕВО — тёмная бренд-панель (десктоп) */}
+      <aside className="hidden lg:flex flex-col justify-between w-[44%] max-w-xl bg-[#0A0A0B] text-[#EDEDED] p-12 relative overflow-hidden">
+        <div className="absolute inset-0 landing-grid opacity-50 [mask-image:radial-gradient(ellipse_70%_60%_at_30%_20%,#000_30%,transparent_100%)]" />
+        <div className="absolute -top-32 -left-20 w-[500px] h-[400px] rounded-full bg-brand-600/15 blur-[120px]" />
+
+        <Link to="/" className="relative flex items-center gap-2 w-fit">
+          <span className="w-2 h-2 rounded-[2px] bg-brand-500" />
+          <span className="font-mono text-sm font-semibold">LinguaFlow</span>
+        </Link>
+
+        <div className="relative">
+          <p className="mono-label mb-4">// кокпит преподавателя</p>
+          <h1 className="font-display font-bold text-4xl leading-[1.1] tracking-tight">
+            {isRegister ? <>Наведи порядок<br />в учениках.</> : <>С возвращением.</>}
+          </h1>
+          <div className="mt-8 space-y-3 font-mono text-[13px] text-[#8A8A8F]">
+            {['группы, уроки, расписание', 'посещаемость и ДЗ', 'долг считается сам', 'соло или с учениками'].map((t) => (
+              <div key={t} className="flex items-center gap-2.5">
+                <span className="text-brand-400">$</span> {t}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="relative font-mono text-[12px] text-[#5A5A60]">бесплатно на старте · с телефона тоже</p>
+      </aside>
+
+      {/* ПРАВО — светлая форма */}
+      <main className="flex-1 flex flex-col">
+        {/* моб. лого */}
+        <div className="lg:hidden flex items-center justify-between px-6 h-16 border-b border-[#EAECEF]">
+          <Link to="/" className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-[2px] bg-brand-500" />
+            <span className="font-mono text-sm font-semibold text-[#0F172A]">LinguaFlow</span>
+          </Link>
+          <Link to="/" className="text-sm text-[#64748B] hover:text-[#0F172A]">← на главную</Link>
+        </div>
+
+        <div className="flex-1 flex items-center justify-center p-6 sm:p-10">
+          <div className="w-full max-w-sm">
+            <h2 className="text-2xl font-semibold text-[#0F172A] tracking-tight">
+              {isRegister ? 'Создать аккаунт' : 'Вход'}
+            </h2>
+            <p className="mt-1 text-sm text-[#64748B]">
+              {isRegister ? 'Открытая регистрация — 30 секунд.' : 'Рады видеть снова.'}
+            </p>
+
+            <form onSubmit={handleSubmit} className="mt-7 space-y-4">
+              {isRegister && (
+                <Field label="Имя" value={form.name} onChange={(v) => set('name', v)} error={errors.name} autoComplete="name" placeholder="Как вас зовут" />
+              )}
+              <Field label="Email" type="email" value={form.email} onChange={(v) => set('email', v)} error={errors.email} autoComplete="email" placeholder="you@mail.com" />
+              <Field label="Пароль" type="password" value={form.password} onChange={(v) => set('password', v)} error={errors.password} autoComplete={isRegister ? 'new-password' : 'current-password'} placeholder="Минимум 6 символов" />
+
+              {errors.form && (
+                <div className="text-sm text-[#DC2626] bg-[#FEF2F2] border border-[#FECACA] rounded-lg px-3 py-2">{errors.form}</div>
+              )}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full h-11 rounded-lg bg-[#111827] text-white text-sm font-medium hover:bg-[#0B1220] transition-colors disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
+              >
+                {submitting && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                {isRegister ? 'Создать аккаунт' : 'Войти'}
+              </button>
+            </form>
+
+            <p className="mt-6 text-sm text-center text-[#64748B]">
+              {isRegister ? 'Уже есть аккаунт? ' : 'Нет аккаунта? '}
+              <Link to={isRegister ? '/login' : '/register'} className="text-brand-600 hover:text-brand-700 font-medium">
+                {isRegister ? 'Войти' : 'Создать'}
+              </Link>
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}
+
+function Field({ label, type = 'text', value, onChange, error, autoComplete, placeholder }) {
+  return (
+    <div>
+      <label className="block text-xs font-medium text-[#475569] mb-1.5">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        autoComplete={autoComplete}
+        placeholder={placeholder}
+        className={`w-full h-11 px-3.5 rounded-lg bg-white border text-[#0F172A] text-sm placeholder:text-[#94A3B8] outline-none transition-colors focus:ring-2 focus:ring-brand-500/20 ${
+          error ? 'border-[#FCA5A5] focus:border-[#EF4444]' : 'border-[#E2E5EA] focus:border-brand-500'
+        }`}
+      />
+      {error && <p className="mt-1 text-xs text-[#DC2626]">{error}</p>}
+    </div>
+  )
+}

@@ -23,7 +23,7 @@ export default function HomeworkPage() {
     <div className="p-5 sm:p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Домашние задания</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">Домашние задания</h1>
           <p className="text-sm text-slate-400 mt-0.5">
             {isTeacher ? 'Создание и проверка работ' : 'Мои задания и оценки'}
           </p>
@@ -45,7 +45,7 @@ export default function HomeworkPage() {
             : null}
         />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 max-w-4xl">
           {homework.map(hw =>
             isTeacher
               ? <TeacherHWCard key={hw.id} hw={hw} onView={() => setSelected(hw)} onDelete={reload} />
@@ -79,10 +79,10 @@ function TeacherHWCard({ hw, onView, onDelete }) {
   return (
     <div
       onClick={onView}
-      className="flex items-start gap-4 px-5 py-4 rounded-2xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.07] hover:border-brand-500/30 transition-all cursor-pointer group"
+      className="flex items-start gap-4 px-5 py-4 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-blue-200 transition-all cursor-pointer group"
     >
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white truncate">{hw.description}</p>
+        <p className="text-sm font-medium text-slate-900 truncate">{hw.description}</p>
         {hw.deadline && (
           <p className="text-xs text-slate-400 mt-1">📅 До {formatDate(hw.deadline?.slice(0, 10))}</p>
         )}
@@ -92,13 +92,13 @@ function TeacherHWCard({ hw, onView, onDelete }) {
         <button
           onClick={(e) => { e.stopPropagation(); setConfirmOpen(true) }}
           disabled={deleting}
-          className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 transition-all cursor-pointer p-1 disabled:opacity-50"
+          className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-600 transition-all cursor-pointer p-1 disabled:opacity-50"
         >
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6" strokeLinecap="round"/>
           </svg>
         </button>
-        <svg className="w-4 h-4 text-slate-500 group-hover:text-brand-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <svg className="w-4 h-4 text-slate-500 group-hover:text-blue-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path d="M9 18l6-6-6-6" strokeLinecap="round"/>
         </svg>
       </div>
@@ -162,16 +162,16 @@ function StudentHWCard({ hw, onSubmitted }) {
   const isOverdue = hw.deadline && new Date(hw.deadline) < new Date()
 
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] overflow-hidden">
+    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
       {/* Шапка */}
       <div className="px-5 py-4">
         <div className="flex items-start justify-between gap-3">
-          <p className="text-sm font-medium text-white leading-snug">{hw.description}</p>
+          <p className="text-sm font-medium text-slate-900 leading-snug">{hw.description}</p>
           <StatusBadge submission={submission} isOverdue={isOverdue} />
         </div>
 
         {hw.deadline && (
-          <p className={`text-xs mt-1 ${isOverdue && !submission ? 'text-red-400' : 'text-slate-400'}`}>
+          <p className={`text-xs mt-1 ${isOverdue && !submission ? 'text-red-600' : 'text-slate-400'}`}>
             📅 До {formatDate(hw.deadline.slice(0, 10))}
             {isOverdue && !submission && ' — просрочено'}
           </p>
@@ -179,10 +179,10 @@ function StudentHWCard({ hw, onSubmitted }) {
 
         {/* Если уже сдано — показываем детали */}
         {submission && (
-          <div className="mt-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.07] space-y-1.5">
+          <div className="mt-3 p-3 rounded-xl bg-white border border-slate-200 space-y-1.5">
             {submission.fileUrl && (
               <a href={submission.fileUrl} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 text-xs text-brand-400 hover:text-brand-300">
+                className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-700">
                 <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.41 17.17a2 2 0 0 1-2.83-2.83l8.49-8.48" strokeLinecap="round"/>
                 </svg>
@@ -190,10 +190,10 @@ function StudentHWCard({ hw, onSubmitted }) {
               </a>
             )}
             {submission.comment && (
-              <p className="text-xs text-slate-300">💬 {submission.comment}</p>
+              <p className="text-xs text-slate-600">💬 {submission.comment}</p>
             )}
             {submission.status === 'graded' && (
-              <p className="text-xs font-semibold text-brand-300">🏆 Оценка: {submission.grade}/100</p>
+              <p className="text-xs font-semibold text-blue-600">🏆 Оценка: {submission.grade}/100</p>
             )}
           </div>
         )}
@@ -201,7 +201,7 @@ function StudentHWCard({ hw, onSubmitted }) {
         {/* Кнопка сдать */}
         {!submission && (
           <button onClick={() => setOpen(o => !o)}
-            className="mt-3 text-xs text-brand-400 hover:text-brand-300 transition-colors cursor-pointer font-medium">
+            className="mt-3 text-xs text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-medium">
             {open ? '↑ Скрыть' : '📤 Сдать задание'}
           </button>
         )}
@@ -209,7 +209,7 @@ function StudentHWCard({ hw, onSubmitted }) {
 
       {/* Форма сдачи — разворачивается */}
       {open && !submission && (
-        <div className="px-5 pb-5 space-y-3 border-t border-white/[0.06] pt-4">
+        <div className="px-5 pb-5 space-y-3 border-t border-slate-200 pt-4">
           {/* Прикрепить файл */}
           <div>
             <label className="text-xs text-slate-400 block mb-1.5">
@@ -217,18 +217,18 @@ function StudentHWCard({ hw, onSubmitted }) {
             </label>
             <label className={`flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-colors ${
               file
-                ? 'border-brand-500/50 bg-brand-600/10'
-                : 'border-white/[0.12] bg-white/[0.04] hover:bg-white/[0.07]'
+                ? 'border-blue-200 bg-blue-50'
+                : 'border-slate-200 bg-white hover:bg-slate-50'
             }`}>
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" className="shrink-0 text-slate-400">
                 <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.41 17.17a2 2 0 0 1-2.83-2.83l8.49-8.48" strokeLinecap="round"/>
               </svg>
-              <span className="text-sm text-slate-300 truncate flex-1">
+              <span className="text-sm text-slate-600 truncate flex-1">
                 {file ? file.name : 'Выбрать файл…'}
               </span>
               {file && (
                 <button type="button" onClick={(e) => { e.preventDefault(); setFile(null) }}
-                  className="text-slate-500 hover:text-red-400 text-xs shrink-0">✕</button>
+                  className="text-slate-500 hover:text-red-600 text-xs shrink-0">✕</button>
               )}
               <input type="file" accept="application/pdf,image/*"
                 className="sr-only" onChange={handleFileChange} />
@@ -240,10 +240,10 @@ function StudentHWCard({ hw, onSubmitted }) {
             <label className="text-xs text-slate-400 block mb-1.5">Комментарий (необязательно)</label>
             <textarea value={comment} onChange={e => setComment(e.target.value)}
               rows={2} placeholder="Напишите что-нибудь учителю…"
-              className="w-full px-4 py-3 rounded-xl bg-white/[0.07] border border-white/[0.12] text-white text-sm placeholder:text-slate-500 outline-none focus:border-brand-400 resize-none" />
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none" />
           </div>
 
-          {error && <p className="text-xs text-red-400">{error}</p>}
+          {error && <p className="text-xs text-red-600">{error}</p>}
 
           <div className="flex gap-2">
             <Button variant="secondary" size="sm" className="flex-1"
@@ -267,8 +267,8 @@ function StatusBadge({ submission, isOverdue }) {
     return (
       <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full border ${
         isOverdue
-          ? 'bg-red-500/10 text-red-400 border-red-500/20'
-          : 'bg-white/[0.06] text-slate-400 border-white/[0.08]'
+          ? 'bg-red-50 text-red-600 border-red-200'
+          : 'bg-slate-50 text-slate-400 border-slate-200'
       }`}>
         {isOverdue ? 'Просрочено' : 'Не сдано'}
       </span>
@@ -276,13 +276,13 @@ function StatusBadge({ submission, isOverdue }) {
   }
   if (submission.status === 'graded') {
     return (
-      <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-brand-600/20 text-brand-300 border border-brand-600/30">
+      <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
         ✓ Оценено: {submission.grade}/100
       </span>
     )
   }
   return (
-    <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
+    <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
       ✓ На проверке
     </span>
   )
@@ -324,7 +324,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
   return (
     <Modal open={open} onClose={onClose} maxWidth="max-w-md">
       <div className="p-6 sm:p-7">
-        <h2 className="text-xl font-semibold text-white mb-5">Новое ДЗ</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mb-5">Новое ДЗ</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
             <label className="text-xs text-slate-400 block mb-1">Описание задания</label>
@@ -333,7 +333,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
               onChange={e => set('description', e.target.value)}
               rows={3}
               placeholder="Что нужно сделать..."
-              className="w-full px-4 py-3 rounded-xl bg-white/[0.07] border border-white/[0.15] text-white text-sm placeholder:text-slate-500 outline-none focus:border-brand-400 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none"
             />
           </div>
 
@@ -344,8 +344,8 @@ function CreateHWModal({ open, onClose, onCreated }) {
                 onClick={() => set('lessonType', t)}
                 className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-all ${
                   form.lessonType === t
-                    ? 'bg-brand-600/25 border-brand-500/50 text-brand-300'
-                    : 'bg-white/[0.04] border-white/[0.10] text-slate-400 hover:text-white'
+                    ? 'bg-blue-50 border-blue-200 text-blue-700'
+                    : 'bg-white border-slate-200 text-slate-400 hover:text-slate-900'
                 }`}>
                 {t === 'group' ? 'Групповой урок' : 'Инд. урок'}
               </button>
@@ -358,7 +358,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
               <select
                 value={form.lessonId}
                 onChange={e => set('lessonId', e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-[#131c35] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400"
+                className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
               >
                 <option value="">Выберите групповой урок</option>
                 {(lessons || []).map(l => (
@@ -374,7 +374,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
               <select
                 value={form.individualLessonId}
                 onChange={e => set('individualLessonId', e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-[#131c35] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400"
+                className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
               >
                 <option value="">Выберите урок</option>
                 {(indLessons || []).map(l => (
@@ -389,10 +389,10 @@ function CreateHWModal({ open, onClose, onCreated }) {
           <div>
             <label className="text-xs text-slate-400 block mb-1">Дедлайн (необязательно)</label>
             <input type="date" value={form.deadline} onChange={e => set('deadline', e.target.value)}
-              className="w-full h-11 px-3 rounded-xl bg-white/[0.07] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400" />
+              className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
           </div>
 
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="flex gap-2 pt-1">
             <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>Отмена</Button>
             <Button type="submit" loading={saving} className="flex-1">Создать</Button>
@@ -428,7 +428,7 @@ function SubmissionsModal({ hw, onClose }) {
   return (
     <Modal open={!!hw} onClose={onClose} maxWidth="max-w-lg">
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-white mb-1">Сдачи</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-1">Сдачи</h3>
         {hw && <p className="text-sm text-slate-400 mb-5 truncate">{hw.description}</p>}
 
         {loading ? <PageSpinner /> : !subs?.length ? (
@@ -439,30 +439,30 @@ function SubmissionsModal({ hw, onClose }) {
               const isGraded  = s.status === 'graded'
               const isEditing = !isGraded || editing[s.id] // ввод виден: не оценено ИЛИ режим правки
               return (
-                <div key={s.id} className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.07]">
+                <div key={s.id} className="p-4 rounded-xl bg-white border border-slate-200">
                   <div className="flex items-start justify-between gap-3 mb-2">
-                    <span className="text-sm font-medium text-white truncate">{s.student?.name ?? s.studentId}</span>
+                    <span className="text-sm font-medium text-slate-900 truncate">{s.student?.name ?? s.studentId}</span>
                     {isGraded ? (
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-sm font-semibold text-brand-300">{s.grade}/100</span>
+                        <span className="text-sm font-semibold text-blue-600">{s.grade}/100</span>
                         {!editing[s.id] && (
                           <button
                             onClick={() => {
                               setEditing(e => ({ ...e, [s.id]: true }))
                               setGrades(g => ({ ...g, [s.id]: String(s.grade) })) // префилл текущей
                             }}
-                            className="text-xs text-slate-400 hover:text-white underline cursor-pointer">
+                            className="text-xs text-slate-400 hover:text-slate-900 underline cursor-pointer">
                             Изменить
                           </button>
                         )}
                       </div>
                     ) : (
-                      <span className="text-xs text-slate-500 px-2 py-0.5 rounded-full bg-white/[0.07]">Не проверено</span>
+                      <span className="text-xs text-slate-500 px-2 py-0.5 rounded-full bg-slate-50">Не проверено</span>
                     )}
                   </div>
                   {s.comment && <p className="text-xs text-slate-400 mb-2">{s.comment}</p>}
                   <a href={s.fileUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-xs text-brand-400 hover:text-brand-300 underline break-all">
+                    className="text-xs text-blue-600 hover:text-blue-700 underline break-all">
                     Открыть файл
                   </a>
                   {isEditing && (
@@ -471,7 +471,7 @@ function SubmissionsModal({ hw, onClose }) {
                         type="number" min="0" max="100" placeholder="Оценка"
                         value={grades[s.id] || ''}
                         onChange={e => setGrades(g => ({ ...g, [s.id]: e.target.value }))}
-                        className="w-28 h-8 px-3 rounded-lg bg-white/[0.07] border border-white/[0.15] text-white text-sm outline-none focus:border-brand-400"
+                        className="w-28 h-8 px-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
                       />
                       <Button size="sm" loading={saving === s.id} onClick={() => handleGrade(s.id)}>
                         {isGraded ? 'Сохранить' : 'Поставить'}
@@ -479,7 +479,7 @@ function SubmissionsModal({ hw, onClose }) {
                       {isGraded && (
                         <button
                           onClick={() => setEditing(e => ({ ...e, [s.id]: false }))}
-                          className="text-xs text-slate-400 hover:text-white cursor-pointer">
+                          className="text-xs text-slate-400 hover:text-slate-900 cursor-pointer">
                           Отмена
                         </button>
                       )}

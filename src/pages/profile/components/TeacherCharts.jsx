@@ -28,7 +28,7 @@ export default function TeacherCharts({ userId }) {
     <div className="space-y-6">
       {/* Шапка с фильтром периода */}
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-300">Финансы и активность</h2>
+        <h2 className="text-sm font-semibold text-slate-600">Финансы и активность</h2>
         <PeriodSwitcher value={period} onChange={setPeriod} />
       </div>
 
@@ -36,7 +36,7 @@ export default function TeacherCharts({ userId }) {
       <ChartPanel title="Доход" subtitle="Оплачено vs начислено">
         <ResponsiveContainer width="100%" height={260}>
           <LineChart data={data?.revenueByPeriod || []}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#EEF1F4" />
             <XAxis dataKey="bucket" stroke="#64748b" fontSize={11} />
             <YAxis stroke="#64748b" fontSize={11} />
             <Tooltip {...tooltipStyle} formatter={(v) => `${v} zł`} />
@@ -53,24 +53,24 @@ export default function TeacherCharts({ userId }) {
           <AreaChart data={data?.studentsByMonth || []}>
             <defs>
               <linearGradient id="studentsGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor="#8b5cf6" stopOpacity={0.5} />
-                <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0}   />
+                <stop offset="0%"   stopColor="#2563EB" stopOpacity={0.5} />
+                <stop offset="100%" stopColor="#2563EB" stopOpacity={0}   />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#EEF1F4" />
             <XAxis dataKey="bucket" stroke="#64748b" fontSize={11} />
             <YAxis stroke="#64748b" fontSize={11} allowDecimals={false} />
             <Tooltip {...tooltipStyle} />
-            <Area type="monotone" dataKey="count" name="Студентов" stroke="#8b5cf6" fill="url(#studentsGrad)" strokeWidth={2} />
+            <Area type="monotone" dataKey="count" name="Студентов" stroke="#2563EB" fill="url(#studentsGrad)" strokeWidth={2} />
           </AreaChart>
         </ResponsiveContainer>
       </ChartPanel>
 
       {/* avgAttendance — большой плашкой */}
-      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 flex items-center justify-between">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 flex items-center justify-between">
         <div>
           <div className="text-xs text-slate-500 uppercase tracking-widest mb-1">Средняя посещаемость</div>
-          <div className="text-3xl font-bold text-white">{data?.avgAttendance ?? 0}%</div>
+          <div className="text-3xl font-bold text-slate-900">{data?.avgAttendance ?? 0}%</div>
         </div>
         <div className="text-5xl">📊</div>
       </div>
@@ -86,7 +86,7 @@ function PeriodSwitcher({ value, onChange }) {
     { id: 'month', label: 'Месяц'  },
   ]
   return (
-    <div className="inline-flex p-0.5 rounded-lg border border-white/[0.08] bg-white/[0.03]">
+    <div className="inline-flex p-0.5 rounded-lg border border-slate-200 bg-white">
       {items.map(it => (
         <button
           key={it.id}
@@ -94,8 +94,8 @@ function PeriodSwitcher({ value, onChange }) {
           onClick={() => onChange(it.id)}
           className={`px-3 py-1 text-xs rounded-md transition-colors cursor-pointer ${
             value === it.id
-              ? 'bg-brand-600 text-white'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-blue-600 text-white'
+              : 'text-slate-500 hover:text-slate-900'
           }`}
         >
           {it.label}
@@ -108,9 +108,9 @@ function PeriodSwitcher({ value, onChange }) {
 /* ─── Карточка-контейнер для графика ──────────────────────────── */
 function ChartPanel({ title, subtitle, children }) {
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4">
       <div className="mb-3">
-        <h3 className="text-sm font-semibold text-white">{title}</h3>
+        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
         {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
       </div>
       {children}
@@ -121,10 +121,10 @@ function ChartPanel({ title, subtitle, children }) {
 // Единый стиль тултипа Recharts на тёмной теме
 const tooltipStyle = {
   contentStyle: {
-    background: '#111827',
-    border: '1px solid #1f2937',
+    background: "#ffffff",
+    border: "1px solid #E2E8F0",
     borderRadius: 8,
     fontSize: 12,
   },
-  labelStyle: { color: '#94a3b8' },
+  labelStyle: { color: "#64748b" },
 }

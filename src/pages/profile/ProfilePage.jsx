@@ -87,9 +87,9 @@ function ProfileHeader({ user, isTeacher, updateUser }) {
       <div className="px-5 sm:px-0 -mt-16 sm:-mt-20 flex items-end gap-4">
         <AvatarUpload url={user.avatar} name={user.name} editable onChange={handleAvatar} size={120} />
         <div className="pb-3 flex-1 min-w-0">
-          <h1 className="text-xl sm:text-2xl font-semibold text-white truncate">{user.name}</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 truncate">{user.name}</h1>
           <p className="text-xs text-slate-400">@{user.username}</p>
-          <p className="text-[11px] text-brand-300 mt-0.5">{isTeacher ? 'Преподаватель' : 'Студент'}</p>
+          <p className="text-[11px] text-blue-600 mt-0.5">{isTeacher ? 'Преподаватель' : 'Студент'}</p>
         </div>
       </div>
     </div>
@@ -161,7 +161,7 @@ function ProfileTab({ user, isTeacher, updateUser }) {
           <Input label="Username" value={form.username} onChange={e => set({ username: e.target.value.toLowerCase() })} />
         </div>
         <p className="text-[11px] text-slate-600 mt-2">
-          Username — уникальный ник для поиска и приглашений: <code className="text-brand-400">@{form.username || 'username'}</code>
+          Username — уникальный ник для поиска и приглашений: <code className="text-blue-600">@{form.username || 'username'}</code>
         </p>
       </Section>
 
@@ -172,7 +172,7 @@ function ProfileTab({ user, isTeacher, updateUser }) {
           onChange={e => set({ bio: e.target.value.slice(0, 300) })}
           rows={4}
           placeholder="Расскажи о себе — опыт, специализация, методика..."
-          className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-500/50 resize-none"
+          className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none"
         />
         <div className="text-right text-[11px] text-slate-600 mt-1">{form.bio.length} / 300</div>
       </Section>
@@ -248,8 +248,8 @@ function SecurityTab() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5 space-y-3 max-w-md">
-      <h2 className="text-sm font-medium text-slate-300">Смена пароля</h2>
+    <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-5 space-y-3 max-w-md">
+      <h2 className="text-sm font-medium text-slate-600">Смена пароля</h2>
       <Input label="Текущий пароль"            type="password" value={form.current} onChange={e => set('current', e.target.value)} />
       <Input label="Новый пароль (от 6 симв.)" type="password" value={form.next}    onChange={e => set('next',    e.target.value)} />
       <Input label="Повторите новый пароль"    type="password" value={form.confirm} onChange={e => set('confirm', e.target.value)} />
@@ -263,8 +263,8 @@ function SecurityTab() {
    ═══════════════════════════════════════════════════════════ */
 function Section({ title, children }) {
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5">
-      <h2 className="text-sm font-medium text-slate-300 mb-3">{title}</h2>
+    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+      <h2 className="text-sm font-medium text-slate-600 mb-3">{title}</h2>
       {children}
     </div>
   )
@@ -272,14 +272,14 @@ function Section({ title, children }) {
 
 function CompletionBar({ percent }) {
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-sm font-medium text-slate-300">Профиль заполнен на</h2>
-        <span className="text-sm font-semibold text-white">{percent}%</span>
+        <h2 className="text-sm font-medium text-slate-600">Профиль заполнен на</h2>
+        <span className="text-sm font-semibold text-slate-900">{percent}%</span>
       </div>
-      <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
+      <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-brand-500 to-pink-accent transition-all"
+          className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all"
           style={{ width: `${percent}%` }}
         />
       </div>

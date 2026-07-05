@@ -17,7 +17,31 @@
   --color-ink:      #EEF2FF;
   --color-ink-soft: #C5D0E8;
   --color-ink-muted: #6B7FA3;
+
+  /* Шрифты редизайна */
+  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
 }
+
+/* ───────────── Лендинг: тёмный тех-моно (Factory-вайб) ───────────── */
+/* Тонкая сетка-фон для секций лендинга */
+.landing-grid {
+  background-image:
+    linear-gradient(to right,  rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+/* Моно-лейбл секции: "// ЧТО УМЕЕТ" */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6E6E76;
+}
+/* Мигающий курсор в терминал-блоке */
+@keyframes caret-blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+.caret::after { content: '▍'; margin-left: 2px; animation: caret-blink 1.1s step-end infinite; color: #8B5CF6; }
 
 /* Базовая типографика */
 html, body {
@@ -27,8 +51,8 @@ html, body {
 
 body {
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  color: var(--color-ink);
-  background: #0F1629;
+  color: #0F172A;
+  background: #F1F3F6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -47,30 +71,6 @@ body {
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
-
-/* Анимированный blur-blob фон */
-.blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(80px);
-  opacity: 0.45;
-  pointer-events: none;
-  will-change: transform;
-}
-
-@keyframes blob-float-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%      { transform: translate(40px, -60px) scale(1.15); }
-  66%      { transform: translate(-30px, 30px) scale(0.95); }
-}
-
-@keyframes blob-float-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50%      { transform: translate(-50px, 40px) scale(1.1); }
-}
-
-.blob-1 { animation: blob-float-1 18s ease-in-out infinite; }
-.blob-2 { animation: blob-float-2 22s ease-in-out infinite; }
 
 /* Кастомные тени бренда */
 .shadow-brand {
@@ -164,56 +164,47 @@ body {
 /* Селекция текста */
 /* FullCalendar — тёмная тема */
 .fc {
-  --fc-border-color: rgba(255,255,255,0.08);
-  --fc-button-bg-color: rgba(255,255,255,0.07);
-  --fc-button-border-color: rgba(255,255,255,0.15);
-  --fc-button-hover-bg-color: rgba(255,255,255,0.12);
-  --fc-button-hover-border-color: rgba(255,255,255,0.25);
-  --fc-button-active-bg-color: #7C3AED;
-  --fc-button-active-border-color: #7C3AED;
-  --fc-today-bg-color: rgba(139,92,246,0.12);
+  --fc-border-color: #EEF1F4;
+  --fc-button-bg-color: #ffffff;
+  --fc-button-border-color: #E2E8F0;
+  --fc-button-hover-bg-color: #F1F5F9;
+  --fc-button-hover-border-color: #CBD5E1;
+  --fc-button-active-bg-color: #2563EB;
+  --fc-button-active-border-color: #2563EB;
+  --fc-today-bg-color: rgba(37,99,235,0.06);
   --fc-page-bg-color: transparent;
   --fc-neutral-bg-color: transparent;
 }
-.fc .fc-toolbar-title       { color: #EEF2FF; font-size: 1.1rem; font-weight: 600; }
-.fc .fc-button              { color: #C5D0E8; font-size: 0.8rem; border-radius: 8px; padding: 5px 10px; }
-.fc .fc-button:focus        { box-shadow: 0 0 0 2px rgba(139,92,246,0.4); }
-.fc .fc-col-header-cell-cushion { color: #6B7FA3; font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 4px; }
-.fc .fc-daygrid-day-number  { color: #C5D0E8; font-size: 0.82rem; padding: 4px 8px; }
-.fc .fc-day-other .fc-daygrid-day-number { color: rgba(255,255,255,0.2); }
-.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number { color: #C084FC; font-weight: 600; }
+.fc .fc-toolbar-title       { color: #0F172A; font-size: 1.1rem; font-weight: 600; }
+.fc .fc-button              { color: #475569; font-size: 0.8rem; border-radius: 8px; padding: 5px 10px; }
+.fc .fc-button:focus        { box-shadow: 0 0 0 2px rgba(37,99,235,0.25); }
+.fc .fc-col-header-cell-cushion { color: #94A3B8; font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 4px; }
+.fc .fc-daygrid-day-number  { color: #475569; font-size: 0.82rem; padding: 4px 8px; }
+.fc .fc-day-other .fc-daygrid-day-number { color: #CBD5E1; }
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number { color: #2563EB; font-weight: 600; }
 .fc .fc-event               { border-radius: 5px; font-size: 0.75rem; padding: 1px 4px; border: none; }
 .fc .fc-event:hover         { opacity: 0.85; cursor: pointer; }
-.fc .fc-more-link           { color: #C084FC; font-size: 0.75rem; }
-.fc-theme-standard td, .fc-theme-standard th { border-color: rgba(255,255,255,0.06); }
+.fc .fc-more-link           { color: #2563EB; font-size: 0.75rem; }
+.fc-theme-standard td, .fc-theme-standard th { border-color: #EEF1F4; }
 
 ::selection {
-  background: rgba(139, 92, 246, 0.40);
-  color: #EEF2FF;
+  background: rgba(59, 130, 246, 0.20);
+  color: #0F172A;
 }
 
-/* Выпадающие списки — тёмная тема */
+/* Выпадающие списки — светлая тема */
 select {
-  background-color: #131c35;
-  color: #EEF2FF;
+  background-color: #ffffff;
+  color: #0F172A;
   appearance: auto;
 }
-select:focus {
-  outline: none;
-}
-select option {
-  background-color: #131c35;
-  color: #EEF2FF;
-}
-select option:checked,
-select option:hover {
-  background-color: #1e2d55;
-  color: #ffffff;
-}
+select:focus { outline: none; }
+select option { background-color: #ffffff; color: #0F172A; }
+select option:checked { background-color: #EFF6FF; color: #1D4ED8; }
 
-/* Дата/время/месяц — тёмный пикер браузера */
+/* Дата/время/месяц — светлый пикер браузера */
 input[type="date"],
 input[type="time"],
 input[type="month"] {
-  color-scheme: dark;
+  color-scheme: light;
 }

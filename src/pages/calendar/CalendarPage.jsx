@@ -44,8 +44,8 @@ export default function CalendarPage() {
         id:    `g-${l.id}`,
         title: l.topic || l.Group?.name || 'Урок',
         start: `${l.date}T${l.time}:00`,
-        backgroundColor: '#7C3AED',
-        borderColor: '#7C3AED',
+        backgroundColor: '#2563EB',
+        borderColor: '#2563EB',
         extendedProps: { type: 'group', lesson: l },
       }))
 
@@ -73,18 +73,18 @@ export default function CalendarPage() {
       {/* Заголовок */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Расписание</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">Расписание</h1>
           <p className="text-sm text-slate-400 mt-0.5">Все уроки по группам и индивидуальные</p>
         </div>
         {loading && (
-          <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-brand-400 animate-spin" />
+          <div className="w-5 h-5 rounded-full border-2 border-slate-200 border-t-blue-600 animate-spin" />
         )}
       </div>
 
       {/* Легенда */}
       <div className="flex items-center gap-5 mb-5 text-xs text-slate-400">
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-sm bg-brand-700 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-sm bg-blue-600 inline-block" />
           Групповые уроки
         </span>
         <span className="flex items-center gap-1.5">
@@ -94,7 +94,7 @@ export default function CalendarPage() {
       </div>
 
       {/* Календарь */}
-      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 sm:p-6">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6">
         <FullCalendar
           ref={calRef}
           plugins={CAL_PLUGINS}
@@ -130,16 +130,16 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
         <div>
           <span className={`inline-flex text-xs px-2 py-0.5 rounded-full mb-2 ${
             type === 'group'
-              ? 'bg-brand-700/30 text-brand-300'
-              : 'bg-pink-900/40 text-pink-300'
+              ? 'bg-blue-100 text-blue-600'
+              : 'bg-pink-100 text-pink-700'
           }`}>
             {type === 'group' ? lesson.Group?.name : 'Инд. урок'}
           </span>
-          <h3 className="text-lg font-semibold text-white">
+          <h3 className="text-lg font-semibold text-slate-900">
             {lesson.topic || 'Без темы'}
           </h3>
         </div>
-        <button onClick={onClose} className="text-slate-500 hover:text-white cursor-pointer">
+        <button onClick={onClose} className="text-slate-500 hover:text-slate-900 cursor-pointer">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
@@ -162,7 +162,7 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
           href={linkUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full h-10 rounded-xl btn-river text-white text-sm font-medium"
+          className="flex items-center justify-center gap-2 w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
         >
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round"/>
@@ -176,7 +176,7 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
           href={chatUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full h-10 mt-2 rounded-xl bg-white/[0.05] border border-white/[0.10] text-slate-300 text-sm font-medium hover:bg-white/[0.08] transition-colors"
+          className="flex items-center justify-center gap-2 w-full h-10 mt-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-100 transition-colors"
         >
           <span>💬</span>
           Чат группы
@@ -190,7 +190,7 @@ function Row({ label, value }) {
   return (
     <div className="flex gap-2">
       <span className="text-slate-500 shrink-0 w-20">{label}</span>
-      <span className="text-slate-200">{value}</span>
+      <span className="text-slate-700">{value}</span>
     </div>
   )
 }

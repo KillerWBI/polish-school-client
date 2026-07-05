@@ -1,31 +1,32 @@
-import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Header from './sections/Header'
 import Hero from './sections/Hero'
+import Pain from './sections/Pain'
 import Features from './sections/Features'
-import About from './sections/About'
+import Modes from './sections/Modes'
+import StudentView from './sections/StudentView'
+import ForWhom from './sections/ForWhom'
 import Faq from './sections/Faq'
 import Footer from './sections/Footer'
-import AuthModal from '../../components/auth/AuthModal'
 
 export default function LandingPage() {
-  const [auth, setAuth] = useState({ open: false, tab: 'login' })
-
-  const openLogin    = () => setAuth({ open: true, tab: 'login' })
-  const openRegister = () => setAuth({ open: true, tab: 'register' })
-  const close        = () => setAuth({ ...auth, open: false })
+  const navigate = useNavigate()
+  const toLogin    = () => navigate('/login')
+  const toRegister = () => navigate('/register')
 
   return (
-    <div className="relative overflow-x-hidden">
-      <Header onLogin={openLogin} onRegister={openRegister} />
+    <div className="relative overflow-x-hidden bg-[#0A0A0B]">
+      <Header onLogin={toLogin} onRegister={toRegister} />
       <main>
-        <Hero    onPrimary={openRegister} onSecondary={openLogin} />
+        <Hero        onPrimary={toRegister} onSecondary={toLogin} />
+        <Pain />
         <Features />
-        <About   onPrimary={openRegister} />
+        <Modes       onPrimary={toRegister} />
+        <StudentView />
+        <ForWhom />
         <Faq />
-        <Footer  onPrimary={openRegister} />
       </main>
-
-      <AuthModal open={auth.open} onClose={close} initialTab={auth.tab} />
+      <Footer onPrimary={toRegister} />
     </div>
   )
 }

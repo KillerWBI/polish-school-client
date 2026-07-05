@@ -35,16 +35,16 @@ export default function VerifyEmailPage() {
   }, [token])
 
   return (
-    <div className="min-h-screen bg-[#080B14] flex items-center justify-center px-5">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-5">
       <div className="w-full max-w-md text-center">
-        <div className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center bg-gradient-to-br from-brand-500 to-pink-accent">
-          <span className="text-white text-2xl font-bold">L</span>
+        <div className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600">
+          <span className="text-slate-900 text-2xl font-bold">L</span>
         </div>
 
         {status === 'loading' && (
           <>
-            <div className="inline-flex w-10 h-10 mb-4 border-2 border-brand-500/30 border-t-brand-400 rounded-full animate-spin" />
-            <h1 className="text-xl font-semibold text-white">Подтверждаем email...</h1>
+            <div className="inline-flex w-10 h-10 mb-4 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
+            <h1 className="text-xl font-semibold text-slate-900">Подтверждаем email...</h1>
           </>
         )}
 
@@ -55,11 +55,11 @@ export default function VerifyEmailPage() {
                 <path d="M5 12l5 5 9-12" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h1 className="text-xl font-semibold text-white mb-2">{message}</h1>
+            <h1 className="text-xl font-semibold text-slate-900 mb-2">{message}</h1>
             <p className="text-sm text-slate-400 mb-6">Теперь у вас полный доступ ко всем функциям.</p>
             <button
-              onClick={() => navigate(user ? '/dashboard' : '/teacher-login')}
-              className="h-11 px-6 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium transition-colors cursor-pointer"
+              onClick={() => navigate(user ? '/dashboard' : '/login')}
+              className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors cursor-pointer"
             >
               {user ? 'В кабинет' : 'Войти'}
             </button>
@@ -74,10 +74,10 @@ export default function VerifyEmailPage() {
                 <path d="M12 8v4M12 16v0" strokeLinecap="round"/>
               </svg>
             </div>
-            <h1 className="text-xl font-semibold text-white mb-2">{message}</h1>
+            <h1 className="text-xl font-semibold text-slate-900 mb-2">{message}</h1>
             <button
-              onClick={() => navigate(user ? '/dashboard' : '/teacher-login')}
-              className="h-11 px-6 rounded-xl bg-white/[0.08] hover:bg-white/[0.12] text-white text-sm font-medium transition-colors cursor-pointer"
+              onClick={() => navigate(user ? '/dashboard' : '/login')}
+              className="h-11 px-6 rounded-xl bg-slate-100 hover:bg-slate-100 text-slate-900 text-sm font-medium transition-colors cursor-pointer"
             >
               {user ? 'В кабинет' : 'Войти'}
             </button>
@@ -92,11 +92,11 @@ export default function VerifyEmailPage() {
                 <path d="M9 9l6 6M15 9l-6 6" strokeLinecap="round"/>
               </svg>
             </div>
-            <h1 className="text-xl font-semibold text-white mb-2">Не удалось подтвердить</h1>
+            <h1 className="text-xl font-semibold text-slate-900 mb-2">Не удалось подтвердить</h1>
             <p className="text-sm text-slate-400 mb-6">{message}</p>
             <button
               onClick={() => navigate(user ? '/dashboard' : '/')}
-              className="h-11 px-6 rounded-xl bg-white/[0.08] hover:bg-white/[0.12] text-white text-sm font-medium transition-colors cursor-pointer"
+              className="h-11 px-6 rounded-xl bg-slate-100 hover:bg-slate-100 text-slate-900 text-sm font-medium transition-colors cursor-pointer"
             >
               {user ? 'В кабинет' : 'На главную'}
             </button>

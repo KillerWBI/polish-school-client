@@ -1,138 +1,162 @@
-import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+// «Что умеет» — не сетка, а чередующиеся развороты: текст + свой светлый макет.
+// Светлые макеты на тёмном фоне подчёркивают: сам продукт — светлый.
 
-gsap.registerPlugin(ScrollTrigger)
+function Row({ index, label, title, children, points, mono, reverse }) {
+  return (
+    <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+      {/* текст */}
+      <div className={reverse ? 'lg:order-2' : ''}>
+        <div className="flex items-center gap-3 mb-4">
+          <span className="font-mono text-xs text-[#5A5A60]">{index}</span>
+          <span className="mono-label">{label}</span>
+        </div>
+        <h3 className="font-display font-semibold text-2xl sm:text-3xl tracking-tight text-[#EDEDED]">{title}</h3>
+        <ul className="mt-5 space-y-2.5">
+          {points.map((p) => (
+            <li key={p} className="flex gap-3 text-sm text-[#9A9AA1]">
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-[2px] bg-brand-500 shrink-0" />
+              <span>{p}</span>
+            </li>
+          ))}
+        </ul>
+        {mono && <p className="mt-5 font-mono text-[12px] text-[#5A5A60] border-l-2 border-[#26262B] pl-3">{mono}</p>}
+      </div>
+      {/* макет */}
+      <div className={reverse ? 'lg:order-1' : ''}>{children}</div>
+    </div>
+  )
+}
 
-const FEATURES = [
-  {
-    title: 'Живые уроки',
-    text: 'Групповые и индивидуальные занятия с постоянной Zoom/Meet ссылкой — без поиска по чатам.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M3 7a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M16 10l5-3v10l-5-3" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Расписание',
-    text: 'Календарь с уроками на месяц вперёд. Учитель генерирует, ученик — просто видит, когда идти учиться.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Домашние задания',
-    text: 'Загрузка файлов через Cloudinary, комментарии, оценки. Студент видит статус — учитель проверяет в одном окне.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-        <path d="M14 3v6h6M8 13h8M8 17h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Материалы',
-    text: 'Ссылки, файлы и заметки прикреплены к каждому уроку. Всё, что обсуждали, останется с тобой.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M9 12h6M9 8h6M9 16h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Посещаемость',
-    text: 'Учитель отмечает присутствие — студент видит свою историю. Прозрачно и без споров.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" stroke="currentColor" strokeWidth="1.8" />
-        <path d="m8 12 3 3 5-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Оплата',
-    text: 'Автоматический расчёт по факту посещения. История платежей всегда под рукой.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M3 10h18" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M7 15h3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-]
+/* ── маленькие светлые макеты ── */
+const Card = ({ children, className = '' }) => (
+  <div className={`rounded-xl bg-white border border-[#EAECEF] shadow-[0_1px_3px_rgba(0,0,0,0.06)] ${className}`}>{children}</div>
+)
+
+function GroupsMock() {
+  return (
+    <div className="rounded-2xl bg-[#F7F8FA] border border-[#EAECEF] p-4 space-y-2.5">
+      {[['A1 · Вторник/Четверг', '6 учеников', '18:00'], ['B2 Разговорный', '4 ученика', '19:30'], ['Инд · Марта', '1 ученик', 'Пн 12:00']].map(([n, s, t], i) => (
+        <Card key={i} className="flex items-center gap-3 p-3">
+          <div className="w-9 h-9 rounded-lg bg-brand-500/15 flex items-center justify-center text-brand-600 text-sm font-semibold">{n[0]}</div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium text-[#0F172A]">{n}</div>
+            <div className="text-[11px] text-[#8A94A6]">{s}</div>
+          </div>
+          <div className="text-[11px] font-mono text-[#64748B]">{t}</div>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
+function AttendanceMock() {
+  const rows = [['Аня', true], ['Пётр', true], ['Марта', false], ['Иван', true]]
+  return (
+    <Card className="p-4 bg-[#F7F8FA]">
+      <div className="text-xs text-[#8A94A6] mb-3 font-medium">Урок · 12 июня · 18:00</div>
+      <div className="space-y-2">
+        {rows.map(([n, ok]) => (
+          <div key={n} className="flex items-center justify-between bg-white rounded-lg border border-[#EAECEF] px-3 py-2">
+            <span className="text-sm text-[#334155]">{n}</span>
+            <span className={`text-xs px-2 py-0.5 rounded-full ${ok ? 'bg-[#16A34A]/10 text-[#16A34A]' : 'bg-[#DC2626]/10 text-[#DC2626]'}`}>
+              {ok ? '✓ был' : '✗ не был'}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 text-[11px] text-[#8A94A6]">Ученик подтверждает у себя — спорные видно сразу.</div>
+    </Card>
+  )
+}
+
+function HomeworkMock() {
+  return (
+    <Card className="p-4 bg-white max-w-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div className="text-sm font-medium text-[#0F172A]">Упражнение 5 · Rzeczownik</div>
+        <span className="text-[11px] px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-600">Оценено</span>
+      </div>
+      <div className="mt-1 text-[11px] text-[#8A94A6]">📅 до 07 июля</div>
+      <div className="mt-3 rounded-lg bg-[#F7F8FA] border border-[#EAECEF] p-3">
+        <div className="text-xs text-[#64748B]">📎 файл ученика · 💬 «сделала, проверьте плз»</div>
+        <div className="mt-2 text-sm font-semibold text-brand-600">🏆 92 / 100</div>
+      </div>
+    </Card>
+  )
+}
+
+function FinanceMock() {
+  return (
+    <Card className="p-5 bg-white max-w-sm">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-pink-accent flex items-center justify-center text-white text-sm font-semibold">М</div>
+        <div>
+          <div className="text-sm font-medium text-[#0F172A]">Марта К.</div>
+          <div className="text-[11px] text-[#8A94A6]">6 посещений в июне</div>
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-2 text-center">
+        {[['Начислено', '600'], ['Оплачено', '400'], ['Остаток', '200']].map(([k, v], i) => (
+          <div key={k} className={`rounded-lg border p-2 ${i === 2 ? 'border-[#FCD34D]/40 bg-[#FEF9C3]/40' : 'border-[#EAECEF] bg-[#F7F8FA]'}`}>
+            <div className="text-[10px] text-[#8A94A6]">{k}</div>
+            <div className={`text-sm font-semibold ${i === 2 ? 'text-[#B45309]' : 'text-[#0F172A]'}`}>{v}</div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 text-[11px] text-[#8A94A6]">Считается из посещений — руками ничего не сводишь.</div>
+    </Card>
+  )
+}
 
 export default function Features() {
-  const rootRef = useRef(null)
-
-  useEffect(() => {
-    if (!rootRef.current) return
-    const ctx = gsap.context(() => {
-      gsap.from('[data-feat-title]', {
-        y: 40,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-        immediateRender: false,
-        scrollTrigger: {
-          trigger: '[data-feat-title]',
-          start: 'top 92%',
-          once: true,
-        },
-      })
-      gsap.from('[data-feat-card]', {
-        y: 50,
-        opacity: 0,
-        duration: 0.7,
-        ease: 'power3.out',
-        stagger: 0.08,
-        immediateRender: false,
-        scrollTrigger: {
-          trigger: '[data-feat-grid]',
-          start: 'top 90%',
-          once: true,
-        },
-      })
-    }, rootRef)
-    return () => ctx.revert()
-  }, [])
-
   return (
-    <section id="features" ref={rootRef} className="relative py-24 sm:py-32">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <div data-feat-title className="max-w-2xl mx-auto text-center mb-16">
-          <p className="text-sm font-medium text-brand-600 mb-3 uppercase tracking-wider">
-            Возможности
-          </p>
-          <h2 className="text-4xl sm:text-5xl font-semibold tracking-tight text-ink mb-4">
-            Всё для обучения <span className="text-gradient">в одном месте</span>
-          </h2>
-          <p className="text-ink-muted">
-            Платформа собирает уроки, материалы и прогресс так, чтобы ничего не терялось.
-          </p>
-        </div>
+    <section id="features" className="bg-[#0A0A0B] text-[#EDEDED] border-t border-[#141416]">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28">
+        <p className="mono-label mb-3">// что умеет</p>
+        <h2 className="font-display font-semibold text-3xl sm:text-4xl tracking-tight max-w-2xl">
+          Разберём по частям — что именно вы делаете внутри
+        </h2>
 
-        <div data-feat-grid className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {FEATURES.map((f) => (
-            <div
-              key={f.title}
-              data-feat-card
-              className="group relative p-7 bg-white/[0.05] rounded-3xl border border-white/[0.09] hover:border-brand-500/50 hover:shadow-brand-sm hover:bg-white/[0.08] transition-all duration-300 hover:-translate-y-1"
-            >
-              {/* Градиентный кружок под иконку */}
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-700/50 to-pink-accent/20 text-brand-300 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                {f.icon}
-              </div>
-              <h3 className="text-lg font-semibold text-ink mb-2">{f.title}</h3>
-              <p className="text-sm text-ink-muted leading-relaxed">{f.text}</p>
-            </div>
-          ))}
+        <div className="mt-16 space-y-24">
+          <Row index="01" label="группы и уроки" title="Группы, расписание и уроки — на автопилоте"
+            points={[
+              'Создаёте группу, задаёте расписание — уроки на 3 месяца вперёд генерируются сами.',
+              'У урока: тема, описание, материалы (ссылки/текст), ссылка на созвон.',
+              'У группы — ссылка на внешний чат (Telegram/WhatsApp), ученик переходит в один клик.',
+            ]}
+            mono="дубль урока на ту же дату/время? система не даст создать.">
+            <GroupsMock />
+          </Row>
+
+          <Row index="02" label="посещаемость" title="Отметил — ученик подтвердил" reverse
+            points={[
+              'Ставите присутствие галочками. Ученик подтверждает у себя — спорные подсвечиваются.',
+              'Долг за урок начисляется автоматически по цене группы.',
+              'Заглушкам (без аккаунта) отметка сразу засчитывается — соло-ведение без лишних шагов.',
+            ]}
+            mono="present=true → +цена урока к долгу, автоматически.">
+            <AttendanceMock />
+          </Row>
+
+          <Row index="03" label="дз и оценки" title="Домашка: задал → сдал → оценил"
+            points={[
+              'Задание на конкретный урок с дедлайном (групповой или индивидуальный).',
+              'Ученик сдаёт файлом (или просто комментарием) прямо в приложении.',
+              'Оценка 0–100, видна ученику; всё в одном списке со статусами.',
+            ]}
+            mono="статусы: не сдано · просрочено · на проверке · оценено.">
+            <HomeworkMock />
+          </Row>
+
+          <Row index="04" label="финансы" title="Долг считается сам — из посещений" reverse
+            points={[
+              'Долг = начислено (посещения) − оплачено. По каждому ученику и учителю.',
+              'Оплату вносите вручную (наличные/перевод) — баланс пересчитывается сразу.',
+              'Переплата не уводит в минус — видно реальную картину.',
+            ]}
+            mono="никаких помесячных табличек — цифра всегда актуальна.">
+            <FinanceMock />
+          </Row>
         </div>
       </div>
     </section>
