@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import useFetch from '../../hooks/useFetch'
+import usePagedList from '../../hooks/usePagedList'
 import useAuth from '../../hooks/useAuth'
 import { getHomework, createHomework, deleteHomework, submitHomework, getSubmissions, gradeSubmission } from '../../api/homework.api'
 import { getLessons } from '../../api/lessons.api'
@@ -11,11 +12,13 @@ import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 
 export default function HomeworkPage() {
   const { isTeacher } = useAuth()
-  const { data: homework, loading, reload } = useFetch(getHomework)
+  const fetchHw = useCallback((page, limit) => getHomework({ page, limit }), [])
+  const { items: homework, loading, loadingMore, hasMore, loadMore, reload } = usePagedList(fetchHw)
   const [createModal, setCreateModal] = useState(false)
   const [selected,    setSelected]    = useState(null)
 
@@ -33,7 +36,7 @@ export default function HomeworkPage() {
         )}
       </div>
 
-      {loading ? <PageSpinner /> : !homework?.length ? (
+      {loading ? <SkeletonList /> : !homework?.length ? (
         <EmptyState
           emoji="✏️"
           title="Заданий пока нет"
@@ -50,6 +53,13 @@ export default function HomeworkPage() {
             isTeacher
               ? <TeacherHWCard key={hw.id} hw={hw} onView={() => setSelected(hw)} onDelete={reload} />
               : <StudentHWCard key={hw.id} hw={hw} onSubmitted={reload} />
+          )}
+          {hasMore && (
+            <div className="pt-2 flex justify-center">
+              <Button variant="secondary" size="sm" loading={loadingMore} onClick={loadMore}>
+                Показать ещё
+              </Button>
+            </div>
           )}
         </div>
       )}

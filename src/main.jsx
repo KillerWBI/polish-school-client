@@ -23,13 +23,10 @@ createRoot(document.getElementById('root')).render(
       <AuthProvider>
         <App />
         <Toaster
-          theme="dark"
+          theme="light"
           position="top-right"
           richColors
           closeButton
-          toastOptions={{
-            style: { background: '#0F1629', border: '1px solid rgba(255,255,255,0.08)' },
-          }}
         />
       </AuthProvider>
     </ErrorBoundary>

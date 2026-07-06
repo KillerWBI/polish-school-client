@@ -5,7 +5,7 @@ import Button from '../../components/ui/Button'
 import EmptyState from '../../components/ui/EmptyState'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
-import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonList } from '../../components/ui/Skeleton'
 import useAuth from '../../hooks/useAuth'
 import useFetch from '../../hooks/useFetch'
 
@@ -57,7 +57,7 @@ function Summary({ rows }) {
 function StudentDebts() {
   const { data, loading } = useFetch(getDebt)
 
-  if (loading) return <PageSpinner />
+  if (loading) return <SkeletonList />
   if (!data?.length) return <EmptyState emoji="💳" title="Долгов нет" text="У вас пока нет начислений." />
 
   return (
@@ -105,7 +105,7 @@ function TeacherDebts() {
     } finally { setSaving(false) }
   }
 
-  if (loading) return <PageSpinner />
+  if (loading) return <SkeletonList />
   if (!data?.length) return <EmptyState emoji="🎓" title="Пока нет учеников" text="Когда появятся ученики, здесь будет их долг." />
 
   // Сначала должники (по убыванию долга), затем остальные

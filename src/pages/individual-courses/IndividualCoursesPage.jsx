@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
@@ -9,7 +9,7 @@ import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
-import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 
 const DAYS = [
@@ -24,17 +24,11 @@ export default function IndividualCoursesPage() {
   const { isTeacher } = useAuth()
 
   const { data: courses,  loading,        reload } = useFetch(getIndividualCourses)
+  // students — для пикера в модалке создания (там studentId = User.id → бэк резолвит в Student)
   const { data: students }                          = useFetch(
     () => isTeacher ? getStudents() : Promise.resolve([]),
     [isTeacher]
   )
-
-  // Карта studentId -> User для отображения имени
-  const studentsMap = useMemo(() => {
-    const m = new Map()
-    ;(students || []).forEach(s => m.set(s.id, s))
-    return m
-  }, [students])
 
   const [modal, setModal] = useState(false)
 
@@ -56,7 +50,7 @@ export default function IndividualCoursesPage() {
         )}
       </div>
 
-      {loading ? <PageSpinner /> : !courses?.length ? (
+      {loading ? <SkeletonCards /> : !courses?.length ? (
         <EmptyState
           emoji="👤"
           title={isTeacher ? 'Курсов пока нет' : 'У вас нет индивидуальных курсов'}
@@ -73,7 +67,7 @@ export default function IndividualCoursesPage() {
             <CourseCard
               key={c.id}
               course={c}
-              student={studentsMap.get(c.studentId)}
+              student={c.student}
               onClick={() => navigate(`/individual-courses/${c.id}`)}
             />
           ))}

@@ -208,3 +208,25 @@ input[type="time"],
 input[type="month"] {
   color-scheme: light;
 }
+
+/* ───────────── Плавный переход между лендингами ─────────────
+   Нативный View Transitions API; включается опцией `viewTransition`
+   при навигации (RoleSwitch). Браузеры без поддержки просто переходят
+   мгновенно (без ошибок). Уважаем prefers-reduced-motion. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Старая страница остаётся видимой (не гаснет) — иначе в середине просвечивает
+     светлый фон body и получается «вспышка с рамкой». Новая мягко проявляется поверх. */
+  ::view-transition-old(root) { animation: none; }
+  ::view-transition-new(root) { animation: vt-fade 480ms ease both; }
+  @keyframes vt-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* Мягкий пульс плавающей кнопки помощи — заметно, но не назойливо */
+  @keyframes help-fab-pulse {
+    0%        { transform: scale(1);   opacity: 0.45; }
+    70%, 100% { transform: scale(1.9); opacity: 0; }
+  }
+  .help-fab-pulse { animation: help-fab-pulse 2.8s cubic-bezier(0, 0, 0.2, 1) infinite; }
+}

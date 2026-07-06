@@ -88,8 +88,11 @@ export default function Sidebar({ onClose }) {
         ))}
       </nav>
 
-      {/* Профиль + выход */}
+      {/* Помощь + профиль + выход */}
       <div className="px-3 py-3 border-t border-[#EAECEF] space-y-0.5">
+        <NavLink to="/help" onClick={onClose} className={linkClass}>
+          <IconHelp /> Помощь
+        </NavLink>
         <NavLink to="/profile" onClick={onClose} className={linkClass}>
           <IconProfile /> Профиль
         </NavLink>
@@ -112,4 +115,5 @@ function IconCheck() { return <svg className="w-[15px] h-[15px] shrink-0" fill="
 function IconPayment() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22" strokeLinecap="round"/></svg> }
 function IconIndividual() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> }
 function IconProfile() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"/><path d="M20 21a8 8 0 1 0-16 0" strokeLinecap="round"/></svg> }
+function IconHelp() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7M12 17h.01" strokeLinecap="round" strokeLinejoin="round"/></svg> }
 function IconLogout() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round"/></svg> }

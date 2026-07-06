@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import useFetch from '../../hooks/useFetch'
 import { getMyStudents } from '../../api/students.api'
-import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 
 export default function StudentsPage() {
@@ -26,7 +26,7 @@ export default function StudentsPage() {
       </div>
 
       {loading ? (
-        <PageSpinner />
+        <SkeletonCards />
       ) : !students?.length ? (
         <EmptyState emoji="🎓" title="Учеников пока нет"
           text="Ученики появляются после добавления в группу или принятия приглашения." />

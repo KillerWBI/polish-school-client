@@ -7,7 +7,6 @@ import {
   deleteIndividualCourse, generateIndividualLessons,
 } from '../../api/individualCourses.api'
 import { getIndividualLessons, createIndividualLesson } from '../../api/individualLessons.api'
-import { getStudent } from '../../api/students.api'
 import { dayLabel, formatDate } from '../../utils/formatDate'
 import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
@@ -30,10 +29,7 @@ export default function IndividualCourseDetailPage() {
   const { isTeacher } = useAuth()
 
   const { data: course,   loading,   reload }      = useFetch(() => getIndividualCourse(id), [id])
-  const { data: student }                          = useFetch(
-    () => course?.studentId ? getStudent(course.studentId) : Promise.resolve(null),
-    [course?.studentId]
-  )
+  const student = course?.student // приходит из include курса (Student.id → name)
   const { data: lessons,  reload: reloadLessons }  = useFetch(
     () => getIndividualLessons({ individualCourseId: id }),
     [id]

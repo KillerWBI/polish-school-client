@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
-import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 
 const DAYS = [
@@ -43,7 +43,7 @@ export default function GroupsPage() {
 
       {!isTeacher && <StudentInvitations onAccepted={reload} />}
 
-      {loading ? <PageSpinner /> : (
+      {loading ? <SkeletonCards /> : (
         !groups?.length ? (
           <EmptyState
             emoji="👥"

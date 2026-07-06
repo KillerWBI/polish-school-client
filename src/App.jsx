@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage        from './pages/landing/LandingPage'
+import StudentLandingPage from './pages/landing/StudentLandingPage'
 import AuthPage           from './pages/auth/AuthPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import ResetPasswordPage  from './pages/auth/ResetPasswordPage'
@@ -19,6 +20,7 @@ import ProfilePage        from './pages/profile/ProfilePage'
 import IndividualCoursesPage      from './pages/individual-courses/IndividualCoursesPage'
 import IndividualCourseDetailPage from './pages/individual-courses/IndividualCourseDetailPage'
 import IndividualLessonsPage      from './pages/individual-lessons/IndividualLessonsPage'
+import HelpPage                    from './pages/help/HelpPage'
 
 export default function App() {
   return (
@@ -26,8 +28,10 @@ export default function App() {
       <Routes>
         {/* Публичные */}
         <Route path="/"               element={<LandingPage />} />
+        <Route path="/for-students"   element={<StudentLandingPage />} />
         <Route path="/login"           element={<AuthPage mode="login" />} />
-        <Route path="/register"        element={<AuthPage mode="register" />} />
+        <Route path="/register"          element={<AuthPage mode="register" role="teacher" />} />
+        <Route path="/register-student"  element={<AuthPage mode="register" role="student" />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password"  element={<ResetPasswordPage />} />
         <Route path="/verify-email"    element={<VerifyEmailPage />} />
@@ -47,6 +51,7 @@ export default function App() {
           <Route path="/individual-courses/:id"  element={<IndividualCourseDetailPage />} />
           <Route path="/individual-lessons"      element={<IndividualLessonsPage />} />
           <Route path="/profile"             element={<ProfilePage />} />
+          <Route path="/help"                element={<HelpPage />} />
 
           {/* Только учитель */}
           <Route path="/students"

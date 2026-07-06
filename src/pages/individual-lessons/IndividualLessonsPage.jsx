@@ -14,7 +14,7 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
-import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 
 export default function IndividualLessonsPage() {
@@ -67,7 +67,7 @@ export default function IndividualLessonsPage() {
         {isTeacher && <Button onClick={openCreate}>+ Создать урок</Button>}
       </div>
 
-      {loading ? <PageSpinner /> : !lessons?.length ? (
+      {loading ? <SkeletonList /> : !lessons?.length ? (
         <EmptyState
           emoji="📅"
           title="Уроков пока нет"

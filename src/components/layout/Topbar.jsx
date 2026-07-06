@@ -1,19 +1,28 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Search, Bell, Users, CalendarDays, FileText, Wallet, UserPlus, X } from 'lucide-react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { Search, Bell, Users, FileText, Wallet, UserPlus, X, HelpCircle } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import { getGroups } from '../../api/groups.api'
 import { getMyStudents } from '../../api/students.api'
 import { getInvitations } from '../../api/invitations.api'
 import { getDashboard } from '../../api/dashboard.api'
+import { helpSectionFor } from '../../utils/helpSection'
 
 export default function Topbar() {
   const { user, isTeacher } = useAuth()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const helpSection = helpSectionFor(pathname)
   return (
     <header className="hidden lg:flex items-center gap-4 h-16 px-6 bg-white border-b border-slate-200">
       <SearchBox isTeacher={isTeacher} navigate={navigate} />
       <div className="ml-auto flex items-center gap-2">
+        <button
+          onClick={() => navigate(`/help${helpSection ? `#${helpSection}` : ''}`)}
+          title="Помощь по этой странице"
+          className="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-colors cursor-pointer">
+          <HelpCircle size={18} />
+        </button>
         <NotifBell isTeacher={isTeacher} navigate={navigate} />
         <button onClick={() => navigate('/profile')}
           className="flex items-center gap-2.5 h-10 pl-1 pr-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer">
@@ -31,7 +40,7 @@ export default function Topbar() {
 }
 
 /* ── Рабочий поиск: группы + ученики ── */
-function SearchBox({ isTeacher, navigate }) {
+export function SearchBox({ isTeacher, navigate }) {
   const [q, setQ] = useState('')
   const [open, setOpen] = useState(false)
   const [groups, setGroups] = useState(null)
@@ -99,7 +108,7 @@ function SearchBox({ isTeacher, navigate }) {
 }
 
 /* ── Рабочие уведомления ── */
-function NotifBell({ isTeacher, navigate }) {
+export function NotifBell({ isTeacher, navigate }) {
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState([])
   const ref = useRef(null)

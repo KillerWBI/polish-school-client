@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../../../hooks/useAuth'
+import RoleSwitch from './RoleSwitch'
 
 // Тёмный тех-моно хедер лендинга.
 export default function Header({ onLogin, onRegister }) {
@@ -42,6 +43,7 @@ export default function Header({ onLogin, onRegister }) {
 
         {/* Действия */}
         <div className="flex items-center gap-2.5">
+          <RoleSwitch active="teacher" />
           {isAuthenticated ? (
             <button
               onClick={() => navigate('/dashboard')}

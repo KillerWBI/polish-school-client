@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
-import { login as apiLogin, register as apiRegister, fetchMe } from '../../api/auth.api'
+import { login as apiLogin, register as apiRegister, registerTeacher as apiRegisterTeacher, fetchMe } from '../../api/auth.api'
 import { setToken } from '../../utils/token'
 
 // Отдельная страница авторизации (не модалка). Split-экран:
 // слева тёмная бренд-панель (как лендинг), справа светлая форма (как аппа).
-// mode: 'login' | 'register'
-export default function AuthPage({ mode = 'login' }) {
+// mode: 'login' | 'register'; role: 'teacher' | 'student' (только для register)
+export default function AuthPage({ mode = 'login', role = 'teacher' }) {
   const isRegister = mode === 'register'
+  const isTeacher = role === 'teacher'
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
@@ -32,7 +33,7 @@ export default function AuthPage({ mode = 'login' }) {
     setSubmitting(true)
     try {
       const data = isRegister
-        ? await apiRegister(form)
+        ? (isTeacher ? await apiRegisterTeacher(form) : await apiRegister(form))
         : await apiLogin({ email: form.email, password: form.password })
       setToken(data.token)
       const me = await fetchMe()
@@ -57,12 +58,17 @@ export default function AuthPage({ mode = 'login' }) {
         </Link>
 
         <div className="relative">
-          <p className="mono-label mb-4">// кокпит преподавателя</p>
+          <p className="mono-label mb-4">{isTeacher ? '// кокпит преподавателя' : '// личный кабинет ученика'}</p>
           <h1 className="font-display font-bold text-4xl leading-[1.1] tracking-tight">
-            {isRegister ? <>Наведи порядок<br />в учениках.</> : <>С возвращением.</>}
+            {!isRegister ? <>С возвращением.</>
+              : isTeacher ? <>Наведи порядок<br />в учениках.</>
+              : <>Вся учёба —<br />в одном месте.</>}
           </h1>
           <div className="mt-8 space-y-3 font-mono text-[13px] text-[#8A8A8F]">
-            {['группы, уроки, расписание', 'посещаемость и ДЗ', 'долг считается сам', 'соло или с учениками'].map((t) => (
+            {(isTeacher
+              ? ['группы, уроки, расписание', 'посещаемость и ДЗ', 'долг считается сам', 'соло или с учениками']
+              : ['расписание и ссылки на урок', 'ДЗ и дедлайны', 'оценки и прогресс', 'посещаемость и долг']
+            ).map((t) => (
               <div key={t} className="flex items-center gap-2.5">
                 <span className="text-brand-400">$</span> {t}
               </div>
@@ -87,10 +93,12 @@ export default function AuthPage({ mode = 'login' }) {
         <div className="flex-1 flex items-center justify-center p-6 sm:p-10">
           <div className="w-full max-w-sm">
             <h2 className="text-2xl font-semibold text-[#0F172A] tracking-tight">
-              {isRegister ? 'Создать аккаунт' : 'Вход'}
+              {isRegister ? (isTeacher ? 'Аккаунт преподавателя' : 'Аккаунт ученика') : 'Вход'}
             </h2>
             <p className="mt-1 text-sm text-[#64748B]">
-              {isRegister ? 'Открытая регистрация — 30 секунд.' : 'Рады видеть снова.'}
+              {isRegister
+                ? (isTeacher ? 'Веди группы, ДЗ и финансы — 30 секунд.' : 'Учись у своего преподавателя — 30 секунд.')
+                : 'Рады видеть снова.'}
             </p>
 
             <form onSubmit={handleSubmit} className="mt-7 space-y-4">
@@ -122,12 +130,24 @@ export default function AuthPage({ mode = 'login' }) {
               </button>
             </form>
 
-            <p className="mt-6 text-sm text-center text-[#64748B]">
-              {isRegister ? 'Уже есть аккаунт? ' : 'Нет аккаунта? '}
-              <Link to={isRegister ? '/login' : '/register'} className="text-brand-600 hover:text-brand-700 font-medium">
-                {isRegister ? 'Войти' : 'Создать'}
-              </Link>
-            </p>
+            {isRegister ? (
+              <div className="mt-6 space-y-1.5 text-sm text-center text-[#64748B]">
+                <p>Уже есть аккаунт? <Link to="/login" className="text-brand-600 hover:text-brand-700 font-medium">Войти</Link></p>
+                <p>
+                  {isTeacher ? 'Вы ученик? ' : 'Вы преподаватель? '}
+                  <Link to={isTeacher ? '/register-student' : '/register'} className="text-brand-600 hover:text-brand-700 font-medium">
+                    {isTeacher ? 'Регистрация ученика' : 'Регистрация преподавателя'}
+                  </Link>
+                </p>
+              </div>
+            ) : (
+              <p className="mt-6 text-sm text-center text-[#64748B]">
+                Нет аккаунта? Регистрация —{' '}
+                <Link to="/register" className="text-brand-600 hover:text-brand-700 font-medium">преподаватель</Link>
+                {' · '}
+                <Link to="/register-student" className="text-brand-600 hover:text-brand-700 font-medium">ученик</Link>
+              </p>
+            )}
           </div>
         </div>
       </main>

@@ -1,7 +1,7 @@
 import client from './client'
 
-export const getHomework = async () => {
-  const { data } = await client.get('/homework')
+export const getHomework = async (params = {}) => {
+  const { data } = await client.get('/homework', { params })
   return data.data
 }
 
