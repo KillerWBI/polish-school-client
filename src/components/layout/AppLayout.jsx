@@ -5,6 +5,7 @@ import useAuth from '../../hooks/useAuth'
 import Sidebar from './Sidebar'
 import Topbar, { SearchBox, NotifBell } from './Topbar'
 import HelpFab from './HelpFab'
+import Tour from '../tour/Tour'
 import EmailVerificationBanner from '../auth/EmailVerificationBanner'
 
 // Светлый SaaS-каркас: плавающий сайдбар + топ-бар с поиском.
@@ -72,6 +73,9 @@ export default function AppLayout() {
 
       {/* Плавающая кнопка помощи — на каждой странице */}
       <HelpFab />
+
+      {/* Интерактивный тур (авто-старт для новичка-учителя) */}
+      <Tour autoStart={isTeacher} />
     </div>
   )
 }

@@ -1,0 +1,16 @@
+{
+  "name": "LinguaFlow — кокпит преподавателя",
+  "short_name": "LinguaFlow",
+  "description": "Группы, уроки, ДЗ, посещаемость и финансы — в одном месте.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "lang": "ru",
+  "background_color": "#F1F3F6",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

@@ -4,6 +4,7 @@ const HELP_MAP = [
   [/^\/attendance/, 'attendance'], [/^\/payments/, 'payments'], [/^\/students/, 'students'],
   [/^\/calendar/, 'calendar'], [/^\/individual-courses/, 'individual-courses'],
   [/^\/individual-lessons/, 'individual-lessons'], [/^\/profile/, 'profile'],
+  [/^\/quiz/, 'quiz'], // /quiz и /quizzes → секция «AI-тесты»
 ]
 
 export const helpSectionFor = (pathname) => (HELP_MAP.find(([re]) => re.test(pathname)) || [])[1] || ''

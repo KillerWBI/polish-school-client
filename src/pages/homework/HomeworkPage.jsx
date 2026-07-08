@@ -1,10 +1,13 @@
 import { useState, useCallback } from 'react'
+import { toast } from 'sonner'
 import useFetch from '../../hooks/useFetch'
 import usePagedList from '../../hooks/usePagedList'
 import useAuth from '../../hooks/useAuth'
-import { getHomework, createHomework, deleteHomework, submitHomework, getSubmissions, gradeSubmission } from '../../api/homework.api'
+import { getHomework, createHomework, deleteHomework, submitHomework, getSubmissions, gradeSubmission, submitHomeworkQuizAttempt, getHomeworkQuizAttempts } from '../../api/homework.api'
 import { getLessons } from '../../api/lessons.api'
 import { getIndividualLessons } from '../../api/individualLessons.api'
+import { getQuizzes } from '../../api/quizzes.api'
+import QuizRunner from '../quiz/QuizRunner'
 import { uploadToCloudinary } from '../../utils/uploadToCloudinary'
 import { formatDate } from '../../utils/formatDate'
 import Button from '../../components/ui/Button'
@@ -96,6 +99,7 @@ function TeacherHWCard({ hw, onView, onDelete }) {
         {hw.deadline && (
           <p className="text-xs text-slate-400 mt-1">📅 До {formatDate(hw.deadline?.slice(0, 10))}</p>
         )}
+        {hw.quiz && <p className="text-xs text-blue-600 mt-1">🧪 тест прикреплён</p>}
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <span className="text-xs text-slate-400 hidden sm:block">Просмотр сдач</span>
@@ -135,6 +139,19 @@ function StudentHWCard({ hw, onSubmitted }) {
   const [uploading,  setUploading]  = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error,      setError]      = useState('')
+  const [quizOpen,   setQuizOpen]   = useState(false)
+  const [quizDone,   setQuizDone]   = useState(false)
+
+  // Прохождение прикреплённого теста: «Проверить» в QuizRunner шлёт ответы+результат учителю.
+  const takeAttempt = async (answers, score, total) => {
+    try {
+      await submitHomeworkQuizAttempt(hw.id, { answers, score, total })
+      toast.success('Тест отправлен учителю')
+      setQuizDone(true)
+    } catch (e) {
+      toast.error(e.response?.data?.error || 'Не удалось отправить тест')
+    }
+  }
 
   const handleFileChange = (e) => {
     const f = e.target.files?.[0]
@@ -185,6 +202,20 @@ function StudentHWCard({ hw, onSubmitted }) {
             📅 До {formatDate(hw.deadline.slice(0, 10))}
             {isOverdue && !submission && ' — просрочено'}
           </p>
+        )}
+
+        {/* Прикреплённый тест */}
+        {hw.quiz && (
+          <div className="mt-3">
+            {quizDone ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700">✓ Тест пройден</span>
+            ) : (
+              <button onClick={() => setQuizOpen(true)}
+                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
+                📝 Пройти тест
+              </button>
+            )}
+          </div>
         )}
 
         {/* Если уже сдано — показываем детали */}
@@ -268,6 +299,15 @@ function StudentHWCard({ hw, onSubmitted }) {
           </div>
         </div>
       )}
+
+      {/* Прохождение прикреплённого теста */}
+      <Modal open={quizOpen} onClose={() => setQuizOpen(false)} maxWidth="max-w-2xl">
+        <div className="p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-1">{hw.quiz?.topic}</h3>
+          <p className="text-sm text-slate-400 mb-4">Ответь и нажми «Проверить» — результат уйдёт учителю и в твою историю тестов.</p>
+          {hw.quiz && <QuizRunner quiz={hw.quiz} onCheck={takeAttempt} />}
+        </div>
+      </Modal>
     </div>
   )
 }
@@ -302,9 +342,13 @@ function StatusBadge({ submission, isOverdue }) {
 function CreateHWModal({ open, onClose, onCreated }) {
   const { data: lessons }    = useFetch(getLessons, [])
   const { data: indLessons } = useFetch(getIndividualLessons, [])
-  const [form, setForm] = useState({ description: '', deadline: '', lessonType: 'group', lessonId: '', individualLessonId: '' })
+  const { data: quizzes }    = useFetch(getQuizzes, [])
+  const [form, setForm] = useState({ description: '', deadline: '', lessonType: 'group', lessonId: '', individualLessonId: '', quizId: '' })
   const [saving, setSaving] = useState(false)
   const [error,  setError]  = useState('')
+
+  // Прикреплять можно только сохранённые в библиотеку тесты (не пройденные)
+  const libraryQuizzes = (quizzes || []).filter(q => !q.taken)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
@@ -321,9 +365,10 @@ function CreateHWModal({ open, onClose, onCreated }) {
         deadline:           form.deadline || null,
         lessonId:           isGroup ? form.lessonId : null,
         individualLessonId: isGroup ? null : form.individualLessonId,
+        quizId:             form.quizId || null,
       })
       onCreated(); onClose()
-      setForm({ description: '', deadline: '', lessonType: 'group', lessonId: '', individualLessonId: '' })
+      setForm({ description: '', deadline: '', lessonType: 'group', lessonId: '', individualLessonId: '', quizId: '' })
     } catch (e) {
       setError(e.response?.data?.error || 'Ошибка создания')
     } finally {
@@ -402,6 +447,21 @@ function CreateHWModal({ open, onClose, onCreated }) {
               className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
           </div>
 
+          {/* Прикрепить тест (необязательно) */}
+          <div>
+            <label className="text-xs text-slate-400 block mb-1">Прикрепить тест (необязательно)</label>
+            <select value={form.quizId} onChange={e => set('quizId', e.target.value)}
+              className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500">
+              <option value="">Без теста</option>
+              {libraryQuizzes.map(q => (
+                <option key={q.id} value={q.id}>{q.topic} · {q.count} вопр.</option>
+              ))}
+            </select>
+            {!libraryQuizzes.length && (
+              <p className="text-[11px] text-slate-400 mt-1">Сохранённых тестов нет — создай в «AI-тесты» и нажми «Сохранить тест».</p>
+            )}
+          </div>
+
           {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="flex gap-2 pt-1">
             <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>Отмена</Button>
@@ -410,6 +470,48 @@ function CreateHWModal({ open, onClose, onCreated }) {
         </form>
       </div>
     </Modal>
+  )
+}
+
+/* ── Результаты прикреплённого теста (учитель видит ответы учеников) ── */
+function QuizAttempts({ hw }) {
+  const { data: attempts, loading } = useFetch(
+    useCallback(() => getHomeworkQuizAttempts(hw.id), [hw.id]),
+    [hw.id],
+  )
+  const [openId, setOpenId] = useState(null)
+
+  return (
+    <div className="mb-6 rounded-2xl border border-blue-100 bg-blue-50/40 p-4">
+      <div className="text-sm font-semibold text-slate-900 mb-2">🧪 Результаты теста «{hw.quiz.topic}»</div>
+      {loading ? (
+        <div className="text-sm text-slate-400">Загрузка…</div>
+      ) : !attempts?.length ? (
+        <div className="text-sm text-slate-400">Ученики ещё не проходили тест.</div>
+      ) : (
+        <div className="space-y-2">
+          {attempts.map((a) => (
+            <div key={a.id} className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+              <button onClick={() => setOpenId(openId === a.id ? null : a.id)}
+                className="w-full flex items-center gap-2 px-3.5 py-2.5 text-left hover:bg-slate-50 transition-colors">
+                <span className="text-sm font-medium text-slate-900 flex-1 truncate">{a.student?.name ?? '—'}</span>
+                {a.total != null && a.total > 0 && (
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    a.score === a.total ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700'
+                  }`}>{a.score}/{a.total}</span>
+                )}
+                <span className="text-xs text-blue-600 shrink-0">{openId === a.id ? 'Скрыть' : 'Ответы'}</span>
+              </button>
+              {openId === a.id && (
+                <div className="px-3.5 pb-3.5 border-t border-slate-100 pt-3">
+                  <QuizRunner quiz={{ topic: a.topic, type: a.type, questions: a.questions }} savedAnswers={a.answers} />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -440,6 +542,9 @@ function SubmissionsModal({ hw, onClose }) {
       <div className="p-6">
         <h3 className="text-lg font-semibold text-slate-900 mb-1">Сдачи</h3>
         {hw && <p className="text-sm text-slate-400 mb-5 truncate">{hw.description}</p>}
+
+        {/* Результаты прикреплённого теста (с ответами учеников) */}
+        {hw?.quiz && <QuizAttempts hw={hw} />}
 
         {loading ? <PageSpinner /> : !subs?.length ? (
           <EmptyState emoji="📭" title="Сдач пока нет" />

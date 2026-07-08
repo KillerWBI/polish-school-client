@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import {
   CalendarDays, FileText, Wallet, CheckCircle2, Plus, Award, Clock,
@@ -8,8 +8,11 @@ import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
 import AnalyticsChart from './AnalyticsChart'
 import { getDashboard, getActivity } from '../../api/dashboard.api'
+import { getGroups } from '../../api/groups.api'
+import { getMyStudents } from '../../api/students.api'
+import { getHomework } from '../../api/homework.api'
 import { formatDate } from '../../utils/formatDate'
-import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonDashboard } from '../../components/ui/Skeleton'
 
 export default function DashboardPage() {
   const { isTeacher } = useAuth()
@@ -22,7 +25,13 @@ function TeacherDashboard() {
   const navigate = useNavigate()
   const { data, loading }  = useFetch(getDashboard)
   const { data: activity } = useFetch(getActivity)
-  if (loading) return <PageSpinner />
+  // Онбординг-чеклист: показываем, пока учитель не прошёл старт (флаг в localStorage).
+  const [hideChecklist, setHideChecklist] = useState(() => localStorage.getItem('lf_onboarding_done') === '1')
+  const dismissChecklist = useCallback(() => {
+    localStorage.setItem('lf_onboarding_done', '1')
+    setHideChecklist(true)
+  }, [])
+  if (loading) return <SkeletonDashboard />
 
   const kpi      = data?.kpi ?? {}
   const lessons  = data?.upcomingLessons ?? []
@@ -35,7 +44,9 @@ function TeacherDashboard() {
       { label: 'Задание', path: '/homework' },
       { label: 'Ученика', path: '/students' },
     ]}>
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
+      {!hideChecklist && <StartChecklist navigate={navigate} onDone={dismissChecklist} />}
+
+      <div data-tour="kpi" className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <Kpi Icon={CalendarDays} accent="blue"    label="Уроков сегодня"  value={kpi.lessonsToday ?? 0} pill={kpi.lessonsToday > 0 ? { t: 'сегодня', tone: 'info' } : { t: 'пусто', tone: 'muted' }} onClick={() => navigate('/calendar')} />
         <Kpi Icon={FileText}     accent="amber"   label="ДЗ без проверки" value={kpi.ungradedSubmissions ?? 0} pill={kpi.ungradedSubmissions > 0 ? { t: 'ждут вас', tone: 'warn' } : { t: 'готово', tone: 'good' }} onClick={() => navigate('/homework')} />
         <Kpi Icon={Wallet}       accent="slate"   label="Долг учеников"   value={fmtMoney(kpi.totalDebt)} pill={kpi.totalDebt > 0 ? { t: 'к оплате', tone: 'warn' } : { t: 'нет долгов', tone: 'good' }} onClick={() => navigate('/payments')} />
@@ -67,7 +78,7 @@ function StudentDashboard() {
   const navigate = useNavigate()
   const { data, loading }  = useFetch(getDashboard)
   const { data: activity } = useFetch(getActivity)
-  if (loading) return <PageSpinner />
+  if (loading) return <SkeletonDashboard />
 
   const kpi     = data?.kpi ?? {}
   const lessons = data?.upcomingLessons ?? []
@@ -99,6 +110,64 @@ function StudentDashboard() {
         </div>
       )}
     </Page>
+  )
+}
+
+/* ══════════════════ ОНБОРДИНГ (быстрый старт) ══════════════════ */
+function StartChecklist({ navigate, onDone }) {
+  const { data: groups }   = useFetch(getGroups)
+  const { data: students } = useFetch(getMyStudents)
+  const { data: homework } = useFetch(getHomework)
+
+  const ready = !!groups && !!students && !!homework
+  const steps = ready ? [
+    { key: 'group',    label: 'Создайте первую группу',  hint: 'Контейнер для уроков, ДЗ и посещаемости',    done: groups.length > 0,   to: '/groups' },
+    { key: 'student',  label: 'Добавьте ученика',         hint: 'Реального по нику или заглушку — для себя',   done: students.length > 0, to: '/students' },
+    { key: 'homework', label: 'Задайте домашнее задание', hint: 'Прикрепите ДЗ к уроку с дедлайном',           done: homework.length > 0, to: '/homework' },
+  ] : []
+  const doneCount = steps.filter(s => s.done).length
+  // Кабинет настроен, когда есть и группа, и ученик — дальше чеклист не нужен (прячем навсегда).
+  const setUp = ready && groups.length > 0 && students.length > 0
+
+  useEffect(() => { if (setUp) onDone() }, [setUp, onDone])
+
+  if (!ready || setUp) return null
+  const next = steps.find(s => !s.done)
+
+  return (
+    <div data-tour="quickstart" className="mb-4 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50/70 to-white p-5">
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h2 className="text-base font-semibold text-slate-900">Быстрый старт</h2>
+          <p className="text-sm text-slate-500 mt-0.5">Три шага, чтобы запустить кабинет</p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="text-sm font-medium text-slate-500 tabular-nums">{doneCount}/{steps.length}</span>
+          <button onClick={onDone} className="text-sm text-slate-400 hover:text-slate-600 transition-colors">Скрыть</button>
+        </div>
+      </div>
+
+      <div className="h-1.5 rounded-full bg-blue-100 overflow-hidden mb-4">
+        <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(doneCount / steps.length) * 100}%` }} />
+      </div>
+
+      <div className="space-y-2">
+        {steps.map(s => (
+          <div key={s.key} className={`flex items-center gap-3 rounded-xl border px-3.5 py-3 transition-colors ${s === next ? 'border-blue-200 bg-white' : 'border-slate-100 bg-white/50'}`}>
+            {s.done
+              ? <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+              : <span className="w-5 h-5 rounded-full border-2 border-slate-300 shrink-0" />}
+            <div className="min-w-0 flex-1">
+              <div className={`text-sm font-medium ${s.done ? 'text-slate-400 line-through' : 'text-slate-900'}`}>{s.label}</div>
+              {!s.done && <div className="text-xs text-slate-500 mt-0.5">{s.hint}</div>}
+            </div>
+            {!s.done && (s === next
+              ? <button onClick={() => navigate(s.to)} className="shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">Сделать <ChevronRight className="w-4 h-4" /></button>
+              : <button onClick={() => navigate(s.to)} className="shrink-0 text-sm text-blue-600 hover:text-blue-700 transition-colors">Открыть</button>)}
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -270,7 +339,7 @@ function CreateDropdown({ navigate, items }) {
     return () => document.removeEventListener('mousedown', h)
   }, [])
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} data-tour="create" className="relative">
       <button onClick={() => setOpen(v => !v)}
         className="flex items-center gap-1.5 h-10 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors cursor-pointer">
         <Plus className="w-4 h-4" /> Создать

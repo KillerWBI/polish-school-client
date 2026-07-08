@@ -12,6 +12,7 @@ export default function HelpFab() {
   const section = helpSectionFor(pathname)
   return (
     <button
+      data-tour="help"
       onClick={() => navigate(`/help${section ? `#${section}` : ''}`)}
       title="Помощь по этой странице"
       aria-label="Помощь по этой странице"

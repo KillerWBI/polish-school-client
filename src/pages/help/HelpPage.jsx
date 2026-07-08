@@ -141,6 +141,16 @@ const TEACHER_SECTIONS = [
         visual: <Shot><Mark label="для приглашений"><span className="inline-flex h-9 px-4 items-center rounded-xl bg-white border border-slate-200 text-sm font-mono text-slate-700">@anna_k</span></Mark></Shot> },
     ],
   },
+  {
+    id: 'quiz', title: 'AI-тесты', items: [
+      { q: 'Как создать тест?', a: 'В «Инструменты → AI-тесты» задай тему, число вопросов, сложность и тип — AI соберёт тест с готовыми ответами. Работает для любого предмета.',
+        visual: <Shot><Mark label="тема → тест"><Btn>✨ Сгенерировать</Btn></Mark></Shot> },
+      { q: 'Как сохранить тест?', a: 'После генерации нажми «Сохранить тест» — он попадёт в «Мои тесты» (твою библиотеку). Оттуда можно пройти для предпросмотра, а позже прикрепить к ДЗ.',
+        visual: <Shot><Mark label="в библиотеку"><Btn>Сохранить тест</Btn></Mark></Shot> },
+      { q: 'Где мои тесты и как их пройти?', a: 'Раздел «Мои тесты» — все сохранённые. Открываешь тест → выбираешь ответы и «Проверить» (увидишь результат) или «Показать ключ».',
+        visual: <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2"><span className="text-xs text-slate-900 flex-1">Дроби · 5 вопр.</span><Mark label="открыть и пройти"><span className="text-xs text-blue-600 font-medium">→</span></Mark></div></Shot> },
+    ],
+  },
 ]
 
 /* ─── Контент справки для УЧЕНИКА ──────────────────────────── */
@@ -194,6 +204,16 @@ const STUDENT_SECTIONS = [
         visual: <Shot><div className="flex gap-1 border-b border-slate-200"><span className="px-3 py-1.5 text-xs text-slate-500">Профиль</span><Mark label="смена пароля"><span className="px-3 py-1.5 text-xs text-blue-700 border-b-2 border-blue-600">Безопасность</span></Mark></div></Shot> },
     ],
   },
+  {
+    id: 'quiz', title: 'AI-тесты', items: [
+      { q: 'Как сделать тест для себя?', a: 'В «Инструменты → AI-тесты» задай тему (любой предмет), число вопросов и тип — AI соберёт тест. Удобно для самопроверки перед контрольной.',
+        visual: <Shot><Mark label="тема → тест"><Btn>✨ Сгенерировать</Btn></Mark></Shot> },
+      { q: 'Как пройти и сохранить результат?', a: 'Выбираешь ответы → «Проверить» (увидишь, сколько верно) → «Сохранить результат». Прохождение с оценкой попадёт в твою историю.',
+        visual: <Shot><Mark label="оценка + сохранение"><span className="inline-flex items-center h-8 px-3 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium">Результат: 4 / 5</span></Mark></Shot> },
+      { q: 'Где моя история тестов?', a: 'Раздел «Мои тесты» — все пройденные, с твоим результатом. Открываешь — видишь свои ответы и правильные.',
+        visual: <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2"><span className="text-xs text-slate-900 flex-1">Дроби · 5 вопр.</span><Mark label="твой счёт"><span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">4/5</span></Mark></div></Shot> },
+    ],
+  },
 ]
 
 export default function HelpPage() {
@@ -209,11 +229,25 @@ export default function HelpPage() {
     if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
   }, [hash])
 
+  // Запуск интерактивного тура: уходим на дашборд и стартуем после отрисовки.
+  const startTour = () => {
+    navigate('/dashboard')
+    setTimeout(() => window.dispatchEvent(new Event('lf:tour-start')), 400)
+  }
+
   return (
     <div className="p-5 sm:p-8">
-      <div className="mb-6 max-w-4xl">
-        <h1 className="text-2xl font-semibold text-slate-900">Помощь</h1>
-        <p className="text-sm text-slate-500 mt-0.5">Как что делать в кабинете — коротко, с подсказками прямо на элементах.</p>
+      <div className="mb-6 max-w-4xl flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900">Помощь</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Как что делать в кабинете — коротко, с подсказками прямо на элементах.</p>
+        </div>
+        {isTeacher && (
+          <button onClick={startTour}
+            className="shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-sm font-medium hover:bg-blue-100 transition-colors cursor-pointer">
+            <span className="text-[10px]">▶</span> Пройти тур
+          </button>
+        )}
       </div>
 
       {/* быстрые ссылки по разделам */}

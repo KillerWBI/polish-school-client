@@ -17,6 +17,18 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   })
 }
 
+// PWA: регистрируем service worker только в проде (в dev он ломал бы Vite HMR).
+if ('serviceWorker' in navigator) {
+  if (import.meta.env.PROD) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {})
+    })
+  } else {
+    // dev — снимаем возможный старый SW, чтобы не мешал разработке
+    navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister()))
+  }
+}
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>

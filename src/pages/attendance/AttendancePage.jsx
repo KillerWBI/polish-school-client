@@ -15,7 +15,7 @@ import { getHomework } from '../../api/homework.api'
 import { formatDate } from '../../utils/formatDate'
 import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
-import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 
 /* ─── Статусы ──────────────────────────────────────────────── */
@@ -159,7 +159,7 @@ function PendingView({ items, loading, isTeacher, reload }) {
     }
   }
 
-  if (loading) return <PageSpinner />
+  if (loading) return <SkeletonList />
   if (!items.length) return (
     <EmptyState
       emoji="✅"
@@ -265,7 +265,7 @@ function DisputedView({ items, loading, isTeacher, reload }) {
     }
   }
 
-  if (loading) return <PageSpinner />
+  if (loading) return <SkeletonList />
   if (!items.length) return (
     <EmptyState
       emoji="🤝"
@@ -429,7 +429,7 @@ function GroupJournal({ onSaved }) {
     if (m) setMonth(m)                                // нет отметок → оставляем текущий месяц
   }, [groupId, attMeta])
 
-  if (loading) return <PageSpinner />
+  if (loading) return <SkeletonList />
   if (!groups?.length)
     return <EmptyState emoji="👥" title="Групп нет" text="Сначала создайте группу — журнал появится здесь." />
 
@@ -526,7 +526,7 @@ function JournalTable({ groupId, month, onSaved }) {
     } finally { setSaving(false) }
   }
 
-  if (gLoad || lLoad) return <PageSpinner />
+  if (gLoad || lLoad) return <SkeletonList />
   if (!students.length)
     return <EmptyState emoji="👤" title="В группе нет учеников" text="Добавьте учеников в группу — они появятся строками журнала." />
   if (!sorted.length)
@@ -715,7 +715,7 @@ function IndividualJournal({ onSaved }) {
       <div className="flex justify-end">
         <MonthNav month={month} onChange={setMonth} />
       </div>
-      {loading ? <PageSpinner /> : !sorted.length ? (
+      {loading ? <SkeletonList /> : !sorted.length ? (
         <EmptyState emoji="👤" title="Нет индивидуальных уроков" text="В этом месяце уроков нет — переключите месяц." />
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
@@ -879,7 +879,7 @@ function StudentView({ onDisputed }) {
 
       <LessonTypeSwitcher tab={tab} onChange={(t) => { setTab(t); setExpandedId(null) }} />
 
-      {attLoading ? <PageSpinner /> : !records.length ? (
+      {attLoading ? <SkeletonList /> : !records.length ? (
         <EmptyState
           emoji="📋"
           title="Записей нет"

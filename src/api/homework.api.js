@@ -40,3 +40,15 @@ export const gradeSubmission = async (homeworkId, subId, grade) => {
   const { data } = await client.put(`/homework/${homeworkId}/submissions/${subId}`, { grade })
   return data.data
 }
+
+// Прикреплённый к ДЗ тест: ученик отправляет прохождение (ответы+результат).
+export const submitHomeworkQuizAttempt = async (id, { answers, score, total }) => {
+  const { data } = await client.post(`/homework/${id}/quiz-attempt`, { answers, score, total })
+  return data.data
+}
+
+// Учитель смотрит прохождения теста учениками (с ответами).
+export const getHomeworkQuizAttempts = async (id) => {
+  const { data } = await client.get(`/homework/${id}/quiz-attempts`)
+  return data.data
+}

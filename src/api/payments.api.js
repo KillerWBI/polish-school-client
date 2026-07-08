@@ -15,7 +15,15 @@ export const getDebtsForTeacher = async () => {
 }
 
 // Учитель вносит оплату от ученика. teacherId и дату ставит сервер.
-export const recordPayment = async (studentId, amount) => {
-  const { data } = await client.post('/payments/record', { studentId, amount })
+// method: 'cash' | 'card' | 'transfer' (по умолчанию наличные).
+export const recordPayment = async (studentId, amount, method) => {
+  const { data } = await client.post('/payments/record', { studentId, amount, method })
   return data.data
+}
+
+// История оплат учителя: { data: [...], summary: { total, byMethod } }.
+// params: { studentId?, method?, from?, to? }
+export const getPaymentHistory = async (params = {}) => {
+  const { data } = await client.get('/payments/history', { params })
+  return data // отдаём весь ответ — нужны и записи, и сводка
 }

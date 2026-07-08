@@ -2,6 +2,8 @@ import { NavLink, Link, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 
 // Светлый сайдбар (Cemdash-стиль).
+const PLAN_LABEL = { free: 'Free', pro: 'Pro', school: 'School' }
+
 const TEACHER_SECTIONS = [
   { label: 'Главное', items: [
     { path: '/dashboard', label: 'Дашборд',   icon: IconDashboard },
@@ -13,6 +15,10 @@ const TEACHER_SECTIONS = [
     { path: '/students',           label: 'Ученики',          icon: IconStudents },
     { path: '/homework',           label: 'Домашние задания', icon: IconHomework },
     { path: '/attendance',         label: 'Посещаемость',     icon: IconCheck },
+  ]},
+  { label: 'Инструменты', items: [
+    { path: '/quiz',    label: 'AI-тесты',  icon: IconSparkles },
+    { path: '/quizzes', label: 'Мои тесты', icon: IconList },
   ]},
   { label: 'Финансы', items: [
     { path: '/payments', label: 'Оплата', icon: IconPayment },
@@ -28,6 +34,10 @@ const STUDENT_SECTIONS = [
     { path: '/groups',     label: 'Мои группы',       icon: IconGroups },
     { path: '/homework',   label: 'Домашние задания', icon: IconHomework },
     { path: '/attendance', label: 'Посещаемость',     icon: IconCheck },
+  ]},
+  { label: 'Инструменты', items: [
+    { path: '/quiz',    label: 'AI-тесты',  icon: IconSparkles },
+    { path: '/quizzes', label: 'Мои тесты', icon: IconList },
   ]},
   { label: 'Финансы', items: [
     { path: '/payments', label: 'Оплата', icon: IconPayment },
@@ -67,12 +77,21 @@ export default function Sidebar({ onClose }) {
             <div className="text-xs font-medium text-[#0F172A] truncate leading-tight">{user?.name?.split(' ')[0] ?? '—'}</div>
             <div className="text-[10px] text-[#94A3B8] truncate mt-0.5">{isTeacher ? 'Преподаватель' : 'Студент'}</div>
           </div>
-          <span className="text-[9px] font-medium text-[#64748B] border border-[#E2E5EA] rounded px-1.5 py-0.5 shrink-0">Free</span>
+          {isTeacher && (
+            <Link to="/plans" onClick={onClose}
+              className={`text-[9px] font-medium rounded px-1.5 py-0.5 shrink-0 border transition-colors ${
+                user?.plan && user.plan !== 'free'
+                  ? 'text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100'
+                  : 'text-[#64748B] border-[#E2E5EA] hover:border-blue-300 hover:text-blue-600'
+              }`}>
+              {PLAN_LABEL[user?.plan] ?? 'Free'}
+            </Link>
+          )}
         </div>
       </div>
 
       {/* Навигация */}
-      <nav className="flex-1 px-3 py-2 overflow-y-auto space-y-5">
+      <nav data-tour="nav" className="flex-1 px-3 py-2 overflow-y-auto space-y-5">
         {sections.map(section => (
           <div key={section.label}>
             <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A0AAB8] px-2.5 mb-1.5">{section.label}</p>
@@ -117,3 +136,5 @@ function IconIndividual() { return <svg className="w-[15px] h-[15px] shrink-0" f
 function IconProfile() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"/><path d="M20 21a8 8 0 1 0-16 0" strokeLinecap="round"/></svg> }
 function IconHelp() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7M12 17h.01" strokeLinecap="round" strokeLinejoin="round"/></svg> }
 function IconLogout() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round"/></svg> }
+function IconSparkles() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 3l1.9 4.8L18.7 9.7 13.9 11.6 12 16.4 10.1 11.6 5.3 9.7 10.1 7.8 12 3zM19 15l.8 2 2 .8-2 .8L19 21l-.8-2-2-.8 2-.8L19 15z" strokeLinejoin="round"/></svg> }
+function IconList() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" strokeLinecap="round"/></svg> }

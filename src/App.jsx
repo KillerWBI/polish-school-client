@@ -16,11 +16,16 @@ import StudentsPage       from './pages/students/StudentsPage'
 import HomeworkPage       from './pages/homework/HomeworkPage'
 import AttendancePage     from './pages/attendance/AttendancePage'
 import PaymentsPage       from './pages/payments/PaymentsPage'
+import PayPage            from './pages/payments/PayPage'
 import ProfilePage        from './pages/profile/ProfilePage'
 import IndividualCoursesPage      from './pages/individual-courses/IndividualCoursesPage'
 import IndividualCourseDetailPage from './pages/individual-courses/IndividualCourseDetailPage'
 import IndividualLessonsPage      from './pages/individual-lessons/IndividualLessonsPage'
 import HelpPage                    from './pages/help/HelpPage'
+import PlansPage                   from './pages/plans/PlansPage'
+import QuizGeneratorPage           from './pages/quiz/QuizGeneratorPage'
+import MyQuizzesPage               from './pages/quiz/MyQuizzesPage'
+import QuizViewPage                from './pages/quiz/QuizViewPage'
 
 export default function App() {
   return (
@@ -52,10 +57,20 @@ export default function App() {
           <Route path="/individual-lessons"      element={<IndividualLessonsPage />} />
           <Route path="/profile"             element={<ProfilePage />} />
           <Route path="/help"                element={<HelpPage />} />
+          <Route path="/plans"               element={<PlansPage />} />
 
           {/* Только учитель */}
           <Route path="/students"
             element={<RoleRoute role="teacher"><StudentsPage /></RoleRoute>} />
+
+          {/* Только ученик — страница оплаты */}
+          <Route path="/pay/:teacherId"
+            element={<RoleRoute role="student"><PayPage /></RoleRoute>} />
+
+          {/* AI-тесты — обе роли (учитель: библиотека; ученик: личные тесты + результаты) */}
+          <Route path="/quiz"        element={<QuizGeneratorPage />} />
+          <Route path="/quizzes"     element={<MyQuizzesPage />} />
+          <Route path="/quizzes/:id" element={<QuizViewPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
