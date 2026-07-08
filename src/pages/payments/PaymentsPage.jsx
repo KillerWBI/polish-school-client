@@ -6,6 +6,7 @@ import Button from '../../components/ui/Button'
 import EmptyState from '../../components/ui/EmptyState'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import useAuth from '../../hooks/useAuth'
 import useFetch from '../../hooks/useFetch'
@@ -131,16 +132,23 @@ function TeacherDebts() {
   const [method, setMethod]     = useState('cash')
   const [err, setErr]           = useState('')
   const [saving, setSaving]     = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   const open  = (student) => { setSelected(student); setAmount(''); setMethod('cash'); setErr('') }
   const close = () => { if (!saving) setSelected(null) }
 
-  const submit = async () => {
+  // Валидация перед показом ConfirmDialog
+  const trySubmit = () => {
     const value = Number(amount)
     if (!amount || Number.isNaN(value) || value <= 0) { setErr('Введите сумму больше 0'); return }
+    setConfirmOpen(true)
+  }
+
+  const submit = async () => {
+    setConfirmOpen(false)
     setSaving(true)
     try {
-      await recordPayment(selected.id, value, method)
+      await recordPayment(selected.id, Number(amount), method)
       toast.success('Оплата внесена')
       setSelected(null)
       reload()
@@ -202,10 +210,19 @@ function TeacherDebts() {
 
           <div className="flex gap-3 mt-6">
             <Button variant="secondary" className="flex-1" onClick={close} disabled={saving}>Отмена</Button>
-            <Button className="flex-1" onClick={submit} loading={saving}>Записать</Button>
+            <Button className="flex-1" onClick={trySubmit} loading={saving}>Записать</Button>
           </div>
         </div>
       </Modal>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={submit}
+        title="Записать оплату?"
+        message={`Записать ${Number(amount)} zł от ${selected?.name ?? ''}? Отменить потом нельзя.`}
+        confirmLabel="Записать"
+      />
     </div>
   )
 }

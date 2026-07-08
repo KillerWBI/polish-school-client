@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 
@@ -48,6 +49,14 @@ export default function Sidebar({ onClose }) {
   const { user, logout, isTeacher } = useAuth()
   const navigate = useNavigate()
   const sections = isTeacher ? TEACHER_SECTIONS : STUDENT_SECTIONS
+
+  const [installPrompt, setInstallPrompt] = useState(null)
+  useEffect(() => {
+    const h = e => { e.preventDefault(); setInstallPrompt(e) }
+    window.addEventListener('beforeinstallprompt', h)
+    return () => window.removeEventListener('beforeinstallprompt', h)
+  }, [])
+  const handleInstall = () => { installPrompt?.prompt(); setInstallPrompt(null) }
 
   const handleLogout = () => { logout(); navigate('/') }
 
@@ -109,11 +118,26 @@ export default function Sidebar({ onClose }) {
 
       {/* Помощь + профиль + выход */}
       <div className="px-3 py-3 border-t border-[#EAECEF] space-y-0.5">
+        {installPrompt && (
+          <button onClick={handleInstall}
+            className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer">
+            <IconInstall /> Установить приложение
+          </button>
+        )}
         <NavLink to="/help" onClick={onClose} className={linkClass}>
           <IconHelp /> Помощь
         </NavLink>
-        <NavLink to="/profile" onClick={onClose} className={linkClass}>
-          <IconProfile /> Профиль
+        <NavLink to="/settings" onClick={onClose} className={({ isActive }) =>
+          `flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-colors ${
+            isActive
+              ? 'bg-blue-50 text-blue-700 font-medium'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+          }`}>
+          <IconProfile />
+          <span className="flex-1">Настройки</span>
+          {isTeacher && !user?.paymentDetails && (
+            <span className="w-4 h-4 rounded-full bg-amber-400 text-white text-[9px] font-bold flex items-center justify-center shrink-0">!</span>
+          )}
         </NavLink>
         <button onClick={handleLogout}
           className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] text-[#94A3B8] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-colors cursor-pointer">
@@ -138,3 +162,4 @@ function IconHelp() { return <svg className="w-[15px] h-[15px] shrink-0" fill="n
 function IconLogout() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round"/></svg> }
 function IconSparkles() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 3l1.9 4.8L18.7 9.7 13.9 11.6 12 16.4 10.1 11.6 5.3 9.7 10.1 7.8 12 3zM19 15l.8 2 2 .8-2 .8L19 21l-.8-2-2-.8 2-.8L19 15z" strokeLinejoin="round"/></svg> }
 function IconList() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" strokeLinecap="round"/></svg> }
+function IconInstall() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 16l-4-4h3V4h2v8h3l-4 4z" strokeLinejoin="round"/><path d="M4 18h16" strokeLinecap="round"/></svg> }

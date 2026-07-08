@@ -60,6 +60,7 @@ export default function QuizGeneratorPage() {
       navigate(`/quizzes/${saved.id}`)
     } catch (err) {
       toast.error(err.response?.data?.error || 'Не удалось сохранить')
+    } finally {
       setSaving(false)
     }
   }

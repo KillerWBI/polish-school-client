@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
 import { getIndividualCourses, createIndividualCourse, generateIndividualLessons } from '../../api/individualCourses.api'
-import { getStudents } from '../../api/students.api'
+import { getMyStudents } from '../../api/students.api'
 import { dayLabel } from '../../utils/formatDate'
 import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
@@ -26,7 +26,7 @@ export default function IndividualCoursesPage() {
   const { data: courses,  loading,        reload } = useFetch(getIndividualCourses)
   // students — для пикера в модалке создания (там studentId = User.id → бэк резолвит в Student)
   const { data: students }                          = useFetch(
-    () => isTeacher ? getStudents() : Promise.resolve([]),
+    () => isTeacher ? getMyStudents() : Promise.resolve([]),
     [isTeacher]
   )
 
