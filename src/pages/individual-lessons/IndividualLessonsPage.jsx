@@ -141,7 +141,12 @@ function LessonCard({ l, isTeacher, onEdit, onDelete }) {
           )}
           {l.lessonLink && (
             <a href={l.lessonLink} target="_blank" rel="noopener noreferrer"
-              className="text-[11px] text-blue-600 hover:text-blue-700">ссылка →</a>
+              className="text-[11px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
+              Войти в урок
+            </a>
+          )}
+          {l.lessonLink && isTeacher && (
+            <span className="text-[10px] text-slate-400">войдите через Google/GitHub чтобы стать модератором</span>
           )}
         </div>
       </div>
@@ -172,12 +177,14 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
   const [form, setForm] = useState(blank)
   const [saving, setSaving] = useState(false)
   const [error, setError]   = useState('')
+  const [linkMode, setLinkMode] = useState('auto') // 'auto' | 'custom' — только для создания
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
   // Инициализация при открытии
   useEffect(() => {
     if (!open) return
     if (editing) {
+      setLinkMode('custom')
       setForm({
         studentId: '', mode: 'existing', phName: '', phContact: '',
         date: editing.date || '', time: editing.time || '18:00',
@@ -185,6 +192,7 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
         lessonLink: editing.lessonLink || '',
       })
     } else {
+      setLinkMode('auto')
       setForm(blank)
     }
     setError('')
@@ -205,11 +213,15 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
         })
         toast.success('Урок обновлён')
       } else {
+        if (linkMode === 'custom' && !form.lessonLink.trim()) {
+          setSaving(false)
+          return setError('Введите ссылку или выберите Jitsi (авто)')
+        }
         const body = {
           date: form.date, time: form.time,
           topic: form.topic.trim() || null,
           pricePerLesson: parseFloat(form.pricePerLesson) || 0,
-          lessonLink: form.lessonLink.trim() || null,
+          lessonLink: linkMode === 'custom' ? form.lessonLink.trim() : undefined,
         }
         if (form.mode === 'placeholder') {
           if (!form.phName.trim()) { setSaving(false); return setError('Введите имя ученика') }
@@ -287,9 +299,48 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
           </div>
 
           <Input label="Тема (необязательно)" value={form.topic} onChange={e => set('topic', e.target.value)} />
-          <div className="grid grid-cols-2 gap-2">
-            <Input label="Цена, zł" type="number" value={form.pricePerLesson} onChange={e => set('pricePerLesson', e.target.value)} />
-            <Input label="Ссылка (необяз.)" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)} />
+          <Input label="Цена, zł" type="number" value={form.pricePerLesson} onChange={e => set('pricePerLesson', e.target.value)} />
+
+          {/* Ссылка на урок */}
+          <div>
+            <label className="text-xs text-slate-400 block mb-1.5">Ссылка на урок</label>
+            {isEdit ? (
+              <>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-slate-400">Пусто = без ссылки</span>
+                  <button type="button"
+                    onClick={() => set('lessonLink', `https://meet.jit.si/lf-${crypto.randomUUID()}`)}
+                    className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
+                    ↻ Новая Jitsi
+                  </button>
+                </div>
+                <input type="text" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
+                  placeholder="https://..."
+                  className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 placeholder:text-slate-400" />
+              </>
+            ) : (
+              <>
+                <div className="flex gap-2 mb-2">
+                  {[['auto', '🎥 Jitsi (авто)'], ['custom', '🔗 Своя ссылка']].map(([m, label]) => (
+                    <button key={m} type="button" onClick={() => setLinkMode(m)}
+                      className={`flex-1 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
+                        linkMode === m
+                          ? 'bg-blue-50 border-blue-200 text-blue-700'
+                          : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
+                      }`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {linkMode === 'auto' ? (
+                  <p className="text-xs text-slate-400 italic">Jitsi-ссылка создастся автоматически</p>
+                ) : (
+                  <input type="url" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
+                    placeholder="https://zoom.us/j/... или meet.google.com/..."
+                    className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 placeholder:text-slate-400" />
+                )}
+              </>
+            )}
           </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}

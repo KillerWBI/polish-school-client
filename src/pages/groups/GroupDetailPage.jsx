@@ -538,7 +538,11 @@ function LessonSection({ title, lessons, onSelect, muted }) {
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="text-xs text-slate-400">{l.time}</span>
                 {l.lessonLink && (
-                  <span className="text-xs text-blue-600">● ссылка</span>
+                  <a href={l.lessonLink} target="_blank" rel="noopener noreferrer"
+                    onClick={e => e.stopPropagation()}
+                    className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
+                    Войти в урок
+                  </a>
                 )}
                 {l.materials?.length > 0 && (
                   <span className="text-xs text-slate-500">{l.materials.length} материал(а)</span>
@@ -613,13 +617,20 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
 
         {/* Ссылка на урок */}
         {linkUrl && (
-          <a href={linkUrl} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600/20 border border-blue-200 text-blue-600 text-sm hover:bg-blue-700/30 transition-colors mb-4">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round"/>
-            </svg>
-            Перейти на урок
-          </a>
+          <div className="mb-4">
+            <a href={linkUrl} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600/20 border border-blue-200 text-blue-600 text-sm hover:bg-blue-700/30 transition-colors">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round"/>
+              </svg>
+              Перейти на урок
+            </a>
+            {isTeacher && (
+              <p className="text-xs text-slate-400 mt-1.5 px-1">
+                Вы — организатор: при входе нажмите «Я организатор» и войдите через Google или GitHub, чтобы стать модератором встречи.
+              </p>
+            )}
+          </div>
         )}
 
         {/* Ссылка на чат группы */}
@@ -732,8 +743,19 @@ function EditLessonForm({ lesson, onSaved, onCancel }) {
             rows={2} placeholder="Что будем делать на уроке..."
             className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none" />
         </div>
-        <Input label="Ссылка на урок (override, необязательно)" value={form.lessonLink}
-          onChange={e => set('lessonLink', e.target.value)} />
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-xs text-slate-400">Ссылка на урок</label>
+            <button type="button"
+              onClick={() => set('lessonLink', `https://meet.jit.si/lf-${crypto.randomUUID()}`)}
+              className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
+              ↻ Новая Jitsi
+            </button>
+          </div>
+          <input type="text" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
+            placeholder="Пусто = без ссылки"
+            className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 placeholder:text-slate-400" />
+        </div>
 
         {/* Материалы */}
         <MaterialsEditor materials={materials} onChange={setMaterials} />
@@ -756,11 +778,13 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
   const [materials, setMaterials] = useState([])
   const [saving, setSaving] = useState(false)
   const [error,  setError]  = useState('')
+  const [linkMode, setLinkMode] = useState('auto') // 'auto' | 'custom'
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
   const handleClose = () => {
     setForm({ date: '', time: '', topic: '', description: '', lessonLink: '' })
+    setLinkMode('auto')
     setMaterials([])
     setError('')
     onClose()
@@ -769,6 +793,7 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.date || !form.time) return setError('Дата и время обязательны')
+    if (linkMode === 'custom' && !form.lessonLink.trim()) return setError('Введите ссылку или выберите Jitsi (авто)')
     setSaving(true); setError('')
     try {
       await createLesson({
@@ -777,7 +802,7 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
         time:        form.time,
         topic:       form.topic.trim()       || null,
         description: form.description.trim() || null,
-        lessonLink:  form.lessonLink.trim()  || null,
+        lessonLink:  linkMode === 'custom' ? form.lessonLink.trim() : undefined,
         materials,
       })
       onCreated()
@@ -814,8 +839,28 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
               rows={2} placeholder="Что будем делать на уроке..."
               className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none" />
           </div>
-          <Input label="Ссылка на урок (необязательно)" value={form.lessonLink}
-            onChange={e => set('lessonLink', e.target.value)} />
+          <div>
+            <label className="text-xs text-slate-400 block mb-1.5">Ссылка на урок</label>
+            <div className="flex gap-2 mb-2">
+              {[['auto', '🎥 Jitsi (авто)'], ['custom', '🔗 Своя ссылка']].map(([m, label]) => (
+                <button key={m} type="button" onClick={() => setLinkMode(m)}
+                  className={`flex-1 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
+                    linkMode === m
+                      ? 'bg-blue-50 border-blue-200 text-blue-700'
+                      : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
+                  }`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            {linkMode === 'auto' ? (
+              <p className="text-xs text-slate-400 italic">Jitsi-ссылка создастся автоматически — учитель и ученик войдут без регистрации</p>
+            ) : (
+              <input type="url" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
+                placeholder="https://zoom.us/j/... или meet.google.com/..."
+                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 placeholder:text-slate-400" />
+            )}
+          </div>
 
           <MaterialsEditor materials={materials} onChange={setMaterials} />
 

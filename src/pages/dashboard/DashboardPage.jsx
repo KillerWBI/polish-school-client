@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import {
   CalendarDays, FileText, Wallet, CheckCircle2, Plus, Award, Clock,
-  ChevronRight, CalendarClock, Inbox, MoreHorizontal,
+  ChevronRight, CalendarClock, Inbox, MoreHorizontal, AlertCircle,
 } from 'lucide-react'
 import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
@@ -29,6 +29,7 @@ function TeacherDashboard() {
   const [hideChecklist, setHideChecklist] = useState(() => localStorage.getItem('lf_onboarding_done') === '1')
   const dismissChecklist = useCallback(() => {
     localStorage.setItem('lf_onboarding_done', '1')
+    localStorage.setItem('lf_tour_done', '1')
     setHideChecklist(true)
   }, [])
   if (loading) return <SkeletonDashboard />
@@ -44,6 +45,7 @@ function TeacherDashboard() {
       { label: 'Задание', path: '/homework' },
       { label: 'Ученика', path: '/students' },
     ]}>
+      {!user?.paymentDetails && <PaymentDetailsBanner navigate={navigate} />}
       {!hideChecklist && <StartChecklist navigate={navigate} onDone={dismissChecklist} />}
 
       <div data-tour="kpi" className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
@@ -110,6 +112,22 @@ function StudentDashboard() {
         </div>
       )}
     </Page>
+  )
+}
+
+/* ══════════════════ БАННЕР — незаполненные реквизиты ══════════════════ */
+function PaymentDetailsBanner({ navigate }) {
+  return (
+    <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-center gap-3">
+      <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+      <p className="text-sm text-amber-800 flex-1">
+        Заполните реквизиты оплаты, чтобы ученики могли самостоятельно перевести деньги.
+      </p>
+      <button onClick={() => navigate('/settings?tab=payment')}
+        className="shrink-0 text-sm font-medium text-amber-700 hover:text-amber-900 underline underline-offset-2 transition-colors">
+        Заполнить
+      </button>
+    </div>
   )
 }
 

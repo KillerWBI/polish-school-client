@@ -27,3 +27,15 @@ export const getPaymentHistory = async (params = {}) => {
   const { data } = await client.get('/payments/history', { params })
   return data // отдаём весь ответ — нужны и записи, и сводка
 }
+
+// Реквизиты учителя для страницы оплаты (вызывает ученик)
+export const getTeacherPaymentInfo = async (teacherId) => {
+  const { data } = await client.get(`/payments/teacher-info/${teacherId}`)
+  return data.data
+}
+
+// Ученик подаёт запись об оплате (со скриншотом или без)
+export const studentPay = async (payload) => {
+  const { data } = await client.post('/payments/student-pay', payload)
+  return data.data
+}

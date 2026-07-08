@@ -151,6 +151,34 @@ const TEACHER_SECTIONS = [
         visual: <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2"><span className="text-xs text-slate-900 flex-1">Дроби · 5 вопр.</span><Mark label="открыть и пройти"><span className="text-xs text-blue-600 font-medium">→</span></Mark></div></Shot> },
     ],
   },
+  {
+    id: 'video-calls', title: 'Видеозвонки', items: [
+      { q: 'Как войти на урок?', a: 'В карточке урока (группа → Уроки, или Расписание) есть кнопка «Войти в урок» — она открывает видеовстречу Jitsi в новой вкладке. Ссылка создаётся автоматически при создании урока.',
+        visual: <Shot><Mark label="открывает встречу"><span className="inline-flex h-9 px-4 items-center rounded-xl bg-blue-600 text-white text-sm font-medium">Войти в урок →</span></Mark></Shot> },
+      { q: 'Как стать модератором встречи (управлять участниками)?', a: 'При входе в Jitsi нажми «Я организатор» и войди через Google или GitHub — тогда ты получишь права модератора: отключение микрофона, запись, выдворение.',
+        visual: <Shot><div className="w-60 rounded-xl bg-white border border-slate-200 p-3 space-y-2"><div className="text-[10px] text-slate-500">При входе в Jitsi:</div><Mark label="→ войди через Google/GitHub"><span className="inline-flex h-8 px-3 items-center rounded-lg border border-slate-200 text-xs text-slate-700">Я организатор</span></Mark></div></Shot> },
+      { q: 'Как изменить ссылку на урок?', a: 'Открой урок → «Редактировать» → поле «Ссылка на урок». Можно вставить свою ссылку (Zoom, Meet) или сгенерировать новую кнопкой «↻ Новая Jitsi».',
+        visual: <Shot><div className="flex gap-2 items-center"><Mark label="своя или новая Jitsi"><span className="inline-flex h-8 px-3 items-center rounded-lg bg-slate-100 text-xs text-slate-700">↻ Новая Jitsi</span></Mark></div></Shot> },
+    ],
+  },
+  {
+    id: 'plans', title: 'Тарифы', items: [
+      { q: 'Что такое тарифы и чем они отличаются?', a: 'Free — бесплатно, базовые возможности (ограниченное число групп и учеников). Pro — снятые лимиты и приоритетная поддержка. School — несколько учителей под одним брендом (в разработке).',
+        visual: <Shot><div className="flex gap-2"><Mark label="текущий"><span className="text-[10px] px-2 py-1 rounded-full border border-slate-200 text-slate-600 font-medium">Free</span></Mark><span className="text-[10px] px-2 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-600 font-medium">Pro</span><span className="text-[10px] px-2 py-1 rounded-full border border-purple-200 bg-purple-50 text-purple-600 font-medium">School</span></div></Shot> },
+      { q: 'Где посмотреть свой тариф и как улучшить?', a: 'Твой тариф — маленький бейдж рядом с именем в левом сайдбаре. Кликни на него — попадёшь на страницу «Тарифы», там описание и кнопка «Улучшить».',
+        visual: <Shot><div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full bg-blue-500" /><div className="text-xs text-slate-900">Мария П.</div><Mark label="кликни → /plans"><span className="text-[9px] px-1.5 py-0.5 rounded border border-slate-200 text-slate-500">Free</span></Mark></div></Shot> },
+    ],
+  },
+  {
+    id: 'pwa', title: 'Установка как приложение', items: [
+      { q: 'Как установить LinguaFlow на телефон (Android / iPhone)?', a: 'Android: открой сайт в Chrome → три точки (⋮) → «Добавить на главный экран» → «Установить». iPhone: открой в Safari → кнопка «Поделиться» (прямоугольник со стрелкой) → «На экран «Домой»».',
+        visual: <Shot><div className="flex gap-3 items-start"><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">Android</span><div className="text-[9px] text-slate-500 leading-relaxed">Chrome → ⋮ →<br/>Добавить на<br/>главный экран</div></div><div className="w-px bg-slate-200" /><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">iPhone</span><div className="text-[9px] text-slate-500 leading-relaxed">Safari → □↑ →<br/>На экран<br/>«Домой»</div></div></div></Shot> },
+      { q: 'Как установить на компьютер?', a: 'В Chrome/Edge в адресной строке появляется значок «Установить» (экран со стрелкой) — кликни и подтверди. Или через меню: «Установить LinguaFlow». После установки откроется как отдельное окно без браузера.',
+        visual: <Shot><Mark label="в адресной строке браузера"><div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56"><span className="flex-1">app.linguaflow...</span><span className="text-blue-600">⊕</span></div></Mark></Shot> },
+      { q: 'Будет ли работать без интернета?', a: 'Частично: страницы, которые уже были открыты, загрузятся из кэша. Создавать уроки и вносить данные без сети нельзя — нужна синхронизация с сервером.',
+        visual: <Shot><div className="w-52 rounded-xl bg-white border border-slate-200 p-3 space-y-1"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500" /><span className="text-[10px] text-slate-600">Кэш страниц — доступно</span></div><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-red-400" /><span className="text-[10px] text-slate-600">Создание данных — нет</span></div></div></Shot> },
+    ],
+  },
 ]
 
 /* ─── Контент справки для УЧЕНИКА ──────────────────────────── */
@@ -212,6 +240,22 @@ const STUDENT_SECTIONS = [
         visual: <Shot><Mark label="оценка + сохранение"><span className="inline-flex items-center h-8 px-3 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium">Результат: 4 / 5</span></Mark></Shot> },
       { q: 'Где моя история тестов?', a: 'Раздел «Мои тесты» — все пройденные, с твоим результатом. Открываешь — видишь свои ответы и правильные.',
         visual: <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2"><span className="text-xs text-slate-900 flex-1">Дроби · 5 вопр.</span><Mark label="твой счёт"><span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">4/5</span></Mark></div></Shot> },
+    ],
+  },
+  {
+    id: 'video-calls', title: 'Видеозвонки', items: [
+      { q: 'Как войти на урок?', a: 'В карточке урока (Расписание или Мои группы → урок) есть кнопка «Войти в урок» — кликни, откроется видеовстреча в новой вкладке. Без регистрации.',
+        visual: <Shot><Mark label="открывает встречу"><span className="inline-flex h-9 px-4 items-center rounded-xl bg-blue-600 text-white text-sm font-medium">Войти в урок →</span></Mark></Shot> },
+      { q: 'Нужно ли создавать аккаунт для видеозвонка?', a: 'Нет. Как ученик заходишь сразу — достаточно кликнуть «Войти в урок» и разрешить камеру/микрофон в браузере.',
+        visual: <Shot><div className="flex items-center gap-2 text-xs text-slate-600"><span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 inline-flex items-center justify-center">✓</span> Без регистрации</div></Shot> },
+    ],
+  },
+  {
+    id: 'pwa', title: 'Установка как приложение', items: [
+      { q: 'Как установить LinguaFlow на телефон (Android / iPhone)?', a: 'Android: открой сайт в Chrome → три точки (⋮) → «Добавить на главный экран» → «Установить». iPhone: открой в Safari → кнопка «Поделиться» (прямоугольник со стрелкой) → «На экран «Домой»».',
+        visual: <Shot><div className="flex gap-3 items-start"><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">Android</span><div className="text-[9px] text-slate-500 leading-relaxed">Chrome → ⋮ →<br/>Добавить на<br/>главный экран</div></div><div className="w-px bg-slate-200" /><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">iPhone</span><div className="text-[9px] text-slate-500 leading-relaxed">Safari → □↑ →<br/>На экран<br/>«Домой»</div></div></div></Shot> },
+      { q: 'Как установить на компьютер?', a: 'В Chrome/Edge в адресной строке появляется значок «Установить» — кликни и подтверди. После установки LinguaFlow откроется как отдельное окно.',
+        visual: <Shot><Mark label="в адресной строке браузера"><div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56"><span className="flex-1">app.linguaflow...</span><span className="text-blue-600">⊕</span></div></Mark></Shot> },
     ],
   },
 ]

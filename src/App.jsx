@@ -17,7 +17,7 @@ import HomeworkPage       from './pages/homework/HomeworkPage'
 import AttendancePage     from './pages/attendance/AttendancePage'
 import PaymentsPage       from './pages/payments/PaymentsPage'
 import PayPage            from './pages/payments/PayPage'
-import ProfilePage        from './pages/profile/ProfilePage'
+import SettingsPage       from './pages/settings/SettingsPage'
 import IndividualCoursesPage      from './pages/individual-courses/IndividualCoursesPage'
 import IndividualCourseDetailPage from './pages/individual-courses/IndividualCourseDetailPage'
 import IndividualLessonsPage      from './pages/individual-lessons/IndividualLessonsPage'
@@ -55,7 +55,8 @@ export default function App() {
           <Route path="/individual-courses"      element={<IndividualCoursesPage />} />
           <Route path="/individual-courses/:id"  element={<IndividualCourseDetailPage />} />
           <Route path="/individual-lessons"      element={<IndividualLessonsPage />} />
-          <Route path="/profile"             element={<ProfilePage />} />
+          <Route path="/settings"            element={<SettingsPage />} />
+          <Route path="/profile"             element={<Navigate to="/settings" replace />} />
           <Route path="/help"                element={<HelpPage />} />
           <Route path="/plans"               element={<PlansPage />} />
 
