@@ -12,12 +12,17 @@ const sameSet = (a = [], b = []) =>
 // Плюс «Показать ключ», «Копировать» и (если передан onSave) «Сохранить результат».
 // savedAnswers — открыть уже пройденным (история): показываем ответы + результат, а не с нуля.
 export default function QuizRunner({ quiz, savedAnswers, onCheck }) {
-  const { type, questions = [] } = quiz
+  const questions = Array.isArray(quiz?.questions) ? quiz.questions : []
+  const type = quiz?.type
+  // Хуки вызываются до любых ранних возвратов (правило хуков)
   const [sel, setSel] = useState(() => savedAnswers || {}) // qi → выбор (число | число[] | строка)
   const [checked, setChecked] = useState(() => !!savedAnswers)
   const [showKey, setShowKey] = useState(false)
   const [attemptSaved, setAttemptSaved] = useState(false) // прохождение сохранено (один раз)
   const reveal = checked || showKey
+
+  if (!quiz) return <p className="text-sm text-slate-400">Тест не загружен.</p>
+  if (!questions.length) return <p className="text-sm text-slate-400">В этом тесте нет вопросов.</p>
 
   const pick = (qi, oi) => {
     if (checked) return
