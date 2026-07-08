@@ -8,6 +8,7 @@ import { getMyStudents, mergeStudent, deletePlaceholder } from '../../api/studen
 import { searchStudent, inviteToGroup } from '../../api/invitations.api'
 import { toast } from 'sonner'
 import { formatDate, dayLabel } from '../../utils/formatDate'
+import { safeUrl } from '../../utils/safeUrl'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
@@ -55,8 +56,8 @@ export default function GroupDetailPage() {
           {schedule && <span>📅 {schedule}</span>}
           <span>💰 {group.pricePerLesson} zł / урок</span>
           <span>👥 {group.students?.length ?? 0} студентов</span>
-          {group.chatLink && (
-            <a href={group.chatLink} target="_blank" rel="noopener noreferrer"
+          {group.chatLink && safeUrl(group.chatLink) && (
+            <a href={safeUrl(group.chatLink)} target="_blank" rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-700 transition-colors">
               💬 Чат группы
             </a>
@@ -537,8 +538,8 @@ function LessonSection({ title, lessons, onSelect, muted }) {
               </div>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="text-xs text-slate-400">{l.time}</span>
-                {l.lessonLink && (
-                  <a href={l.lessonLink} target="_blank" rel="noopener noreferrer"
+                {l.lessonLink && safeUrl(l.lessonLink) && (
+                  <a href={safeUrl(l.lessonLink)} target="_blank" rel="noopener noreferrer"
                     onClick={e => e.stopPropagation()}
                     className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
                     Войти в урок
@@ -616,9 +617,9 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
         )}
 
         {/* Ссылка на урок */}
-        {linkUrl && (
+        {linkUrl && safeUrl(linkUrl) && (
           <div className="mb-4">
-            <a href={linkUrl} target="_blank" rel="noopener noreferrer"
+            <a href={safeUrl(linkUrl)} target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600/20 border border-blue-200 text-blue-600 text-sm hover:bg-blue-700/30 transition-colors">
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round"/>
@@ -634,8 +635,8 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
         )}
 
         {/* Ссылка на чат группы */}
-        {chatUrl && (
-          <a href={chatUrl} target="_blank" rel="noopener noreferrer"
+        {chatUrl && safeUrl(chatUrl) && (
+          <a href={safeUrl(chatUrl)} target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-sm hover:bg-slate-100 transition-colors mb-4">
             <span>💬</span>
             Чат группы
@@ -1022,14 +1023,14 @@ function MaterialsList({ materials }) {
           </span>
           <div className="flex-1 min-w-0">
             {m.title && <p className="text-xs font-medium text-slate-900 mb-0.5">{m.title}</p>}
-            {m.type === 'link' && m.url && (
-              <a href={m.url} target="_blank" rel="noopener noreferrer"
+            {m.type === 'link' && m.url && safeUrl(m.url) && (
+              <a href={safeUrl(m.url)} target="_blank" rel="noopener noreferrer"
                 className="text-xs text-blue-600 hover:text-blue-700 underline break-all">
                 {m.url}
               </a>
             )}
-            {m.type === 'file' && m.url && (
-              <a href={m.url} target="_blank" rel="noopener noreferrer"
+            {m.type === 'file' && m.url && safeUrl(m.url) && (
+              <a href={safeUrl(m.url)} target="_blank" rel="noopener noreferrer"
                 className="text-xs text-blue-600 hover:text-blue-700 underline">
                 Открыть файл
               </a>

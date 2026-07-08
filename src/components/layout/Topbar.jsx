@@ -7,6 +7,7 @@ import { getMyStudents } from '../../api/students.api'
 import { getInvitations } from '../../api/invitations.api'
 import { getDashboard } from '../../api/dashboard.api'
 import { helpSectionFor } from '../../utils/helpSection'
+import { safeUrl } from '../../utils/safeUrl'
 
 export default function Topbar() {
   const { user, isTeacher } = useAuth()
@@ -27,7 +28,7 @@ export default function Topbar() {
         <button onClick={() => navigate('/profile')}
           className="flex items-center gap-2.5 h-10 pl-1 pr-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer">
           <span className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-semibold overflow-hidden">
-            {user?.avatar ? <img src={user.avatar} alt="" className="w-full h-full object-cover" /> : (user?.name?.[0]?.toUpperCase() ?? '?')}
+            {user?.avatar ? <img src={safeUrl(user.avatar)} alt="" className="w-full h-full object-cover" /> : (user?.name?.[0]?.toUpperCase() ?? '?')}
           </span>
           <span className="text-left leading-tight">
             <span className="block text-xs font-medium text-slate-900 max-w-[110px] truncate">{user?.name?.split(' ')[0] ?? '—'}</span>

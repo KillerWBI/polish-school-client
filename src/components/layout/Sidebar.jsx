@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
+import { safeUrl } from '../../utils/safeUrl'
 
 // Светлый сайдбар (Cemdash-стиль).
 const PLAN_LABEL = { free: 'Free', pro: 'Pro', school: 'School' }
@@ -80,7 +81,7 @@ export default function Sidebar({ onClose }) {
       <div className="px-3 pt-3 pb-2">
         <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl bg-[#F7F8FA] border border-[#EAECEF]">
           <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
-            {user?.avatar ? <img src={user.avatar} alt="" className="w-full h-full object-cover" /> : (user?.name?.[0]?.toUpperCase() ?? '?')}
+            {user?.avatar ? <img src={safeUrl(user.avatar)} alt="" className="w-full h-full object-cover" /> : (user?.name?.[0]?.toUpperCase() ?? '?')}
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-xs font-medium text-[#0F172A] truncate leading-tight">{user?.name?.split(' ')[0] ?? '—'}</div>
