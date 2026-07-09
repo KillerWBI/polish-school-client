@@ -46,10 +46,19 @@ const STUDENT_SECTIONS = [
   ]},
 ]
 
+const ADMIN_EXTRA_SECTION = {
+  label: 'Администрирование',
+  items: [{ path: '/admin', label: 'Панель управления', icon: IconShield }],
+}
+
+const ROLE_DISPLAY = { teacher: 'Преподаватель', student: 'Студент', admin: 'Администратор' }
+
 export default function Sidebar({ onClose }) {
   const { user, logout, isTeacher } = useAuth()
   const navigate = useNavigate()
-  const sections = isTeacher ? TEACHER_SECTIONS : STUDENT_SECTIONS
+  const isAdmin = user?.role === 'admin'
+  const baseSections = isTeacher ? TEACHER_SECTIONS : STUDENT_SECTIONS
+  const sections = isAdmin ? [...baseSections, ADMIN_EXTRA_SECTION] : baseSections
 
   const [installPrompt, setInstallPrompt] = useState(null)
   useEffect(() => {
@@ -85,7 +94,7 @@ export default function Sidebar({ onClose }) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-xs font-medium text-[#0F172A] truncate leading-tight">{user?.name?.split(' ')[0] ?? '—'}</div>
-            <div className="text-[10px] text-[#94A3B8] truncate mt-0.5">{isTeacher ? 'Преподаватель' : 'Студент'}</div>
+            <div className="text-[10px] text-[#94A3B8] truncate mt-0.5">{ROLE_DISPLAY[user?.role] ?? 'Пользователь'}</div>
           </div>
           {isTeacher && (
             <Link to="/plans" onClick={onClose}
@@ -164,3 +173,4 @@ function IconLogout() { return <svg className="w-[15px] h-[15px] shrink-0" fill=
 function IconSparkles() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 3l1.9 4.8L18.7 9.7 13.9 11.6 12 16.4 10.1 11.6 5.3 9.7 10.1 7.8 12 3zM19 15l.8 2 2 .8-2 .8L19 21l-.8-2-2-.8 2-.8L19 15z" strokeLinejoin="round"/></svg> }
 function IconList() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" strokeLinecap="round"/></svg> }
 function IconInstall() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 16l-4-4h3V4h2v8h3l-4 4z" strokeLinejoin="round"/><path d="M4 18h16" strokeLinecap="round"/></svg> }
+function IconShield()  { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinejoin="round"/></svg> }

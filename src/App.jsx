@@ -26,6 +26,7 @@ import PlansPage                   from './pages/plans/PlansPage'
 import QuizGeneratorPage           from './pages/quiz/QuizGeneratorPage'
 import MyQuizzesPage               from './pages/quiz/MyQuizzesPage'
 import QuizViewPage                from './pages/quiz/QuizViewPage'
+import AdminPage                   from './pages/admin/AdminPage'
 
 export default function App() {
   return (
@@ -72,6 +73,10 @@ export default function App() {
           <Route path="/quiz"        element={<QuizGeneratorPage />} />
           <Route path="/quizzes"     element={<MyQuizzesPage />} />
           <Route path="/quizzes/:id" element={<QuizViewPage />} />
+
+          {/* Только admin */}
+          <Route path="/admin"
+            element={<RoleRoute role="admin"><AdminPage /></RoleRoute>} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
