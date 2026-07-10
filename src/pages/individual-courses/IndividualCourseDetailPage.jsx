@@ -13,7 +13,7 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
-import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 
 const DAYS = [
@@ -41,7 +41,7 @@ export default function IndividualCourseDetailPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [delBusy,     setDelBusy]     = useState(false)
 
-  if (loading) return <PageSpinner />
+  if (loading) return <div className="p-5 sm:p-8 max-w-3xl"><SkeletonList count={4} /></div>
   if (!course) {
     return (
       <div className="p-5 sm:p-8">

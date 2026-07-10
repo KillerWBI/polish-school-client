@@ -1,32 +1,43 @@
+import { lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+
+// Eager — нужны немедленно (лендинг, auth, layout)
 import LandingPage        from './pages/landing/LandingPage'
 import StudentLandingPage from './pages/landing/StudentLandingPage'
 import AuthPage           from './pages/auth/AuthPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import ResetPasswordPage  from './pages/auth/ResetPasswordPage'
 import VerifyEmailPage    from './pages/auth/VerifyEmailPage'
+import SupportPage        from './pages/support/SupportPage'
 import AppLayout          from './components/layout/AppLayout'
 import PrivateRoute       from './components/layout/PrivateRoute'
 import RoleRoute          from './components/layout/RoleRoute'
 import DashboardPage      from './pages/dashboard/DashboardPage'
-import CalendarPage       from './pages/calendar/CalendarPage'
-import GroupsPage         from './pages/groups/GroupsPage'
-import GroupDetailPage    from './pages/groups/GroupDetailPage'
-import StudentsPage       from './pages/students/StudentsPage'
-import HomeworkPage       from './pages/homework/HomeworkPage'
-import AttendancePage     from './pages/attendance/AttendancePage'
-import PaymentsPage       from './pages/payments/PaymentsPage'
-import PayPage            from './pages/payments/PayPage'
-import SettingsPage       from './pages/settings/SettingsPage'
-import IndividualCoursesPage      from './pages/individual-courses/IndividualCoursesPage'
-import IndividualCourseDetailPage from './pages/individual-courses/IndividualCourseDetailPage'
-import IndividualLessonsPage      from './pages/individual-lessons/IndividualLessonsPage'
-import HelpPage                    from './pages/help/HelpPage'
-import PlansPage                   from './pages/plans/PlansPage'
-import QuizGeneratorPage           from './pages/quiz/QuizGeneratorPage'
-import MyQuizzesPage               from './pages/quiz/MyQuizzesPage'
-import QuizViewPage                from './pages/quiz/QuizViewPage'
-import AdminPage                   from './pages/admin/AdminPage'
+
+// Lazy — грузятся только при переходе на страницу (экономит ~300KB+ начального бандла)
+const CalendarPage               = lazy(() => import('./pages/calendar/CalendarPage'))
+const GroupsPage                 = lazy(() => import('./pages/groups/GroupsPage'))
+const GroupDetailPage            = lazy(() => import('./pages/groups/GroupDetailPage'))
+const StudentsPage               = lazy(() => import('./pages/students/StudentsPage'))
+const HomeworkPage               = lazy(() => import('./pages/homework/HomeworkPage'))
+const AttendancePage             = lazy(() => import('./pages/attendance/AttendancePage'))
+const PaymentsPage               = lazy(() => import('./pages/payments/PaymentsPage'))
+const PayPage                    = lazy(() => import('./pages/payments/PayPage'))
+const SettingsPage               = lazy(() => import('./pages/settings/SettingsPage'))
+const IndividualCoursesPage      = lazy(() => import('./pages/individual-courses/IndividualCoursesPage'))
+const IndividualCourseDetailPage = lazy(() => import('./pages/individual-courses/IndividualCourseDetailPage'))
+const IndividualLessonsPage      = lazy(() => import('./pages/individual-lessons/IndividualLessonsPage'))
+const HelpPage                   = lazy(() => import('./pages/help/HelpPage'))
+const PlansPage                  = lazy(() => import('./pages/plans/PlansPage'))
+const QuizGeneratorPage          = lazy(() => import('./pages/quiz/QuizGeneratorPage'))
+const MyQuizzesPage              = lazy(() => import('./pages/quiz/MyQuizzesPage'))
+const QuizViewPage               = lazy(() => import('./pages/quiz/QuizViewPage'))
+const AdminPage                  = lazy(() => import('./pages/admin/AdminPage'))
+const VocabPage                  = lazy(() => import('./pages/vocab/VocabPage'))
+const MyLessonsPage              = lazy(() => import('./pages/my-lessons/MyLessonsPage'))
+const NotesPage                  = lazy(() => import('./pages/notes/NotesPage'))
+const ProgressPage               = lazy(() => import('./pages/progress/ProgressPage'))
+const MaterialsPage              = lazy(() => import('./pages/materials/MaterialsPage'))
 
 export default function App() {
   return (
@@ -41,8 +52,9 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password"  element={<ResetPasswordPage />} />
         <Route path="/verify-email"    element={<VerifyEmailPage />} />
+        <Route path="/support"         element={<SupportPage />} />
 
-        {/* Кабинет — все страницы через AppLayout */}
+        {/* Кабинет — Suspense внутри AppLayout вокруг <Outlet /> */}
         <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
 
           {/* Общие — оба роля видят (внутри страница отличается по role) */}
@@ -60,6 +72,7 @@ export default function App() {
           <Route path="/profile"             element={<Navigate to="/settings" replace />} />
           <Route path="/help"                element={<HelpPage />} />
           <Route path="/plans"               element={<PlansPage />} />
+          <Route path="/materials"           element={<MaterialsPage />} />
 
           {/* Только учитель */}
           <Route path="/students"
@@ -68,6 +81,22 @@ export default function App() {
           {/* Только ученик — страница оплаты */}
           <Route path="/pay/:teacherId"
             element={<RoleRoute role="student"><PayPage /></RoleRoute>} />
+
+          {/* Только ученик — личный словарь */}
+          <Route path="/vocab"
+            element={<RoleRoute role="student"><VocabPage /></RoleRoute>} />
+
+          {/* Только ученик — журнал внешних занятий */}
+          <Route path="/my-lessons"
+            element={<RoleRoute role="student"><MyLessonsPage /></RoleRoute>} />
+
+          {/* Только ученик — личные заметки */}
+          <Route path="/my-notes"
+            element={<RoleRoute role="student"><NotesPage /></RoleRoute>} />
+
+          {/* Только ученик — прогресс-центр */}
+          <Route path="/my-progress"
+            element={<RoleRoute role="student"><ProgressPage /></RoleRoute>} />
 
           {/* AI-тесты — обе роли (учитель: библиотека; ученик: личные тесты + результаты) */}
           <Route path="/quiz"        element={<QuizGeneratorPage />} />

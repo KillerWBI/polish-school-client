@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { Search, X } from 'lucide-react'
+import { PageSpinner } from '../ui/Spinner'
 import useAuth from '../../hooks/useAuth'
 import Sidebar from './Sidebar'
 import Topbar, { SearchBox, NotifBell } from './Topbar'
@@ -66,7 +67,9 @@ export default function AppLayout() {
         <main className="flex-1 overflow-y-auto">
           {/* Центрируем контент и ограничиваем ширину — чтобы страницы не «растягивались» на весь монитор */}
           <div className="mx-auto w-full max-w-[1320px]">
-            <Outlet />
+            <Suspense fallback={<PageSpinner />}>
+              <Outlet />
+            </Suspense>
           </div>
         </main>
       </div>

@@ -6,7 +6,7 @@ import { getDebt, getTeacherPaymentInfo, studentPay } from '../../api/payments.a
 import useFetch from '../../hooks/useFetch'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
-import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonList } from '../../components/ui/Skeleton'
 
 const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
 
@@ -46,7 +46,7 @@ export default function PayPage() {
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone]             = useState(false)
 
-  if (debtLoading || infoLoading) return <PageSpinner />
+  if (debtLoading || infoLoading) return <div className="p-5 sm:p-8 max-w-2xl mx-auto"><SkeletonList count={3} /></div>
 
   const row = (debtData || []).find((r) => r.teacher?.id === teacherId)
   const pd  = teacherInfo?.paymentDetails || {}

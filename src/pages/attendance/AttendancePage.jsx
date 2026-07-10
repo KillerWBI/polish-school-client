@@ -677,6 +677,7 @@ function JournalLegend({ loading }) {
 /* ─── Журнал индивидуальных уроков (список по датам) ────────── */
 function IndividualJournal({ onSaved }) {
   const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7))
+  const [period, setPeriod] = useState('all')
   const { from, to } = monthBounds(month)
 
   const { data: lessons, loading } = useFetch(
@@ -708,18 +709,25 @@ function IndividualJournal({ onSaved }) {
     } finally { setBusy(b => ({ ...b, [l.id]: false })) }
   }
 
-  const sorted = [...(lessons || [])].sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+  const sorted   = [...(lessons || [])].sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+  const filtered = applyPeriod(sorted, l => l.date || '', period)
+
+  const handlePeriod = (p) => {
+    setPeriod(p)
+    if (p === 'today' || p === 'upcoming') setMonth(new Date().toISOString().slice(0, 7))
+  }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <PeriodFilter value={period} onChange={handlePeriod} />
         <MonthNav month={month} onChange={setMonth} />
       </div>
-      {loading ? <SkeletonList /> : !sorted.length ? (
-        <EmptyState emoji="👤" title="Нет индивидуальных уроков" text="В этом месяце уроков нет — переключите месяц." />
+      {loading ? <SkeletonList /> : !filtered.length ? (
+        <EmptyState emoji="👤" title="Нет индивидуальных уроков" text="В этом месяце уроков нет — переключите месяц или измените фильтр." />
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
-          {sorted.map(l => {
+          {filtered.map(l => {
             const rec = records[l.id]
             const marked = !!rec
             const present = rec ? (rec.teacherMarked ?? rec.present) : null
@@ -824,11 +832,45 @@ function plural(n, one, few, many) {
   return many
 }
 
+/* ─── Фильтр по периоду (сегодня / прошедшие / предстоящие) ─── */
+function applyPeriod(items, getDate, period) {
+  if (period === 'all') return items
+  const today = new Date().toISOString().slice(0, 10)
+  if (period === 'today')    return items.filter(i => getDate(i) === today)
+  if (period === 'past')     return items.filter(i => getDate(i) <  today)
+  if (period === 'upcoming') return items.filter(i => getDate(i) >  today)
+  return items
+}
+
+function PeriodFilter({ value, onChange }) {
+  const opts = [
+    { key: 'all',      label: 'Все' },
+    { key: 'today',    label: 'Сегодня' },
+    { key: 'past',     label: 'Прошедшие' },
+    { key: 'upcoming', label: 'Предстоящие' },
+  ]
+  return (
+    <div className="flex gap-1 p-1 bg-slate-50 rounded-xl w-fit">
+      {opts.map(o => (
+        <button key={o.key} onClick={() => onChange(o.key)}
+          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+            value === o.key
+              ? 'bg-white text-blue-700 shadow-sm'
+              : 'text-slate-500 hover:text-slate-900'
+          }`}>
+          {o.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 /* ─── Студент — история ─────────────────────────────────────── */
 function StudentView({ onDisputed }) {
   const [tab,        setTab]        = useState('group')
   const [expandedId, setExpandedId] = useState(null)
   const [busy,       setBusy]       = useState({})
+  const [period,     setPeriod]     = useState('all')
 
   const { data: attendance, loading: attLoading, reload } = useFetch(getAttendance)
   const { data: homework }                                = useFetch(getHomework)
@@ -863,7 +905,8 @@ function StudentView({ onDisputed }) {
   const confirmed = all.filter(r => r.status === 'confirmed')
   const groupRecs = sortByDate(confirmed.filter(r => r.lessonId))
   const indivRecs = sortByDate(confirmed.filter(r => r.individualLessonId))
-  const records   = tab === 'group' ? groupRecs : indivRecs
+  const allRecords = tab === 'group' ? groupRecs : indivRecs
+  const records    = applyPeriod(allRecords, r => r.Lesson?.date || r.IndividualLesson?.date || '', period)
 
   const total    = confirmed.length
   const attended = confirmed.filter(r => r.present).length
@@ -877,7 +920,10 @@ function StudentView({ onDisputed }) {
         <Stat label="Процент"      value={`${percent}%`} color="text-blue-600" />
       </div>
 
-      <LessonTypeSwitcher tab={tab} onChange={(t) => { setTab(t); setExpandedId(null) }} />
+      <LessonTypeSwitcher tab={tab} onChange={(t) => { setTab(t); setExpandedId(null); setPeriod('all') }} />
+      <div className="mb-4">
+        <PeriodFilter value={period} onChange={setPeriod} />
+      </div>
 
       {attLoading ? <SkeletonList /> : !records.length ? (
         <EmptyState

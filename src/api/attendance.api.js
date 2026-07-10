@@ -6,8 +6,8 @@ export const getAttendance = async (params = {}) => {
 }
 
 // Записи, ожидающие действия (pending + disputed) для текущего пользователя
-export const getPendingAttendance = async () => {
-  const { data } = await client.get('/attendance/pending')
+export const getPendingAttendance = async (signal) => {
+  const { data } = await client.get('/attendance/pending', { signal })
   return data.data
 }
 

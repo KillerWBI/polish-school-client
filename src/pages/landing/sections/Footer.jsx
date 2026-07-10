@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 // Футер лендинга — тёмный тех-моно.
 export default function Footer({ onPrimary }) {
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -17,6 +19,7 @@ export default function Footer({ onPrimary }) {
             <button onClick={() => scrollTo('features')} className="hover:text-white transition-colors cursor-pointer">возможности</button>
             <button onClick={() => scrollTo('how')}      className="hover:text-white transition-colors cursor-pointer">как работает</button>
             <button onClick={() => scrollTo('faq')}       className="hover:text-white transition-colors cursor-pointer">вопросы</button>
+            <Link to="/support"                            className="hover:text-white transition-colors cursor-pointer">поддержка</Link>
             <button onClick={onPrimary}                    className="hover:text-white transition-colors cursor-pointer">начать</button>
           </nav>
         </div>

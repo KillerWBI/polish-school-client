@@ -17,6 +17,7 @@ const TEACHER_SECTIONS = [
     { path: '/students',           label: 'Ученики',          icon: IconStudents },
     { path: '/homework',           label: 'Домашние задания', icon: IconHomework },
     { path: '/attendance',         label: 'Посещаемость',     icon: IconCheck },
+    { path: '/materials',          label: 'Материалы',        icon: IconFolder },
   ]},
   { label: 'Инструменты', items: [
     { path: '/quiz',    label: 'AI-тесты',  icon: IconSparkles },
@@ -29,17 +30,22 @@ const TEACHER_SECTIONS = [
 
 const STUDENT_SECTIONS = [
   { label: 'Главное', items: [
-    { path: '/dashboard', label: 'Дашборд',   icon: IconDashboard },
-    { path: '/calendar',  label: 'Расписание', icon: IconCalendar },
+    { path: '/dashboard',   label: 'Дашборд',    icon: IconDashboard },
+    { path: '/calendar',    label: 'Расписание', icon: IconCalendar },
+    { path: '/my-progress', label: 'Прогресс',   icon: IconProgress },
   ]},
   { label: 'Учёба', items: [
     { path: '/groups',     label: 'Мои группы',       icon: IconGroups },
     { path: '/homework',   label: 'Домашние задания', icon: IconHomework },
     { path: '/attendance', label: 'Посещаемость',     icon: IconCheck },
+    { path: '/materials',  label: 'Материалы',        icon: IconFolder },
+    { path: '/my-lessons', label: 'Мои занятия',      icon: IconNotebook },
   ]},
   { label: 'Инструменты', items: [
-    { path: '/quiz',    label: 'AI-тесты',  icon: IconSparkles },
-    { path: '/quizzes', label: 'Мои тесты', icon: IconList },
+    { path: '/quiz',     label: 'AI-тесты',  icon: IconSparkles },
+    { path: '/quizzes',  label: 'Мои тесты', icon: IconList },
+    { path: '/vocab',    label: 'Словарь',   icon: IconVocab },
+    { path: '/my-notes', label: 'Заметки',   icon: IconNote },
   ]},
   { label: 'Финансы', items: [
     { path: '/payments', label: 'Оплата', icon: IconPayment },
@@ -174,3 +180,8 @@ function IconSparkles() { return <svg className="w-[15px] h-[15px] shrink-0" fil
 function IconList() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" strokeLinecap="round"/></svg> }
 function IconInstall() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 16l-4-4h3V4h2v8h3l-4 4z" strokeLinejoin="round"/><path d="M4 18h16" strokeLinecap="round"/></svg> }
 function IconShield()  { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinejoin="round"/></svg> }
+function IconVocab()   { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" strokeLinecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" strokeLinejoin="round"/></svg> }
+function IconNotebook(){ return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M4 4a2 2 0 0 1 2-2h11a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2V4z" strokeLinejoin="round"/><path d="M8 2v20M12 7h3M12 11h3" strokeLinecap="round"/></svg> }
+function IconNote()    { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z" strokeLinejoin="round"/><path d="M15 3v6h6" strokeLinejoin="round"/></svg> }
+function IconProgress(){ return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M3 3v18h18" strokeLinecap="round"/><path d="M7 14l3-4 3 3 4-6" strokeLinecap="round" strokeLinejoin="round"/></svg> }
+function IconFolder()  { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" strokeLinejoin="round"/></svg> }

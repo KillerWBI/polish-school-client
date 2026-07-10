@@ -1,7 +1,7 @@
 import client from './client'
 
-export const getIndividualCourses = async () => {
-  const { data } = await client.get('/individual-courses')
+export const getIndividualCourses = async (signal) => {
+  const { data } = await client.get('/individual-courses', { signal })
   return data.data
 }
 

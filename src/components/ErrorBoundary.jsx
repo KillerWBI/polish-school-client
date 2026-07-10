@@ -1,5 +1,5 @@
 import { Component } from 'react'
-import * as Sentry from '@sentry/react'
+import { captureException } from '../utils/sentry.js'
 
 // Глобальный перехватчик ошибок рендера — спасает от белого экрана.
 export default class ErrorBoundary extends Component {
@@ -14,7 +14,7 @@ export default class ErrorBoundary extends Component {
 
   componentDidCatch(error, info) {
     console.error('ErrorBoundary caught:', error, info)
-    Sentry.captureException(error, { extra: { componentStack: info?.componentStack } })
+    captureException(error, { extra: { componentStack: info?.componentStack } })
   }
 
   handleReload = () => {
