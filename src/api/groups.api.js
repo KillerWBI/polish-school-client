@@ -1,7 +1,7 @@
 import client from './client'
 
-export const getGroups = async () => {
-  const { data } = await client.get('/groups')
+export const getGroups = async (signal) => {
+  const { data } = await client.get('/groups', { signal })
   return data.data
 }
 

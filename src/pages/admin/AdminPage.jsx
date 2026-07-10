@@ -1,8 +1,11 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { toast } from 'sonner'
-import { Users, GraduationCap, LayoutGrid, DollarSign, Search, Shield, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react'
-import { getAdminStats, getAdminUsers, deactivateUser, activateUser, setUserRole, setUserPlan } from '../../api/admin.api'
+import { Users, GraduationCap, LayoutGrid, DollarSign, Search, Shield, ChevronLeft, ChevronRight, RefreshCw, LifeBuoy } from 'lucide-react'
+import { getAdminStats, getAdminUsers, deactivateUser, activateUser, setUserRole, setUserPlan, getSupportTickets, replySupportTicket } from '../../api/admin.api'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
+import Modal from '../../components/ui/Modal'
+import Button from '../../components/ui/Button'
 
 const ROLE_LABEL  = { teacher: 'Учитель', student: 'Ученик', admin: 'Администратор' }
 const ROLE_COLOR  = { teacher: 'bg-blue-100 text-blue-700', student: 'bg-emerald-100 text-emerald-700', admin: 'bg-purple-100 text-purple-700' }
@@ -27,7 +30,7 @@ export default function AdminPage() {
 
       {/* Табы */}
       <div className="flex gap-1 mb-6 bg-slate-100 rounded-xl p-1 w-fit">
-        {[['overview', 'Обзор'], ['users', 'Пользователи']].map(([key, label]) => (
+        {[['overview', 'Обзор'], ['users', 'Пользователи'], ['support', 'Поддержка']].map(([key, label]) => (
           <button key={key} type="button" onClick={() => setTab(key)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
             {label}
@@ -37,6 +40,7 @@ export default function AdminPage() {
 
       {tab === 'overview' && <OverviewTab />}
       {tab === 'users'    && <UsersTab />}
+      {tab === 'support'  && <SupportTab />}
     </div>
   )
 }
@@ -315,6 +319,25 @@ function UsersTab() {
 
 function UserRow({ user, onDeactivate, onActivate, onRole, onPlan }) {
   const [open, setOpen] = useState(false)
+  const [dropPos, setDropPos] = useState({ top: 0, left: 0 })
+  const btnRef = useRef(null)
+
+  const handleOpen = () => {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect()
+      const dropW = 208  // w-52
+      const dropH = 288  // max-h-72
+      // Координаты относительно документа (viewport + прокрутка страницы)
+      const pageTop = rect.bottom + window.scrollY
+      const pageLeft = Math.max(8, rect.right + window.scrollX - dropW)
+      // Если снизу не хватает места — открыть вверх
+      const top = (window.innerHeight - rect.bottom) >= dropH
+        ? pageTop + 4
+        : rect.top + window.scrollY - dropH - 4
+      setDropPos({ top, left: pageLeft })
+    }
+    setOpen(v => !v)
+  }
 
   const regDate = user.createdAt
     ? new Date(user.createdAt).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' })
@@ -358,16 +381,22 @@ function UserRow({ user, onDeactivate, onActivate, onRole, onPlan }) {
       <td className="px-4 py-3 text-xs text-slate-500">{regDate}</td>
 
       {/* Действия */}
-      <td className="px-4 py-3 text-right relative">
-        <button type="button" onClick={() => setOpen(v => !v)}
+      <td className="px-4 py-3 text-right">
+        <button ref={btnRef} type="button" onClick={handleOpen}
           className="text-sm px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
           Действия ▾
         </button>
 
-        {open && (
+        {/* Portal — рендерим в document.body, вне overflow-hidden таблицы */}
+        {open && createPortal(
           <>
-            <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-            <div className="absolute right-4 top-full mt-1 w-52 bg-white rounded-xl border border-slate-200 shadow-lg z-20 py-1 text-left">
+            {/* Прозрачный оверлей — закрывает по клику вне */}
+            <div className="fixed inset-0 z-[9998]" onClick={() => setOpen(false)} />
+            {/* Дропдаун: absolute по координатам страницы, скроллится вместе с ней */}
+            <div
+              style={{ position: 'absolute', top: dropPos.top, left: dropPos.left, width: 208 }}
+              className="bg-white rounded-xl border border-slate-200 shadow-xl z-[9999] py-1 text-left max-h-72 overflow-y-auto"
+            >
               <MenuSection label="Роль">
                 {['teacher', 'student', 'admin'].map(r => (
                   <MenuBtn key={r} active={user.role === r}
@@ -396,7 +425,8 @@ function UserRow({ user, onDeactivate, onActivate, onRole, onPlan }) {
                 )}
               </div>
             </div>
-          </>
+          </>,
+          document.body
         )}
       </td>
     </tr>
@@ -458,6 +488,159 @@ function RoleModal({ user, currentRole, onSelect, onConfirm, onClose, busy }) {
         </div>
       </div>
     </div>
+  )
+}
+
+// ─── Поддержка ───────────────────────────────────────────────────────────────
+
+const TICKET_STATUS = {
+  open:        { label: 'Открыто',   cls: 'bg-amber-100 text-amber-700' },
+  in_progress: { label: 'В работе',  cls: 'bg-blue-100 text-blue-700' },
+  resolved:    { label: 'Решено',    cls: 'bg-emerald-100 text-emerald-700' },
+}
+const TICKET_CATEGORY = {
+  question: 'Вопрос',
+  problem:  'Проблема',
+  billing:  'Оплата',
+}
+
+function SupportTab() {
+  const [tickets, setTickets] = useState([])
+  const [counts, setCounts]   = useState({ open: 0, in_progress: 0, resolved: 0 })
+  const [loading, setLoading] = useState(true)
+  const [statusFilter, setStatusFilter] = useState('')
+  const [active, setActive]   = useState(null) // тикет в модалке
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    try {
+      const res = await getSupportTickets(statusFilter ? { status: statusFilter } : {})
+      setTickets(res.data)
+      setCounts(res.meta?.counts ?? { open: 0, in_progress: 0, resolved: 0 })
+    } catch {
+      toast.error('Не удалось загрузить обращения')
+    } finally {
+      setLoading(false)
+    }
+  }, [statusFilter])
+
+  useEffect(() => { load() }, [load])
+
+  const filters = [
+    ['', 'Все'],
+    ['open', `Открытые (${counts.open})`],
+    ['in_progress', `В работе (${counts.in_progress})`],
+    ['resolved', `Решённые (${counts.resolved})`],
+  ]
+
+  return (
+    <div>
+      {/* Фильтры по статусу */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {filters.map(([key, label]) => (
+          <button key={key} type="button" onClick={() => setStatusFilter(key)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${statusFilter === key ? 'bg-purple-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
+            {label}
+          </button>
+        ))}
+        <button type="button" onClick={load}
+          className="h-9 px-3 rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 transition-colors ml-auto">
+          <RefreshCw className="w-4 h-4" />
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="h-48 flex items-center justify-center text-sm text-slate-400">Загрузка…</div>
+      ) : tickets.length === 0 ? (
+        <div className="h-40 flex flex-col items-center justify-center text-slate-400 gap-2">
+          <LifeBuoy className="w-8 h-8" />
+          <span className="text-sm">Обращений нет</span>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {tickets.map(t => (
+            <button key={t.id} type="button" onClick={() => setActive(t)}
+              className="w-full text-left rounded-2xl border border-slate-200 bg-white p-4 hover:border-slate-300 transition-colors">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-medium text-slate-900 truncate">{t.subject}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${TICKET_STATUS[t.status]?.cls}`}>{TICKET_STATUS[t.status]?.label}</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">{TICKET_CATEGORY[t.category] ?? t.category}</span>
+                  </div>
+                  <div className="text-sm text-slate-500 mt-1 line-clamp-1">{t.message}</div>
+                  <div className="text-xs text-slate-400 mt-1">{t.name} · {t.email}</div>
+                </div>
+                <div className="text-xs text-slate-400 shrink-0">
+                  {new Date(t.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {active && (
+        <TicketModal ticket={active} onClose={() => setActive(null)} onSaved={() => { setActive(null); load() }} />
+      )}
+    </div>
+  )
+}
+
+function TicketModal({ ticket, onClose, onSaved }) {
+  const [reply, setReply]   = useState(ticket.adminReply || '')
+  const [status, setStatus] = useState(ticket.status)
+  const [busy, setBusy]     = useState(false)
+
+  const save = async (withReply) => {
+    setBusy(true)
+    try {
+      const payload = { status }
+      if (withReply) payload.adminReply = reply
+      await replySupportTicket(ticket.id, payload)
+      toast.success(withReply ? 'Ответ отправлен на email' : 'Статус обновлён')
+      onSaved()
+    } catch (e) {
+      toast.error(e.response?.data?.error || 'Ошибка')
+    } finally { setBusy(false) }
+  }
+
+  return (
+    <Modal open onClose={onClose} maxWidth="max-w-lg">
+      <div className="p-6">
+        <h3 className="text-base font-semibold text-slate-900 mb-1">{ticket.subject}</h3>
+        <p className="text-xs text-slate-400 mb-4">
+          {ticket.name} · {ticket.email} · {TICKET_CATEGORY[ticket.category] ?? ticket.category}
+          {ticket.author && <> · <span className="text-slate-500">{ROLE_LABEL[ticket.author.role]}</span></>}
+        </p>
+
+        <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 text-sm text-slate-700 whitespace-pre-wrap mb-4">
+          {ticket.message}
+        </div>
+
+        <label className="block text-xs font-medium text-slate-500 mb-1">Статус</label>
+        <select value={status} onChange={e => setStatus(e.target.value)}
+          className="w-full h-10 px-3 mb-4 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/15 focus:border-blue-500">
+          <option value="open">Открыто</option>
+          <option value="in_progress">В работе</option>
+          <option value="resolved">Решено</option>
+        </select>
+
+        <label className="block text-xs font-medium text-slate-500 mb-1">Ответ (уйдёт на {ticket.email})</label>
+        <textarea value={reply} onChange={e => setReply(e.target.value)} rows={4}
+          placeholder="Напишите ответ пользователю…"
+          className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/15 focus:border-blue-500 resize-none mb-4" />
+
+        <div className="flex gap-2">
+          <Button variant="secondary" className="flex-1" onClick={() => save(false)} loading={busy}>
+            Только статус
+          </Button>
+          <Button className="flex-1" onClick={() => save(true)} loading={busy} disabled={!reply.trim()}>
+            Ответить и закрыть
+          </Button>
+        </div>
+      </div>
+    </Modal>
   )
 }
 

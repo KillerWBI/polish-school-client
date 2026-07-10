@@ -11,8 +11,8 @@ export const getStudent = async (id) => {
 }
 
 // GET /users/me/students — «мои ученики» (принятые через заявку), для StudentsPage/picker
-export const getMyStudents = async () => {
-  const { data } = await client.get('/users/me/students')
+export const getMyStudents = async (signal) => {
+  const { data } = await client.get('/users/me/students', { signal })
   return data.data
 }
 

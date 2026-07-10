@@ -1,12 +1,16 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import useFetch from '../../hooks/useFetch'
 import { getMyStudents } from '../../api/students.api'
 import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import Pagination from '../../components/ui/Pagination'
+
+const PAGE_SIZE = 12
 
 export default function StudentsPage() {
   const { data: students, loading } = useFetch(getMyStudents)
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -17,6 +21,12 @@ export default function StudentsPage() {
       (s.email || '').toLowerCase().includes(q)
     )
   }, [students, search])
+
+  // Сбрасываем страницу при изменении поиска
+  useEffect(() => { setPage(1) }, [search])
+
+  const pages = Math.ceil(filtered.length / PAGE_SIZE)
+  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   return (
     <div className="p-5 sm:p-8">
@@ -56,9 +66,12 @@ export default function StudentsPage() {
               Ничего не найдено
             </div>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map(s => <StudentCard key={s.id} s={s} />)}
-            </div>
+            <>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {paged.map(s => <StudentCard key={s.id} s={s} />)}
+              </div>
+              <Pagination page={page} pages={pages} onChange={setPage} />
+            </>
           )}
         </div>
       )}

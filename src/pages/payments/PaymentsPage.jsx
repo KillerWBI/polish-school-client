@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { getDebt, getDebtsForTeacher, recordPayment, getPaymentHistory } from '../../api/payments.api'
+import { getDebt, getDebtsForTeacher, recordPayment, getPaymentHistory, getMyPaymentHistory } from '../../api/payments.api'
 import Button from '../../components/ui/Button'
 import EmptyState from '../../components/ui/EmptyState'
 import Input from '../../components/ui/Input'
@@ -34,7 +34,7 @@ export default function PaymentsPage() {
           {isTeacher ? 'Долги учеников, внесение оплат и история' : 'Мой долг по преподавателям'}
         </p>
       </div>
-      {isTeacher ? <TeacherPayments /> : <StudentDebts />}
+      {isTeacher ? <TeacherPayments /> : <StudentPayments />}
     </div>
   )
 }
@@ -92,6 +92,103 @@ function Summary({ rows }) {
 }
 
 // Студент: долг по каждому преподавателю. «Оплатить» → страница оплаты.
+/* ══════════════════ УЧЕНИК: вкладки Долг / История ══════════════════ */
+function StudentPayments() {
+  const [tab, setTab] = useState('debts')
+  return (
+    <div className="max-w-5xl">
+      <div className="inline-flex p-0.5 mb-5 rounded-xl bg-slate-100 border border-slate-200">
+        <TabBtn active={tab === 'debts'}   onClick={() => setTab('debts')}>Мой долг</TabBtn>
+        <TabBtn active={tab === 'history'} onClick={() => setTab('history')}>История оплат</TabBtn>
+      </div>
+      {tab === 'debts' ? <StudentDebts /> : <StudentPaymentHistory />}
+    </div>
+  )
+}
+
+// История оплат ученика: карточки-счета по способам + список «когда/кому».
+function StudentPaymentHistory() {
+  const [method, setMethod] = useState('')
+  const [from, setFrom]     = useState('')
+  const [to, setTo]         = useState('')
+
+  const { data, loading } = useFetch(
+    () => getMyPaymentHistory({ from: from || undefined, to: to || undefined }),
+    [from, to],
+  )
+
+  const allRecords = data?.data ?? []
+  const byMethod   = data?.summary?.byMethod ?? {}
+  const total      = data?.summary?.total ?? 0
+  const records    = method ? allRecords.filter((r) => r.method === method) : allRecords
+
+  const inputCls = 'h-9 px-3 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15'
+
+  return (
+    <div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+        {METHOD_ORDER.map((m) => (
+          <MethodCard key={m} m={m} amount={byMethod[m] || 0}
+            active={method === m} onClick={() => setMethod(method === m ? '' : m)} />
+        ))}
+      </div>
+
+      <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
+        <div className="text-sm text-slate-500">
+          Всего оплачено: <span className="font-semibold text-slate-900">{fmt(total)}</span>
+          {method && <> · способ: <span className="font-medium text-slate-700">{METHOD[method].label}</span></>}
+        </div>
+        <div className="flex items-end gap-2">
+          <div>
+            <label className="block text-xs text-slate-500 mb-1">С</label>
+            <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputCls} />
+          </div>
+          <div>
+            <label className="block text-xs text-slate-500 mb-1">По</label>
+            <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputCls} />
+          </div>
+          {(method || from || to) && (
+            <button onClick={() => { setMethod(''); setFrom(''); setTo('') }}
+              className="h-9 px-3 text-sm text-slate-500 hover:text-slate-700 transition-colors">Сбросить</button>
+          )}
+        </div>
+      </div>
+
+      {loading ? (
+        <SkeletonList />
+      ) : !records.length ? (
+        <EmptyState emoji="🧾" title="Оплат нет"
+          text={method ? 'По этому способу оплат не найдено.' : 'За выбранный период оплат не найдено.'} />
+      ) : (
+        <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
+          {records.map((r) => <StudentHistoryRow key={r.id} rec={r} />)}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Строка истории оплат ученика — показывает учителя (кому платил).
+function StudentHistoryRow({ rec }) {
+  const m = METHOD[rec.method] ?? { label: rec.method, cls: 'bg-slate-50 text-slate-600 border-slate-200' }
+  const date = rec.paidAt
+    ? new Date(rec.paidAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })
+    : '—'
+  return (
+    <div className="flex items-center gap-3 px-4 py-3.5">
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-semibold shrink-0">
+        {(rec.teacher?.name || '?')[0].toUpperCase()}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-medium text-slate-900 truncate">{rec.teacher?.name ?? '—'}</div>
+        <div className="text-xs text-slate-400">{date}</div>
+      </div>
+      <span className={`text-xs px-2 py-0.5 rounded-full border shrink-0 ${m.cls}`}>{m.label}</span>
+      <div className="text-base font-semibold text-emerald-600 shrink-0 tabular-nums w-24 text-right">{fmt(rec.amount)}</div>
+    </div>
+  )
+}
+
 function StudentDebts() {
   const { data, loading } = useFetch(getDebt)
   const navigate = useNavigate()
@@ -100,7 +197,7 @@ function StudentDebts() {
   if (!data?.length) return <EmptyState emoji="💳" title="Долгов нет" text="У вас пока нет начислений." />
 
   return (
-    <div className="max-w-5xl">
+    <div>
       <Summary rows={data} />
       <div className="grid gap-3 lg:grid-cols-2">
         {data.map((row) => (

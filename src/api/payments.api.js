@@ -2,15 +2,15 @@ import client from './client'
 
 // Долг студента по каждому учителю: [{ teacher, charged, paid, balance }]
 // studentId сервер берёт из токена — тело/аргументы не нужны.
-export const getDebt = async () => {
-  const { data } = await client.get('/payments/debt')
+export const getDebt = async (signal) => {
+  const { data } = await client.get('/payments/debt', { signal })
   return data.data
 }
 
 // Долг учителя по каждому его ученику: [{ student, charged, paid, balance }]
 // teacherId сервер берёт из токена — аргументы не нужны.
-export const getDebtsForTeacher = async () => {
-  const { data } = await client.get('/payments/debts')
+export const getDebtsForTeacher = async (signal) => {
+  const { data } = await client.get('/payments/debts', { signal })
   return data.data
 }
 
@@ -26,6 +26,13 @@ export const recordPayment = async (studentId, amount, method) => {
 export const getPaymentHistory = async (params = {}) => {
   const { data } = await client.get('/payments/history', { params })
   return data // отдаём весь ответ — нужны и записи, и сводка
+}
+
+// История оплат ученика: { data: [...], summary: { total, byMethod } }.
+// studentId сервер берёт из токена. params: { method?, from?, to? }
+export const getMyPaymentHistory = async (params = {}) => {
+  const { data } = await client.get('/payments/my-history', { params })
+  return data // весь ответ — записи + сводка
 }
 
 // Реквизиты учителя для страницы оплаты (вызывает ученик)

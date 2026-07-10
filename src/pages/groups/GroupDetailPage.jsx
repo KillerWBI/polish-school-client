@@ -13,7 +13,7 @@ import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
-import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 
 const DAYS = [
@@ -33,7 +33,7 @@ export default function GroupDetailPage() {
     useCallback(() => getGroup(id), [id])
   )
 
-  if (loading) return <PageSpinner />
+  if (loading) return <div className="p-5 sm:p-8 max-w-4xl"><SkeletonList count={4} /></div>
   if (!group)  return <div className="p-8 text-slate-400">Группа не найдена</div>
 
   const schedule = (group.schedule || [])
@@ -471,7 +471,7 @@ function LessonsTab({ group, isTeacher }) {
         )}
       </div>
 
-      {loading ? <PageSpinner /> : !lessons?.length ? (
+      {loading ? <SkeletonList count={3} /> : !lessons?.length ? (
         <EmptyState emoji="📅" title="Уроков пока нет"
           text={isTeacher
             ? 'Сгенерируйте уроки по расписанию или создайте отдельный урок.'

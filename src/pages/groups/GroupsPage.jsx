@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
@@ -11,6 +11,9 @@ import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import Pagination from '../../components/ui/Pagination'
+
+const PAGE_SIZE = 12
 
 const DAYS = [
   { value: 1, label: 'Пн' }, { value: 2, label: 'Вт' },
@@ -24,6 +27,13 @@ export default function GroupsPage() {
   const { isTeacher } = useAuth()
   const { data: groups, loading, reload } = useFetch(getGroups)
   const [modal, setModal] = useState(false)
+  const [page, setPage] = useState(1)
+
+  const pages = Math.ceil((groups?.length || 0) / PAGE_SIZE)
+  const paged = useMemo(
+    () => (groups || []).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [groups, page]
+  )
 
   return (
     <div className="p-5 sm:p-8">
@@ -56,11 +66,14 @@ export default function GroupsPage() {
               : null}
           />
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {groups.map(g => (
-              <GroupCard key={g.id} group={g} onClick={() => navigate(`/groups/${g.id}`)} />
-            ))}
-          </div>
+          <>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {paged.map(g => (
+                <GroupCard key={g.id} group={g} onClick={() => navigate(`/groups/${g.id}`)} />
+              ))}
+            </div>
+            <Pagination page={page} pages={pages} onChange={setPage} />
+          </>
         )
       )}
 

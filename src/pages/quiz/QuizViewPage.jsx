@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 import { ArrowLeft, Trash2 } from 'lucide-react'
 import useFetch from '../../hooks/useFetch'
 import { getQuiz, deleteQuiz } from '../../api/quizzes.api'
-import { PageSpinner } from '../../components/ui/Spinner'
+import { SkeletonList } from '../../components/ui/Skeleton'
 import QuizRunner from './QuizRunner'
 
 export default function QuizViewPage() {
@@ -11,7 +11,7 @@ export default function QuizViewPage() {
   const navigate = useNavigate()
   const { data: quiz, loading } = useFetch(() => getQuiz(id), [id])
 
-  if (loading) return <PageSpinner />
+  if (loading) return <div className="p-5 sm:p-8 max-w-3xl mx-auto"><SkeletonList count={4} /></div>
 
   if (!quiz) {
     return (

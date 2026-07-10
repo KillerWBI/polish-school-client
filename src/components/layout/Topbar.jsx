@@ -1,13 +1,22 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Search, Bell, Users, FileText, Wallet, UserPlus, X, HelpCircle } from 'lucide-react'
+import { Search, Bell, Users, FileText, Wallet, UserPlus, CheckCircle2, CalendarCheck, X, HelpCircle } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import { getGroups } from '../../api/groups.api'
 import { getMyStudents } from '../../api/students.api'
-import { getInvitations } from '../../api/invitations.api'
-import { getDashboard } from '../../api/dashboard.api'
+import { getNotifications, markNotificationRead, markAllNotificationsRead } from '../../api/notifications.api'
 import { helpSectionFor } from '../../utils/helpSection'
 import { safeUrl } from '../../utils/safeUrl'
+
+// Иконка + цвет по типу уведомления
+const NOTIF_META = {
+  homework_assigned: { Icon: FileText,     cls: 'bg-amber-50 text-amber-600' },
+  homework_graded:   { Icon: CheckCircle2, cls: 'bg-emerald-50 text-emerald-600' },
+  attendance_pending:{ Icon: CalendarCheck,cls: 'bg-blue-50 text-blue-600' },
+  invitation_received:{ Icon: UserPlus,    cls: 'bg-blue-50 text-blue-600' },
+  payment_recorded:  { Icon: Wallet,       cls: 'bg-emerald-50 text-emerald-600' },
+  _default:          { Icon: Bell,         cls: 'bg-slate-100 text-slate-500' },
+}
 
 export default function Topbar() {
   const { user, isTeacher } = useAuth()
@@ -108,10 +117,11 @@ export function SearchBox({ isTeacher, navigate }) {
   )
 }
 
-/* ── Рабочие уведомления ── */
-export function NotifBell({ isTeacher, navigate }) {
+/* ── Рабочие уведомления (реальные, из /notifications) ── */
+export function NotifBell({ navigate }) {
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState([])
+  const [unread, setUnread] = useState(0)
   const ref = useRef(null)
 
   useEffect(() => {
@@ -120,42 +130,53 @@ export function NotifBell({ isTeacher, navigate }) {
     return () => document.removeEventListener('mousedown', h)
   }, [])
 
+  const load = () => {
+    getNotifications({ }).then((res) => {
+      setItems(res.data || [])
+      setUnread(res.meta?.unreadCount ?? 0)
+    }).catch(() => {})
+  }
+
+  // Загрузка при монтировании + опрос раз в 60с
   useEffect(() => {
-    let alive = true
-    Promise.all([
-      getDashboard().catch(() => null),
-      getInvitations('pending').catch(() => []),
-    ]).then(([dash, invites]) => {
-      if (!alive) return
-      const k = dash?.kpi ?? {}
-      const list = []
-      if (isTeacher) {
-        if (k.ungradedSubmissions > 0) list.push({ Icon: FileText, cls: 'bg-amber-50 text-amber-600', text: `${k.ungradedSubmissions} ДЗ ждут проверки`, to: '/homework' })
-        if (k.totalDebt > 0)           list.push({ Icon: Wallet,   cls: 'bg-slate-100 text-slate-500', text: `Долг учеников: ${k.totalDebt} zł`, to: '/payments' })
-        if (invites?.length)           list.push({ Icon: UserPlus, cls: 'bg-blue-50 text-blue-600', text: `${invites.length} приглашений ждут ответа`, to: '/groups' })
-      } else {
-        if (invites?.length)           list.push({ Icon: UserPlus, cls: 'bg-blue-50 text-blue-600', text: `${invites.length} приглашение в группу`, to: '/groups' })
-        if (k.pendingHomework > 0)     list.push({ Icon: FileText, cls: 'bg-amber-50 text-amber-600', text: `${k.pendingHomework} ДЗ к сдаче`, to: '/homework' })
-        if (k.myDebt > 0)              list.push({ Icon: Wallet,   cls: 'bg-slate-100 text-slate-500', text: `Ваш долг: ${k.myDebt} zł`, to: '/payments' })
-      }
-      setItems(list)
-    })
-    return () => { alive = false }
-  }, [isTeacher])
+    load()
+    const t = setInterval(load, 60000)
+    return () => clearInterval(t)
+  }, [])
+
+  const openItem = async (n) => {
+    setOpen(false)
+    if (!n.readAt) {
+      setUnread(u => Math.max(0, u - 1))
+      setItems(list => list.map(x => x.id === n.id ? { ...x, readAt: new Date().toISOString() } : x))
+      markNotificationRead(n.id).catch(() => {})
+    }
+    if (n.link) navigate(n.link)
+  }
+
+  const readAll = async () => {
+    setUnread(0)
+    setItems(list => list.map(x => ({ ...x, readAt: x.readAt || new Date().toISOString() })))
+    markAllNotificationsRead().catch(() => {})
+  }
 
   return (
     <div ref={ref} className="relative">
       <button onClick={() => setOpen(v => !v)}
         className="relative w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors cursor-pointer">
         <Bell className="w-[18px] h-[18px]" strokeWidth={1.9} />
-        {items.length > 0 && <span className="absolute top-2 right-2 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-semibold flex items-center justify-center">{items.length}</span>}
+        {unread > 0 && <span className="absolute top-2 right-2 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-semibold flex items-center justify-center">{unread}</span>}
       </button>
 
       {open && (
         <div className="absolute right-0 mt-2 w-80 rounded-xl border border-slate-200 bg-white shadow-lg z-50 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
             <span className="text-sm font-semibold text-slate-900">Уведомления</span>
-            {items.length > 0 && <span className="text-[11px] text-slate-400">{items.length} новых</span>}
+            {unread > 0 && (
+              <button onClick={readAll} className="text-[11px] text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+                Прочитать все
+              </button>
+            )}
           </div>
           {items.length === 0 ? (
             <div className="px-4 py-8 text-center">
@@ -163,14 +184,21 @@ export function NotifBell({ isTeacher, navigate }) {
               <p className="text-sm text-slate-400">Новых уведомлений нет</p>
             </div>
           ) : (
-            <div className="py-1">
-              {items.map((it, i) => (
-                <button key={i} onClick={() => { navigate(it.to); setOpen(false) }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 cursor-pointer text-left">
-                  <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${it.cls}`}><it.Icon className="w-4 h-4" /></span>
-                  <span className="text-sm text-slate-700 flex-1">{it.text}</span>
-                </button>
-              ))}
+            <div className="py-1 max-h-[380px] overflow-y-auto">
+              {items.map((n) => {
+                const meta = NOTIF_META[n.type] ?? NOTIF_META._default
+                return (
+                  <button key={n.id} onClick={() => openItem(n)}
+                    className={`w-full flex items-start gap-3 px-4 py-2.5 hover:bg-slate-50 cursor-pointer text-left ${!n.readAt ? 'bg-blue-50/40' : ''}`}>
+                    <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${meta.cls}`}><meta.Icon className="w-4 h-4" /></span>
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-sm font-medium text-slate-800">{n.title}</span>
+                      {n.body && <span className="block text-xs text-slate-500 truncate">{n.body}</span>}
+                    </span>
+                    {!n.readAt && <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 mt-1.5" />}
+                  </button>
+                )
+              })}
             </div>
           )}
         </div>

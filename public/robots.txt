@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+Allow: /for-students
+
+# Страницы приложения — не индексировать (требуют авторизации)
+Disallow: /dashboard
+Disallow: /groups
+Disallow: /homework
+Disallow: /attendance
+Disallow: /payments
+Disallow: /pay/
+Disallow: /settings
+Disallow: /profile
+Disallow: /admin
+Disallow: /calendar
+Disallow: /students
+Disallow: /individual-courses
+Disallow: /individual-lessons
+Disallow: /welcome
+Disallow: /plans
+
+Sitemap: https://linguaflow.app/sitemap.xml

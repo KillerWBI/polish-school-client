@@ -7,8 +7,8 @@ export const saveQuiz = async (quiz) => {
 }
 
 // Список моих тестов (мета)
-export const getQuizzes = async () => {
-  const { data } = await client.get('/quizzes')
+export const getQuizzes = async (signal) => {
+  const { data } = await client.get('/quizzes', { signal })
   return data.data
 }
 
