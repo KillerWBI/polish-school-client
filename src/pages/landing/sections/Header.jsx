@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import useAuth from '../../../hooks/useAuth'
 import RoleSwitch from './RoleSwitch'
 import LanguageSwitcher from '../../../components/ui/LanguageSwitcher'
 
 // Тёмный тех-моно хедер лендинга.
 export default function Header({ onLogin, onRegister }) {
+  const { t } = useTranslation('landing')
+  const { t: tc } = useTranslation('common')
   const [scrolled, setScrolled] = useState(false)
   const { isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
@@ -37,10 +40,10 @@ export default function Header({ onLogin, onRegister }) {
 
         {/* Нав — моно */}
         <nav className="hidden md:flex items-center gap-8 font-mono text-[13px] text-[#8A8A8F]">
-          <button onClick={() => scrollTo('features')} className="hover:text-[#EDEDED] transition-colors cursor-pointer">возможности</button>
-          <button onClick={() => scrollTo('how')}      className="hover:text-[#EDEDED] transition-colors cursor-pointer">как&nbsp;работает</button>
-          <button onClick={() => scrollTo('faq')}       className="hover:text-[#EDEDED] transition-colors cursor-pointer">вопросы</button>
-          <button onClick={() => navigate('/support')}  className="hover:text-[#EDEDED] transition-colors cursor-pointer">поддержка</button>
+          <button onClick={() => scrollTo('features')} className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('header.features')}</button>
+          <button onClick={() => scrollTo('how')}      className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('header.how')}</button>
+          <button onClick={() => scrollTo('faq')}       className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('header.faq')}</button>
+          <button onClick={() => navigate('/support')}  className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('header.support')}</button>
         </nav>
 
         {/* Действия */}
@@ -52,7 +55,7 @@ export default function Header({ onLogin, onRegister }) {
               onClick={() => navigate('/dashboard')}
               className="h-9 px-4 rounded-lg bg-white text-[#0A0A0B] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer"
             >
-              В кабинет{user?.name ? `, ${user.name.split(' ')[0]}` : ''}
+              {user?.name ? t('header.toDashboardName', { name: user.name.split(' ')[0] }) : t('header.toDashboard')}
             </button>
           ) : (
             <>
@@ -60,13 +63,13 @@ export default function Header({ onLogin, onRegister }) {
                 onClick={onLogin}
                 className="hidden sm:inline-flex h-9 px-3 items-center rounded-lg text-[13px] text-[#B4B4BA] hover:text-white transition-colors cursor-pointer"
               >
-                Войти
+                {tc('login')}
               </button>
               <button
                 onClick={onRegister}
                 className="h-9 px-4 rounded-lg bg-white text-[#0A0A0B] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer"
               >
-                Начать
+                {tc('register')}
               </button>
             </>
           )}

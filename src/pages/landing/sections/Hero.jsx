@@ -1,5 +1,9 @@
+import { useTranslation } from 'react-i18next'
+
 // Hero лендинга — тёмный тех-моно.
 export default function Hero({ onPrimary, onSecondary }) {
+  const { t } = useTranslation('landing')
+  const { t: tc } = useTranslation('common')
   return (
     <section className="relative bg-[#0A0A0B] text-[#EDEDED] overflow-hidden">
       {/* тонкая сетка-фон + мягкое свечение сверху */}
@@ -7,16 +11,15 @@ export default function Hero({ onPrimary, onSecondary }) {
       <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full bg-brand-600/15 blur-[120px] pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-32 pb-20 sm:pt-40 sm:pb-28">
-        <p className="mono-label mb-5">// платформа для преподавателей и учеников</p>
+        <p className="mono-label mb-5">{t('hero.label')}</p>
 
         <h1 className="font-display font-bold tracking-tight leading-[1.02] text-[clamp(2.6rem,7vw,5rem)]">
-          Рабочее место<br />
-          <span className="text-[#6E6E76]">преподавателя.</span>
+          {t('hero.title1')}<br />
+          <span className="text-[#6E6E76]">{t('hero.title2')}</span>
         </h1>
 
         <p className="mt-6 max-w-xl text-[#9A9AA1] text-base sm:text-lg leading-relaxed">
-          Группы, уроки, задания, посещаемость и финансы — <span className="text-[#EDEDED]">соло или с учениками</span>.
-          Любой предмет. Один инструмент вместо десяти вкладок и таблиц.
+          {t('hero.subtitle')}
         </p>
 
         {/* терминал-блок */}
@@ -25,13 +28,13 @@ export default function Hero({ onPrimary, onSecondary }) {
             <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
-            <span className="ml-2 text-[#5A5A60] text-[11px]">workflow</span>
+            <span className="ml-2 text-[#5A5A60] text-[11px]">{t('hero.term')}</span>
           </div>
           <div className="p-4 space-y-1.5 text-[#8A8A8F]">
-            <p><span className="text-brand-400">01</span> создаёте группу или добавляете ученика</p>
-            <p><span className="text-brand-400">02</span> ведёте уроки, задания, посещаемость</p>
-            <p><span className="text-brand-400">03</span> долг считается автоматически</p>
-            <p className="text-[#EDEDED]"><span className="text-brand-400">04</span> приглашаете учеников в кабинет <span className="caret" /></p>
+            <p><span className="text-brand-400">01</span> {t('hero.term1')}</p>
+            <p><span className="text-brand-400">02</span> {t('hero.term2')}</p>
+            <p><span className="text-brand-400">03</span> {t('hero.term3')}</p>
+            <p className="text-[#EDEDED]"><span className="text-brand-400">04</span> {t('hero.term4')} <span className="caret" /></p>
           </div>
         </div>
 
@@ -41,27 +44,27 @@ export default function Hero({ onPrimary, onSecondary }) {
             onClick={onPrimary}
             className="h-11 px-6 rounded-lg bg-white text-[#0A0A0B] text-sm font-semibold hover:bg-[#EDEDED] transition-colors cursor-pointer"
           >
-            Начать бесплатно
+            {t('hero.startFree')}
           </button>
           <button
             onClick={onSecondary}
             className="h-11 px-6 rounded-lg border border-[#2A2A2E] text-[#EDEDED] text-sm hover:bg-white/[0.04] hover:border-[#3A3A40] transition-colors cursor-pointer"
           >
-            Войти
+            {tc('login')}
           </button>
         </div>
 
         {/* живая моно-строка */}
         <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[12px] text-[#5A5A60]">
-          <span className="text-[#8A8A8F]">≈ 10 вкладок</span>
+          <span className="text-[#8A8A8F]">{t('hero.stats1')}</span>
           <span>→</span>
-          <span className="text-brand-400">1 экран</span>
+          <span className="text-brand-400">{t('hero.stats2')}</span>
           <span className="text-[#2A2A2E]">·</span>
-          <span>соло или с учениками</span>
+          <span>{t('hero.stats3')}</span>
           <span className="text-[#2A2A2E]">·</span>
-          <span>бесплатно на старте</span>
+          <span>{t('hero.stats4')}</span>
           <span className="text-[#2A2A2E]">·</span>
-          <span>с телефона тоже</span>
+          <span>{t('hero.stats5')}</span>
         </div>
 
         {/* макет интерфейса (стилизованный «скрин», без картинки) */}
@@ -71,16 +74,16 @@ export default function Hero({ onPrimary, onSecondary }) {
             <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
-            <span className="ml-3 font-mono text-[11px] text-[#5A5A60]">linguaflow — дашборд</span>
+            <span className="ml-3 font-mono text-[11px] text-[#5A5A60]">{t('hero.mockTab')}</span>
           </div>
           {/* «светлое» приложение внутри — намёк, что аппа светлая */}
           <div className="bg-[#F7F8FA] p-4 sm:p-6">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-              {[['Долг', '2 340 zł', '+2.8%'], ['Уроки сегодня', '3', ''], ['ДЗ к проверке', '5', ''], ['Посещаемость', '92%', '']].map(([k, v, t]) => (
+              {[[t('hero.kpiDebt'), '2 340 zł', '+2.8%'], [t('hero.kpiToday'), '3', ''], [t('hero.kpiHw'), '5', ''], [t('hero.kpiAttendance'), '92%', '']].map(([k, v, tt]) => (
                 <div key={k} className="rounded-xl bg-white border border-[#EAECEF] p-3 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
                   <div className="text-[10px] text-[#8A94A6] mb-1">{k}</div>
                   <div className="text-lg font-semibold text-[#0F172A] leading-none">{v}</div>
-                  {t && <div className="text-[10px] text-[#16A34A] mt-1">{t}</div>}
+                  {tt && <div className="text-[10px] text-[#16A34A] mt-1">{tt}</div>}
                 </div>
               ))}
             </div>
@@ -91,10 +94,10 @@ export default function Hero({ onPrimary, onSecondary }) {
                 ))}
               </div>
               <div className="rounded-xl bg-white border border-[#EAECEF] p-3 shadow-[0_1px_3px_rgba(0,0,0,0.05)] space-y-2">
-                <div className="text-[10px] text-[#8A94A6]">Ближайшие</div>
-                {['Пн 10:00 · Группа', 'Ср 18:00 · Индивид.'].map(t => (
-                  <div key={t} className="text-xs text-[#334155] flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-500" />{t}
+                <div className="text-[10px] text-[#8A94A6]">{t('hero.upcoming')}</div>
+                {['Пн 10:00 · Группа', 'Ср 18:00 · Индивид.'].map(row => (
+                  <div key={row} className="text-xs text-[#334155] flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-500" />{row}
                   </div>
                 ))}
               </div>

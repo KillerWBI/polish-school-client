@@ -12,12 +12,15 @@ import enCommon from './locales/en/common.json'
 import esCommon from './locales/es/common.json'
 import frCommon from './locales/fr/common.json'
 import deCommon from './locales/de/common.json'
+// landing: пока ru + en (источник + fallback); pl/uk/es/fr/de добавляются по мере перевода
+import ruLanding from './locales/ru/landing.json'
+import enLanding from './locales/en/landing.json'
 
 const resources = {
-  ru: { common: ruCommon },
+  ru: { common: ruCommon, landing: ruLanding },
   pl: { common: plCommon },
   uk: { common: ukCommon },
-  en: { common: enCommon },
+  en: { common: enCommon, landing: enLanding },
   es: { common: esCommon },
   fr: { common: frCommon },
   de: { common: deCommon },
@@ -34,7 +37,7 @@ i18n
     resources,
     supportedLngs: SUPPORTED,
     fallbackLng: FALLBACK,
-    ns: ['common'],
+    ns: ['common', 'landing'],
     defaultNS: 'common',
     load: 'languageOnly', // 'pl-PL' → 'pl'
     interpolation: { escapeValue: false },

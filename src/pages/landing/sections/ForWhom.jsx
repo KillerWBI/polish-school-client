@@ -1,37 +1,22 @@
-// «Для кого» — сценарии-истории, а не сухие карточки. Смещённая раскладка.
-const CASES = [
-  {
-    tag: 'репетитор-соло',
-    quote: '«Веду 12 человек, никто из них не в системе — и не нужно».',
-    story: 'Добавляете всех записями, отмечаете посещения — приложение само считает, кто сколько должен. Регистрация учеников не требуется, всё на вашем экране.',
-    stat: '12 учеников · 0 регистраций',
-  },
-  {
-    tag: 'небольшая школа',
-    quote: '«Три группы, расписание, задания и деньги — раньше в четырёх местах».',
-    story: 'Группы с расписанием генерируют уроки автоматически, задания и посещаемость — в одном списке, долг по каждому ученику — в реальном времени. Вечер снова уходит на занятия, а не на таблицы.',
-    stat: '3 группы · 1 экран',
-  },
-  {
-    tag: 'онлайн-преподаватель',
-    quote: '«Ученики видят своё сами — меня перестали спрашивать расписание».',
-    story: 'Приглашаете ученика по нику — он видит уроки, задания, посещаемость, долг и чат группы. Ссылка на видеозвонок — прямо в карточке урока.',
-    stat: 'приглашение → ученик в группе',
-  },
-]
+import { useTranslation } from 'react-i18next'
 
+// «Для кого» — сценарии-истории, а не сухие карточки. Смещённая раскладка.
 export default function ForWhom() {
+  const { t } = useTranslation('landing')
+  const CASES = [1, 2, 3].map((i) => ({
+    tag: t(`forWhom.c${i}tag`), quote: t(`forWhom.c${i}quote`), story: t(`forWhom.c${i}story`), stat: t(`forWhom.c${i}stat`),
+  }))
   return (
     <section className="bg-[#0D0D0F] text-[#EDEDED] border-t border-[#141416]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-14">
           <div>
-            <p className="mono-label mb-3">// для кого</p>
+            <p className="mono-label mb-3">{t('forWhom.label')}</p>
             <h2 className="font-display font-semibold text-3xl sm:text-4xl tracking-tight max-w-xl">
-              Кому это правда упрощает жизнь
+              {t('forWhom.title')}
             </h2>
           </div>
-          <p className="font-mono text-[12px] text-[#5A5A60] max-w-xs">не «для всех сразу» — а под конкретный способ вести учеников</p>
+          <p className="font-mono text-[12px] text-[#5A5A60] max-w-xs">{t('forWhom.note')}</p>
         </div>
 
         <div className="space-y-5">
