@@ -39,6 +39,7 @@ export default function Header({ onLogin, onRegister }) {
           <button onClick={() => scrollTo('features')} className="hover:text-[#EDEDED] transition-colors cursor-pointer">возможности</button>
           <button onClick={() => scrollTo('how')}      className="hover:text-[#EDEDED] transition-colors cursor-pointer">как&nbsp;работает</button>
           <button onClick={() => scrollTo('faq')}       className="hover:text-[#EDEDED] transition-colors cursor-pointer">вопросы</button>
+          <button onClick={() => navigate('/support')}  className="hover:text-[#EDEDED] transition-colors cursor-pointer">поддержка</button>
         </nav>
 
         {/* Действия */}

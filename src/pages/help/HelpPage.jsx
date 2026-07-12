@@ -116,7 +116,7 @@ const TEACHER_SECTIONS = [
   {
     id: 'calendar', title: 'Расписание', items: [
       { q: 'Что показывает календарь?', a: 'Все уроки по датам: групповые (синие) и индивидуальные (розовые). Клик по уроку — детали и ссылка на занятие.',
-        visual: <Shot><div className="flex gap-2"><Mark label="групповой урок"><span className="text-[11px] px-2 py-1 rounded bg-blue-600 text-white">18:00 A2</span></Mark><span className="text-[11px] px-2 py-1 rounded bg-pink-700 text-white">16:00 инд.</span></div></Shot> },
+        visual: <Shot><div className="flex gap-2"><Mark label="групповой урок"><span className="text-[11px] px-2 py-1 rounded bg-blue-600 text-white">18:00 группа</span></Mark><span className="text-[11px] px-2 py-1 rounded bg-pink-700 text-white">16:00 инд.</span></div></Shot> },
     ],
   },
   {
@@ -195,7 +195,7 @@ const STUDENT_SECTIONS = [
   {
     id: 'groups', title: 'Мои группы', items: [
       { q: 'Как принять приглашение в группу?', a: 'На «Мои группы» сверху появляется блок «Приглашения» — жми «Принять», и группа добавится. Пригласить тебя может преподаватель по нику.',
-        visual: <Shot><div className="w-64 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2"><span className="text-xs text-slate-900 flex-1">Польский A2 · от Марии</span><span className="text-xs text-slate-400">Отклонить</span><Mark label="вступить"><Btn>Принять</Btn></Mark></div></Shot> },
+        visual: <Shot><div className="w-64 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2"><span className="text-xs text-slate-900 flex-1">Группа · от Марии</span><span className="text-xs text-slate-400">Отклонить</span><Mark label="вступить"><Btn>Принять</Btn></Mark></div></Shot> },
     ],
   },
   {

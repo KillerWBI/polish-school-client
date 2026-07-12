@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Search, Bell, Users, FileText, Wallet, UserPlus, CheckCircle2, CalendarCheck, X, HelpCircle } from 'lucide-react'
+import { Search, Bell, Users, FileText, Wallet, UserPlus, CheckCircle2, CalendarCheck, XCircle, X, HelpCircle } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import { getGroups } from '../../api/groups.api'
 import { getMyStudents } from '../../api/students.api'
@@ -15,6 +15,9 @@ const NOTIF_META = {
   attendance_pending:{ Icon: CalendarCheck,cls: 'bg-blue-50 text-blue-600' },
   invitation_received:{ Icon: UserPlus,    cls: 'bg-blue-50 text-blue-600' },
   payment_recorded:  { Icon: Wallet,       cls: 'bg-emerald-50 text-emerald-600' },
+  payment_submitted: { Icon: Wallet,       cls: 'bg-amber-50 text-amber-600' },
+  payment_approved:  { Icon: CheckCircle2, cls: 'bg-emerald-50 text-emerald-600' },
+  payment_rejected:  { Icon: XCircle,      cls: 'bg-red-50 text-red-600' },
   _default:          { Icon: Bell,         cls: 'bg-slate-100 text-slate-500' },
 }
 

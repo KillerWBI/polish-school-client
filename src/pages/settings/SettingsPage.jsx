@@ -230,7 +230,7 @@ function PaymentMethodsTab({ user, updateUser }) {
       {/* BLIK */}
       <Section title="BLIK (Польша)">
         <Input label="Номер телефона" placeholder="+48 123 456 789" value={form.blik} onChange={e => set({ blik: e.target.value })} />
-        <p className="text-[11px] text-slate-400 mt-1.5">Для польских учеников — самый быстрый способ.</p>
+        <p className="text-[11px] text-slate-400 mt-1.5">Быстрая оплата по номеру телефона.</p>
       </Section>
 
       {/* PayPal */}

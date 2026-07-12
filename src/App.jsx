@@ -38,6 +38,7 @@ const MyLessonsPage              = lazy(() => import('./pages/my-lessons/MyLesso
 const NotesPage                  = lazy(() => import('./pages/notes/NotesPage'))
 const ProgressPage               = lazy(() => import('./pages/progress/ProgressPage'))
 const MaterialsPage              = lazy(() => import('./pages/materials/MaterialsPage'))
+const TopicsPage                 = lazy(() => import('./pages/topics/TopicsPage'))
 
 export default function App() {
   return (
@@ -85,6 +86,10 @@ export default function App() {
           {/* Только ученик — личный словарь */}
           <Route path="/vocab"
             element={<RoleRoute role="student"><VocabPage /></RoleRoute>} />
+
+          {/* Только ученик — темы с адаптивными тестами */}
+          <Route path="/topics"
+            element={<RoleRoute role="student"><TopicsPage /></RoleRoute>} />
 
           {/* Только ученик — журнал внешних занятий */}
           <Route path="/my-lessons"

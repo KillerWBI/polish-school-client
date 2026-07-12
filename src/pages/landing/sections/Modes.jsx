@@ -8,7 +8,7 @@ export default function Modes({ onPrimary }) {
           <h2 className="font-display font-semibold text-3xl sm:text-4xl tracking-tight">
             Работайте так, как удобно <span className="text-[#6E6E76]">именно вам</span>
           </h2>
-          <p className="mt-3 text-[#8A8A8F]">Один и тот же ученик может «вырасти» из заметки в полноценный аккаунт. Без потери истории.</p>
+          <p className="mt-3 text-[#8A8A8F]">Один и тот же ученик может вырасти из простой записи в полноценный аккаунт — без потери истории.</p>
         </div>
 
         <div className="mt-14 grid lg:grid-cols-[1fr_auto_1fr] gap-8 items-stretch">
@@ -17,13 +17,13 @@ export default function Modes({ onPrimary }) {
             <div className="font-mono text-[12px] text-brand-400 mb-4">режим_A · соло</div>
             <h3 className="font-display font-semibold text-2xl">Ведёте сами, без регистрации учеников</h3>
             <p className="mt-3 text-sm text-[#8A8A8F] leading-relaxed">
-              Добавляете ученика как «заглушку» — просто имя и контакт. Ему ничего не приходит, аккаунт не нужен.
-              Посещаемость и долг считаются как у обычного.
+              Добавляете ученика записью — только имя и контакт. Ему ничего не приходит, аккаунт не нужен.
+              Посещаемость и долг считаются так же, как у обычного ученика.
             </p>
             <div className="mt-5 space-y-2 font-mono text-[12px] text-[#8A8A8F]">
-              <div className="flex items-center gap-2"><span className="text-[#3A3A40]">01</span> добавил «Вася (telegram)»</div>
-              <div className="flex items-center gap-2"><span className="text-[#3A3A40]">02</span> отметил посещения → долг растёт</div>
-              <div className="flex items-center gap-2"><span className="text-[#3A3A40]">03</span> внёс оплату вручную</div>
+              <div className="flex items-center gap-2"><span className="text-[#3A3A40]">01</span> добавили ученика (имя, контакт)</div>
+              <div className="flex items-center gap-2"><span className="text-[#3A3A40]">02</span> отметили посещения → долг растёт</div>
+              <div className="flex items-center gap-2"><span className="text-[#3A3A40]">03</span> внесли оплату</div>
             </div>
           </div>
 
@@ -39,13 +39,13 @@ export default function Modes({ onPrimary }) {
             <div className="font-mono text-[12px] text-brand-400 mb-4">режим_B · с учениками</div>
             <h3 className="font-display font-semibold text-2xl">Подключаете учеников — они видят своё</h3>
             <p className="mt-3 text-sm text-[#8A8A8F] leading-relaxed">
-              Находите ученика по нику, отправляете приглашение в группу. Он принимает — и видит расписание, ДЗ,
-              посещаемость, долг и чат. А заглушку переносите на его аккаунт вместе со всей историей.
+              Находите ученика по нику и отправляете приглашение в группу. Он принимает — и видит расписание, задания,
+              посещаемость, долг и чат. Прежнюю запись можно перенести на его аккаунт вместе со всей историей.
             </p>
             <div className="mt-5 space-y-2 font-mono text-[12px] text-[#8A8A8F]">
-              <div className="flex items-center gap-2"><span className="text-[#3A3A40]">01</span> нашёл @vasya → пригласил</div>
-              <div className="flex items-center gap-2"><span className="text-[#3A3A40]">02</span> ученик принял → в группе</div>
-              <div className="flex items-center gap-2"><span className="text-brand-400">03</span> перенёс историю заглушки → на него</div>
+              <div className="flex items-center gap-2"><span className="text-[#3A3A40]">01</span> нашли ученика по нику → пригласили</div>
+              <div className="flex items-center gap-2"><span className="text-[#3A3A40]">02</span> ученик принял → он в группе</div>
+              <div className="flex items-center gap-2"><span className="text-brand-400">03</span> перенесли историю на его аккаунт</div>
             </div>
           </div>
         </div>

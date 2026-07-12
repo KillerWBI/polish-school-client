@@ -2,39 +2,43 @@ import { toast } from 'sonner'
 import { Check, Minus, Sparkles } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 
+// Иерархия тарифов — для сравнения «выше/ниже текущего»
+const RANK = { free: 0, pro: 1, school: 2 }
+
 // Тарифы учителя (SaaS). Оплата подписки подключится позже (платёжный шлюз) —
 // сейчас кнопка «Улучшить» показывает «скоро». Лимиты Free пока не блокируются, только показываются.
 const PLANS = [
   {
     key: 'free', name: 'Free', price: '0', period: 'навсегда',
-    tagline: 'Попробовать и вести первых учеников',
+    tagline: 'Для старта и первых учеников',
     features: [
       { t: 'До 2 групп', ok: true },
       { t: 'До 15 учеников', ok: true },
-      { t: 'Журнал, ДЗ, посещаемость, финансы', ok: true },
+      { t: 'Уроки, задания, посещаемость, финансы', ok: true },
+      { t: 'Кабинет ученика: расписание, оценки, прогресс', ok: true },
       { t: 'Индивидуальные курсы и уроки', ok: false },
-      { t: 'Аналитика и история оплат', ok: false },
-      { t: 'AI-проверка ДЗ и напоминания', ok: false },
+      { t: 'AI-генератор тестов', ok: false },
+      { t: 'Email-напоминания ученикам', ok: false },
     ],
   },
   {
     key: 'pro', name: 'Pro', price: '49', period: 'zł / мес', highlight: true,
-    tagline: 'Для активного преподавателя без ограничений',
+    tagline: 'Для работы без ограничений',
     features: [
-      { t: 'Безлимит групп', ok: true },
-      { t: 'Безлимит учеников', ok: true },
-      { t: 'Журнал, ДЗ, посещаемость, финансы', ok: true },
+      { t: 'Группы и ученики без ограничений', ok: true },
+      { t: 'Уроки, задания, посещаемость, финансы', ok: true },
       { t: 'Индивидуальные курсы и уроки', ok: true },
       { t: 'Аналитика и история оплат', ok: true },
-      { t: 'AI-проверка ДЗ и напоминания', ok: true, soon: true },
+      { t: 'AI-генератор тестов', ok: true },
+      { t: 'Email-напоминания об уроках и дедлайнах', ok: true },
     ],
   },
   {
     key: 'school', name: 'School', price: '—', period: 'скоро',
     tagline: 'Несколько преподавателей под одним брендом',
     features: [
-      { t: 'Всё из Pro', ok: true },
-      { t: 'Несколько учителей под школой', ok: true },
+      { t: 'Все возможности Pro', ok: true },
+      { t: 'Несколько преподавателей в одной школе', ok: true },
       { t: 'Общий бренд и управление', ok: true },
       { t: 'Приоритетная поддержка', ok: true },
     ],
@@ -59,7 +63,7 @@ export default function PlansPage() {
       </div>
 
       <p className="text-center text-xs text-slate-400 mt-6">
-        Оплата подписки подключается — сейчас лимиты Free не блокируют работу.
+        Оплата подписки подключается. Сейчас ограничения тарифа Free не блокируют работу.
       </p>
     </div>
   )
@@ -68,6 +72,9 @@ export default function PlansPage() {
 function PlanCard({ plan, current }) {
   const isCurrent = plan.key === current
   const isSchool  = plan.key === 'school'
+  const planRank  = RANK[plan.key] ?? 0
+  const curRank   = RANK[current] ?? 0
+  const isIncluded = planRank < curRank // тариф ниже текущего — уже входит в подписку
 
   const upgrade = () => toast('Оплата подписки скоро — подключаем платёжку')
 
@@ -105,8 +112,13 @@ function PlanCard({ plan, current }) {
       </ul>
 
       {isCurrent ? (
-        <button disabled className="h-10 rounded-xl bg-slate-100 text-slate-500 text-sm font-medium cursor-default">
+        <button disabled className="h-10 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 text-sm font-medium cursor-default">
           Ваш тариф
+        </button>
+      ) : isIncluded ? (
+        // Тариф ниже текущего — его возможности уже входят в вашу подписку
+        <button disabled className="h-10 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm font-medium cursor-default inline-flex items-center justify-center gap-1.5">
+          <Check className="w-4 h-4" /> Включено
         </button>
       ) : isSchool ? (
         <button disabled className="h-10 rounded-xl bg-slate-100 text-slate-400 text-sm font-medium cursor-default">

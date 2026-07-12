@@ -35,7 +35,7 @@ const Card = ({ children, className = '' }) => (
 function GroupsMock() {
   return (
     <div className="rounded-2xl bg-[#F7F8FA] border border-[#EAECEF] p-4 space-y-2.5">
-      {[['A1 · Вторник/Четверг', '6 учеников', '18:00'], ['B2 Разговорный', '4 ученика', '19:30'], ['Инд · Марта', '1 ученик', 'Пн 12:00']].map(([n, s, t], i) => (
+      {[['Математика · Вт/Чт', '6 учеников', '18:00'], ['Английский разговорный', '4 ученика', '19:30'], ['Индивидуально · Марта', '1 ученик', 'Пн 12:00']].map(([n, s, t], i) => (
         <Card key={i} className="flex items-center gap-3 p-3">
           <div className="w-9 h-9 rounded-lg bg-brand-500/15 flex items-center justify-center text-brand-600 text-sm font-semibold">{n[0]}</div>
           <div className="flex-1 min-w-0">
@@ -73,7 +73,7 @@ function HomeworkMock() {
   return (
     <Card className="p-4 bg-white max-w-sm">
       <div className="flex items-start justify-between gap-3">
-        <div className="text-sm font-medium text-[#0F172A]">Упражнение 5 · Rzeczownik</div>
+        <div className="text-sm font-medium text-[#0F172A]">Упражнение 5 · Тема 3</div>
         <span className="text-[11px] px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-600">Оценено</span>
       </div>
       <div className="mt-1 text-[11px] text-[#8A94A6]">📅 до 07 июля</div>

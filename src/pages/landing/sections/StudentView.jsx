@@ -53,7 +53,7 @@ export default function StudentView() {
                 {/* урок */}
                 <div className="rounded-lg bg-white border border-[#EAECEF] p-2.5">
                   <div className="text-[10px] text-[#8A94A6]">Сегодня</div>
-                  <div className="text-xs font-medium text-[#0F172A] mt-0.5">18:00 · Группа A1</div>
+                  <div className="text-xs font-medium text-[#0F172A] mt-0.5">18:00 · Группа</div>
                   <div className="mt-2 flex gap-1.5">
                     <span className="text-[9px] px-2 py-1 rounded bg-brand-500 text-white">Перейти на урок</span>
                     <span className="text-[9px] px-2 py-1 rounded bg-[#F1F5F9] text-[#475569]">💬 Чат</span>
