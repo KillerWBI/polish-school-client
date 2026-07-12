@@ -1,0 +1,50 @@
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import LanguageDetector from 'i18next-browser-languagedetector'
+import { SUPPORTED, FALLBACK } from './countryToLang'
+import { geoDetector } from './detectLocale'
+
+// Ресурсы (namespaces). Пока — common; остальные namespace добавляются по фазам.
+import ruCommon from './locales/ru/common.json'
+import plCommon from './locales/pl/common.json'
+import ukCommon from './locales/uk/common.json'
+import enCommon from './locales/en/common.json'
+import esCommon from './locales/es/common.json'
+import frCommon from './locales/fr/common.json'
+import deCommon from './locales/de/common.json'
+
+const resources = {
+  ru: { common: ruCommon },
+  pl: { common: plCommon },
+  uk: { common: ukCommon },
+  en: { common: enCommon },
+  es: { common: esCommon },
+  fr: { common: frCommon },
+  de: { common: deCommon },
+}
+
+// Регистрируем кастомный гео-детектор (читает кэш lf_geo_lang)
+const detector = new LanguageDetector()
+detector.addDetector(geoDetector)
+
+i18n
+  .use(detector)
+  .use(initReactI18next)
+  .init({
+    resources,
+    supportedLngs: SUPPORTED,
+    fallbackLng: FALLBACK,
+    ns: ['common'],
+    defaultNS: 'common',
+    load: 'languageOnly', // 'pl-PL' → 'pl'
+    interpolation: { escapeValue: false },
+    detection: {
+      // Порядок: явный выбор → гео (кэш) → язык браузера
+      order: ['localStorage', 'geo', 'navigator'],
+      lookupLocalStorage: 'lf_lang',
+      caches: [], // выбор пишем сами (LanguageSwitcher) в lf_lang
+    },
+    react: { useSuspense: false },
+  })
+
+export default i18n

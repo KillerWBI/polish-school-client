@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 import { safeUrl } from '../../utils/safeUrl'
+import LanguageSwitcher from '../ui/LanguageSwitcher'
 
 // Светлый сайдбар (Cemdash-стиль).
 const PLAN_LABEL = { free: 'Free', pro: 'Pro', school: 'School' }
@@ -147,6 +148,7 @@ export default function Sidebar({ onClose }) {
         <NavLink to="/support" onClick={onClose} className={linkClass}>
           <IconSupport /> Поддержка
         </NavLink>
+        <div className="px-1 py-1"><LanguageSwitcher className="w-full" /></div>
         <NavLink to="/settings" onClick={onClose} className={({ isActive }) =>
           `flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-colors ${
             isActive

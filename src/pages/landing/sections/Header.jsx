@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../../../hooks/useAuth'
 import RoleSwitch from './RoleSwitch'
+import LanguageSwitcher from '../../../components/ui/LanguageSwitcher'
 
 // Тёмный тех-моно хедер лендинга.
 export default function Header({ onLogin, onRegister }) {
@@ -44,6 +45,7 @@ export default function Header({ onLogin, onRegister }) {
 
         {/* Действия */}
         <div className="flex items-center gap-2.5">
+          <LanguageSwitcher variant="dark" />
           <RoleSwitch active="teacher" />
           {isAuthenticated ? (
             <button

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 import RoleSwitch from './sections/RoleSwitch'
+import LanguageSwitcher from '../../components/ui/LanguageSwitcher'
 
 // Отдельный лендинг для УЧЕНИКА (teacher-лендинг — на «/»). Тёмный тех-моно стиль бренда.
 export default function StudentLandingPage() {
@@ -40,6 +41,7 @@ export default function StudentLandingPage() {
           </nav>
 
           <div className="flex items-center gap-2.5">
+            <LanguageSwitcher variant="dark" />
             <RoleSwitch active="student" />
             {isAuthenticated ? (
               <button onClick={() => navigate('/dashboard')}
