@@ -12,7 +12,7 @@ export default function Footer({ onPrimary }) {
               <span className="w-2 h-2 rounded-[2px] bg-brand-500" />
               <span className="font-mono text-sm font-semibold">LinguaFlow</span>
             </div>
-            <p className="text-sm text-[#6E6E76] max-w-xs">Кокпит преподавателя языков. Группы, ДЗ, посещаемость и финансы — в одном месте.</p>
+            <p className="text-sm text-[#6E6E76] max-w-xs">Рабочее место преподавателя. Группы, задания, посещаемость и финансы — в одном месте, по любому предмету.</p>
           </div>
 
           <nav className="flex flex-wrap gap-x-8 gap-y-2 font-mono text-[13px] text-[#8A8A8F]">
@@ -26,7 +26,7 @@ export default function Footer({ onPrimary }) {
 
         <div className="mt-12 pt-6 border-t border-[#141416] flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[12px] text-[#5A5A60]">
           <span>© {new Date().getFullYear()} LinguaFlow</span>
-          <span>сделано для преподавателей языков</span>
+          <span>сделано для преподавателей и учеников</span>
         </div>
       </div>
     </footer>

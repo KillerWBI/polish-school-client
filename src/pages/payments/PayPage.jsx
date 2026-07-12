@@ -10,15 +10,6 @@ import { SkeletonList } from '../../components/ui/Skeleton'
 
 const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
 
-// Иконки и лейблы для способов оплаты
-const METHOD_META = {
-  iban:    { Icon: Landmark,   label: 'Банковский перевод (IBAN)' },
-  blik:    { Icon: Smartphone, label: 'BLIK' },
-  paypal:  { Icon: CreditCard, label: 'PayPal' },
-  revolut: { Icon: Globe,      label: 'Revolut' },
-  custom:  { Icon: CreditCard, label: '' },
-}
-
 // Загружает скриншот напрямую в Cloudinary (unsigned upload preset)
 const uploadScreenshot = async (file) => {
   const CLOUD = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
@@ -72,6 +63,17 @@ export default function PayPage() {
 
   const hasPaymentMethods = pd.iban || pd.blik || pd.paypal || pd.revolut || pd.customLabel
 
+  // Способы = только те каналы, что учитель заполнил в реквизитах
+  const methodOptions = [
+    pd.iban && { k: 'transfer', l: 'Перевод' },
+    pd.blik && { k: 'blik', l: 'BLIK' },
+    pd.paypal && { k: 'paypal', l: 'PayPal' },
+    pd.revolut && { k: 'revolut', l: 'Revolut' },
+    pd.customLabel && { k: 'other', l: pd.customLabel },
+  ].filter(Boolean)
+  // Если текущий выбранный способ недоступен — берём первый доступный
+  const effectiveMethod = methodOptions.find((o) => o.k === method) ? method : (methodOptions[0]?.k || 'transfer')
+
   const handleScreenshotChange = async (e) => {
     const file = e.target.files[0]
     if (!file) return
@@ -92,9 +94,9 @@ export default function PayPage() {
     if (!canSubmit) return
     setSubmitting(true)
     try {
-      await studentPay({ teacherId, amount: payAmount, method, screenshotUrl: screenshotUrl || undefined })
+      await studentPay({ teacherId, amount: payAmount, method: effectiveMethod, screenshotUrl: screenshotUrl || undefined })
       setDone(true)
-      toast.success('Оплата записана! Преподаватель получит уведомление.')
+      toast.success('Оплата отправлена на проверку преподавателю.')
     } catch (e) {
       toast.error(e.response?.data?.error || 'Ошибка записи оплаты')
     } finally {
@@ -106,10 +108,10 @@ export default function PayPage() {
     return (
       <div className="p-5 sm:p-8 max-w-2xl mx-auto">
         <BackLink />
-        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-10 text-center">
-          <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-          <div className="text-slate-900 font-semibold text-lg mb-1">Готово!</div>
-          <div className="text-sm text-slate-600">Мы записали вашу оплату {fmt(payAmount)} преподавателю {teacherName}.</div>
+        <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-10 text-center">
+          <CheckCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
+          <div className="text-slate-900 font-semibold text-lg mb-1">Отправлено на проверку</div>
+          <div className="text-sm text-slate-600">Оплата {fmt(payAmount)} преподавателю {teacherName} ждёт подтверждения. Статус — в разделе «Финансы» → «В процессе». Долг уменьшится после одобрения.</div>
           <Button className="mt-5" onClick={() => navigate('/payments')}>К финансам</Button>
         </div>
       </div>
@@ -186,23 +188,20 @@ export default function PayPage() {
           <Input label="Сумма оплаты, zł" type="number" value={amount}
             placeholder={String(balance)} onChange={e => setAmount(e.target.value)} />
 
-          {/* Способ */}
-          <div>
-            <div className="text-xs font-medium text-slate-600 mb-1.5">Способ</div>
-            <div className="grid grid-cols-2 gap-1.5">
-              {[
-                { k: 'transfer', l: 'Перевод' },
-                { k: 'blik',    l: 'BLIK' },
-                { k: 'paypal',  l: 'PayPal' },
-                { k: 'revolut', l: 'Revolut' },
-              ].map(({ k, l }) => (
-                <button key={k} type="button" onClick={() => setMethod(k)}
-                  className={`h-8 px-2 rounded-lg border text-xs font-medium transition-colors ${
-                    method === k ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'
-                  }`}>{l}</button>
-              ))}
+          {/* Способ — только каналы, которые учитель заполнил */}
+          {methodOptions.length > 0 && (
+            <div>
+              <div className="text-xs font-medium text-slate-600 mb-1.5">Способ</div>
+              <div className="grid grid-cols-2 gap-1.5">
+                {methodOptions.map(({ k, l }) => (
+                  <button key={k} type="button" onClick={() => setMethod(k)}
+                    className={`h-8 px-2 rounded-lg border text-xs font-medium transition-colors ${
+                      effectiveMethod === k ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                    }`}>{l}</button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Скриншот */}
           <div>

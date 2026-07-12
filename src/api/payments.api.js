@@ -21,6 +21,28 @@ export const recordPayment = async (studentId, amount, method) => {
   return data.data
 }
 
+// Оплаты учеников на проверке (учитель): [{ id, amount, method, screenshotUrl, paidAt, student }]
+export const getPendingPayments = async (signal) => {
+  const { data } = await client.get('/payments/pending', { signal })
+  return data.data
+}
+
+// Учитель подтверждает / отклоняет оплату ученика
+export const approvePayment = async (id) => {
+  const { data } = await client.patch(`/payments/${id}/approve`)
+  return data.data
+}
+export const rejectPayment = async (id, reason) => {
+  const { data } = await client.patch(`/payments/${id}/reject`, { reason })
+  return data.data
+}
+
+// Ученик отменяет свою заявку (пока на проверке)
+export const cancelMyPayment = async (id) => {
+  const { data } = await client.delete(`/payments/${id}`)
+  return data.data
+}
+
 // История оплат учителя: { data: [...], summary: { total, byMethod } }.
 // params: { studentId?, method?, from?, to? }
 export const getPaymentHistory = async (params = {}) => {

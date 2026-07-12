@@ -26,7 +26,7 @@ export default function VocabPage() {
         </div>
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Словарь</h1>
-          <p className="text-sm text-slate-500">Учите слова карточками с повторением</p>
+          <p className="text-sm text-slate-500">Слова, термины и понятия — карточками с повторением</p>
         </div>
       </div>
 
@@ -207,12 +207,12 @@ function AddTab({ onAdded }) {
 
   return (
     <form onSubmit={submit} className="rounded-2xl border border-slate-200 bg-white p-6 space-y-4 max-w-md">
-      <Input label="Слово / термин" value={word} onChange={e => setWord(e.target.value)} placeholder="np. dziękuję" />
-      <Input label="Перевод / определение" value={translation} onChange={e => setTr(e.target.value)} placeholder="спасибо" />
+      <Input label="Слово / термин" value={word} onChange={e => setWord(e.target.value)} placeholder="слово, термин или понятие" />
+      <Input label="Перевод / определение" value={translation} onChange={e => setTr(e.target.value)} placeholder="перевод или определение" />
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">Пример (необязательно)</label>
         <textarea value={example} onChange={e => setExample(e.target.value)} rows={2}
-          placeholder="Dziękuję bardzo!"
+          placeholder="пример использования"
           className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 resize-none" />
       </div>
       <Button type="submit" loading={busy} className="w-full">

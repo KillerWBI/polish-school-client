@@ -233,7 +233,7 @@ function CreateModal({ onClose, onCreated }) {
         </div>
 
         <div className="space-y-3">
-          <Input label="Предмет" value={f.subject} onChange={set('subject')} placeholder="польский, математика…" />
+          <Input label="Предмет" value={f.subject} onChange={set('subject')} placeholder="математика, английский, музыка…" />
           {f.type === 'external' && (
             <Input label="Преподаватель / источник" value={f.teacherLabel} onChange={set('teacherLabel')} placeholder="Пан Войтек" />
           )}

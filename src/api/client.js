@@ -33,6 +33,12 @@ const doRefresh = () => {
 client.interceptors.response.use(
   (res) => res,
   async (err) => {
+    // Отменённый запрос (AbortController при переходе между страницами / размонтировании)
+    // — это НЕ ошибка сети. Тихо пробрасываем, без тоста «Нет связи с сервером».
+    if (axios.isCancel(err) || err.code === 'ERR_CANCELED' || err.name === 'CanceledError') {
+      return Promise.reject(err)
+    }
+
     const status = err.response?.status
     const original = err.config
     const isAuthCall = original?.url?.includes('/auth/refresh') || original?.url?.includes('/auth/login')
