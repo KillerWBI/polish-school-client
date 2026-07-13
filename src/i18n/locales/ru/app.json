@@ -130,6 +130,24 @@
     "asTeacher": "преподаватель",
     "asStudent": "ученик"
   },
+  "calendar": {
+    "title": "Расписание",
+    "subtitle": "Все уроки по группам и индивидуальные",
+    "today": "Сегодня",
+    "month": "Месяц",
+    "week": "Неделя",
+    "legendGroup": "Групповые уроки",
+    "legendIndiv": "Индивидуальные",
+    "lessonFallback": "Урок",
+    "indFallback": "Инд. урок",
+    "noTopic": "Без темы",
+    "rowDate": "Дата",
+    "rowTime": "Время",
+    "rowStudent": "Студент",
+    "rowDesc": "Описание",
+    "goToLesson": "Перейти на урок",
+    "chatGroup": "Чат группы"
+  },
   "quiz": {
     "defaultLanguage": "русский",
     "diffEasy": "Лёгкий",

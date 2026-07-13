@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   ResponsiveContainer,
   AreaChart, Area,
@@ -9,6 +10,7 @@ import { getStudentAnalytics } from '../../../api/analytics.api'
 import { PageSpinner } from '../../../components/ui/Spinner'
 
 export default function StudentCharts({ studentId }) {
+  const { t, i18n } = useTranslation('teacher')
   const [data,    setData]    = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -21,11 +23,11 @@ export default function StudentCharts({ studentId }) {
   }, [studentId])
 
   if (loading) return <PageSpinner />
-  if (!data)  return <p className="text-sm text-slate-500">Нет данных</p>
+  if (!data)  return <p className="text-sm text-slate-500">{t('profile.noData')}</p>
 
   // grades: бэк отдаёт массив от новых к старым → разворачиваем для timeline слева-направо
   const gradesChart = [...(data.grades || [])].reverse().map(g => ({
-    date: new Date(g.at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }),
+    date: new Date(g.at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' }),
     grade: g.grade,
     hw: g.homework,
   }))
@@ -33,7 +35,7 @@ export default function StudentCharts({ studentId }) {
   return (
     <div className="space-y-6">
       {/* Посещаемость по месяцам (area) */}
-      <ChartPanel title="Моя посещаемость" subtitle="Последние 6 месяцев">
+      <ChartPanel title={t('profile.myAttendance')} subtitle={t('profile.last6')}>
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={data.attendanceByMonth || []}>
             <defs>
@@ -46,15 +48,15 @@ export default function StudentCharts({ studentId }) {
             <XAxis dataKey="bucket" stroke="#64748b" fontSize={11} />
             <YAxis stroke="#64748b" fontSize={11} domain={[0, 100]} unit="%" />
             <Tooltip {...tooltipStyle} formatter={(v) => `${v}%`} />
-            <Area type="monotone" dataKey="percent" name="Посещено" stroke="#10b981" fill="url(#attGrad)" strokeWidth={2} />
+            <Area type="monotone" dataKey="percent" name={t('profile.attended')} stroke="#10b981" fill="url(#attGrad)" strokeWidth={2} />
           </AreaChart>
         </ResponsiveContainer>
       </ChartPanel>
 
       {/* Динамика оценок (line) */}
-      <ChartPanel title="Оценки" subtitle="Последние 10 ДЗ">
+      <ChartPanel title={t('profile.grades')} subtitle={t('profile.last10hw')}>
         {gradesChart.length === 0 ? (
-          <p className="text-xs text-slate-600 text-center py-8">Оценок пока нет</p>
+          <p className="text-xs text-slate-600 text-center py-8">{t('profile.noGrades')}</p>
         ) : (
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={gradesChart}>
@@ -62,7 +64,7 @@ export default function StudentCharts({ studentId }) {
               <XAxis dataKey="date" stroke="#64748b" fontSize={11} />
               <YAxis stroke="#64748b" fontSize={11} domain={[0, 5]} allowDecimals={false} />
               <Tooltip {...tooltipStyle} labelFormatter={(_, p) => p?.[0]?.payload?.hw || ''} />
-              <Line type="monotone" dataKey="grade" name="Оценка" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4 }} />
+              <Line type="monotone" dataKey="grade" name={t('profile.grade')} stroke="#f59e0b" strokeWidth={2} dot={{ r: 4 }} />
             </LineChart>
           </ResponsiveContainer>
         )}
@@ -72,8 +74,8 @@ export default function StudentCharts({ studentId }) {
       <div className="rounded-2xl border border-slate-200 bg-white p-5">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">Выполнение ДЗ</h3>
-            <p className="text-xs text-slate-500">Учитываются только ДЗ с прошедшим дедлайном</p>
+            <h3 className="text-sm font-semibold text-slate-900">{t('profile.hwCompletion')}</h3>
+            <p className="text-xs text-slate-500">{t('profile.hwCompletionHint')}</p>
           </div>
           <div className="text-2xl font-bold text-slate-900">{data.homeworkStats?.percent ?? 0}%</div>
         </div>
@@ -84,7 +86,7 @@ export default function StudentCharts({ studentId }) {
           />
         </div>
         <p className="text-xs text-slate-500 mt-2">
-          Сдано: {data.homeworkStats?.submitted ?? 0} из {data.homeworkStats?.total ?? 0}
+          {t('profile.submittedOf', { done: data.homeworkStats?.submitted ?? 0, total: data.homeworkStats?.total ?? 0 })}
         </p>
       </div>
     </div>

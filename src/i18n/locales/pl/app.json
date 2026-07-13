@@ -130,6 +130,24 @@
     "asTeacher": "nauczyciel",
     "asStudent": "uczeń"
   },
+  "calendar": {
+    "title": "Plan",
+    "subtitle": "Wszystkie lekcje grupowe i indywidualne",
+    "today": "Dziś",
+    "month": "Miesiąc",
+    "week": "Tydzień",
+    "legendGroup": "Lekcje grupowe",
+    "legendIndiv": "Indywidualne",
+    "lessonFallback": "Lekcja",
+    "indFallback": "Lekcja indyw.",
+    "noTopic": "Bez tematu",
+    "rowDate": "Data",
+    "rowTime": "Godzina",
+    "rowStudent": "Uczeń",
+    "rowDesc": "Opis",
+    "goToLesson": "Przejdź na lekcję",
+    "chatGroup": "Czat grupy"
+  },
   "quiz": {
     "defaultLanguage": "polski",
     "diffEasy": "Łatwy",

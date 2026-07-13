@@ -130,6 +130,24 @@
     "asTeacher": "teacher",
     "asStudent": "student"
   },
+  "calendar": {
+    "title": "Schedule",
+    "subtitle": "All group and individual lessons",
+    "today": "Today",
+    "month": "Month",
+    "week": "Week",
+    "legendGroup": "Group lessons",
+    "legendIndiv": "Individual",
+    "lessonFallback": "Lesson",
+    "indFallback": "Individual lesson",
+    "noTopic": "No topic",
+    "rowDate": "Date",
+    "rowTime": "Time",
+    "rowStudent": "Student",
+    "rowDesc": "Description",
+    "goToLesson": "Go to lesson",
+    "chatGroup": "Group chat"
+  },
   "quiz": {
     "defaultLanguage": "English",
     "diffEasy": "Easy",

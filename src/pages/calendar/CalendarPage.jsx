@@ -1,8 +1,11 @@
 import { useState, useRef, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import ruLocale from '@fullcalendar/core/locales/ru'
+import plLocale from '@fullcalendar/core/locales/pl'
+import ukLocale from '@fullcalendar/core/locales/uk'
 import { getLessons } from '../../api/lessons.api'
 import { getIndividualLessons } from '../../api/individualLessons.api'
 import { formatDate } from '../../utils/formatDate'
@@ -12,11 +15,11 @@ import Modal from '../../components/ui/Modal'
 // на каждый рендер. Иначе обёртка @fullcalendar/react видит «пропсы изменились» →
 // resetOptions() → повторный datesSet → бесконечная петля запросов.
 const CAL_PLUGINS = [dayGridPlugin, interactionPlugin]
-const CAL_LOCALES = [ruLocale]
+const CAL_LOCALES = [ruLocale, plLocale, ukLocale] // en встроен в FullCalendar
 const CAL_HEADER  = { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' }
-const CAL_BUTTONS = { today: 'Сегодня', month: 'Месяц', week: 'Неделя' }
 
 export default function CalendarPage() {
+  const { t, i18n } = useTranslation('app')
   const calRef  = useRef(null)
   const lastRange = useRef('')                     // последний загруженный диапазон from|to
   const [events, setEvents]       = useState([])
@@ -42,7 +45,7 @@ export default function CalendarPage() {
 
       const groupEvents = (group || []).map(l => ({
         id:    `g-${l.id}`,
-        title: l.topic || l.Group?.name || 'Урок',
+        title: l.topic || l.Group?.name || t('calendar.lessonFallback'),
         start: `${l.date}T${l.time}:00`,
         backgroundColor: '#2563EB',
         borderColor: '#2563EB',
@@ -51,7 +54,7 @@ export default function CalendarPage() {
 
       const indivEvents = (indiv || []).map(l => ({
         id:    `i-${l.id}`,
-        title: l.topic || l.student?.name || 'Инд. урок',
+        title: l.topic || l.student?.name || t('calendar.indFallback'),
         start: `${l.date}T${l.time}:00`,
         backgroundColor: '#BE185D',
         borderColor: '#BE185D',
@@ -64,7 +67,7 @@ export default function CalendarPage() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   const handleEventClick = ({ event }) => setSelected(event.extendedProps)
 
@@ -73,8 +76,8 @@ export default function CalendarPage() {
       {/* Заголовок */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Расписание</h1>
-          <p className="text-sm text-slate-400 mt-0.5">Все уроки по группам и индивидуальные</p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t('calendar.title')}</h1>
+          <p className="text-sm text-slate-400 mt-0.5">{t('calendar.subtitle')}</p>
         </div>
         {loading && (
           <div className="w-5 h-5 rounded-full border-2 border-slate-200 border-t-blue-600 animate-spin" />
@@ -85,11 +88,11 @@ export default function CalendarPage() {
       <div className="flex items-center gap-5 mb-5 text-xs text-slate-400">
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-sm bg-blue-600 inline-block" />
-          Групповые уроки
+          {t('calendar.legendGroup')}
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-sm bg-pink-700 inline-block" />
-          Индивидуальные
+          {t('calendar.legendIndiv')}
         </span>
       </div>
 
@@ -100,10 +103,10 @@ export default function CalendarPage() {
           plugins={CAL_PLUGINS}
           initialView="dayGridMonth"
           locales={CAL_LOCALES}
-          locale="ru"
+          locale={i18n.language}
           firstDay={1}
           headerToolbar={CAL_HEADER}
-          buttonText={CAL_BUTTONS}
+          buttonText={{ today: t('calendar.today'), month: t('calendar.month'), week: t('calendar.week') }}
           events={events}
           datesSet={handleDatesSet}
           eventClick={handleEventClick}
@@ -121,6 +124,7 @@ export default function CalendarPage() {
 }
 
 function LessonDetail({ props: { type, lesson }, onClose }) {
+  const { t } = useTranslation('app')
   const linkUrl = lesson.lessonLink || lesson.Group?.lessonLink
   const chatUrl = lesson.Group?.chatLink
 
@@ -133,10 +137,10 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
               ? 'bg-blue-100 text-blue-600'
               : 'bg-pink-100 text-pink-700'
           }`}>
-            {type === 'group' ? lesson.Group?.name : 'Инд. урок'}
+            {type === 'group' ? lesson.Group?.name : t('calendar.indFallback')}
           </span>
           <h3 className="text-lg font-semibold text-slate-900">
-            {lesson.topic || 'Без темы'}
+            {lesson.topic || t('calendar.noTopic')}
           </h3>
         </div>
         <button onClick={onClose} className="text-slate-500 hover:text-slate-900 cursor-pointer">
@@ -147,13 +151,13 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
       </div>
 
       <div className="space-y-2 text-sm mb-5">
-        <Row label="Дата"  value={formatDate(lesson.date)} />
-        <Row label="Время" value={lesson.time} />
+        <Row label={t('calendar.rowDate')}  value={formatDate(lesson.date)} />
+        <Row label={t('calendar.rowTime')} value={lesson.time} />
         {type === 'individual' && lesson.student &&
-          <Row label="Студент" value={lesson.student.name} />
+          <Row label={t('calendar.rowStudent')} value={lesson.student.name} />
         }
         {lesson.description &&
-          <Row label="Описание" value={lesson.description} />
+          <Row label={t('calendar.rowDesc')} value={lesson.description} />
         }
       </div>
 
@@ -167,7 +171,7 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round"/>
           </svg>
-          Перейти на урок
+          {t('calendar.goToLesson')}
         </a>
       )}
 
@@ -179,7 +183,7 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
           className="flex items-center justify-center gap-2 w-full h-10 mt-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-100 transition-colors"
         >
           <span>💬</span>
-          Чат группы
+          {t('calendar.chatGroup')}
         </a>
       )}
     </div>

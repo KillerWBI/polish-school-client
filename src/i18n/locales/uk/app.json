@@ -130,6 +130,24 @@
     "asTeacher": "викладач",
     "asStudent": "учень"
   },
+  "calendar": {
+    "title": "Розклад",
+    "subtitle": "Усі уроки за групами та індивідуальні",
+    "today": "Сьогодні",
+    "month": "Місяць",
+    "week": "Тиждень",
+    "legendGroup": "Групові уроки",
+    "legendIndiv": "Індивідуальні",
+    "lessonFallback": "Урок",
+    "indFallback": "Інд. урок",
+    "noTopic": "Без теми",
+    "rowDate": "Дата",
+    "rowTime": "Час",
+    "rowStudent": "Студент",
+    "rowDesc": "Опис",
+    "goToLesson": "Перейти на урок",
+    "chatGroup": "Чат групи"
+  },
   "quiz": {
     "defaultLanguage": "українська",
     "diffEasy": "Легкий",
