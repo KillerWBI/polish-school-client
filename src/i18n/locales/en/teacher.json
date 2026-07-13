@@ -1,0 +1,51 @@
+{
+  "students": {
+    "title": "Students",
+    "subtitle": "Your roster — all students linked to you",
+    "emptyTitle": "No students yet",
+    "emptyText": "Students appear after you add them to a group or they accept an invitation.",
+    "searchPlaceholder": "Search by name, username or email",
+    "notFound": "Nothing found",
+    "placeholder": "placeholder"
+  },
+  "plans": {
+    "title": "Plans",
+    "subtitle": "More groups, students and features as you grow.",
+    "footNote": "Subscription payment is being connected. For now, Free plan limits don't block your work.",
+    "periodForever": "forever",
+    "periodMonth": "zł / mo",
+    "periodSoon": "soon",
+    "popular": "Popular",
+    "yourPlan": "Your plan",
+    "included": "Included",
+    "soon": "Soon",
+    "upgrade": "Upgrade",
+    "upgradeToast": "Subscription payment coming soon — connecting the gateway",
+    "freeTagline": "For getting started and your first students",
+    "proTagline": "For unlimited work",
+    "schoolTagline": "Several teachers under one brand",
+    "freeFeatures": [
+      "Up to 2 groups",
+      "Up to 15 students",
+      "Lessons, homework, attendance, finances",
+      "Student portal: schedule, grades, progress",
+      "Individual courses and lessons",
+      "AI test generator",
+      "Email reminders for students"
+    ],
+    "proFeatures": [
+      "Unlimited groups and students",
+      "Lessons, homework, attendance, finances",
+      "Individual courses and lessons",
+      "Analytics and payment history",
+      "AI test generator",
+      "Email reminders for lessons and deadlines"
+    ],
+    "schoolFeatures": [
+      "All Pro features",
+      "Several teachers in one school",
+      "Shared brand and management",
+      "Priority support"
+    ]
+  }
+}

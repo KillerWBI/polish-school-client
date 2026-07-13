@@ -1,0 +1,51 @@
+{
+  "students": {
+    "title": "Uczniowie",
+    "subtitle": "Twoja lista — wszyscy uczniowie przypisani do ciebie",
+    "emptyTitle": "Na razie brak uczniów",
+    "emptyText": "Uczniowie pojawiają się po dodaniu do grupy lub przyjęciu zaproszenia.",
+    "searchPlaceholder": "Szukaj po imieniu, nicku lub emailu",
+    "notFound": "Nic nie znaleziono",
+    "placeholder": "wpis"
+  },
+  "plans": {
+    "title": "Plany",
+    "subtitle": "Więcej grup, uczniów i możliwości w miarę rozwoju.",
+    "footNote": "Płatność za subskrypcję jest podłączana. Na razie limity planu Free nie blokują pracy.",
+    "periodForever": "na zawsze",
+    "periodMonth": "zł / mies",
+    "periodSoon": "wkrótce",
+    "popular": "Popularny",
+    "yourPlan": "Twój plan",
+    "included": "W pakiecie",
+    "soon": "Wkrótce",
+    "upgrade": "Ulepsz",
+    "upgradeToast": "Płatność za subskrypcję wkrótce — podłączamy bramkę",
+    "freeTagline": "Na start i pierwszych uczniów",
+    "proTagline": "Do pracy bez ograniczeń",
+    "schoolTagline": "Kilku nauczycieli pod jedną marką",
+    "freeFeatures": [
+      "Do 2 grup",
+      "Do 15 uczniów",
+      "Lekcje, zadania, obecność, finanse",
+      "Panel ucznia: plan, oceny, postępy",
+      "Kursy i lekcje indywidualne",
+      "Generator testów AI",
+      "Przypomnienia email dla uczniów"
+    ],
+    "proFeatures": [
+      "Grupy i uczniowie bez ograniczeń",
+      "Lekcje, zadania, obecność, finanse",
+      "Kursy i lekcje indywidualne",
+      "Analityka i historia płatności",
+      "Generator testów AI",
+      "Przypomnienia email o lekcjach i terminach"
+    ],
+    "schoolFeatures": [
+      "Wszystkie funkcje Pro",
+      "Kilku nauczycieli w jednej szkole",
+      "Wspólna marka i zarządzanie",
+      "Priorytetowe wsparcie"
+    ]
+  }
+}
