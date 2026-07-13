@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
 import { getGroups, createGroup, generateLessons } from '../../api/groups.api'
 import { getInvitations, respondInvitation } from '../../api/invitations.api'
-import { dayLabel } from '../../utils/formatDate'
 import { toast } from 'sonner'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
@@ -15,15 +15,12 @@ import Pagination from '../../components/ui/Pagination'
 
 const PAGE_SIZE = 12
 
-const DAYS = [
-  { value: 1, label: 'Пн' }, { value: 2, label: 'Вт' },
-  { value: 3, label: 'Ср' }, { value: 4, label: 'Чт' },
-  { value: 5, label: 'Пт' }, { value: 6, label: 'Сб' },
-  { value: 0, label: 'Вс' },
-]
+// value = номер дня (0=Вс..6=Сб); порядок отображения Пн→Вс
+const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0]
 
 export default function GroupsPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation('teacher')
   const { isTeacher } = useAuth()
   const { data: groups, loading, reload } = useFetch(getGroups)
   const [modal, setModal] = useState(false)
@@ -40,14 +37,14 @@ export default function GroupsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">
-            {isTeacher ? 'Группы' : 'Мои группы'}
+            {isTeacher ? t('groups.titleTeacher') : t('groups.titleStudent')}
           </h1>
           <p className="text-sm text-slate-400 mt-0.5">
-            {isTeacher ? 'Управление учебными группами' : 'Группы, в которых я учусь'}
+            {isTeacher ? t('groups.subtitleTeacher') : t('groups.subtitleStudent')}
           </p>
         </div>
         {isTeacher && (
-          <Button size="sm" onClick={() => setModal(true)}>+ Создать группу</Button>
+          <Button size="sm" onClick={() => setModal(true)}>{t('groups.createBtn')}</Button>
         )}
       </div>
 
@@ -57,12 +54,10 @@ export default function GroupsPage() {
         !groups?.length ? (
           <EmptyState
             emoji="👥"
-            title={isTeacher ? 'Групп пока нет' : 'Вы пока не в группах'}
-            text={isTeacher
-              ? 'Создайте первую группу, чтобы начать добавлять студентов и генерировать уроки.'
-              : 'Преподаватель добавит вас в группу — она появится здесь.'}
+            title={isTeacher ? t('groups.emptyTeacherTitle') : t('groups.emptyStudentTitle')}
+            text={isTeacher ? t('groups.emptyTeacherText') : t('groups.emptyStudentText')}
             action={isTeacher
-              ? <Button size="sm" onClick={() => setModal(true)}>Создать группу</Button>
+              ? <Button size="sm" onClick={() => setModal(true)}>{t('groups.createShort')}</Button>
               : null}
           />
         ) : (
@@ -86,6 +81,8 @@ export default function GroupsPage() {
 
 /* ── Входящие приглашения ученика (C3) ─────────────────────── */
 function StudentInvitations({ onAccepted }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const { data: invites, loading, reload } = useFetch(() => getInvitations('pending'))
   const [busy, setBusy] = useState(null) // id обрабатываемого приглашения
 
@@ -93,11 +90,11 @@ function StudentInvitations({ onAccepted }) {
     setBusy(inv.id)
     try {
       await respondInvitation(inv.id, status)
-      toast.success(status === 'accepted' ? 'Вы вступили в группу' : 'Приглашение отклонено')
+      toast.success(status === 'accepted' ? t('groups.joinedToast') : t('groups.declinedToast'))
       reload()
       if (status === 'accepted') onAccepted() // обновляем список групп — появится новая
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка')
+      toast.error(e.response?.data?.error || tc('error'))
       setBusy(null)
     }
   }
@@ -107,7 +104,7 @@ function StudentInvitations({ onAccepted }) {
   return (
     <div className="mb-6 p-4 rounded-2xl border border-blue-200 bg-blue-600/10">
       <h2 className="text-sm font-semibold text-blue-600 mb-3">
-        Приглашения в группы ({invites.length})
+        {t('groups.invitesTitle', { n: invites.length })}
       </h2>
       <div className="space-y-2">
         {invites.map(inv => (
@@ -115,17 +112,17 @@ function StudentInvitations({ onAccepted }) {
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200">
             <div className="flex-1 min-w-0">
               <div className="text-sm text-slate-900 truncate">
-                <span className="font-medium">{inv.Group?.name || 'Группа'}</span>
+                <span className="font-medium">{inv.Group?.name || t('groups.groupFallback')}</span>
               </div>
               <div className="text-xs text-slate-400 truncate">
-                от {inv.teacher?.name || 'преподавателя'}
+                {t('groups.from')} {inv.teacher?.name || t('groups.teacherFallback')}
               </div>
             </div>
             <div className="flex gap-2 shrink-0">
               <Button size="sm" variant="secondary" loading={busy === inv.id}
-                onClick={() => respond(inv, 'declined')}>Отклонить</Button>
+                onClick={() => respond(inv, 'declined')}>{t('groups.decline')}</Button>
               <Button size="sm" loading={busy === inv.id}
-                onClick={() => respond(inv, 'accepted')}>Принять</Button>
+                onClick={() => respond(inv, 'accepted')}>{t('groups.accept')}</Button>
             </div>
           </div>
         ))}
@@ -135,8 +132,10 @@ function StudentInvitations({ onAccepted }) {
 }
 
 function GroupCard({ group, onClick }) {
+  const { t } = useTranslation('teacher')
+  const weekdays = t('groups.weekdays', { returnObjects: true })
   const schedule = (group.schedule || [])
-    .map(s => `${dayLabel(s.day)} ${s.time}`)
+    .map(s => `${weekdays[s.day] ?? ''} ${s.time}`)
     .join(', ')
 
   return (
@@ -154,13 +153,16 @@ function GroupCard({ group, onClick }) {
       </div>
       {schedule && <p className="text-xs text-slate-400 mb-2">📅 {schedule}</p>}
       <p className="text-xs text-slate-400">
-        💰 {group.pricePerLesson} / урок
+        💰 {group.pricePerLesson} {t('groups.perLesson')}
       </p>
     </button>
   )
 }
 
 function CreateGroupModal({ open, onClose, onCreated }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
+  const weekdays = t('groups.weekdays', { returnObjects: true })
   const [form, setForm]       = useState({ name: '', pricePerLesson: '', lessonLink: '', chatLink: '' })
   const [schedule, setSchedule] = useState([]) // [{day, time}]
   const [saving, setSaving]   = useState(false)
@@ -175,7 +177,7 @@ function CreateGroupModal({ open, onClose, onCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!form.name.trim()) return setError('Введите название')
+    if (!form.name.trim()) return setError(t('groups.enterName'))
     setSaving(true)
     setError('')
     try {
@@ -201,7 +203,7 @@ function CreateGroupModal({ open, onClose, onCreated }) {
       setForm({ name: '', pricePerLesson: '', lessonLink: '', chatLink: '' })
       setSchedule([])
     } catch (e) {
-      setError(e.response?.data?.error || 'Ошибка создания')
+      setError(e.response?.data?.error || t('groups.createError'))
     } finally {
       setSaving(false)
     }
@@ -210,24 +212,24 @@ function CreateGroupModal({ open, onClose, onCreated }) {
   return (
     <Modal open={open} onClose={onClose} maxWidth="max-w-md">
       <div className="p-6 sm:p-7">
-        <h2 className="text-xl font-semibold text-slate-900 mb-5">Новая группа</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mb-5">{t('groups.modalTitle')}</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
-          <Input label="Название группы" value={form.name}
+          <Input label={t('groups.fName')} value={form.name}
             onChange={e => set('name', e.target.value)} />
-          <Input label="Цена за урок" type="number" value={form.pricePerLesson}
+          <Input label={t('groups.fPrice')} type="number" value={form.pricePerLesson}
             onChange={e => set('pricePerLesson', e.target.value)} />
-          <Input label="Ссылка Zoom/Meet (необязательно)" value={form.lessonLink}
+          <Input label={t('groups.fLessonLink')} value={form.lessonLink}
             onChange={e => set('lessonLink', e.target.value)} />
-          <Input label="Ссылка группового чата (необязательно)" value={form.chatLink}
+          <Input label={t('groups.fChatLink')} value={form.chatLink}
             onChange={e => set('chatLink', e.target.value)} />
 
           {/* Расписание */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-slate-400 uppercase tracking-wider">Расписание</span>
+              <span className="text-xs text-slate-400 uppercase tracking-wider">{t('groups.scheduleLabel')}</span>
               <button type="button" onClick={addSlot}
                 className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
-                + Добавить слот
+                {t('groups.addSlot')}
               </button>
             </div>
             <div className="space-y-2">
@@ -238,7 +240,7 @@ function CreateGroupModal({ open, onClose, onCreated }) {
                     onChange={e => updateSlot(i, 'day', e.target.value)}
                     className="flex-1 h-10 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
                   >
-                    {DAYS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+                    {DAY_VALUES.map(v => <option key={v} value={v}>{weekdays[v]}</option>)}
                   </select>
                   <input
                     type="time"
@@ -258,8 +260,8 @@ function CreateGroupModal({ open, onClose, onCreated }) {
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           <div className="flex gap-2 pt-1">
-            <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>Отмена</Button>
-            <Button type="submit" loading={saving} className="flex-1">Создать</Button>
+            <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>{tc('cancel')}</Button>
+            <Button type="submit" loading={saving} className="flex-1">{tc('create')}</Button>
           </div>
         </form>
       </div>
