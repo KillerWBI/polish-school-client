@@ -17,12 +17,17 @@ import ruLanding from './locales/ru/landing.json'
 import enLanding from './locales/en/landing.json'
 import plLanding from './locales/pl/landing.json'
 import ukLanding from './locales/uk/landing.json'
+// app: оболочка/auth/дашборд — ru/en/pl/uk; es/fr/de пока фолбэк на en
+import ruApp from './locales/ru/app.json'
+import enApp from './locales/en/app.json'
+import plApp from './locales/pl/app.json'
+import ukApp from './locales/uk/app.json'
 
 const resources = {
-  ru: { common: ruCommon, landing: ruLanding },
-  pl: { common: plCommon, landing: plLanding },
-  uk: { common: ukCommon, landing: ukLanding },
-  en: { common: enCommon, landing: enLanding },
+  ru: { common: ruCommon, landing: ruLanding, app: ruApp },
+  pl: { common: plCommon, landing: plLanding, app: plApp },
+  uk: { common: ukCommon, landing: ukLanding, app: ukApp },
+  en: { common: enCommon, landing: enLanding, app: enApp },
   es: { common: esCommon },
   fr: { common: frCommon },
   de: { common: deCommon },
@@ -39,7 +44,7 @@ i18n
     resources,
     supportedLngs: SUPPORTED,
     fallbackLng: FALLBACK,
-    ns: ['common', 'landing'],
+    ns: ['common', 'landing', 'app'],
     defaultNS: 'common',
     load: 'languageOnly', // 'pl-PL' → 'pl'
     interpolation: { escapeValue: false },
