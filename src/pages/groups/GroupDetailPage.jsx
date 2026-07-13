@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
 import { getGroup, updateGroup, deleteGroup, addStudent, addPlaceholder, removeStudent, generateLessons } from '../../api/groups.api'
@@ -7,7 +8,7 @@ import { getLessons, createLesson, updateLesson, deleteLesson } from '../../api/
 import { getMyStudents, mergeStudent, deletePlaceholder } from '../../api/students.api'
 import { searchStudent, inviteToGroup } from '../../api/invitations.api'
 import { toast } from 'sonner'
-import { formatDate, dayLabel } from '../../utils/formatDate'
+import { formatDate } from '../../utils/formatDate'
 import { safeUrl } from '../../utils/safeUrl'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
@@ -16,28 +17,30 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 
-const DAYS = [
-  {value:1,label:'Пн'},{value:2,label:'Вт'},{value:3,label:'Ср'},
-  {value:4,label:'Чт'},{value:5,label:'Пт'},{value:6,label:'Сб'},{value:0,label:'Вс'},
-]
+// value = номер дня (0=Вс..6=Сб); порядок отображения Пн→Вс
+const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0]
 
 export default function GroupDetailPage() {
+  const { t } = useTranslation('teacher')
   const { id } = useParams()
   const navigate = useNavigate()
   const { isTeacher } = useAuth()
   const [tab, setTab] = useState(0)
+  const weekdays = t('groups.weekdays', { returnObjects: true })
 
-  const TABS = isTeacher ? ['Студенты', 'Уроки', 'Настройки'] : ['Студенты', 'Уроки']
+  const TABS = isTeacher
+    ? [t('groupDetail.tabStudents'), t('groupDetail.tabLessons'), t('groupDetail.tabSettings')]
+    : [t('groupDetail.tabStudents'), t('groupDetail.tabLessons')]
 
   const { data: group, loading, reload } = useFetch(
     useCallback(() => getGroup(id), [id])
   )
 
   if (loading) return <div className="p-5 sm:p-8 max-w-4xl"><SkeletonList count={4} /></div>
-  if (!group)  return <div className="p-8 text-slate-400">Группа не найдена</div>
+  if (!group)  return <div className="p-8 text-slate-400">{t('groupDetail.notFound')}</div>
 
   const schedule = (group.schedule || [])
-    .map(s => `${dayLabel(s.day)} ${s.time}`)
+    .map(s => `${weekdays[s.day] ?? ''} ${s.time}`)
     .join(' · ')
 
   return (
@@ -47,19 +50,19 @@ export default function GroupDetailPage() {
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        Группы
+        {t('groupDetail.backGroups')}
       </button>
 
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-slate-900">{group.name}</h1>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-slate-400">
           {schedule && <span>📅 {schedule}</span>}
-          <span>💰 {group.pricePerLesson} zł / урок</span>
-          <span>👥 {group.students?.length ?? 0} студентов</span>
+          <span>💰 {group.pricePerLesson} {t('groupDetail.perLesson')}</span>
+          <span>👥 {t('groupDetail.studentsCount', { n: group.students?.length ?? 0 })}</span>
           {group.chatLink && safeUrl(group.chatLink) && (
             <a href={safeUrl(group.chatLink)} target="_blank" rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-700 transition-colors">
-              💬 Чат группы
+              💬 {t('groupDetail.chatGroup')}
             </a>
           )}
         </div>
@@ -85,6 +88,8 @@ export default function GroupDetailPage() {
 
 /* ── Студенты ──────────────────────────────────────────────── */
 function StudentsTab({ group, reload, isTeacher }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [addModal, setAddModal] = useState(false)
   const [phModal, setPhModal]   = useState(false)
   const [inviteModal, setInviteModal] = useState(false)
@@ -110,20 +115,20 @@ function StudentsTab({ group, reload, isTeacher }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-medium text-slate-400">{group.students?.length ?? 0} студентов</h2>
+        <h2 className="text-sm font-medium text-slate-400">{t('groupDetail.studentsCount', { n: group.students?.length ?? 0 })}</h2>
         {isTeacher && (
           <div className="flex gap-2">
-            <Button size="sm" variant="secondary" onClick={() => setPhModal(true)}>+ Заглушка</Button>
-            <Button size="sm" variant="secondary" onClick={() => setInviteModal(true)}>+ Пригласить</Button>
-            <Button size="sm" onClick={() => setAddModal(true)}>+ Добавить</Button>
+            <Button size="sm" variant="secondary" onClick={() => setPhModal(true)}>{t('groupDetail.addPlaceholderBtn')}</Button>
+            <Button size="sm" variant="secondary" onClick={() => setInviteModal(true)}>{t('groupDetail.inviteBtn')}</Button>
+            <Button size="sm" onClick={() => setAddModal(true)}>{t('groupDetail.addBtn')}</Button>
           </div>
         )}
       </div>
 
       {!group.students?.length ? (
-        <EmptyState emoji="👤" title="Студентов пока нет"
-          text={isTeacher ? 'Добавьте ученика по аккаунту или заглушку (без регистрации).' : 'В группе пока никого нет.'}
-          action={isTeacher ? <Button size="sm" onClick={() => setAddModal(true)}>Добавить студента</Button> : null} />
+        <EmptyState emoji="👤" title={t('groupDetail.emptyStudentsTitle')}
+          text={isTeacher ? t('groupDetail.emptyStudentsTeacher') : t('groupDetail.emptyStudentsStudent')}
+          action={isTeacher ? <Button size="sm" onClick={() => setAddModal(true)}>{t('groupDetail.addStudentAction')}</Button> : null} />
       ) : (
         <div className="space-y-2">
           {group.students.map(s => (
@@ -138,13 +143,13 @@ function StudentsTab({ group, reload, isTeacher }) {
                     <span className="text-sm font-medium text-slate-900 truncate">{s.name}</span>
                     {s.isPlaceholder && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-600 border border-amber-500/20 shrink-0">
-                        заглушка
+                        {t('groupDetail.placeholder')}
                       </span>
                     )}
                   </div>
                   {isTeacher && (
                     <div className="text-xs text-slate-400 truncate">
-                      {s.isPlaceholder ? (s.contact || 'без контакта') : s.email}
+                      {s.isPlaceholder ? (s.contact || t('groupDetail.noContact')) : s.email}
                     </div>
                   )}
                 </div>
@@ -154,7 +159,7 @@ function StudentsTab({ group, reload, isTeacher }) {
                   {s.isPlaceholder && (
                     <button onClick={() => setMergeSource(s)}
                       className="text-xs text-blue-600 hover:text-blue-700 px-2 py-1 cursor-pointer">
-                      Перенести
+                      {t('groupDetail.transfer')}
                     </button>
                   )}
                   <button onClick={() => handleRemove(s)} disabled={removing === s.id}
@@ -183,9 +188,9 @@ function StudentsTab({ group, reload, isTeacher }) {
             onMerged={() => { setMergeSource(null); reload() }} />
           <ConfirmDialog open={!!confirmRemove} onClose={() => setConfirmRemove(null)}
             onConfirm={confirmDeletePlaceholder} busy={removing === confirmRemove?.id}
-            title="Удалить заглушку?"
-            message={`«${confirmRemove?.name}» и её посещаемость/долг будут удалены безвозвратно. Чтобы сохранить историю — сначала перенесите на реального ученика.`}
-            confirmLabel="Удалить" />
+            title={t('groupDetail.confirmDeletePhTitle')}
+            message={t('groupDetail.confirmDeletePhMsg', { name: confirmRemove?.name })}
+            confirmLabel={tc('delete')} />
         </>
       )}
     </div>
@@ -193,6 +198,7 @@ function StudentsTab({ group, reload, isTeacher }) {
 }
 
 function AddStudentModal({ open, onClose, groupId, existing, onAdded }) {
+  const { t } = useTranslation('teacher')
   const { data: all } = useFetch(getMyStudents, [])
   const [search, setSearch] = useState('')
   const [adding, setAdding] = useState(null)
@@ -208,20 +214,20 @@ function AddStudentModal({ open, onClose, groupId, existing, onAdded }) {
   const handleAdd = async (studentId) => {
     setAdding(studentId); setError('')
     try { await addStudent(groupId, studentId); onAdded(); onClose() }
-    catch (e) { setError(e.response?.data?.error || 'Ошибка добавления') }
+    catch (e) { setError(e.response?.data?.error || t('groupDetail.addError')) }
     finally   { setAdding(null) }
   }
 
   return (
     <Modal open={open} onClose={onClose} maxWidth="max-w-sm">
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Добавить студента</h3>
-        <Input label="Поиск по имени или email" value={search}
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('groupDetail.addStudentTitle')}</h3>
+        <Input label={t('groupDetail.searchByNameEmail')} value={search}
           onChange={e => setSearch(e.target.value)} className="mb-3" />
         {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
         <div className="space-y-2 max-h-60 overflow-y-auto">
           {!filtered.length
-            ? <p className="text-sm text-slate-400 text-center py-4">Студентов не найдено</p>
+            ? <p className="text-sm text-slate-400 text-center py-4">{t('groupDetail.noStudentsFound')}</p>
             : filtered.map(s => (
                 <div key={s.id}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white hover:bg-slate-100 transition-colors">
@@ -232,7 +238,7 @@ function AddStudentModal({ open, onClose, groupId, existing, onAdded }) {
                     <div className="text-sm text-slate-900">{s.name}</div>
                     <div className="text-xs text-slate-400 truncate">{s.email}</div>
                   </div>
-                  <Button size="sm" loading={adding === s.id} onClick={() => handleAdd(s.id)}>Добавить</Button>
+                  <Button size="sm" loading={adding === s.id} onClick={() => handleAdd(s.id)}>{t('groupDetail.add')}</Button>
                 </div>
               ))}
         </div>
@@ -243,6 +249,8 @@ function AddStudentModal({ open, onClose, groupId, existing, onAdded }) {
 
 /* ── Добавление заглушки (ученик без аккаунта) ─────────────── */
 function AddPlaceholderModal({ open, onClose, groupId, onAdded }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [name, setName]       = useState('')
   const [contact, setContact] = useState('')
   const [saving, setSaving]   = useState(false)
@@ -252,13 +260,13 @@ function AddPlaceholderModal({ open, onClose, groupId, onAdded }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!name.trim()) return setError('Введите имя')
+    if (!name.trim()) return setError(t('groupDetail.enterName'))
     setSaving(true); setError('')
     try {
       await addPlaceholder(groupId, { name: name.trim(), contact: contact.trim() || undefined })
       onAdded(); handleClose()
     } catch (e) {
-      setError(e.response?.data?.error || 'Ошибка добавления')
+      setError(e.response?.data?.error || t('groupDetail.addError'))
     } finally {
       setSaving(false)
     }
@@ -267,18 +275,18 @@ function AddPlaceholderModal({ open, onClose, groupId, onAdded }) {
   return (
     <Modal open={open} onClose={handleClose} maxWidth="max-w-sm">
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1">Добавить заглушку</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-1">{t('groupDetail.addPlaceholderTitle')}</h3>
         <p className="text-xs text-slate-400 mb-4">
-          Ученик без аккаунта — для ваших заметок. Долг и посещаемость считаются как у обычного. Позже можно перенести на реального ученика.
+          {t('groupDetail.placeholderHint')}
         </p>
         <form onSubmit={handleSubmit} className="space-y-3">
-          <Input label="Имя" value={name} onChange={e => setName(e.target.value)} />
-          <Input label="Контакт (необязательно)" value={contact}
-            onChange={e => setContact(e.target.value)} placeholder="телефон / @ник / заметка" />
+          <Input label={t('groupDetail.nameLabel')} value={name} onChange={e => setName(e.target.value)} />
+          <Input label={t('groupDetail.contactLabel')} value={contact}
+            onChange={e => setContact(e.target.value)} placeholder={t('groupDetail.contactPlaceholder')} />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="flex gap-2 pt-1">
-            <Button type="button" variant="secondary" className="flex-1" onClick={handleClose}>Отмена</Button>
-            <Button type="submit" loading={saving} className="flex-1">Добавить</Button>
+            <Button type="button" variant="secondary" className="flex-1" onClick={handleClose}>{tc('cancel')}</Button>
+            <Button type="submit" loading={saving} className="flex-1">{t('groupDetail.add')}</Button>
           </div>
         </form>
       </div>
@@ -288,6 +296,8 @@ function AddPlaceholderModal({ open, onClose, groupId, onAdded }) {
 
 /* ── Пригласить студента в группу (C3, по нику) ────────────── */
 function InviteModal({ open, onClose, groupId, onAdded }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [query, setQuery]       = useState('')
   const [searching, setSearching] = useState(false)
   const [results, setResults]   = useState(null) // массив похожих учеников или null (ещё не искали)
@@ -301,12 +311,12 @@ function InviteModal({ open, onClose, groupId, onAdded }) {
   const handleSearch = async (e) => {
     e.preventDefault()
     const q = query.trim()
-    if (q.length < 3) return setError('Минимум 3 символа')
+    if (q.length < 3) return setError(t('groupDetail.min3'))
     setSearching(true); setError(''); setResults(null)
     try {
       setResults(await searchStudent(q)) // массив [{id,name,username,avatar,alreadyMine}]
     } catch (e) {
-      setError(e.response?.data?.error || 'Ошибка поиска')
+      setError(e.response?.data?.error || t('groupDetail.searchError'))
     } finally {
       setSearching(false)
     }
@@ -316,12 +326,12 @@ function InviteModal({ open, onClose, groupId, onAdded }) {
     setSending(u.id); setError('')
     try {
       const r = await inviteToGroup(groupId, u.id)
-      if (r.directAdd) { toast.success(`${u.name} — уже ваш, добавлен в группу`); onAdded() }
-      else             { toast.success(`Приглашение отправлено: ${u.name}`) }
+      if (r.directAdd) { toast.success(t('groupDetail.directAddToast', { name: u.name })); onAdded() }
+      else             { toast.success(t('groupDetail.inviteSentToast', { name: u.name })) }
       // убираем из списка, чтобы можно было пригласить других
       setResults(rs => (rs || []).filter(x => x.id !== u.id))
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка отправки')
+      toast.error(e.response?.data?.error || t('groupDetail.sendError'))
     } finally {
       setSending(null)
     }
@@ -330,15 +340,15 @@ function InviteModal({ open, onClose, groupId, onAdded }) {
   return (
     <Modal open={open} onClose={handleClose} maxWidth="max-w-sm">
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1">Пригласить студента</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-1">{t('groupDetail.inviteTitle')}</h3>
         <p className="text-xs text-slate-400 mb-4">
-          Найдите ученика по нику или имени (по похожим). Он получит приглашение и сам подтвердит вступление.
+          {t('groupDetail.inviteHint')}
         </p>
 
         <form onSubmit={handleSearch} className="flex gap-2 mb-3">
           <Input value={query} onChange={e => setQuery(e.target.value)}
-            placeholder="ник или имя" className="flex-1" />
-          <Button type="submit" loading={searching}>Найти</Button>
+            placeholder={t('groupDetail.nickOrName')} className="flex-1" />
+          <Button type="submit" loading={searching}>{t('groupDetail.find')}</Button>
         </form>
 
         {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
@@ -346,7 +356,7 @@ function InviteModal({ open, onClose, groupId, onAdded }) {
         {results && (
           <div className="space-y-2 max-h-64 overflow-y-auto mb-1">
             {!results.length
-              ? <p className="text-sm text-slate-400 text-center py-4">Никого не нашли</p>
+              ? <p className="text-sm text-slate-400 text-center py-4">{t('groupDetail.nobodyFound')}</p>
               : results.map(u => (
                   <div key={u.id}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white border border-slate-200">
@@ -359,11 +369,11 @@ function InviteModal({ open, onClose, groupId, onAdded }) {
                     </div>
                     {u.alreadyMine && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-emerald-600 border border-green-500/20 shrink-0">
-                        ваш
+                        {t('groupDetail.yours')}
                       </span>
                     )}
                     <Button size="sm" loading={sending === u.id} onClick={() => handleInvite(u)}>
-                      {u.alreadyMine ? 'Добавить' : 'Пригласить'}
+                      {u.alreadyMine ? t('groupDetail.add') : t('groupDetail.inviteAction')}
                     </Button>
                   </div>
                 ))}
@@ -371,7 +381,7 @@ function InviteModal({ open, onClose, groupId, onAdded }) {
         )}
 
         <div className="pt-2">
-          <Button variant="secondary" className="w-full" onClick={handleClose}>Закрыть</Button>
+          <Button variant="secondary" className="w-full" onClick={handleClose}>{tc('close')}</Button>
         </div>
       </div>
     </Modal>
@@ -380,6 +390,8 @@ function InviteModal({ open, onClose, groupId, onAdded }) {
 
 /* ── Перенос заглушки на реального ученика (merge) ─────────── */
 function MergeModal({ open, onClose, source, students, onMerged }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [targetId, setTargetId] = useState('')
   const [busy, setBusy]   = useState(false)
   const [error, setError] = useState('')
@@ -388,14 +400,14 @@ function MergeModal({ open, onClose, source, students, onMerged }) {
   const reals = (students || []).filter(s => !s.isPlaceholder)
 
   const handleMerge = async () => {
-    if (!targetId) return setError('Выберите ученика')
+    if (!targetId) return setError(t('groupDetail.mergeChooseStudent'))
     setBusy(true); setError('')
     try {
       const r = await mergeStudent(source.id, targetId)
-      toast.success(`Перенесено записей: ${r.moved}${r.skipped ? `, пропущено дублей: ${r.skipped}` : ''}`)
+      toast.success(t('groupDetail.mergedToast', { moved: r.moved }) + (r.skipped ? t('groupDetail.mergedSkipped', { skipped: r.skipped }) : ''))
       onMerged()
     } catch (e) {
-      setError(e.response?.data?.error || 'Ошибка переноса')
+      setError(e.response?.data?.error || t('groupDetail.mergeError'))
       setBusy(false)
     }
   }
@@ -405,15 +417,15 @@ function MergeModal({ open, onClose, source, students, onMerged }) {
   return (
     <Modal open={open} onClose={onClose} maxWidth="max-w-sm">
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1">Перенести заглушку</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-1">{t('groupDetail.mergeTitle')}</h3>
         <p className="text-xs text-slate-400 mb-4">
-          Вся история «{source.name}» (посещаемость, оплаты, ДЗ) перейдёт на выбранного ученика, а заглушка удалится.
+          {t('groupDetail.mergeHint', { name: source.name })}
         </p>
 
         {reals.length === 0 ? (
           <>
-            <p className="text-sm text-amber-600 mb-4">В этой группе нет реальных учеников (с аккаунтом), на кого перенести.</p>
-            <Button variant="secondary" className="w-full" onClick={onClose}>Закрыть</Button>
+            <p className="text-sm text-amber-600 mb-4">{t('groupDetail.noReals')}</p>
+            <Button variant="secondary" className="w-full" onClick={onClose}>{tc('close')}</Button>
           </>
         ) : (
           <>
@@ -435,8 +447,8 @@ function MergeModal({ open, onClose, source, students, onMerged }) {
             </div>
             {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
             <div className="flex gap-2">
-              <Button variant="secondary" className="flex-1" onClick={onClose}>Отмена</Button>
-              <Button className="flex-1" loading={busy} disabled={!targetId} onClick={handleMerge}>Перенести</Button>
+              <Button variant="secondary" className="flex-1" onClick={onClose}>{tc('cancel')}</Button>
+              <Button className="flex-1" loading={busy} disabled={!targetId} onClick={handleMerge}>{t('groupDetail.transferBtn')}</Button>
             </div>
           </>
         )}
@@ -447,6 +459,7 @@ function MergeModal({ open, onClose, source, students, onMerged }) {
 
 /* ── Уроки ──────────────────────────────────────────────────── */
 function LessonsTab({ group, isTeacher }) {
+  const { t } = useTranslation('teacher')
   const [genModal,    setGenModal]    = useState(false)
   const [createModal, setCreateModal] = useState(false)
   const [selected,    setSelected]    = useState(null) // урок для просмотра/редактирования
@@ -462,34 +475,32 @@ function LessonsTab({ group, isTeacher }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-medium text-slate-400">{lessons?.length ?? 0} уроков</h2>
+        <h2 className="text-sm font-medium text-slate-400">{t('groupDetail.lessonsCount', { n: lessons?.length ?? 0 })}</h2>
         {isTeacher && (
           <div className="flex gap-2">
-            <Button size="sm" variant="secondary" onClick={() => setGenModal(true)}>⚡ По расписанию</Button>
-            <Button size="sm" onClick={() => setCreateModal(true)}>+ Урок</Button>
+            <Button size="sm" variant="secondary" onClick={() => setGenModal(true)}>{t('groupDetail.genBySchedule')}</Button>
+            <Button size="sm" onClick={() => setCreateModal(true)}>{t('groupDetail.addLesson')}</Button>
           </div>
         )}
       </div>
 
       {loading ? <SkeletonList count={3} /> : !lessons?.length ? (
-        <EmptyState emoji="📅" title="Уроков пока нет"
-          text={isTeacher
-            ? 'Сгенерируйте уроки по расписанию или создайте отдельный урок.'
-            : 'Преподаватель ещё не создал уроки.'}
+        <EmptyState emoji="📅" title={t('groupDetail.emptyLessonsTitle')}
+          text={isTeacher ? t('groupDetail.emptyLessonsTeacher') : t('groupDetail.emptyLessonsStudent')}
           action={isTeacher ? (
             <div className="flex gap-2 justify-center">
-              <Button size="sm" variant="secondary" onClick={() => setGenModal(true)}>⚡ По расписанию</Button>
-              <Button size="sm" onClick={() => setCreateModal(true)}>+ Урок</Button>
+              <Button size="sm" variant="secondary" onClick={() => setGenModal(true)}>{t('groupDetail.genBySchedule')}</Button>
+              <Button size="sm" onClick={() => setCreateModal(true)}>{t('groupDetail.addLesson')}</Button>
             </div>
           ) : null} />
       ) : (
         <div className="space-y-4">
           {upcoming.length > 0 && (
-            <LessonSection title="Предстоящие" lessons={upcoming}
+            <LessonSection title={t('groupDetail.sectionUpcoming')} lessons={upcoming}
               onSelect={setSelected} isTeacher={isTeacher} />
           )}
           {past.length > 0 && (
-            <LessonSection title="Прошедшие" lessons={past}
+            <LessonSection title={t('groupDetail.sectionPast')} lessons={past}
               onSelect={setSelected} isTeacher={isTeacher} muted />
           )}
         </div>
@@ -515,6 +526,7 @@ function LessonsTab({ group, isTeacher }) {
 
 /* ── Карточка урока ─────────────────────────────────────────── */
 function LessonSection({ title, lessons, onSelect, muted }) {
+  const { t } = useTranslation('teacher')
   return (
     <div>
       <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">{title}</p>
@@ -534,7 +546,7 @@ function LessonSection({ title, lessons, onSelect, muted }) {
             {/* Инфо */}
             <div className="flex-1 min-w-0">
               <div className={`text-sm font-medium ${l.topic ? 'text-slate-900' : 'text-slate-500 italic'}`}>
-                {l.topic || 'Без темы'}
+                {l.topic || t('groupDetail.noTopic')}
               </div>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="text-xs text-slate-400">{l.time}</span>
@@ -542,11 +554,11 @@ function LessonSection({ title, lessons, onSelect, muted }) {
                   <a href={safeUrl(l.lessonLink)} target="_blank" rel="noopener noreferrer"
                     onClick={e => e.stopPropagation()}
                     className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
-                    Войти в урок
+                    {t('groupDetail.enterLesson')}
                   </a>
                 )}
                 {l.materials?.length > 0 && (
-                  <span className="text-xs text-slate-500">{l.materials.length} материал(а)</span>
+                  <span className="text-xs text-slate-500">{t('groupDetail.materialsCount', { n: l.materials.length })}</span>
                 )}
               </div>
             </div>
@@ -554,7 +566,7 @@ function LessonSection({ title, lessons, onSelect, muted }) {
             <div className="flex items-center gap-2 shrink-0">
               {l.Homeworks?.length > 0 && (
                 <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-600">
-                  ДЗ {l.Homeworks.length}
+                  {t('groupDetail.hwBadge', { n: l.Homeworks.length })}
                 </span>
               )}
               <svg className="w-4 h-4 text-slate-600 group-hover:text-blue-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -570,6 +582,8 @@ function LessonSection({ title, lessons, onSelect, muted }) {
 
 /* ── Просмотр/редактирование урока ─────────────────────────── */
 function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [editing,  setEditing]  = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [delConfirm, setDelConfirm] = useState(false)
@@ -601,7 +615,7 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
           <div>
             <p className="text-xs text-slate-500 mb-1">{formatDate(lesson.date)} · {lesson.time}</p>
             <h3 className="text-lg font-semibold text-slate-900">
-              {lesson.topic || <span className="text-slate-500 italic">Без темы</span>}
+              {lesson.topic || <span className="text-slate-500 italic">{t('groupDetail.noTopic')}</span>}
             </h3>
           </div>
           <button onClick={onClose} className="text-slate-500 hover:text-slate-900 cursor-pointer shrink-0 p-1">
@@ -624,11 +638,11 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round"/>
               </svg>
-              Перейти на урок
+              {t('groupDetail.goToLesson')}
             </a>
             {isTeacher && (
               <p className="text-xs text-slate-400 mt-1.5 px-1">
-                Вы — организатор: при входе нажмите «Я организатор» и войдите через Google или GitHub, чтобы стать модератором встречи.
+                {t('groupDetail.organizerHint')}
               </p>
             )}
           </div>
@@ -639,14 +653,14 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
           <a href={safeUrl(chatUrl)} target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-sm hover:bg-slate-100 transition-colors mb-4">
             <span>💬</span>
-            Чат группы
+            {t('groupDetail.chatGroup')}
           </a>
         )}
 
         {/* Материалы */}
         {lesson.materials?.length > 0 && (
           <div className="mb-4">
-            <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Материалы</p>
+            <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">{t('groupDetail.materialsHeading')}</p>
             <MaterialsList materials={lesson.materials} />
           </div>
         )}
@@ -655,7 +669,7 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
         {lesson.Homeworks?.length > 0 && (
           <div className="mb-4">
             <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-600">
-              {lesson.Homeworks.length} домашних заданий
+              {t('groupDetail.hwCount', { n: lesson.Homeworks.length })}
             </span>
           </div>
         )}
@@ -664,18 +678,18 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
         {isTeacher && (
           <div className="flex gap-2 pt-2 border-t border-slate-200 mt-4">
             <Button className="flex-1" size="sm" onClick={() => setEditing(true)}>
-              Редактировать
+              {t('groupDetail.edit')}
             </Button>
             {!delConfirm ? (
               <Button variant="secondary" size="sm"
                 className="border-red-200 text-red-600 hover:border-red-300 hover:bg-red-50"
                 onClick={() => setDelConfirm(true)}>
-                Удалить
+                {tc('delete')}
               </Button>
             ) : (
               <Button size="sm" loading={deleting} onClick={handleDelete}
                 className="bg-red-600 hover:bg-red-700 border-0 text-slate-900">
-                Точно удалить
+                {t('groupDetail.confirmDeleteLesson')}
               </Button>
             )}
           </div>
@@ -687,6 +701,8 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
 
 /* ── Форма редактирования урока ─────────────────────────────── */
 function EditLessonForm({ lesson, onSaved, onCancel }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [form, setForm] = useState({
     date:        lesson.date        || '',
     time:        lesson.time        || '',
@@ -714,7 +730,7 @@ function EditLessonForm({ lesson, onSaved, onCancel }) {
       })
       onSaved()
     } catch (e) {
-      setError(e.response?.data?.error || 'Ошибка сохранения')
+      setError(e.response?.data?.error || t('groupDetail.saveError'))
     } finally {
       setSaving(false)
     }
@@ -722,39 +738,39 @@ function EditLessonForm({ lesson, onSaved, onCancel }) {
 
   return (
     <div className="p-6 sm:p-7">
-      <h3 className="text-lg font-semibold text-slate-900 mb-5">Редактировать урок</h3>
+      <h3 className="text-lg font-semibold text-slate-900 mb-5">{t('groupDetail.editLessonTitle')}</h3>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-slate-400 block mb-1">Дата</label>
+            <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.dateLabel')}</label>
             <input type="date" value={form.date} onChange={e => set('date', e.target.value)} required
               className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
           </div>
           <div>
-            <label className="text-xs text-slate-400 block mb-1">Время</label>
+            <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.timeLabel')}</label>
             <input type="time" value={form.time} onChange={e => set('time', e.target.value)} required
               className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
           </div>
         </div>
-        <Input label="Тема урока (необязательно)" value={form.topic}
+        <Input label={t('groupDetail.topicLabel')} value={form.topic}
           onChange={e => set('topic', e.target.value)} />
         <div>
-          <label className="text-xs text-slate-400 block mb-1">Описание (необязательно)</label>
+          <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.descLabel')}</label>
           <textarea value={form.description} onChange={e => set('description', e.target.value)}
-            rows={2} placeholder="Что будем делать на уроке..."
+            rows={2} placeholder={t('groupDetail.descPlaceholder')}
             className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none" />
         </div>
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-xs text-slate-400">Ссылка на урок</label>
+            <label className="text-xs text-slate-400">{t('groupDetail.linkLabel')}</label>
             <button type="button"
               onClick={() => set('lessonLink', `https://meet.jit.si/lf-${crypto.randomUUID()}`)}
               className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
-              ↻ Новая Jitsi
+              {t('groupDetail.newJitsi')}
             </button>
           </div>
           <input type="text" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
-            placeholder="Пусто = без ссылки"
+            placeholder={t('groupDetail.emptyNoLink')}
             className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 placeholder:text-slate-400" />
         </div>
 
@@ -763,8 +779,8 @@ function EditLessonForm({ lesson, onSaved, onCancel }) {
 
         {error && <p className="text-sm text-red-600">{error}</p>}
         <div className="flex gap-2 pt-1">
-          <Button type="button" variant="secondary" className="flex-1" onClick={onCancel}>Отмена</Button>
-          <Button type="submit" loading={saving} className="flex-1">Сохранить</Button>
+          <Button type="button" variant="secondary" className="flex-1" onClick={onCancel}>{tc('cancel')}</Button>
+          <Button type="submit" loading={saving} className="flex-1">{tc('save')}</Button>
         </div>
       </form>
     </div>
@@ -773,6 +789,8 @@ function EditLessonForm({ lesson, onSaved, onCancel }) {
 
 /* ── Создание одиночного урока ──────────────────────────────── */
 function CreateLessonModal({ open, onClose, groupId, onCreated }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [form, setForm] = useState({
     date: '', time: '', topic: '', description: '', lessonLink: '',
   })
@@ -793,8 +811,8 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!form.date || !form.time) return setError('Дата и время обязательны')
-    if (linkMode === 'custom' && !form.lessonLink.trim()) return setError('Введите ссылку или выберите Jitsi (авто)')
+    if (!form.date || !form.time) return setError(t('groupDetail.dateTimeReq'))
+    if (linkMode === 'custom' && !form.lessonLink.trim()) return setError(t('groupDetail.validLink'))
     setSaving(true); setError('')
     try {
       await createLesson({
@@ -809,7 +827,7 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
       onCreated()
       handleClose()
     } catch (e) {
-      setError(e.response?.data?.error || 'Ошибка создания')
+      setError(e.response?.data?.error || t('groupDetail.createError'))
     } finally {
       setSaving(false)
     }
@@ -818,32 +836,32 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
   return (
     <Modal open={open} onClose={handleClose} maxWidth="max-w-lg">
       <div className="p-6 sm:p-7">
-        <h3 className="text-lg font-semibold text-slate-900 mb-5">Новый урок</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-5">{t('groupDetail.newLessonTitle')}</h3>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-slate-400 block mb-1">Дата *</label>
+              <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.dateReq')}</label>
               <input type="date" value={form.date} onChange={e => set('date', e.target.value)} required
                 className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
             </div>
             <div>
-              <label className="text-xs text-slate-400 block mb-1">Время *</label>
+              <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.timeReq')}</label>
               <input type="time" value={form.time} onChange={e => set('time', e.target.value)} required
                 className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
             </div>
           </div>
-          <Input label="Тема урока (необязательно)" value={form.topic}
+          <Input label={t('groupDetail.topicLabel')} value={form.topic}
             onChange={e => set('topic', e.target.value)} />
           <div>
-            <label className="text-xs text-slate-400 block mb-1">Описание (необязательно)</label>
+            <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.descLabel')}</label>
             <textarea value={form.description} onChange={e => set('description', e.target.value)}
-              rows={2} placeholder="Что будем делать на уроке..."
+              rows={2} placeholder={t('groupDetail.descPlaceholder')}
               className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none" />
           </div>
           <div>
-            <label className="text-xs text-slate-400 block mb-1.5">Ссылка на урок</label>
+            <label className="text-xs text-slate-400 block mb-1.5">{t('groupDetail.linkLabel')}</label>
             <div className="flex gap-2 mb-2">
-              {[['auto', '🎥 Jitsi (авто)'], ['custom', '🔗 Своя ссылка']].map(([m, label]) => (
+              {[['auto', t('groupDetail.linkAuto')], ['custom', t('groupDetail.linkCustom')]].map(([m, label]) => (
                 <button key={m} type="button" onClick={() => setLinkMode(m)}
                   className={`flex-1 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
                     linkMode === m
@@ -855,10 +873,10 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
               ))}
             </div>
             {linkMode === 'auto' ? (
-              <p className="text-xs text-slate-400 italic">Jitsi-ссылка создастся автоматически — учитель и ученик войдут без регистрации</p>
+              <p className="text-xs text-slate-400 italic">{t('groupDetail.autoHintFull')}</p>
             ) : (
               <input type="url" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
-                placeholder="https://zoom.us/j/... или meet.google.com/..."
+                placeholder={t('groupDetail.customPlaceholder')}
                 className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 placeholder:text-slate-400" />
             )}
           </div>
@@ -867,8 +885,8 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
 
           {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="flex gap-2 pt-1">
-            <Button type="button" variant="secondary" className="flex-1" onClick={handleClose}>Отмена</Button>
-            <Button type="submit" loading={saving} className="flex-1">Создать урок</Button>
+            <Button type="button" variant="secondary" className="flex-1" onClick={handleClose}>{tc('cancel')}</Button>
+            <Button type="submit" loading={saving} className="flex-1">{t('groupDetail.createLesson')}</Button>
           </div>
         </form>
       </div>
@@ -878,6 +896,9 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
 
 /* ── Генерация уроков по расписанию ────────────────────────── */
 function GenerateLessonsModal({ open, onClose, group, onGenerated }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
+  const weekdays = t('groups.weekdays', { returnObjects: true })
   // Дефолт: от сегодня до +3 месяца
   const todayStr = new Date().toISOString().slice(0, 10)
   const endDate  = new Date(); endDate.setMonth(endDate.getMonth() + 3)
@@ -890,19 +911,19 @@ function GenerateLessonsModal({ open, onClose, group, onGenerated }) {
   const [error,   setError]   = useState('')
 
   const schedule = (group.schedule || [])
-    .map(s => `${dayLabel(s.day)} ${s.time}`)
+    .map(s => `${weekdays[s.day] ?? ''} ${s.time}`)
     .join(', ')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!from || !to) return setError('Укажите обе даты')
+    if (!from || !to) return setError(t('groupDetail.bothDates'))
     setLoading(true); setError('')
     try {
       const r = await generateLessons(group.id, from, to)
       setResult(r.created)
       onGenerated()
     } catch (e) {
-      setError(e.response?.data?.error || 'Ошибка генерации')
+      setError(e.response?.data?.error || t('groupDetail.genError'))
     } finally {
       setLoading(false)
     }
@@ -917,36 +938,36 @@ function GenerateLessonsModal({ open, onClose, group, onGenerated }) {
   return (
     <Modal open={open} onClose={handleClose} maxWidth="max-w-sm">
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-2">Сгенерировать по расписанию</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-2">{t('groupDetail.genTitle')}</h3>
         {schedule && (
-          <p className="text-xs text-slate-400 mb-5">Расписание: {schedule}</p>
+          <p className="text-xs text-slate-400 mb-5">{t('groupDetail.schedulePrefix', { schedule })}</p>
         )}
         {!schedule && (
-          <p className="text-xs text-amber-600 mb-5">⚠️ У группы нет расписания. Сначала добавьте его в «Настройках».</p>
+          <p className="text-xs text-amber-600 mb-5">{t('groupDetail.noSchedule')}</p>
         )}
         {result !== null ? (
           <div className="text-center py-4">
             <div className="text-4xl mb-3">✅</div>
-            <p className="text-slate-900 font-medium">Создано {result} уроков</p>
-            <p className="text-xs text-slate-400 mt-1">Повторный вызов безопасен — дубли не создаются</p>
-            <Button className="mt-4 w-full" onClick={handleClose}>Закрыть</Button>
+            <p className="text-slate-900 font-medium">{t('groupDetail.createdN', { n: result })}</p>
+            <p className="text-xs text-slate-400 mt-1">{t('groupDetail.safeRepeat')}</p>
+            <Button className="mt-4 w-full" onClick={handleClose}>{tc('close')}</Button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label className="text-xs text-slate-400 block mb-1">Начало</label>
+              <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.startLabel')}</label>
               <input type="date" value={from} onChange={e => setFrom(e.target.value)}
                 className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
             </div>
             <div>
-              <label className="text-xs text-slate-400 block mb-1">Конец</label>
+              <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.endLabel')}</label>
               <input type="date" value={to} onChange={e => setTo(e.target.value)}
                 className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
             </div>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <div className="flex gap-2 pt-1">
-              <Button type="button" variant="secondary" className="flex-1" onClick={handleClose}>Отмена</Button>
-              <Button type="submit" loading={loading} disabled={!schedule} className="flex-1">Создать</Button>
+              <Button type="button" variant="secondary" className="flex-1" onClick={handleClose}>{tc('cancel')}</Button>
+              <Button type="submit" loading={loading} disabled={!schedule} className="flex-1">{tc('create')}</Button>
             </div>
           </form>
         )}
@@ -957,6 +978,7 @@ function GenerateLessonsModal({ open, onClose, group, onGenerated }) {
 
 /* ── Редактор материалов ────────────────────────────────────── */
 function MaterialsEditor({ materials, onChange }) {
+  const { t } = useTranslation('teacher')
   const add = (type) => onChange([...materials, type === 'link'
     ? { type: 'link', url: '', title: '' }
     : { type: 'text', content: '', title: '' }
@@ -970,30 +992,30 @@ function MaterialsEditor({ materials, onChange }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-slate-400 uppercase tracking-wider">Материалы</span>
+        <span className="text-xs text-slate-400 uppercase tracking-wider">{t('groupDetail.materialsLabel')}</span>
         <div className="flex gap-2">
           <button type="button" onClick={() => add('link')}
             className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
-            + Ссылка
+            {t('groupDetail.addLink')}
           </button>
           <button type="button" onClick={() => add('text')}
             className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
-            + Текст
+            {t('groupDetail.addTextMat')}
           </button>
         </div>
       </div>
       {materials.length === 0 && (
-        <p className="text-xs text-slate-600 italic">Нет материалов. Добавьте ссылку или текстовую заметку.</p>
+        <p className="text-xs text-slate-600 italic">{t('groupDetail.noMaterials')}</p>
       )}
       <div className="space-y-2">
         {materials.map((m, i) => (
           <div key={i} className="p-3 rounded-xl bg-white border border-slate-200 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-500">{m.type === 'link' ? '🔗 Ссылка' : '📝 Текст'}</span>
+              <span className="text-xs text-slate-500">{m.type === 'link' ? t('groupDetail.matLink') : t('groupDetail.matText')}</span>
               <button type="button" onClick={() => remove(i)}
                 className="text-slate-600 hover:text-red-600 cursor-pointer text-xs">✕</button>
             </div>
-            <input placeholder="Заголовок (необязательно)" value={m.title || ''}
+            <input placeholder={t('groupDetail.titleOptional')} value={m.title || ''}
               onChange={e => update(i, 'title', e.target.value)}
               className="w-full h-8 px-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-xs outline-none focus:border-blue-500 placeholder:text-slate-400" />
             {m.type === 'link' ? (
@@ -1001,7 +1023,7 @@ function MaterialsEditor({ materials, onChange }) {
                 onChange={e => update(i, 'url', e.target.value)}
                 className="w-full h-8 px-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-xs outline-none focus:border-blue-500 placeholder:text-slate-400" />
             ) : (
-              <textarea placeholder="Текст заметки..." value={m.content || ''}
+              <textarea placeholder={t('groupDetail.noteText')} value={m.content || ''}
                 onChange={e => update(i, 'content', e.target.value)} rows={2}
                 className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-xs outline-none focus:border-blue-500 placeholder:text-slate-400 resize-none" />
             )}
@@ -1014,6 +1036,7 @@ function MaterialsEditor({ materials, onChange }) {
 
 /* ── Отображение материалов ─────────────────────────────────── */
 function MaterialsList({ materials }) {
+  const { t } = useTranslation('teacher')
   return (
     <div className="space-y-2">
       {materials.map((m, i) => (
@@ -1032,7 +1055,7 @@ function MaterialsList({ materials }) {
             {m.type === 'file' && m.url && safeUrl(m.url) && (
               <a href={safeUrl(m.url)} target="_blank" rel="noopener noreferrer"
                 className="text-xs text-blue-600 hover:text-blue-700 underline">
-                Открыть файл
+                {t('groupDetail.openFile')}
               </a>
             )}
             {m.type === 'text' && m.content && (
@@ -1047,6 +1070,9 @@ function MaterialsList({ materials }) {
 
 /* ── Настройки ──────────────────────────────────────────────── */
 function SettingsTab({ group, reload, onDeleted }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
+  const weekdays = t('groups.weekdays', { returnObjects: true })
   const [form, setForm] = useState({
     name:           group.name,
     pricePerLesson: String(group.pricePerLesson || ''),
@@ -1068,7 +1094,7 @@ function SettingsTab({ group, reload, onDeleted }) {
 
   const handleSave = async (e) => {
     e.preventDefault()
-    if (!form.name.trim()) return setError('Введите название')
+    if (!form.name.trim()) return setError(t('groupDetail.enterName'))
     setSaving(true); setError(''); setOk(false)
     try {
       await updateGroup(group.id, {
@@ -1080,7 +1106,7 @@ function SettingsTab({ group, reload, onDeleted }) {
       })
       reload(); setOk(true)
     } catch (e) {
-      setError(e.response?.data?.error || 'Ошибка сохранения')
+      setError(e.response?.data?.error || t('groupDetail.saveError'))
     } finally {
       setSaving(false)
     }
@@ -1089,39 +1115,39 @@ function SettingsTab({ group, reload, onDeleted }) {
   const handleDelete = async () => {
     setDeleting(true)
     try { await deleteGroup(group.id); onDeleted() }
-    catch (e) { setError(e.response?.data?.error || 'Ошибка удаления'); setDeleting(false) }
+    catch (e) { setError(e.response?.data?.error || t('groupDetail.deleteError')); setDeleting(false) }
   }
 
   return (
     <div className="max-w-lg">
       <form onSubmit={handleSave} className="space-y-3 mb-8">
-        <Input label="Название" value={form.name}
+        <Input label={t('groupDetail.nameLabel')} value={form.name}
           onChange={e => set('name', e.target.value)} />
-        <Input label="Цена за урок (zł)" type="number" min="0" value={form.pricePerLesson}
+        <Input label={t('groupDetail.priceLabel')} type="number" min="0" value={form.pricePerLesson}
           onChange={e => set('pricePerLesson', e.target.value)} />
-        <Input label="Постоянная ссылка Zoom/Meet (необязательно)" value={form.lessonLink}
+        <Input label={t('groupDetail.lessonLinkLabel')} value={form.lessonLink}
           onChange={e => set('lessonLink', e.target.value)} />
-        <Input label="Ссылка группового чата (необязательно)" value={form.chatLink}
+        <Input label={t('groupDetail.chatLinkLabel')} value={form.chatLink}
           onChange={e => set('chatLink', e.target.value)} />
 
         {/* Расписание */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-slate-400 uppercase tracking-wider">Расписание</span>
+            <span className="text-xs text-slate-400 uppercase tracking-wider">{t('groupDetail.scheduleLabel')}</span>
             <button type="button" onClick={addSlot}
               className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
-              + Добавить слот
+              {t('groupDetail.addSlot')}
             </button>
           </div>
           {schedule.length === 0 && (
-            <p className="text-xs text-slate-600 italic mb-2">Нет расписания — добавьте слоты для генерации уроков.</p>
+            <p className="text-xs text-slate-600 italic mb-2">{t('groupDetail.noScheduleHint')}</p>
           )}
           <div className="space-y-2">
             {schedule.map((sl, i) => (
               <div key={i} className="flex items-center gap-2">
                 <select value={sl.day} onChange={e => updateSlot(i, 'day', e.target.value)}
                   className="flex-1 h-10 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500">
-                  {DAYS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+                  {DAY_VALUES.map(v => <option key={v} value={v}>{weekdays[v]}</option>)}
                 </select>
                 <input type="time" value={sl.time} onChange={e => updateSlot(i, 'time', e.target.value)}
                   className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
@@ -1133,29 +1159,29 @@ function SettingsTab({ group, reload, onDeleted }) {
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
-        {ok    && <p className="text-sm text-emerald-600">✓ Сохранено</p>}
-        <Button type="submit" loading={saving} className="w-full">Сохранить изменения</Button>
+        {ok    && <p className="text-sm text-emerald-600">{t('groupDetail.savedOk')}</p>}
+        <Button type="submit" loading={saving} className="w-full">{t('groupDetail.saveChanges')}</Button>
       </form>
 
       {/* Удаление */}
       <div className="pt-6 border-t border-slate-200">
-        <h3 className="text-sm font-medium text-red-600 mb-2">Опасная зона</h3>
+        <h3 className="text-sm font-medium text-red-600 mb-2">{t('groupDetail.dangerZone')}</h3>
         {!delConfirm ? (
           <Button variant="secondary" size="sm"
             onClick={() => setDelConfirm(true)}
             className="border-red-200 text-red-600 hover:border-red-300 hover:bg-red-50">
-            Удалить группу
+            {t('groupDetail.deleteGroup')}
           </Button>
         ) : (
           <div className="p-4 rounded-xl border border-red-500/30 bg-red-500/10">
             <p className="text-sm text-red-600 mb-3">
-              Удалить группу «{group.name}»? Все уроки, ДЗ и посещаемость группы будут удалены безвозвратно.
+              {t('groupDetail.confirmDeleteGroupMsg', { name: group.name })}
             </p>
             <div className="flex gap-2">
-              <Button variant="secondary" size="sm" onClick={() => setDelConfirm(false)}>Отмена</Button>
+              <Button variant="secondary" size="sm" onClick={() => setDelConfirm(false)}>{tc('cancel')}</Button>
               <Button size="sm" loading={deleting} onClick={handleDelete}
                 className="bg-red-600 hover:bg-red-700 border-0">
-                Удалить
+                {tc('delete')}
               </Button>
             </div>
           </div>
