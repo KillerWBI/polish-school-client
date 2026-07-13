@@ -20,10 +20,11 @@ export default function LanguageSwitcher({ variant = 'light', className = '' }) 
   const toggle = () => {
     if (!open && btnRef.current) {
       const r = btnRef.current.getBoundingClientRect()
-      // открываем вверх, если снизу не хватает места
+      // position: fixed → координаты вьюпорта (без scrollY). Сайдбар sticky —
+      // кнопка не двигается во вьюпорте, поэтому меню остаётся приклеенным при прокрутке.
       const openUp = (window.innerHeight - r.bottom) < DROP_H
-      const top = openUp ? r.top + window.scrollY - DROP_H - 4 : r.bottom + window.scrollY + 4
-      const left = Math.max(8, Math.min(r.left + window.scrollX, window.innerWidth - DROP_W - 8))
+      const top = openUp ? r.top - DROP_H - 4 : r.bottom + 4
+      const left = Math.max(8, Math.min(r.left, window.innerWidth - DROP_W - 8))
       setPos({ top, left })
     }
     setOpen(v => !v)
@@ -52,7 +53,7 @@ export default function LanguageSwitcher({ variant = 'light', className = '' }) 
         <>
           <div className="fixed inset-0 z-[9998]" onClick={() => setOpen(false)} />
           <div
-            style={{ position: 'absolute', top: pos.top, left: pos.left, width: DROP_W }}
+            style={{ position: 'fixed', top: pos.top, left: pos.left, width: DROP_W }}
             className="rounded-xl border border-slate-200 bg-white shadow-xl z-[9999] py-1 max-h-72 overflow-y-auto">
             {SUPPORTED.map((lng) => (
               <button key={lng} onClick={() => choose(lng)}
