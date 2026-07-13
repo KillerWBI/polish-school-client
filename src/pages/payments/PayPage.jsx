@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ArrowLeft, Upload, CheckCircle, Landmark, Smartphone, CreditCard, Globe, Copy } from 'lucide-react'
 import { getDebt, getTeacherPaymentInfo, studentPay } from '../../api/payments.api'
@@ -18,12 +19,13 @@ const uploadScreenshot = async (file) => {
   fd.append('file', file)
   fd.append('upload_preset', PRESET)
   const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`, { method: 'POST', body: fd })
-  if (!r.ok) throw new Error('Ошибка загрузки скриншота')
+  if (!r.ok) throw new Error('screenshot upload failed')
   const json = await r.json()
   return json.secure_url
 }
 
 export default function PayPage() {
+  const { t } = useTranslation('teacher')
   const { teacherId } = useParams()
   const navigate = useNavigate()
   const { data: debtData, loading: debtLoading } = useFetch(getDebt)
@@ -49,9 +51,9 @@ export default function PayPage() {
         <BackLink />
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-10 text-center">
           <div className="text-4xl mb-3">🤷</div>
-          <div className="text-slate-900 font-medium mb-1">Счёт не найден</div>
-          <div className="text-sm text-slate-500">У вас нет начислений от этого преподавателя.</div>
-          <Button className="mt-5" onClick={() => navigate('/payments')}>К финансам</Button>
+          <div className="text-slate-900 font-medium mb-1">{t('payPage.notFoundTitle')}</div>
+          <div className="text-sm text-slate-500">{t('payPage.notFoundText')}</div>
+          <Button className="mt-5" onClick={() => navigate('/payments')}>{t('payPage.toFinances')}</Button>
         </div>
       </div>
     )
@@ -65,10 +67,10 @@ export default function PayPage() {
 
   // Способы = только те каналы, что учитель заполнил в реквизитах
   const methodOptions = [
-    pd.iban && { k: 'transfer', l: 'Перевод' },
-    pd.blik && { k: 'blik', l: 'BLIK' },
-    pd.paypal && { k: 'paypal', l: 'PayPal' },
-    pd.revolut && { k: 'revolut', l: 'Revolut' },
+    pd.iban && { k: 'transfer', l: t('payments.mTransfer') },
+    pd.blik && { k: 'blik', l: t('payments.mBlik') },
+    pd.paypal && { k: 'paypal', l: t('payments.mPaypal') },
+    pd.revolut && { k: 'revolut', l: t('payments.mRevolut') },
     pd.customLabel && { k: 'other', l: pd.customLabel },
   ].filter(Boolean)
   // Если текущий выбранный способ недоступен — берём первый доступный
@@ -83,7 +85,7 @@ export default function PayPage() {
       const url = await uploadScreenshot(file)
       setScreenshotUrl(url)
     } catch {
-      toast.error('Не удалось загрузить скриншот. Продолжите без него.')
+      toast.error(t('payPage.screenshotUploadFail'))
       setScreenshot(null)
     } finally {
       setUploading(false)
@@ -96,9 +98,9 @@ export default function PayPage() {
     try {
       await studentPay({ teacherId, amount: payAmount, method: effectiveMethod, screenshotUrl: screenshotUrl || undefined })
       setDone(true)
-      toast.success('Оплата отправлена на проверку преподавателю.')
+      toast.success(t('payPage.sentToReview'))
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка записи оплаты')
+      toast.error(e.response?.data?.error || t('payments.recordError'))
     } finally {
       setSubmitting(false)
     }
@@ -110,9 +112,9 @@ export default function PayPage() {
         <BackLink />
         <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-10 text-center">
           <CheckCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-          <div className="text-slate-900 font-semibold text-lg mb-1">Отправлено на проверку</div>
-          <div className="text-sm text-slate-600">Оплата {fmt(payAmount)} преподавателю {teacherName} ждёт подтверждения. Статус — в разделе «Финансы» → «В процессе». Долг уменьшится после одобрения.</div>
-          <Button className="mt-5" onClick={() => navigate('/payments')}>К финансам</Button>
+          <div className="text-slate-900 font-semibold text-lg mb-1">{t('payPage.doneTitle')}</div>
+          <div className="text-sm text-slate-600">{t('payPage.doneText', { amount: fmt(payAmount), name: teacherName })}</div>
+          <Button className="mt-5" onClick={() => navigate('/payments')}>{t('payPage.toFinances')}</Button>
         </div>
       </div>
     )
@@ -121,53 +123,53 @@ export default function PayPage() {
   return (
     <div className="p-5 sm:p-8 max-w-4xl mx-auto">
       <BackLink />
-      <h1 className="text-2xl font-semibold text-slate-900 mt-4 mb-1">Оплата занятий</h1>
-      <p className="text-sm text-slate-500 mb-6">Преподаватель: <span className="font-medium text-slate-700">{teacherName}</span></p>
+      <h1 className="text-2xl font-semibold text-slate-900 mt-4 mb-1">{t('payPage.pageTitle')}</h1>
+      <p className="text-sm text-slate-500 mb-6">{t('payPage.teacherLabel')} <span className="font-medium text-slate-700">{teacherName}</span></p>
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-5 items-start">
         {/* Левая колонка: реквизиты */}
         <div className="space-y-4">
           {!hasPaymentMethods ? (
             <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-slate-500 text-sm">
-              Преподаватель пока не заполнил реквизиты. Напишите ему напрямую, чтобы узнать, как оплатить.
+              {t('payPage.noMethods')}
             </div>
           ) : (
             <>
               {/* IBAN */}
               {pd.iban && (
-                <PayCard title="Банковский перевод" Icon={Landmark}>
-                  <PayRow label="IBAN" value={pd.iban} copy />
-                  {pd.bic && <PayRow label="BIC / SWIFT" value={pd.bic} copy />}
-                  {pd.bankName && <PayRow label="Банк" value={pd.bankName} />}
-                  <PayRow label="Получатель" value={teacherName} />
-                  <PayRow label="Назначение" value="Оплата занятий" />
+                <PayCard title={t('payPage.cardTransfer')} Icon={Landmark}>
+                  <PayRow label={t('payPage.ibanLabel')} value={pd.iban} copy />
+                  {pd.bic && <PayRow label={t('payPage.bicLabel')} value={pd.bic} copy />}
+                  {pd.bankName && <PayRow label={t('payPage.bankLabel')} value={pd.bankName} />}
+                  <PayRow label={t('payPage.recipientLabel')} value={teacherName} />
+                  <PayRow label={t('payPage.purposeLabel')} value={t('payPage.purposeValue')} />
                 </PayCard>
               )}
               {/* BLIK */}
               {pd.blik && (
-                <PayCard title="BLIK" Icon={Smartphone}>
-                  <PayRow label="Номер телефона" value={pd.blik} copy />
-                  <p className="text-xs text-slate-400 mt-1">Откройте приложение банка → BLIK → «Перевод на номер телефона».</p>
+                <PayCard title={t('payments.mBlik')} Icon={Smartphone}>
+                  <PayRow label={t('payPage.blikPhone')} value={pd.blik} copy />
+                  <p className="text-xs text-slate-400 mt-1">{t('payPage.blikHint')}</p>
                 </PayCard>
               )}
               {/* PayPal */}
               {pd.paypal && (
-                <PayCard title="PayPal" Icon={CreditCard}>
-                  <PayRow label="PayPal email / ссылка" value={pd.paypal} copy />
-                  <p className="text-xs text-slate-400 mt-1">Войдите в PayPal → «Отправить» → введите email преподавателя.</p>
+                <PayCard title={t('payments.mPaypal')} Icon={CreditCard}>
+                  <PayRow label={t('payPage.paypalLabel')} value={pd.paypal} copy />
+                  <p className="text-xs text-slate-400 mt-1">{t('payPage.paypalHint')}</p>
                 </PayCard>
               )}
               {/* Revolut */}
               {pd.revolut && (
-                <PayCard title="Revolut" Icon={Globe}>
-                  <PayRow label="Revolut tag / ссылка" value={pd.revolut} copy />
-                  <p className="text-xs text-slate-400 mt-1">Откройте Revolut → «Отправить» → найдите по тегу или перейдите по ссылке.</p>
+                <PayCard title={t('payments.mRevolut')} Icon={Globe}>
+                  <PayRow label={t('payPage.revolutLabel')} value={pd.revolut} copy />
+                  <p className="text-xs text-slate-400 mt-1">{t('payPage.revolutHint')}</p>
                 </PayCard>
               )}
               {/* Кастомное */}
               {pd.customLabel && (
                 <PayCard title={pd.customLabel} Icon={Globe}>
-                  {pd.customValue && <PayRow label="Реквизиты" value={pd.customValue} copy />}
+                  {pd.customValue && <PayRow label={t('payPage.customValueLabel')} value={pd.customValue} copy />}
                 </PayCard>
               )}
             </>
@@ -176,22 +178,22 @@ export default function PayPage() {
 
         {/* Правая колонка: сумма + скриншот + кнопка */}
         <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:sticky lg:top-4 space-y-4">
-          <div className="text-sm font-semibold text-slate-900 mb-2">Записать оплату</div>
+          <div className="text-sm font-semibold text-slate-900 mb-2">{t('payPage.recordTitle')}</div>
 
           {/* Сводка долга */}
           <div className="space-y-1.5 text-sm pb-3 border-b border-slate-100">
-            <Row label="Начислено" value={fmt(row.charged)} />
-            <Row label="Оплачено"  value={fmt(row.paid)} cls="text-emerald-600" />
-            <Row label="Остаток"   value={fmt(balance)} bold />
+            <Row label={t('payments.sumCharged')} value={fmt(row.charged)} />
+            <Row label={t('payments.sumPaid')}    value={fmt(row.paid)} cls="text-emerald-600" />
+            <Row label={t('payments.sumBalance')} value={fmt(balance)} bold />
           </div>
 
-          <Input label="Сумма оплаты, zł" type="number" value={amount}
+          <Input label={t('payPage.amountLabel')} type="number" value={amount}
             placeholder={String(balance)} onChange={e => setAmount(e.target.value)} />
 
           {/* Способ — только каналы, которые учитель заполнил */}
           {methodOptions.length > 0 && (
             <div>
-              <div className="text-xs font-medium text-slate-600 mb-1.5">Способ</div>
+              <div className="text-xs font-medium text-slate-600 mb-1.5">{t('payPage.methodWord')}</div>
               <div className="grid grid-cols-2 gap-1.5">
                 {methodOptions.map(({ k, l }) => (
                   <button key={k} type="button" onClick={() => setMethod(k)}
@@ -205,7 +207,7 @@ export default function PayPage() {
 
           {/* Скриншот */}
           <div>
-            <div className="text-xs font-medium text-slate-600 mb-1.5">Скриншот подтверждения (необязательно)</div>
+            <div className="text-xs font-medium text-slate-600 mb-1.5">{t('payPage.screenshotLabel')}</div>
             {screenshot ? (
               <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
                 <CheckCircle className="w-4 h-4 shrink-0" />
@@ -215,19 +217,19 @@ export default function PayPage() {
             ) : (
               <label className="flex items-center gap-2 h-9 px-3 rounded-lg border border-dashed border-slate-300 text-xs text-slate-500 hover:bg-slate-50 cursor-pointer transition-colors">
                 <Upload className="w-3.5 h-3.5" />
-                {uploading ? 'Загрузка...' : 'Прикрепить скриншот'}
+                {uploading ? t('payPage.uploadingShort') : t('payPage.attachScreenshot')}
                 <input type="file" accept="image/*" className="sr-only" onChange={handleScreenshotChange} disabled={uploading} />
               </label>
             )}
-            <p className="text-[10px] text-slate-400 mt-1">Помогает преподавателю сверить оплату быстрее.</p>
+            <p className="text-[10px] text-slate-400 mt-1">{t('payPage.screenshotHint')}</p>
           </div>
 
           <Button className="w-full" disabled={!canSubmit || uploading} loading={submitting} onClick={handleSubmit}>
-            Записать оплату {canSubmit ? fmt(payAmount) : ''}
+            {t('payPage.recordBtn')} {canSubmit ? fmt(payAmount) : ''}
           </Button>
 
           <p className="text-[10px] text-center text-slate-400">
-            Деньги идут напрямую преподавателю. Запись появится в «Финансах».
+            {t('payPage.directNote')}
           </p>
         </div>
       </div>
@@ -236,9 +238,10 @@ export default function PayPage() {
 }
 
 function BackLink() {
+  const { t } = useTranslation('teacher')
   return (
     <Link to="/payments" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors">
-      <ArrowLeft className="w-4 h-4" /> Назад к финансам
+      <ArrowLeft className="w-4 h-4" /> {t('payPage.backLink')}
     </Link>
   )
 }
@@ -265,7 +268,8 @@ function PayCard({ title, Icon, children }) {
 }
 
 function PayRow({ label, value, copy }) {
-  const handleCopy = () => { navigator.clipboard.writeText(value); toast.success('Скопировано') }
+  const { t } = useTranslation('teacher')
+  const handleCopy = () => { navigator.clipboard.writeText(value); toast.success(t('payPage.copied')) }
   return (
     <div className="flex items-start justify-between gap-3 text-sm">
       <span className="text-slate-500 shrink-0">{label}</span>
