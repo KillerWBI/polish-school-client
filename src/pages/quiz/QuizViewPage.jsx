@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ArrowLeft, Trash2 } from 'lucide-react'
 import useFetch from '../../hooks/useFetch'
@@ -7,6 +8,8 @@ import { SkeletonList } from '../../components/ui/Skeleton'
 import QuizRunner from './QuizRunner'
 
 export default function QuizViewPage() {
+  const { t } = useTranslation('app')
+  const { t: tc } = useTranslation('common')
   const { id } = useParams()
   const navigate = useNavigate()
   const { data: quiz, loading } = useFetch(() => getQuiz(id), [id])
@@ -16,15 +19,15 @@ export default function QuizViewPage() {
   if (!quiz) {
     return (
       <div className="p-5 sm:p-8 max-w-3xl mx-auto">
-        <Link to="/quizzes" className="text-sm text-slate-500 hover:text-slate-700">← Мои тесты</Link>
-        <div className="mt-6 text-center text-slate-400">Тест не найден.</div>
+        <Link to="/quizzes" className="text-sm text-slate-500 hover:text-slate-700">← {t('quiz.backToMy')}</Link>
+        <div className="mt-6 text-center text-slate-400">{t('quiz.notFound')}</div>
       </div>
     )
   }
 
   const del = async () => {
-    try { await deleteQuiz(id); toast.success('Тест удалён'); navigate('/quizzes') }
-    catch { toast.error('Не удалось удалить') }
+    try { await deleteQuiz(id); toast.success(t('quiz.deleted')); navigate('/quizzes') }
+    catch { toast.error(t('quiz.deleteFail')) }
   }
 
   // Пройденный (есть ответы/оценка) → открываем завершённым; сохранённый в библиотеку → свежий для прохождения.
@@ -33,13 +36,13 @@ export default function QuizViewPage() {
   return (
     <div className="p-5 sm:p-8 max-w-3xl mx-auto">
       <Link to="/quizzes" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors">
-        <ArrowLeft className="w-4 h-4" /> Мои тесты
+        <ArrowLeft className="w-4 h-4" /> {t('quiz.backToMy')}
       </Link>
       <div className="flex items-center justify-between gap-3 mt-3 mb-5">
         <h1 className="text-2xl font-semibold text-slate-900">{quiz.topic}</h1>
         <button onClick={del}
           className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 text-sm text-slate-500 hover:text-red-600 hover:border-red-200 transition-colors shrink-0">
-          <Trash2 className="w-4 h-4" /> Удалить
+          <Trash2 className="w-4 h-4" /> {tc('delete')}
         </button>
       </div>
       <QuizRunner quiz={quiz} savedAnswers={taken ? quiz.answers : undefined} />
