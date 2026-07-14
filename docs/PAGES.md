@@ -1,6 +1,10 @@
 # Frontend — Страницы и функционал
 
-**Обновлено 2026-07-09.**
+**Обновлено 2026-07-14.**
+
+> **📦 Актуальный список страниц и их статусы** — в `PROGRESS.md` (таблица «Страницы» + блок «Локализация»). Ниже — детальные описания части экранов; при расхождении приоритет у `PROGRESS.md`.
+> **Локализация:** все описанные страницы учителя и общие (dashboard/quiz/calendar/settings/profile) переведены на **ru/en/pl/uk** через `useTranslation`; тексты — в `src/i18n/locales/<lang>/{landing,app,teacher}.json`. Страницы ученика (vocab/my-lessons/notes/progress/materials/topics/support) — перевод в очереди (`student.json`).
+> **Актуальные маршруты входа:** `/login`, `/register`, `/register-student` (страница `AuthPage`, не модалка), `/for-students` (лендинг ученика). Старые упоминания `/teacher-login`/`AuthModal` ниже — устаревшие.
 
 ## Легенда ролей
 - 👨‍🏫 teacher

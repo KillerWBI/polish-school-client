@@ -1,6 +1,6 @@
 # Frontend — Архитектура
 
-**Обновлено 2026-07-09.**
+**Обновлено 2026-07-14.**
 
 ## Стек
 
@@ -11,6 +11,7 @@
 | Routing | React Router 7 |
 | HTTP | Axios (interceptors: JWT + 401-refresh + 5xx toast) |
 | Style | TailwindCSS 4 |
+| i18n | i18next + react-i18next + browser-languagedetector (7 языков; ru/en/pl/uk полные) |
 | Тосты | sonner |
 | Анимация | GSAP (лендинг + onboarding) |
 | Графики | Recharts 2.15 (lazy) |
@@ -18,6 +19,10 @@
 | Мониторинг | @sentry/react (off без DSN) |
 | PWA | Vite PWA plugin + install button в Sidebar |
 | Хостинг | Vercel (main = прод) |
+
+## Локализация (`src/i18n/`)
+
+`index.js` (init i18next, resources, namespaces `common/landing/app/teacher`), `detectLocale.js` (гео по IP `ipwho.is` + кэш), `countryToLang.js` (карта страна→язык), `locales/<lang>/*.json`. Компоненты: `const { t } = useTranslation('<ns>')`. Язык: `localStorage.lf_lang` → гео-IP → navigator → `en`. Переключатель: `components/ui/LanguageSwitcher.jsx`.
 
 ---
 

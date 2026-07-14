@@ -1,6 +1,6 @@
 # Frontend — Технологический стек
 
-**Обновлено 2026-07-09.**
+**Обновлено 2026-07-14.**
 
 ## Зависимости
 
@@ -19,8 +19,11 @@
 | @fullcalendar/react | 6 | Обёртка FullCalendar для React |
 | @fullcalendar/daygrid | 6 | Вид «месяц» |
 | @fullcalendar/interaction | 6 | Кликабельные события |
-| @fullcalendar/core | 6 | + ru locale (`import ruLocale from '@fullcalendar/core/locales/ru'`) |
+| @fullcalendar/core | 6 | + ru/pl/uk locales (`@fullcalendar/core/locales/*`), `locale={i18n.language}` |
 | @sentry/react | — | Мониторинг ошибок (off без DSN) |
+| i18next | — | Ядро локализации |
+| react-i18next | — | React-биндинги (`useTranslation`) |
+| i18next-browser-languagedetector | — | Детект языка (localStorage `lf_lang` → гео-IP → navigator → en) |
 
 ## Dev-зависимости
 
@@ -48,7 +51,11 @@ npm run lint     # ESLint
 VITE_API_URL=http://localhost:5000/api/v1
 ```
 
-В production — Railway-URL бэкенда. Все переменные должны начинаться с `VITE_`.
+В production — URL бэкенда. Все переменные должны начинаться с `VITE_`.
+
+## Локализация (i18n)
+
+`src/i18n/` — `index.js` (init, resources, namespaces `common/landing/app/teacher`), `detectLocale.js` (гео по `ipwho.is`, кэш `lf_geo_lang`), `countryToLang.js` (карта страна→язык, `SUPPORTED`, `FALLBACK='en'`), `locales/<lang>/*.json`. 7 языков (pl/uk/ru/en/es/fr/de); полные переводы ru/en/pl/uk, у es/fr/de пока только `common` (остальное фолбэк на en). Переключатель — `components/ui/LanguageSwitcher.jsx` (портал, `position:fixed`).
 
 ## Цветовая тема
 
