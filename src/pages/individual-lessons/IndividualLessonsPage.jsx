@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
 import {
@@ -18,6 +19,7 @@ import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 
 export default function IndividualLessonsPage() {
+  const { t, i18n } = useTranslation('teacher')
   const { isTeacher } = useAuth()
   const { data: lessons, loading, reload } = useFetch(getIndividualLessons)
   const { data: students } = useFetch(
@@ -37,10 +39,10 @@ export default function IndividualLessonsPage() {
     setDelBusy(true)
     try {
       await deleteIndividualLesson(toDelete.id)
-      toast.success('Урок удалён')
+      toast.success(t('indLessons.deleted'))
       setToDelete(null)
       reload()
-    } catch (e) { toast.error(errMsg(e, 'Ошибка удаления')) }
+    } catch (e) { toast.error(errMsg(e, t('indLessons.deleteError'))) }
     finally { setDelBusy(false) }
   }
 
@@ -61,27 +63,25 @@ export default function IndividualLessonsPage() {
     <div className="p-5 sm:p-8">
       <div className="flex items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Индивидуальные уроки</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Разовые занятия и уроки из серий — создавайте вручную или по расписанию курса</p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t('indLessons.title')}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{t('indLessons.subtitle')}</p>
         </div>
-        {isTeacher && <Button onClick={openCreate}>+ Создать урок</Button>}
+        {isTeacher && <Button onClick={openCreate}>{t('indLessons.createBtn')}</Button>}
       </div>
 
       {loading ? <SkeletonList /> : !lessons?.length ? (
         <EmptyState
           emoji="📅"
-          title="Уроков пока нет"
-          text={isTeacher
-            ? 'Создайте разовый урок кнопкой выше — или сгенерируйте серию в разделе «Инд. курсы».'
-            : 'Здесь появятся ваши индивидуальные занятия.'}
-          action={isTeacher ? <Button onClick={openCreate}>Создать урок</Button> : null}
+          title={t('indLessons.emptyTitle')}
+          text={isTeacher ? t('indLessons.emptyTeacher') : t('indLessons.emptyStudent')}
+          action={isTeacher ? <Button onClick={openCreate}>{t('indLessons.createShort')}</Button> : null}
         />
       ) : (
-        <div className="max-w-4xl space-y-6">
+        <div className="max-w-[1240px] space-y-6">
           {groups.map(([month, items]) => (
             <div key={month}>
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 capitalize">
-                {monthTitle(month)} · {items.length}
+                {monthTitle(month, i18n.language)} · {items.length}
               </div>
               <div className="grid sm:grid-cols-2 gap-3">
                 {items.map(l => (
@@ -108,8 +108,8 @@ export default function IndividualLessonsPage() {
         open={!!toDelete}
         onClose={() => setToDelete(null)}
         onConfirm={handleDelete}
-        title="Удалить урок?"
-        message="Урок и связанные с ним данные (посещаемость, ДЗ) будут удалены."
+        title={t('indLessons.confirmTitle')}
+        message={t('indLessons.confirmMsg')}
         busy={delBusy}
       />
     </div>
@@ -117,6 +117,8 @@ export default function IndividualLessonsPage() {
 }
 
 function LessonCard({ l, isTeacher, onEdit, onDelete }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const isPast = l.date && new Date(`${l.date}T${l.time || '00:00'}`) < new Date()
   return (
     <div className="group flex items-start gap-3 p-4 rounded-2xl border border-slate-200 bg-white hover:border-blue-200 transition-colors">
@@ -127,7 +129,7 @@ function LessonCard({ l, isTeacher, onEdit, onDelete }) {
       </div>
       <div className="flex-1 min-w-0">
         <div className={`text-sm font-medium truncate ${l.topic ? 'text-slate-900' : 'text-slate-400 italic'}`}>
-          {l.topic || 'Без темы'}
+          {l.topic || t('indLessons.noTopic')}
         </div>
         <div className="text-xs text-slate-400 mt-0.5 truncate">
           {l.time}{l.student?.name && ` · ${l.student.name}`}
@@ -137,28 +139,28 @@ function LessonCard({ l, isTeacher, onEdit, onDelete }) {
             <span className="text-[11px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">{l.pricePerLesson} zł</span>
           )}
           {l.individualCourseId && (
-            <span className="text-[11px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">серия</span>
+            <span className="text-[11px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">{t('indLessons.series')}</span>
           )}
           {l.lessonLink && (
             <a href={l.lessonLink} target="_blank" rel="noopener noreferrer"
               className="text-[11px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
-              Войти в урок
+              {t('indLessons.enterLesson')}
             </a>
           )}
           {l.lessonLink && isTeacher && (
-            <span className="text-[10px] text-slate-400">войдите через Google/GitHub чтобы стать модератором</span>
+            <span className="text-[10px] text-slate-400">{t('indLessons.moderatorHint')}</span>
           )}
         </div>
       </div>
       {isTeacher && (
         <div className="flex flex-col gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onClick={onEdit} title="Редактировать"
+          <button onClick={onEdit} title={tc('edit')}
             className="p-1.5 rounded-lg text-slate-400 hover:text-blue-700 hover:bg-blue-50 cursor-pointer">
             <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <button onClick={onDelete} title="Удалить"
+          <button onClick={onDelete} title={tc('delete')}
             className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 cursor-pointer">
             <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6" strokeLinecap="round" />
@@ -172,6 +174,8 @@ function LessonCard({ l, isTeacher, onEdit, onDelete }) {
 
 /* Создание разового урока или редактирование существующего */
 function LessonFormModal({ open, editing, students, onClose, onSaved }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const isEdit = !!editing
   const blank = { studentId: '', mode: 'existing', phName: '', phContact: '', date: '', time: '18:00', topic: '', pricePerLesson: '', lessonLink: '' }
   const [form, setForm] = useState(blank)
@@ -200,7 +204,7 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
 
   const submit = async (e) => {
     e.preventDefault()
-    if (!form.date || !form.time) return setError('Укажите дату и время')
+    if (!form.date || !form.time) return setError(t('indLessons.validDateTime'))
 
     setSaving(true); setError('')
     try {
@@ -211,11 +215,11 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
           pricePerLesson: parseFloat(form.pricePerLesson) || 0,
           lessonLink: form.lessonLink.trim() || null,
         })
-        toast.success('Урок обновлён')
+        toast.success(t('indLessons.updated'))
       } else {
         if (linkMode === 'custom' && !form.lessonLink.trim()) {
           setSaving(false)
-          return setError('Введите ссылку или выберите Jitsi (авто)')
+          return setError(t('indLessons.validLink'))
         }
         const body = {
           date: form.date, time: form.time,
@@ -224,36 +228,36 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
           lessonLink: linkMode === 'custom' ? form.lessonLink.trim() : undefined,
         }
         if (form.mode === 'placeholder') {
-          if (!form.phName.trim()) { setSaving(false); return setError('Введите имя ученика') }
+          if (!form.phName.trim()) { setSaving(false); return setError(t('indLessons.validPhName')) }
           body.placeholder = { name: form.phName.trim(), contact: form.phContact.trim() || null }
         } else {
-          if (!form.studentId) { setSaving(false); return setError('Выберите ученика') }
+          if (!form.studentId) { setSaving(false); return setError(t('indLessons.validStudent')) }
           body.studentId = form.studentId
         }
         await createIndividualLesson(body)
-        toast.success('Урок создан')
+        toast.success(t('indLessons.created'))
       }
       onSaved()
       onClose()
     } catch (e2) {
-      setError(errMsg(e2, 'Ошибка сохранения'))
+      setError(errMsg(e2, t('indLessons.saveError')))
     } finally { setSaving(false) }
   }
 
   return (
     <Modal open={open} onClose={onClose} maxWidth="max-w-md">
       <div className="p-6 sm:p-7">
-        <h2 className="text-xl font-semibold text-slate-900 mb-5">{isEdit ? 'Редактировать урок' : 'Новый индивидуальный урок'}</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mb-5">{isEdit ? t('indLessons.editTitle') : t('indLessons.newTitle')}</h2>
         <form onSubmit={submit} className="space-y-3">
           {isEdit ? (
             <div className="px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-600">
-              Ученик: <span className="font-medium text-slate-900">{editing.student?.name || '—'}</span>
+              {t('indLessons.studentField')} <span className="font-medium text-slate-900">{editing.student?.name || '—'}</span>
             </div>
           ) : (
             <>
               {/* Кто ученик */}
               <div className="flex gap-2">
-                {[['existing', 'Мой ученик'], ['placeholder', 'Заглушка']].map(([m, label]) => (
+                {[['existing', t('indLessons.modeExisting')], ['placeholder', t('indLessons.modePlaceholder')]].map(([m, label]) => (
                   <button key={m} type="button" onClick={() => set('mode', m)}
                     className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-colors ${
                       form.mode === m ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'}`}>
@@ -264,22 +268,22 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
 
               {form.mode === 'existing' ? (
                 <div>
-                  <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">Ученик</label>
+                  <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">{t('indLessons.studentLabel')}</label>
                   <select value={form.studentId} onChange={e => set('studentId', e.target.value)}
                     className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500">
-                    <option value="">— выбрать —</option>
+                    <option value="">{t('indLessons.choose')}</option>
                     {students.map(s => (
                       <option key={s.id} value={s.id}>{s.name}{s.username ? ` (@${s.username})` : ''}</option>
                     ))}
                   </select>
                   {!students.length && (
-                    <p className="text-xs text-slate-400 mt-1">Учеников пока нет — используйте «Заглушка».</p>
+                    <p className="text-xs text-slate-400 mt-1">{t('indLessons.noStudentsHint')}</p>
                   )}
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
-                  <Input label="Имя ученика" value={form.phName} onChange={e => set('phName', e.target.value)} />
-                  <Input label="Контакт (необяз.)" value={form.phContact} onChange={e => set('phContact', e.target.value)} />
+                  <Input label={t('indLessons.phName')} value={form.phName} onChange={e => set('phName', e.target.value)} />
+                  <Input label={t('indLessons.phContact')} value={form.phContact} onChange={e => set('phContact', e.target.value)} />
                 </div>
               )}
             </>
@@ -287,31 +291,31 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">Дата</label>
+              <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">{t('indLessons.dateLabel')}</label>
               <input type="date" value={form.date} onChange={e => set('date', e.target.value)}
                 className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">Время</label>
+              <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">{t('indLessons.timeLabel')}</label>
               <input type="time" value={form.time} onChange={e => set('time', e.target.value)}
                 className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
             </div>
           </div>
 
-          <Input label="Тема (необязательно)" value={form.topic} onChange={e => set('topic', e.target.value)} />
-          <Input label="Цена, zł" type="number" value={form.pricePerLesson} onChange={e => set('pricePerLesson', e.target.value)} />
+          <Input label={t('indLessons.fTopic')} value={form.topic} onChange={e => set('topic', e.target.value)} />
+          <Input label={t('indLessons.fPrice')} type="number" value={form.pricePerLesson} onChange={e => set('pricePerLesson', e.target.value)} />
 
           {/* Ссылка на урок */}
           <div>
-            <label className="text-xs text-slate-400 block mb-1.5">Ссылка на урок</label>
+            <label className="text-xs text-slate-400 block mb-1.5">{t('indLessons.linkLabel')}</label>
             {isEdit ? (
               <>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-slate-400">Пусто = без ссылки</span>
+                  <span className="text-xs text-slate-400">{t('indLessons.emptyNoLink')}</span>
                   <button type="button"
                     onClick={() => set('lessonLink', `https://meet.jit.si/lf-${crypto.randomUUID()}`)}
                     className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
-                    ↻ Новая Jitsi
+                    {t('indLessons.newJitsi')}
                   </button>
                 </div>
                 <input type="text" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
@@ -321,7 +325,7 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
             ) : (
               <>
                 <div className="flex gap-2 mb-2">
-                  {[['auto', '🎥 Jitsi (авто)'], ['custom', '🔗 Своя ссылка']].map(([m, label]) => (
+                  {[['auto', t('indLessons.linkAuto')], ['custom', t('indLessons.linkCustom')]].map(([m, label]) => (
                     <button key={m} type="button" onClick={() => setLinkMode(m)}
                       className={`flex-1 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
                         linkMode === m
@@ -333,10 +337,10 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
                   ))}
                 </div>
                 {linkMode === 'auto' ? (
-                  <p className="text-xs text-slate-400 italic">Jitsi-ссылка создастся автоматически</p>
+                  <p className="text-xs text-slate-400 italic">{t('indLessons.autoHint')}</p>
                 ) : (
                   <input type="url" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
-                    placeholder="https://zoom.us/j/... или meet.google.com/..."
+                    placeholder={t('indLessons.customPlaceholder')}
                     className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 placeholder:text-slate-400" />
                 )}
               </>
@@ -345,8 +349,8 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
 
           {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="flex gap-2 pt-1">
-            <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>Отмена</Button>
-            <Button type="submit" loading={saving} className="flex-1">{isEdit ? 'Сохранить' : 'Создать'}</Button>
+            <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>{tc('cancel')}</Button>
+            <Button type="submit" loading={saving} className="flex-1">{isEdit ? tc('save') : tc('create')}</Button>
           </div>
         </form>
       </div>
@@ -354,8 +358,8 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
   )
 }
 
-function monthTitle(ym) {
+function monthTitle(ym, lng = 'ru') {
   if (!ym) return '—'
   const [y, m] = ym.split('-').map(Number)
-  return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })
+  return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString(lng, { month: 'long', year: 'numeric' })
 }

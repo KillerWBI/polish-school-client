@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Settings2, User, CreditCard, Shield } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
@@ -16,6 +17,7 @@ import SocialsEditor   from '../profile/components/SocialsEditor'
    Табы: Личные данные | Способы оплаты (учитель) | Безопасность
    ═══════════════════════════════════════════════════════════ */
 export default function SettingsPage() {
+  const { t } = useTranslation('teacher')
   const { user, isTeacher, updateUser } = useAuth()
   const [searchParams] = useSearchParams()
   const [tab, setTab] = useState(searchParams.get('tab') || 'profile')
@@ -23,9 +25,9 @@ export default function SettingsPage() {
   if (!user) return null
 
   const tabs = [
-    { id: 'profile',  label: 'Личные данные', Icon: User },
-    ...(isTeacher ? [{ id: 'payment', label: 'Способы оплаты', Icon: CreditCard }] : []),
-    { id: 'security', label: 'Безопасность', Icon: Shield },
+    { id: 'profile',  label: t('settings.tabProfile'), Icon: User },
+    ...(isTeacher ? [{ id: 'payment', label: t('settings.tabPayment'), Icon: CreditCard }] : []),
+    { id: 'security', label: t('settings.tabSecurity'), Icon: Shield },
   ]
 
   return (
@@ -36,8 +38,8 @@ export default function SettingsPage() {
           <Settings2 className="w-5 h-5 text-slate-600" />
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Настройки</h1>
-          <p className="text-sm text-slate-500">Профиль, реквизиты оплаты и безопасность</p>
+          <h1 className="text-xl font-semibold text-slate-900">{t('settings.title')}</h1>
+          <p className="text-sm text-slate-500">{t('settings.subtitle')}</p>
         </div>
       </div>
 
@@ -66,12 +68,13 @@ export default function SettingsPage() {
 }
 
 const PLAN_NAME = { free: 'Free', pro: 'Pro', school: 'School' }
-const ROLE_NAME = { teacher: 'Преподаватель', student: 'Студент' }
+const ROLE_KEY  = { teacher: 'settings.roleTeacher', student: 'settings.roleStudent' }
 
 /* ═══════════════════════════════════════════════════════════
    Вкладка «Личные данные» — чистая форма, без обложек
    ═══════════════════════════════════════════════════════════ */
 function PersonalTab({ user, isTeacher, updateUser }) {
+  const { t } = useTranslation('teacher')
   const initial = useMemo(() => ({
     name:           user.name           || '',
     username:       user.username       || '',
@@ -94,9 +97,9 @@ function PersonalTab({ user, isTeacher, updateUser }) {
       await updateMyProfile(form)
       const fresh = await fetchMe()
       updateUser(fresh)
-      toast.success('Данные сохранены')
+      toast.success(t('settings.dataSaved'))
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка сохранения')
+      toast.error(e.response?.data?.error || t('settings.saveError'))
     } finally {
       setSaving(false)
     }
@@ -105,51 +108,51 @@ function PersonalTab({ user, isTeacher, updateUser }) {
   return (
     <div className="space-y-5">
       {/* Неизменяемые данные аккаунта */}
-      <Section title="Данные аккаунта">
+      <Section title={t('settings.accountData')}>
         <div className="grid sm:grid-cols-2 gap-3">
-          <ReadField label="Email" value={user.email} />
-          <ReadField label="Роль" value={ROLE_NAME[user.role] ?? user.role} />
-          {isTeacher && <ReadField label="Тариф" value={PLAN_NAME[user.plan] ?? user.plan} />}
-          <ReadField label="Статус email" value={user.emailVerified ? 'Подтверждён ✓' : 'Не подтверждён'} accent={user.emailVerified ? 'text-emerald-600' : 'text-amber-600'} />
+          <ReadField label={t('settings.email')} value={user.email} />
+          <ReadField label={t('settings.role')} value={ROLE_KEY[user.role] ? t(ROLE_KEY[user.role]) : user.role} />
+          {isTeacher && <ReadField label={t('settings.plan')} value={PLAN_NAME[user.plan] ?? user.plan} />}
+          <ReadField label={t('settings.emailStatus')} value={user.emailVerified ? t('settings.verified') : t('settings.notVerified')} accent={user.emailVerified ? 'text-emerald-600' : 'text-amber-600'} />
         </div>
-        <p className="text-[11px] text-slate-400 mt-2">Email и роль нельзя изменить самостоятельно — обратитесь в поддержку.</p>
+        <p className="text-[11px] text-slate-400 mt-2">{t('settings.emailRoleNote')}</p>
       </Section>
 
       {/* Изменяемые: имя, username, телефон */}
-      <Section title="Имя и контакты">
+      <Section title={t('settings.nameContacts')}>
         <div className="grid sm:grid-cols-2 gap-3">
-          <Input label="Полное имя" value={form.name} onChange={e => set({ name: e.target.value })} />
+          <Input label={t('settings.fullName')} value={form.name} onChange={e => set({ name: e.target.value })} />
           <div>
-            <Input label="Username" value={form.username} onChange={e => set({ username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') })} />
-            <p className="text-[11px] text-slate-400 mt-1">По нику вас находят для приглашений: <span className="font-mono text-blue-600">@{form.username || '—'}</span></p>
+            <Input label={t('settings.usernameLabel')} value={form.username} onChange={e => set({ username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') })} />
+            <p className="text-[11px] text-slate-400 mt-1">{t('settings.usernameNote')} <span className="font-mono text-blue-600">@{form.username || '—'}</span></p>
           </div>
         </div>
         <div className="mt-3">
-          <Input label="Телефон" placeholder="+48 123 456 789" value={form.phone} onChange={e => set({ phone: e.target.value })} />
+          <Input label={t('settings.phoneLabel')} placeholder="+48 123 456 789" value={form.phone} onChange={e => set({ phone: e.target.value })} />
         </div>
       </Section>
 
       {/* О себе */}
-      <Section title="О себе">
+      <Section title={t('settings.about')}>
         <textarea value={form.bio} onChange={e => set({ bio: e.target.value.slice(0, 300) })} rows={3}
-          placeholder={isTeacher ? 'Опыт, специализация, методика...' : 'Расскажите о себе...'}
+          placeholder={isTeacher ? t('settings.bioTeacherPh') : t('settings.bioStudentPh')}
           className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none" />
         <div className="text-right text-[11px] text-slate-400 mt-1">{form.bio.length} / 300</div>
       </Section>
 
       {/* Мессенджеры */}
-      <Section title="Мессенджеры">
+      <Section title={t('settings.messengers')}>
         <SocialsEditor values={{ socialTelegram: form.socialTelegram, socialWhatsApp: form.socialWhatsApp, socialLinkedIn: form.socialLinkedIn }} onChange={set} />
       </Section>
 
       {/* Языки */}
-      <Section title={isTeacher ? 'Преподаваемые языки' : 'Изучаемые языки'}>
+      <Section title={isTeacher ? t('settings.langTeacher') : t('settings.langStudent')}>
         <LanguagesEditor value={form.languages} onChange={arr => set({ languages: arr })} withLevel={!isTeacher} />
       </Section>
 
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={!dirty} loading={saving}>
-          {dirty ? 'Сохранить изменения' : 'Нет изменений'}
+          {dirty ? t('settings.saveChanges') : t('settings.noChanges')}
         </Button>
       </div>
     </div>
@@ -169,6 +172,7 @@ function ReadField({ label, value, accent = 'text-slate-900' }) {
    Вкладка «Способы оплаты» (только учитель)
    ═══════════════════════════════════════════════════════════ */
 function PaymentMethodsTab({ user, updateUser }) {
+  const { t } = useTranslation('teacher')
   const pd = user.paymentDetails || {}
   const initial = useMemo(() => ({
     iban:        pd.iban        || '',
@@ -196,9 +200,9 @@ function PaymentMethodsTab({ user, updateUser }) {
       await updateMyProfile({ paymentDetails: Object.keys(clean).length ? clean : null })
       const fresh = await fetchMe()
       updateUser(fresh)
-      toast.success('Реквизиты сохранены')
+      toast.success(t('settings.reqsSaved'))
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка сохранения')
+      toast.error(e.response?.data?.error || t('settings.saveError'))
     } finally {
       setSaving(false)
     }
@@ -208,54 +212,54 @@ function PaymentMethodsTab({ user, updateUser }) {
     <div className="space-y-5">
       {/* Подсказка */}
       <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-        Заполните хотя бы один способ — ученики увидят реквизиты на странице оплаты и смогут перевести деньги напрямую вам. Оставьте пустыми те, которые не используете.
+        {t('settings.payHint')}
       </div>
 
       {!hasAny && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          ⚠️ Реквизиты не заполнены. Ученики не смогут самостоятельно оплатить занятие.
+          {t('settings.noReqs')}
         </div>
       )}
 
       {/* IBAN / Bank Transfer */}
-      <Section title="Банковский перевод (IBAN)">
+      <Section title={t('settings.bankTransfer')}>
         <div className="grid sm:grid-cols-2 gap-3">
-          <Input label="IBAN" placeholder="PL61 1090 1014 0000 0712 1981 2874" value={form.iban} onChange={e => set({ iban: e.target.value })} />
-          <Input label="BIC / SWIFT" placeholder="WBKPPLPP" value={form.bic} onChange={e => set({ bic: e.target.value })} />
+          <Input label={t('settings.ibanLabel')} placeholder="PL61 1090 1014 0000 0712 1981 2874" value={form.iban} onChange={e => set({ iban: e.target.value })} />
+          <Input label={t('settings.bicLabel')} placeholder="WBKPPLPP" value={form.bic} onChange={e => set({ bic: e.target.value })} />
         </div>
-        <Input label="Название банка" placeholder="PKO Bank Polski" value={form.bankName} onChange={e => set({ bankName: e.target.value })} className="mt-3" />
-        <p className="text-[11px] text-slate-400 mt-1.5">Универсальный вариант — работает для переводов из любой страны.</p>
+        <Input label={t('settings.bankNameLabel')} placeholder="PKO Bank Polski" value={form.bankName} onChange={e => set({ bankName: e.target.value })} className="mt-3" />
+        <p className="text-[11px] text-slate-400 mt-1.5">{t('settings.bankNote')}</p>
       </Section>
 
       {/* BLIK */}
-      <Section title="BLIK (Польша)">
-        <Input label="Номер телефона" placeholder="+48 123 456 789" value={form.blik} onChange={e => set({ blik: e.target.value })} />
-        <p className="text-[11px] text-slate-400 mt-1.5">Быстрая оплата по номеру телефона.</p>
+      <Section title={t('settings.blikTitle')}>
+        <Input label={t('settings.blikPhone')} placeholder="+48 123 456 789" value={form.blik} onChange={e => set({ blik: e.target.value })} />
+        <p className="text-[11px] text-slate-400 mt-1.5">{t('settings.blikNote')}</p>
       </Section>
 
       {/* PayPal */}
-      <Section title="PayPal">
-        <Input label="Email или ссылка на PayPal" placeholder="teacher@gmail.com" value={form.paypal} onChange={e => set({ paypal: e.target.value })} />
-        <p className="text-[11px] text-slate-400 mt-1.5">Работает в 200+ странах. Ученик переводит на ваш PayPal-email.</p>
+      <Section title={t('settings.paypalTitle')}>
+        <Input label={t('settings.paypalLabel')} placeholder="teacher@gmail.com" value={form.paypal} onChange={e => set({ paypal: e.target.value })} />
+        <p className="text-[11px] text-slate-400 mt-1.5">{t('settings.paypalNote')}</p>
       </Section>
 
       {/* Revolut */}
-      <Section title="Revolut">
-        <Input label="@username или ссылка на Revolut" placeholder="@teacher_name" value={form.revolut} onChange={e => set({ revolut: e.target.value })} />
-        <p className="text-[11px] text-slate-400 mt-1.5">Популярно в Европе. Ваш Revolut-тег или revtag.io/ссылка.</p>
+      <Section title={t('settings.revolutTitle')}>
+        <Input label={t('settings.revolutLabel')} placeholder="@teacher_name" value={form.revolut} onChange={e => set({ revolut: e.target.value })} />
+        <p className="text-[11px] text-slate-400 mt-1.5">{t('settings.revolutNote')}</p>
       </Section>
 
       {/* Своё поле */}
-      <Section title="Другой способ (Wise, Venmo, CashApp…)">
+      <Section title={t('settings.otherTitle')}>
         <div className="grid sm:grid-cols-2 gap-3">
-          <Input label="Название" placeholder="Wise, Venmo…" value={form.customLabel} onChange={e => set({ customLabel: e.target.value })} />
-          <Input label="Реквизиты / ссылка" placeholder="wise.com/pay/..." value={form.customValue} onChange={e => set({ customValue: e.target.value })} />
+          <Input label={t('settings.otherName')} placeholder="Wise, Venmo…" value={form.customLabel} onChange={e => set({ customLabel: e.target.value })} />
+          <Input label={t('settings.otherValue')} placeholder="wise.com/pay/..." value={form.customValue} onChange={e => set({ customValue: e.target.value })} />
         </div>
       </Section>
 
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={!dirty} loading={saving}>
-          {dirty ? 'Сохранить реквизиты' : 'Нет изменений'}
+          {dirty ? t('settings.saveReqs') : t('settings.noChanges')}
         </Button>
       </div>
     </div>
@@ -266,22 +270,23 @@ function PaymentMethodsTab({ user, updateUser }) {
    Вкладка «Безопасность»
    ═══════════════════════════════════════════════════════════ */
 function SecurityTab() {
+  const { t } = useTranslation('teacher')
   const [form, setForm]   = useState({ current: '', next: '', confirm: '' })
   const [saving, setSaving] = useState(false)
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!form.current || !form.next) return toast.error('Заполните оба пароля')
-    if (form.next.length < 6)        return toast.error('Новый пароль — минимум 6 символов')
-    if (form.next !== form.confirm)  return toast.error('Пароли не совпадают')
+    if (!form.current || !form.next) return toast.error(t('settings.fillBoth'))
+    if (form.next.length < 6)        return toast.error(t('settings.pwdMinChars'))
+    if (form.next !== form.confirm)  return toast.error(t('settings.pwdMismatch'))
     setSaving(true)
     try {
       await changePassword(form.current, form.next)
       setForm({ current: '', next: '', confirm: '' })
-      toast.success('Пароль изменён')
+      toast.success(t('settings.pwdChanged'))
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка смены пароля')
+      toast.error(e.response?.data?.error || t('settings.pwdError'))
     } finally {
       setSaving(false)
     }
@@ -289,11 +294,11 @@ function SecurityTab() {
 
   return (
     <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-5 space-y-3 max-w-md">
-      <h2 className="text-sm font-medium text-slate-600 mb-1">Смена пароля</h2>
-      <Input label="Текущий пароль"            type="password" value={form.current} onChange={e => set('current', e.target.value)} />
-      <Input label="Новый пароль (от 6 симв.)" type="password" value={form.next}    onChange={e => set('next',    e.target.value)} />
-      <Input label="Повторите новый пароль"    type="password" value={form.confirm} onChange={e => set('confirm', e.target.value)} />
-      <Button type="submit" loading={saving}>Сменить пароль</Button>
+      <h2 className="text-sm font-medium text-slate-600 mb-1">{t('settings.changePasswordTitle')}</h2>
+      <Input label={t('settings.currentPwd')} type="password" value={form.current} onChange={e => set('current', e.target.value)} />
+      <Input label={t('settings.newPwd')}     type="password" value={form.next}    onChange={e => set('next',    e.target.value)} />
+      <Input label={t('settings.repeatPwd')}  type="password" value={form.confirm} onChange={e => set('confirm', e.target.value)} />
+      <Button type="submit" loading={saving}>{t('settings.changePwdBtn')}</Button>
     </form>
   )
 }

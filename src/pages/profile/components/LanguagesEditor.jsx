@@ -1,10 +1,13 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { LANGUAGES, CEFR_LEVELS, getLanguageName } from '../../../constants/languages'
 
 // Управляемый редактор языков.
 // value: [{ code, level? }]  onChange: (newArr) => void
 // withLevel — true для студента (показывать селект уровня), false для учителя
 export default function LanguagesEditor({ value = [], onChange, withLevel = false, readOnly = false }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [picking, setPicking] = useState(false)
 
   // Языки, ещё не выбранные
@@ -24,7 +27,7 @@ export default function LanguagesEditor({ value = [], onChange, withLevel = fals
   }
 
   if (readOnly) {
-    if (value.length === 0) return <span className="text-xs text-slate-600">Не указано</span>
+    if (value.length === 0) return <span className="text-xs text-slate-600">{t('settings.langNotSpecified')}</span>
     return (
       <div className="flex flex-wrap gap-1.5">
         {value.map(v => (
@@ -56,7 +59,7 @@ export default function LanguagesEditor({ value = [], onChange, withLevel = fals
               type="button"
               onClick={() => removeLanguage(v.code)}
               className="w-5 h-5 rounded-full text-slate-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
-              title="Удалить"
+              title={tc('delete')}
             >
               ×
             </button>
@@ -70,7 +73,7 @@ export default function LanguagesEditor({ value = [], onChange, withLevel = fals
             onClick={() => setPicking(p => !p)}
             className="px-2.5 py-1 rounded-full border border-dashed border-slate-200 text-xs text-slate-400 hover:text-slate-900 hover:border-slate-200 transition-colors cursor-pointer"
           >
-            + Язык
+            {t('settings.addLang')}
           </button>
         )}
       </div>

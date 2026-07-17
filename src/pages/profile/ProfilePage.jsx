@@ -1,4 +1,5 @@
 import { useState, useMemo, lazy, Suspense } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import useAuth from '../../hooks/useAuth'
 import { fetchMe, changePassword } from '../../api/auth.api'
@@ -22,6 +23,7 @@ const StudentCharts = lazy(() => import('./components/StudentCharts'))
    Главный компонент
    ═══════════════════════════════════════════════════════════ */
 export default function ProfilePage() {
+  const { t } = useTranslation('teacher')
   const { user, isTeacher, updateUser } = useAuth()
   const [tab, setTab] = useState('profile')
 
@@ -34,9 +36,9 @@ export default function ProfilePage() {
       <div className="max-w-4xl mx-auto px-5 sm:px-8 mt-6">
         <Tabs
           items={[
-            { id: 'profile',   label: 'Профиль'    },
-            { id: 'analytics', label: 'Аналитика'  },
-            { id: 'security',  label: 'Безопасность'},
+            { id: 'profile',   label: t('profile.tabProfile')    },
+            { id: 'analytics', label: t('profile.tabAnalytics')  },
+            { id: 'security',  label: t('profile.tabSecurity')},
           ]}
           active={tab}
           onChange={setTab}
@@ -59,13 +61,14 @@ export default function ProfilePage() {
    нажатия «Сохранить»), потому что это атомарные действия.
 */
 function ProfileHeader({ user, isTeacher, updateUser }) {
+  const { t } = useTranslation('teacher')
   const handleAvatar = async (url) => {
     try {
       const updated = await updateMyProfile({ avatar: url })
       updateUser({ avatar: updated.avatar })
-      toast.success('Аватар обновлён')
+      toast.success(t('profile.avatarUpdated'))
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка загрузки')
+      toast.error(e.response?.data?.error || t('profile.uploadError'))
     }
   }
 
@@ -73,9 +76,9 @@ function ProfileHeader({ user, isTeacher, updateUser }) {
     try {
       const updated = await updateMyProfile({ coverImage: url })
       updateUser({ coverImage: updated.coverImage })
-      toast.success('Обложка обновлена')
+      toast.success(t('profile.coverUpdated'))
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка загрузки')
+      toast.error(e.response?.data?.error || t('profile.uploadError'))
     }
   }
 
@@ -89,7 +92,7 @@ function ProfileHeader({ user, isTeacher, updateUser }) {
         <div className="pb-3 flex-1 min-w-0">
           <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 truncate">{user.name}</h1>
           <p className="text-xs text-slate-400">@{user.username}</p>
-          <p className="text-[11px] text-blue-600 mt-0.5">{isTeacher ? 'Преподаватель' : 'Студент'}</p>
+          <p className="text-[11px] text-blue-600 mt-0.5">{isTeacher ? t('settings.roleTeacher') : t('settings.roleStudent')}</p>
         </div>
       </div>
     </div>
@@ -105,6 +108,7 @@ function ProfileHeader({ user, isTeacher, updateUser }) {
    - При успешном сохранении — обновляем глобальный user через updateUser.
 */
 function ProfileTab({ user, isTeacher, updateUser }) {
+  const { t } = useTranslation('teacher')
   const initial = useMemo(() => ({
     name:           user.name           || '',
     username:       user.username       || '',
@@ -131,9 +135,9 @@ function ProfileTab({ user, isTeacher, updateUser }) {
       // Подтягиваем свежий /auth/me чтобы синхронизировать ВСЕ поля (avatar, coverImage и тд)
       const fresh = await fetchMe()
       updateUser(fresh)
-      toast.success('Профиль сохранён')
+      toast.success(t('profile.profileSaved'))
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка сохранения')
+      toast.error(e.response?.data?.error || t('settings.saveError'))
     } finally {
       setSaving(false)
     }
@@ -155,30 +159,30 @@ function ProfileTab({ user, isTeacher, updateUser }) {
       <CompletionBar percent={completionPercent} />
 
       {/* Имя + username */}
-      <Section title="Основное">
+      <Section title={t('profile.main')}>
         <div className="grid sm:grid-cols-2 gap-3">
-          <Input label="Имя"     value={form.name}     onChange={e => set({ name: e.target.value })} />
-          <Input label="Username" value={form.username} onChange={e => set({ username: e.target.value.toLowerCase() })} />
+          <Input label={t('profile.nameLabel')} value={form.name}     onChange={e => set({ name: e.target.value })} />
+          <Input label={t('profile.usernameLabel')} value={form.username} onChange={e => set({ username: e.target.value.toLowerCase() })} />
         </div>
         <p className="text-[11px] text-slate-600 mt-2">
-          Username — уникальный ник для поиска и приглашений: <code className="text-blue-600">@{form.username || 'username'}</code>
+          {t('profile.usernameNote')} <code className="text-blue-600">@{form.username || t('profile.usernamePlaceholder')}</code>
         </p>
       </Section>
 
       {/* Bio */}
-      <Section title="О себе">
+      <Section title={t('profile.about')}>
         <textarea
           value={form.bio}
           onChange={e => set({ bio: e.target.value.slice(0, 300) })}
           rows={4}
-          placeholder="Расскажи о себе — опыт, специализация, методика..."
+          placeholder={t('profile.bioPlaceholder')}
           className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none"
         />
         <div className="text-right text-[11px] text-slate-600 mt-1">{form.bio.length} / 300</div>
       </Section>
 
       {/* Соцсети */}
-      <Section title="Контакты">
+      <Section title={t('profile.contacts')}>
         <SocialsEditor
           values={{
             socialTelegram: form.socialTelegram,
@@ -190,7 +194,7 @@ function ProfileTab({ user, isTeacher, updateUser }) {
       </Section>
 
       {/* Языки */}
-      <Section title={isTeacher ? 'Я преподаю' : 'Я изучаю'}>
+      <Section title={isTeacher ? t('profile.iTeach') : t('profile.iLearn')}>
         <LanguagesEditor
           value={form.languages}
           onChange={(arr) => set({ languages: arr })}
@@ -201,7 +205,7 @@ function ProfileTab({ user, isTeacher, updateUser }) {
       {/* Sticky-кнопка сохранить */}
       <div className="sticky bottom-4 flex justify-end">
         <Button onClick={handleSave} disabled={!dirty} loading={saving}>
-          {dirty ? 'Сохранить изменения' : 'Нет изменений'}
+          {dirty ? t('settings.saveChanges') : t('settings.noChanges')}
         </Button>
       </div>
     </div>
@@ -225,6 +229,7 @@ function AnalyticsTab({ user, isTeacher }) {
    Таб «Безопасность» — смена пароля (вынесли из старого ProfilePage)
    ═══════════════════════════════════════════════════════════ */
 function SecurityTab() {
+  const { t } = useTranslation('teacher')
   const [form, setForm] = useState({ current: '', next: '', confirm: '' })
   const [saving, setSaving] = useState(false)
 
@@ -232,16 +237,16 @@ function SecurityTab() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!form.current || !form.next) return toast.error('Заполните оба пароля')
-    if (form.next.length < 6)        return toast.error('Новый пароль минимум 6 символов')
-    if (form.next !== form.confirm)  return toast.error('Пароли не совпадают')
+    if (!form.current || !form.next) return toast.error(t('settings.fillBoth'))
+    if (form.next.length < 6)        return toast.error(t('settings.pwdMinChars'))
+    if (form.next !== form.confirm)  return toast.error(t('settings.pwdMismatch'))
     setSaving(true)
     try {
       await changePassword(form.current, form.next)
       setForm({ current: '', next: '', confirm: '' })
-      toast.success('Пароль изменён')
+      toast.success(t('settings.pwdChanged'))
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка смены пароля')
+      toast.error(e.response?.data?.error || t('settings.pwdError'))
     } finally {
       setSaving(false)
     }
@@ -249,11 +254,11 @@ function SecurityTab() {
 
   return (
     <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-5 space-y-3 max-w-md">
-      <h2 className="text-sm font-medium text-slate-600">Смена пароля</h2>
-      <Input label="Текущий пароль"            type="password" value={form.current} onChange={e => set('current', e.target.value)} />
-      <Input label="Новый пароль (от 6 симв.)" type="password" value={form.next}    onChange={e => set('next',    e.target.value)} />
-      <Input label="Повторите новый пароль"    type="password" value={form.confirm} onChange={e => set('confirm', e.target.value)} />
-      <Button type="submit" loading={saving}>Сменить пароль</Button>
+      <h2 className="text-sm font-medium text-slate-600">{t('settings.changePasswordTitle')}</h2>
+      <Input label={t('settings.currentPwd')} type="password" value={form.current} onChange={e => set('current', e.target.value)} />
+      <Input label={t('settings.newPwd')}     type="password" value={form.next}    onChange={e => set('next',    e.target.value)} />
+      <Input label={t('settings.repeatPwd')}  type="password" value={form.confirm} onChange={e => set('confirm', e.target.value)} />
+      <Button type="submit" loading={saving}>{t('settings.changePwdBtn')}</Button>
     </form>
   )
 }
@@ -271,10 +276,11 @@ function Section({ title, children }) {
 }
 
 function CompletionBar({ percent }) {
+  const { t } = useTranslation('teacher')
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-sm font-medium text-slate-600">Профиль заполнен на</h2>
+        <h2 className="text-sm font-medium text-slate-600">{t('profile.completionTitle')}</h2>
         <span className="text-sm font-semibold text-slate-900">{percent}%</span>
       </div>
       <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
@@ -285,7 +291,7 @@ function CompletionBar({ percent }) {
       </div>
       {percent < 100 && (
         <p className="text-[11px] text-slate-500 mt-2">
-          Заполни недостающие поля чтобы профиль выглядел доверительнее
+          {t('profile.completionHint')}
         </p>
       )}
     </div>

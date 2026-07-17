@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import useFetch from '../../hooks/useFetch'
 import { getMyStudents } from '../../api/students.api'
 import { SkeletonCards } from '../../components/ui/Skeleton'
@@ -8,6 +9,7 @@ import Pagination from '../../components/ui/Pagination'
 const PAGE_SIZE = 12
 
 export default function StudentsPage() {
+  const { t } = useTranslation('teacher')
   const { data: students, loading } = useFetch(getMyStudents)
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -31,15 +33,15 @@ export default function StudentsPage() {
   return (
     <div className="p-5 sm:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">Ученики</h1>
-        <p className="text-sm text-slate-500 mt-0.5">Ваш ростер — все ученики, привязанные к вам</p>
+        <h1 className="text-2xl font-semibold text-slate-900">{t('students.title')}</h1>
+        <p className="text-sm text-slate-500 mt-0.5">{t('students.subtitle')}</p>
       </div>
 
       {loading ? (
         <SkeletonCards />
       ) : !students?.length ? (
-        <EmptyState emoji="🎓" title="Учеников пока нет"
-          text="Ученики появляются после добавления в группу или принятия приглашения." />
+        <EmptyState emoji="🎓" title={t('students.emptyTitle')}
+          text={t('students.emptyText')} />
       ) : (
         <div>
           {/* Поиск + счётчик */}
@@ -49,7 +51,7 @@ export default function StudentsPage() {
                 <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" strokeLinecap="round" />
               </svg>
               <input
-                placeholder="Поиск по имени, нику или email"
+                placeholder={t('students.searchPlaceholder')}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="w-full h-10 pl-10 pr-4 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-shadow"
@@ -63,7 +65,7 @@ export default function StudentsPage() {
           {/* Ростер — сетка карточек */}
           {filtered.length === 0 ? (
             <div className="rounded-2xl border border-slate-200 bg-white px-4 py-10 text-center text-sm text-slate-400">
-              Ничего не найдено
+              {t('students.notFound')}
             </div>
           ) : (
             <>
@@ -80,6 +82,7 @@ export default function StudentsPage() {
 }
 
 function StudentCard({ s }) {
+  const { t } = useTranslation('teacher')
   return (
     <div className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200 bg-white hover:border-blue-200 hover:shadow-sm transition-all">
       <Avatar url={s.avatar} name={s.name} />
@@ -88,7 +91,7 @@ function StudentCard({ s }) {
           <span className="text-sm font-medium text-slate-900 truncate">{s.name}</span>
           {s.isPlaceholder && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
-              заглушка
+              {t('students.placeholder')}
             </span>
           )}
         </div>

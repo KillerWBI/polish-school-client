@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import useAuth from '../../hooks/useAuth'
 import { login as apiLogin, register as apiRegister, registerTeacher as apiRegisterTeacher, fetchMe } from '../../api/auth.api'
 import { setToken } from '../../utils/token'
@@ -8,6 +9,7 @@ import { setToken } from '../../utils/token'
 // слева тёмная бренд-панель (как лендинг), справа светлая форма (как аппа).
 // mode: 'login' | 'register'; role: 'teacher' | 'student' (только для register)
 export default function AuthPage({ mode = 'login', role = 'teacher' }) {
+  const { t } = useTranslation('app')
   const isRegister = mode === 'register'
   const isTeacher = role === 'teacher'
   const [form, setForm] = useState({ name: '', email: '', password: '' })
@@ -20,9 +22,9 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
 
   const validate = () => {
     const e = {}
-    if (isRegister && form.name.trim().length < 2) e.name = 'Введите имя'
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Неверный email'
-    if (form.password.length < 6) e.password = 'Минимум 6 символов'
+    if (isRegister && form.name.trim().length < 2) e.name = t('authPage.validName')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = t('authPage.validEmail')
+    if (form.password.length < 6) e.password = t('authPage.validPassword')
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -40,7 +42,7 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
       login(data.token, me)
       navigate('/dashboard')
     } catch (err) {
-      setErrors({ form: err.response?.data?.error || 'Что-то пошло не так' })
+      setErrors({ form: err.response?.data?.error || t('authPage.genericError') })
       setSubmitting(false)
     }
   }
@@ -58,25 +60,22 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
         </Link>
 
         <div className="relative">
-          <p className="mono-label mb-4">{isTeacher ? '// кокпит преподавателя' : '// личный кабинет ученика'}</p>
+          <p className="mono-label mb-4">{isTeacher ? t('authPage.panelTeacher') : t('authPage.panelStudent')}</p>
           <h1 className="font-display font-bold text-4xl leading-[1.1] tracking-tight">
-            {!isRegister ? <>С возвращением.</>
-              : isTeacher ? <>Наведи порядок<br />в учениках.</>
-              : <>Вся учёба —<br />в одном месте.</>}
+            {!isRegister ? <>{t('authPage.welcomeBack')}</>
+              : isTeacher ? <>{t('authPage.headlineTeacher1')}<br />{t('authPage.headlineTeacher2')}</>
+              : <>{t('authPage.headlineStudent1')}<br />{t('authPage.headlineStudent2')}</>}
           </h1>
           <div className="mt-8 space-y-3 font-mono text-[13px] text-[#8A8A8F]">
-            {(isTeacher
-              ? ['группы, уроки, расписание', 'посещаемость и ДЗ', 'долг считается сам', 'соло или с учениками']
-              : ['расписание и ссылки на урок', 'ДЗ и дедлайны', 'оценки и прогресс', 'посещаемость и долг']
-            ).map((t) => (
-              <div key={t} className="flex items-center gap-2.5">
-                <span className="text-brand-400">$</span> {t}
+            {t(isTeacher ? 'authPage.teacherBullets' : 'authPage.studentBullets', { returnObjects: true }).map((b) => (
+              <div key={b} className="flex items-center gap-2.5">
+                <span className="text-brand-400">$</span> {b}
               </div>
             ))}
           </div>
         </div>
 
-        <p className="relative font-mono text-[12px] text-[#5A5A60]">бесплатно на старте · с телефона тоже</p>
+        <p className="relative font-mono text-[12px] text-[#5A5A60]">{t('authPage.panelFoot')}</p>
       </aside>
 
       {/* ПРАВО — светлая форма */}
@@ -87,31 +86,31 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
             <span className="w-2 h-2 rounded-[2px] bg-brand-500" />
             <span className="font-mono text-sm font-semibold text-[#0F172A]">LinguaFlow</span>
           </Link>
-          <Link to="/" className="text-sm text-[#64748B] hover:text-[#0F172A]">← на главную</Link>
+          <Link to="/" className="text-sm text-[#64748B] hover:text-[#0F172A]">{t('authPage.backHome')}</Link>
         </div>
 
         <div className="flex-1 flex items-center justify-center p-6 sm:p-10">
           <div className="w-full max-w-sm">
             <h2 className="text-2xl font-semibold text-[#0F172A] tracking-tight">
-              {isRegister ? (isTeacher ? 'Аккаунт преподавателя' : 'Аккаунт ученика') : 'Вход'}
+              {isRegister ? (isTeacher ? t('authPage.headTeacher') : t('authPage.headStudent')) : t('authPage.headLogin')}
             </h2>
             <p className="mt-1 text-sm text-[#64748B]">
               {isRegister
-                ? (isTeacher ? 'Веди группы, ДЗ и финансы — 30 секунд.' : 'Учись у своего преподавателя — 30 секунд.')
-                : 'Рады видеть снова.'}
+                ? (isTeacher ? t('authPage.subTeacher') : t('authPage.subStudent'))
+                : t('authPage.subLogin')}
             </p>
 
             <form onSubmit={handleSubmit} className="mt-7 space-y-4">
               {isRegister && (
-                <Field label="Имя" value={form.name} onChange={(v) => set('name', v)} error={errors.name} autoComplete="name" placeholder="Как вас зовут" />
+                <Field label={t('authPage.labelName')} value={form.name} onChange={(v) => set('name', v)} error={errors.name} autoComplete="name" placeholder={t('authPage.placeholderName')} />
               )}
-              <Field label="Email" type="email" value={form.email} onChange={(v) => set('email', v)} error={errors.email} autoComplete="email" placeholder="you@mail.com" />
-              <Field label="Пароль" type="password" value={form.password} onChange={(v) => set('password', v)} error={errors.password} autoComplete={isRegister ? 'new-password' : 'current-password'} placeholder="Минимум 6 символов" />
+              <Field label={t('authPage.labelEmail')} type="email" value={form.email} onChange={(v) => set('email', v)} error={errors.email} autoComplete="email" placeholder="you@mail.com" />
+              <Field label={t('authPage.labelPassword')} type="password" value={form.password} onChange={(v) => set('password', v)} error={errors.password} autoComplete={isRegister ? 'new-password' : 'current-password'} placeholder={t('authPage.placeholderPassword')} />
 
               {!isRegister && (
                 <div className="text-right -mt-1">
                   <Link to="/forgot-password" className="text-xs text-[#64748B] hover:text-brand-600">
-                    Забыли пароль?
+                    {t('authPage.forgot')}
                   </Link>
                 </div>
               )}
@@ -126,26 +125,26 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
                 className="w-full h-11 rounded-lg bg-[#111827] text-white text-sm font-medium hover:bg-[#0B1220] transition-colors disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
               >
                 {submitting && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-                {isRegister ? 'Создать аккаунт' : 'Войти'}
+                {isRegister ? t('authPage.createAccount') : t('authPage.login')}
               </button>
             </form>
 
             {isRegister ? (
               <div className="mt-6 space-y-1.5 text-sm text-center text-[#64748B]">
-                <p>Уже есть аккаунт? <Link to="/login" className="text-brand-600 hover:text-brand-700 font-medium">Войти</Link></p>
+                <p>{t('authPage.haveAccount')} <Link to="/login" className="text-brand-600 hover:text-brand-700 font-medium">{t('authPage.login')}</Link></p>
                 <p>
-                  {isTeacher ? 'Вы ученик? ' : 'Вы преподаватель? '}
+                  {isTeacher ? `${t('authPage.youAreStudent')} ` : `${t('authPage.youAreTeacher')} `}
                   <Link to={isTeacher ? '/register-student' : '/register'} className="text-brand-600 hover:text-brand-700 font-medium">
-                    {isTeacher ? 'Регистрация ученика' : 'Регистрация преподавателя'}
+                    {isTeacher ? t('authPage.regStudent') : t('authPage.regTeacher')}
                   </Link>
                 </p>
               </div>
             ) : (
               <p className="mt-6 text-sm text-center text-[#64748B]">
-                Нет аккаунта? Регистрация —{' '}
-                <Link to="/register" className="text-brand-600 hover:text-brand-700 font-medium">преподаватель</Link>
+                {t('authPage.noAccount')}{' '}
+                <Link to="/register" className="text-brand-600 hover:text-brand-700 font-medium">{t('authPage.asTeacher')}</Link>
                 {' · '}
-                <Link to="/register-student" className="text-brand-600 hover:text-brand-700 font-medium">ученик</Link>
+                <Link to="/register-student" className="text-brand-600 hover:text-brand-700 font-medium">{t('authPage.asStudent')}</Link>
               </p>
             )}
           </div>

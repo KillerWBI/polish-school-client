@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { verifyEmail } from '../../api/auth.api'
 import useAuth from '../../hooks/useAuth'
 
 export default function VerifyEmailPage() {
+  const { t } = useTranslation('app')
   const [params]    = useSearchParams()
   const navigate    = useNavigate()
   const { user, updateUser } = useAuth()
@@ -14,23 +16,23 @@ export default function VerifyEmailPage() {
   useEffect(() => {
     if (!token) {
       setStatus('error')
-      setMessage('Токен не найден в ссылке')
+      setMessage(t('auth.verifyNoToken'))
       return
     }
     verifyEmail(token)
       .then((data) => {
         if (data.alreadyVerified) {
           setStatus('already')
-          setMessage('Email уже был подтверждён ранее')
+          setMessage(t('auth.verifyAlready'))
         } else {
           setStatus('success')
-          setMessage('Email успешно подтверждён!')
+          setMessage(t('auth.verifySuccessMsg'))
           if (user) updateUser({ emailVerified: true })
         }
       })
       .catch((err) => {
         setStatus('error')
-        setMessage(err.response?.data?.error || 'Ошибка подтверждения')
+        setMessage(err.response?.data?.error || t('auth.verifyGenericErr'))
       })
   }, [token])
 
@@ -44,7 +46,7 @@ export default function VerifyEmailPage() {
         {status === 'loading' && (
           <>
             <div className="inline-flex w-10 h-10 mb-4 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
-            <h1 className="text-xl font-semibold text-slate-900">Подтверждаем email...</h1>
+            <h1 className="text-xl font-semibold text-slate-900">{t('auth.verifyLoading')}</h1>
           </>
         )}
 
@@ -56,12 +58,12 @@ export default function VerifyEmailPage() {
               </svg>
             </div>
             <h1 className="text-xl font-semibold text-slate-900 mb-2">{message}</h1>
-            <p className="text-sm text-slate-400 mb-6">Теперь у вас полный доступ ко всем функциям.</p>
+            <p className="text-sm text-slate-400 mb-6">{t('auth.verifySuccessSub')}</p>
             <button
               onClick={() => navigate(user ? '/dashboard' : '/login')}
               className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors cursor-pointer"
             >
-              {user ? 'В кабинет' : 'Войти'}
+              {user ? t('auth.toDashboard') : t('auth.login')}
             </button>
           </>
         )}
@@ -79,7 +81,7 @@ export default function VerifyEmailPage() {
               onClick={() => navigate(user ? '/dashboard' : '/login')}
               className="h-11 px-6 rounded-xl bg-slate-100 hover:bg-slate-100 text-slate-900 text-sm font-medium transition-colors cursor-pointer"
             >
-              {user ? 'В кабинет' : 'Войти'}
+              {user ? t('auth.toDashboard') : t('auth.login')}
             </button>
           </>
         )}
@@ -92,17 +94,17 @@ export default function VerifyEmailPage() {
                 <path d="M9 9l6 6M15 9l-6 6" strokeLinecap="round"/>
               </svg>
             </div>
-            <h1 className="text-xl font-semibold text-slate-900 mb-2">Не удалось подтвердить</h1>
+            <h1 className="text-xl font-semibold text-slate-900 mb-2">{t('auth.verifyFailTitle')}</h1>
             <p className="text-sm text-slate-400 mb-6">{message}</p>
             <button
               onClick={() => navigate(user ? '/dashboard' : '/')}
               className="h-11 px-6 rounded-xl bg-slate-100 hover:bg-slate-100 text-slate-900 text-sm font-medium transition-colors cursor-pointer"
             >
-              {user ? 'В кабинет' : 'На главную'}
+              {user ? t('auth.toDashboard') : t('auth.home')}
             </button>
             {user && (
               <p className="text-xs text-slate-500 mt-3">
-                В кабинете можно отправить новое письмо.
+                {t('auth.verifyResendHint')}
               </p>
             )}
           </>

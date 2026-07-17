@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 // 3 поля соцсетей с иконками. readOnly показывает только заполненные.
 const FIELDS = [
   { key: 'socialTelegram', icon: '📨', label: 'Telegram',  placeholder: 'username',     prefix: '@' },
@@ -6,9 +8,10 @@ const FIELDS = [
 ]
 
 export default function SocialsEditor({ values, onChange, readOnly = false }) {
+  const { t } = useTranslation('teacher')
   if (readOnly) {
     const filled = FIELDS.filter(f => values[f.key])
-    if (filled.length === 0) return <span className="text-xs text-slate-600">Не указаны</span>
+    if (filled.length === 0) return <span className="text-xs text-slate-600">{t('settings.notSpecified')}</span>
     return (
       <div className="flex flex-wrap gap-2">
         {filled.map(f => (

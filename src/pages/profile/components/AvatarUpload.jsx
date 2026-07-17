@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { uploadToCloudinary } from '../../../utils/uploadToCloudinary'
 
 // Круглый аватар. В edit-режиме при клике открывает диалог выбора файла.
 // При загрузке вызывает onChange(url) — родитель решает, сохранять локально или сразу слать на бэк.
 export default function AvatarUpload({ url, name, editable = false, onChange, size = 120 }) {
+  const { t } = useTranslation('teacher')
   const fileRef = useRef(null)
   const [uploading, setUploading] = useState(false)
 
@@ -15,7 +17,7 @@ export default function AvatarUpload({ url, name, editable = false, onChange, si
     if (!file) return
     // Размер до 5 MB — экономия Cloudinary квоты, аватары больше и не нужны
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Файл больше 5 MB')
+      toast.error(t('profile.avatarTooBig'))
       return
     }
     setUploading(true)
@@ -53,7 +55,7 @@ export default function AvatarUpload({ url, name, editable = false, onChange, si
             disabled={uploading}
             className="absolute inset-0 rounded-full bg-black/40 opacity-0 hover:opacity-100 flex items-center justify-center text-white text-xs font-medium transition-opacity cursor-pointer disabled:cursor-not-allowed"
           >
-            {uploading ? 'Загрузка...' : '📷 Заменить'}
+            {uploading ? t('profile.uploading') : t('profile.replaceAvatar')}
           </button>
           <input
             ref={fileRef}

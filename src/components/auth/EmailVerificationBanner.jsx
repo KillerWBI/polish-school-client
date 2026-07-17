@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import useAuth from '../../hooks/useAuth'
 import { resendVerification } from '../../api/auth.api'
 import { toast, errMsg } from '../../utils/toast'
 
 // Баннер «Подтвердите email» — показывается в AppLayout если !emailVerified
 export default function EmailVerificationBanner() {
+  const { t } = useTranslation('app')
   const { user } = useAuth()
   const [busy, setBusy]       = useState(false)
   const [hidden, setHidden]   = useState(false)
@@ -15,9 +17,9 @@ export default function EmailVerificationBanner() {
     setBusy(true)
     try {
       await resendVerification()
-      toast.success(`Письмо отправлено на ${user.email}`)
+      toast.success(t('verifyBanner.sentToast', { email: user.email }))
     } catch (e) {
-      toast.error(errMsg(e, 'Не удалось отправить письмо'))
+      toast.error(errMsg(e, t('verifyBanner.failToast')))
     } finally {
       setBusy(false)
     }
@@ -31,20 +33,20 @@ export default function EmailVerificationBanner() {
         </svg>
       </div>
       <p className="flex-1 text-amber-800 leading-snug">
-        <span className="font-medium">Подтвердите email.</span>{' '}
-        <span className="text-amber-700/80 hidden sm:inline">Мы отправили письмо на {user.email}.</span>
+        <span className="font-medium">{t('verifyBanner.title')}</span>{' '}
+        <span className="text-amber-700/80 hidden sm:inline">{t('verifyBanner.body', { email: user.email })}</span>
       </p>
       <button
         onClick={handleResend}
         disabled={busy}
         className="text-amber-700 hover:text-amber-900 underline text-[12px] cursor-pointer disabled:opacity-50 shrink-0"
       >
-        {busy ? 'Отправляется…' : 'Отправить снова'}
+        {busy ? t('verifyBanner.sending') : t('verifyBanner.resend')}
       </button>
       <button
         onClick={() => setHidden(true)}
         className="text-amber-500 hover:text-amber-700 transition-colors shrink-0 cursor-pointer"
-        aria-label="Скрыть"
+        aria-label={t('verifyBanner.hide')}
       >
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path d="M6 6l12 12M18 6l-12 12" strokeLinecap="round"/>

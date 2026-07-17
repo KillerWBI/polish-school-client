@@ -9,6 +9,7 @@ import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import PageContainer from '../../components/ui/PageContainer'
 
 const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
 const TYPE_LABEL = { external: 'С репетитором', self_study: 'Сам' }
@@ -23,7 +24,7 @@ export default function MyLessonsPage() {
   const refresh = () => { reload(); reloadStats() }
 
   return (
-    <div className="p-5 sm:p-8 max-w-4xl">
+    <PageContainer>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
@@ -61,7 +62,7 @@ export default function MyLessonsPage() {
       {createOpen && (
         <CreateModal onClose={() => setCreateOpen(false)} onCreated={() => { setCreateOpen(false); refresh() }} />
       )}
-    </div>
+    </PageContainer>
   )
 }
 

@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom'
 import { flushSync } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 
 // Быстрый переключатель между лендингом преподавателя и ученика (в шапке обоих).
 // active: 'teacher' | 'student'
 export default function RoleSwitch({ active }) {
   const navigate = useNavigate()
+  const { t } = useTranslation('landing')
 
   // Плавный переход через View Transitions API. flushSync — чтобы навигация (смена DOM)
   // произошла СИНХРОННО внутри колбэка startViewTransition (иначе браузер не снимет «новую» страницу).
@@ -23,9 +25,9 @@ export default function RoleSwitch({ active }) {
   return (
     <div className="inline-flex items-center gap-0.5 p-0.5 rounded-lg border border-[#1E1E22] bg-[#0D0D0F]">
       <button onClick={() => active !== 'teacher' && go('/')}
-        className={`${base} ${active === 'teacher' ? on : off}`}>преподаватель</button>
+        className={`${base} ${active === 'teacher' ? on : off}`}>{t('roleSwitch.teacher')}</button>
       <button onClick={() => active !== 'student' && go('/for-students')}
-        className={`${base} ${active === 'student' ? on : off}`}>ученик</button>
+        className={`${base} ${active === 'student' ? on : off}`}>{t('roleSwitch.student')}</button>
     </div>
   )
 }

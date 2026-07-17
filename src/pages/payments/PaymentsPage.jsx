@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
   getDebt, getDebtsForTeacher, recordPayment, getPaymentHistory, getMyPaymentHistory,
@@ -17,16 +18,22 @@ import useFetch from '../../hooks/useFetch'
 
 const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
 
-// Способы оплаты — единый справочник (лейбл + цвет бейджа + цвет точки).
+// Способы оплаты — единый справочник (ключ лейбла + цвет бейджа + цвет точки).
 const METHOD = {
-  cash:     { label: 'Наличные', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500' },
-  card:     { label: 'Карта',    cls: 'bg-blue-50 text-blue-700 border-blue-200',          dot: 'bg-blue-500' },
-  transfer: { label: 'Перевод',  cls: 'bg-violet-50 text-violet-700 border-violet-200',    dot: 'bg-violet-500' },
-  blik:     { label: 'BLIK',     cls: 'bg-rose-50 text-rose-700 border-rose-200',          dot: 'bg-rose-500' },
-  paypal:   { label: 'PayPal',   cls: 'bg-indigo-50 text-indigo-700 border-indigo-200',    dot: 'bg-indigo-500' },
-  revolut:  { label: 'Revolut',  cls: 'bg-cyan-50 text-cyan-700 border-cyan-200',          dot: 'bg-cyan-500' },
-  other:    { label: 'Другое',   cls: 'bg-slate-50 text-slate-600 border-slate-200',       dot: 'bg-slate-400' },
-  online:   { label: 'Онлайн',   cls: 'bg-amber-50 text-amber-700 border-amber-200',       dot: 'bg-amber-500' }, // легаси
+  cash:     { labelKey: 'payments.mCash',     cls: 'bg-emerald-50 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500' },
+  card:     { labelKey: 'payments.mCard',     cls: 'bg-blue-50 text-blue-700 border-blue-200',          dot: 'bg-blue-500' },
+  transfer: { labelKey: 'payments.mTransfer', cls: 'bg-violet-50 text-violet-700 border-violet-200',    dot: 'bg-violet-500' },
+  blik:     { labelKey: 'payments.mBlik',     cls: 'bg-rose-50 text-rose-700 border-rose-200',          dot: 'bg-rose-500' },
+  paypal:   { labelKey: 'payments.mPaypal',   cls: 'bg-indigo-50 text-indigo-700 border-indigo-200',    dot: 'bg-indigo-500' },
+  revolut:  { labelKey: 'payments.mRevolut',  cls: 'bg-cyan-50 text-cyan-700 border-cyan-200',          dot: 'bg-cyan-500' },
+  other:    { labelKey: 'payments.mOther',    cls: 'bg-slate-50 text-slate-600 border-slate-200',       dot: 'bg-slate-400' },
+  online:   { labelKey: 'payments.mOnline',   cls: 'bg-amber-50 text-amber-700 border-amber-200',       dot: 'bg-amber-500' }, // легаси
+}
+// Мета способа с локализованным лейблом (или сырой ключ метода как fallback).
+function methodMeta(m, t) {
+  const meta = METHOD[m]
+  if (!meta) return { label: m, cls: 'bg-slate-50 text-slate-600 border-slate-200', dot: 'bg-slate-400' }
+  return { label: t(meta.labelKey), cls: meta.cls, dot: meta.dot }
 }
 const BASE_METHODS = ['cash', 'card', 'transfer']
 // Методы для ручного ввода учителем (базовые всегда доступны).
@@ -45,7 +52,8 @@ function extraMethodsFromPaymentDetails(pd) {
 
 // Карточка-счёт по способу оплаты: подпись + сумма поступлений. Кликом фильтрует список.
 function MethodCard({ m, amount, active, onClick }) {
-  const meta = METHOD[m]
+  const { t } = useTranslation('teacher')
+  const meta = methodMeta(m, t)
   return (
     <button onClick={onClick}
       className={`text-left p-4 rounded-2xl border transition-all cursor-pointer ${
@@ -69,7 +77,9 @@ function breakdownMethods(byMethod, extras = []) {
 }
 
 // Блок «поступило по способам» + фильтр по датам (для вкладки «Поступления»)
-function MethodBreakdown({ methods, byMethod, method, setMethod, from, setFrom, to, setTo, total, totalLabel = 'Всего поступило' }) {
+function MethodBreakdown({ methods, byMethod, method, setMethod, from, setFrom, to, setTo, total, totalLabel }) {
+  const { t } = useTranslation('teacher')
+  const label = totalLabel ?? t('payments.totalReceived')
   const inputCls = 'h-9 px-3 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15'
   return (
     <>
@@ -81,21 +91,21 @@ function MethodBreakdown({ methods, byMethod, method, setMethod, from, setFrom, 
       </div>
       <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
         <div className="text-sm text-slate-500">
-          {totalLabel}: <span className="font-semibold text-slate-900">{fmt(total)}</span>
-          {method && <> · способ: <span className="font-medium text-slate-700">{METHOD[method]?.label}</span></>}
+          {label}: <span className="font-semibold text-slate-900">{fmt(total)}</span>
+          {method && <> · {t('payments.methodWord')} <span className="font-medium text-slate-700">{methodMeta(method, t).label}</span></>}
         </div>
         <div className="flex items-end gap-2">
           <div>
-            <label className="block text-xs text-slate-500 mb-1">С</label>
+            <label className="block text-xs text-slate-500 mb-1">{t('payments.dateFrom')}</label>
             <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className="block text-xs text-slate-500 mb-1">По</label>
+            <label className="block text-xs text-slate-500 mb-1">{t('payments.dateTo')}</label>
             <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputCls} />
           </div>
           {(method || from || to) && (
             <button onClick={() => { setMethod(''); setFrom(''); setTo('') }}
-              className="h-9 px-3 text-sm text-slate-500 hover:text-slate-700 transition-colors">Сбросить</button>
+              className="h-9 px-3 text-sm text-slate-500 hover:text-slate-700 transition-colors">{t('payments.reset')}</button>
           )}
         </div>
       </div>
@@ -103,11 +113,11 @@ function MethodBreakdown({ methods, byMethod, method, setMethod, from, setFrom, 
   )
 }
 
-// Статусы модерации оплаты
+// Статусы модерации оплаты (ключ лейбла + цвет)
 const STATUS = {
-  pending:  { label: 'На проверке', cls: 'bg-amber-100 text-amber-700' },
-  approved: { label: 'Одобрено',    cls: 'bg-emerald-100 text-emerald-700' },
-  rejected: { label: 'Отклонено',   cls: 'bg-red-100 text-red-700' },
+  pending:  { labelKey: 'payments.stPending',  cls: 'bg-amber-100 text-amber-700' },
+  approved: { labelKey: 'payments.stApproved', cls: 'bg-emerald-100 text-emerald-700' },
+  rejected: { labelKey: 'payments.stRejected', cls: 'bg-red-100 text-red-700' },
 }
 
 // Переключатель статусов сверху (с опциональным счётчиком)
@@ -131,11 +141,12 @@ function StatusToggle({ value, onChange, tabs }) {
 
 // Лайтбокс скриншота оплаты
 function ScreenshotModal({ url, onClose }) {
+  const { t } = useTranslation('teacher')
   return (
     <Modal open onClose={onClose} maxWidth="max-w-2xl">
       <div className="p-4">
-        <div className="text-sm font-medium text-slate-700 mb-3">Скриншот оплаты</div>
-        <img src={safeUrl(url)} alt="Скриншот оплаты" className="w-full rounded-lg border border-slate-200" />
+        <div className="text-sm font-medium text-slate-700 mb-3">{t('payments.screenshot')}</div>
+        <img src={safeUrl(url)} alt={t('payments.screenshot')} className="w-full rounded-lg border border-slate-200" />
       </div>
     </Modal>
   )
@@ -143,23 +154,25 @@ function ScreenshotModal({ url, onClose }) {
 
 // Миниатюра-кнопка «Скрин» (если есть)
 function ShotButton({ url, onShot }) {
+  const { t } = useTranslation('teacher')
   if (!url) return null
   return (
     <button onClick={() => onShot(url)}
       className="shrink-0 text-xs px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-colors">
-      📎 Скрин
+      📎 {t('payments.shot')}
     </button>
   )
 }
 
 export default function PaymentsPage() {
+  const { t } = useTranslation('teacher')
   const { isTeacher } = useAuth()
   return (
     <div className="p-5 sm:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">Финансы</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">{t('payments.title')}</h1>
         <p className="text-sm text-slate-500 mt-0.5">
-          {isTeacher ? 'Долги учеников, внесение оплат и история' : 'Мой долг по преподавателям'}
+          {isTeacher ? t('payments.subtitleTeacher') : t('payments.subtitleStudent')}
         </p>
       </div>
       {isTeacher ? <TeacherPayments /> : <StudentPayments />}
@@ -169,12 +182,13 @@ export default function PaymentsPage() {
 
 /* ══════════════════ УЧИТЕЛЬ: вкладки Долги / История ══════════════════ */
 function TeacherPayments() {
+  const { t } = useTranslation('teacher')
   const [tab, setTab] = useState('debts')
   return (
     <div className="max-w-5xl">
       <div className="inline-flex p-0.5 mb-5 rounded-xl bg-slate-100 border border-slate-200">
-        <TabBtn active={tab === 'debts'}   onClick={() => setTab('debts')}>Долги</TabBtn>
-        <TabBtn active={tab === 'history'} onClick={() => setTab('history')}>История оплат</TabBtn>
+        <TabBtn active={tab === 'debts'}   onClick={() => setTab('debts')}>{t('payments.tabDebtsTeacher')}</TabBtn>
+        <TabBtn active={tab === 'history'} onClick={() => setTab('history')}>{t('payments.tabHistory')}</TabBtn>
       </div>
       {tab === 'debts' ? <TeacherDebts /> : <PaymentHistory />}
     </div>
@@ -204,7 +218,8 @@ function SummaryCell({ label, value, accent }) {
 
 /* Сводка сверху: начислено / оплачено / остаток */
 function Summary({ rows }) {
-  const t = useMemo(() => rows.reduce((a, r) => ({
+  const { t } = useTranslation('teacher')
+  const sum = useMemo(() => rows.reduce((a, r) => ({
     charged: a.charged + Number(r.charged || 0),
     paid:    a.paid + Number(r.paid || 0),
     debt:    a.debt + Math.max(0, Number(r.balance || 0)),
@@ -212,9 +227,9 @@ function Summary({ rows }) {
 
   return (
     <div className="flex rounded-2xl border border-slate-200 bg-white divide-x divide-slate-100 mb-5">
-      <SummaryCell label="Начислено" value={t.charged} accent="text-slate-900" />
-      <SummaryCell label="Оплачено"  value={t.paid}    accent="text-emerald-600" />
-      <SummaryCell label="Остаток"   value={t.debt}    accent={t.debt > 0 ? 'text-amber-600' : 'text-slate-400'} />
+      <SummaryCell label={t('payments.sumCharged')} value={sum.charged} accent="text-slate-900" />
+      <SummaryCell label={t('payments.sumPaid')}    value={sum.paid}    accent="text-emerald-600" />
+      <SummaryCell label={t('payments.sumBalance')} value={sum.debt}    accent={sum.debt > 0 ? 'text-amber-600' : 'text-slate-400'} />
     </div>
   )
 }
@@ -222,12 +237,13 @@ function Summary({ rows }) {
 // Студент: долг по каждому преподавателю. «Оплатить» → страница оплаты.
 /* ══════════════════ УЧЕНИК: вкладки Долг / История ══════════════════ */
 function StudentPayments() {
+  const { t } = useTranslation('teacher')
   const [tab, setTab] = useState('debts')
   return (
     <div className="max-w-5xl">
       <div className="inline-flex p-0.5 mb-5 rounded-xl bg-slate-100 border border-slate-200">
-        <TabBtn active={tab === 'debts'}   onClick={() => setTab('debts')}>Мой долг</TabBtn>
-        <TabBtn active={tab === 'history'} onClick={() => setTab('history')}>История оплат</TabBtn>
+        <TabBtn active={tab === 'debts'}   onClick={() => setTab('debts')}>{t('payments.tabMyDebt')}</TabBtn>
+        <TabBtn active={tab === 'history'} onClick={() => setTab('history')}>{t('payments.tabHistory')}</TabBtn>
       </div>
       {tab === 'debts' ? <StudentDebts /> : <StudentPaymentHistory />}
     </div>
@@ -236,6 +252,7 @@ function StudentPayments() {
 
 // История оплат ученика: переключатели статусов В процессе / Одобрено / Отклонено.
 function StudentPaymentHistory() {
+  const { t } = useTranslation('teacher')
   const [status, setStatus] = useState('approved')
   const [shot, setShot]     = useState(null)
 
@@ -246,9 +263,9 @@ function StudentPaymentHistory() {
   return (
     <div>
       <StatusToggle value={status} onChange={setStatus} tabs={[
-        { key: 'pending',  label: 'В процессе', count: pendingCount },
-        { key: 'approved', label: 'Одобрено' },
-        { key: 'rejected', label: 'Отклонено' },
+        { key: 'pending',  label: t('payments.toggleInProcess'), count: pendingCount },
+        { key: 'approved', label: t('payments.toggleApproved') },
+        { key: 'rejected', label: t('payments.toggleRejected') },
       ]} />
 
       <StudentHistoryList status={status} onShot={setShot} onChanged={reloadPending} />
@@ -259,6 +276,8 @@ function StudentPaymentHistory() {
 }
 
 function StudentHistoryList({ status, onShot, onChanged }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const isApproved = status === 'approved'
   const [busy, setBusy]     = useState(null)
   const [method, setMethod] = useState('')
@@ -277,8 +296,8 @@ function StudentHistoryList({ status, onShot, onChanged }) {
 
   const cancel = async (id) => {
     setBusy(id)
-    try { await cancelMyPayment(id); toast.success('Заявка отменена'); reload(); onChanged?.() }
-    catch (e) { toast.error(e.response?.data?.error || 'Ошибка') }
+    try { await cancelMyPayment(id); toast.success(t('payments.requestCancelled')); reload(); onChanged?.() }
+    catch (e) { toast.error(e.response?.data?.error || tc('error')) }
     finally { setBusy(null) }
   }
 
@@ -286,14 +305,14 @@ function StudentHistoryList({ status, onShot, onChanged }) {
     <div>
       {isApproved && (
         <MethodBreakdown methods={methods} byMethod={byMethod} method={method} setMethod={setMethod}
-          from={from} setFrom={setFrom} to={to} setTo={setTo} total={total} totalLabel="Всего оплачено" />
+          from={from} setFrom={setFrom} to={to} setTo={setTo} total={total} totalLabel={t('payments.totalPaid')} />
       )}
 
       {loading ? (
         <SkeletonList />
       ) : !records.length ? (
-        <EmptyState emoji="🧾" title="Оплат нет"
-          text={status === 'pending' ? 'Оплаты на проверке появятся здесь.' : status === 'rejected' ? 'Отклонённых оплат нет.' : 'Подтверждённые оплаты появятся здесь.'} />
+        <EmptyState emoji="🧾" title={t('payments.noPaymentsTitle')}
+          text={status === 'pending' ? t('payments.pendingEmpty') : status === 'rejected' ? t('payments.rejectedEmptyStudent') : t('payments.approvedEmptyStudent')} />
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
           {records.map((r) => (
@@ -308,10 +327,11 @@ function StudentHistoryList({ status, onShot, onChanged }) {
 
 // Строка истории оплат ученика — показывает учителя (кому платил) + статус/скрин/причину.
 function StudentHistoryRow({ rec, onShot, onCancel, busy }) {
-  const m = METHOD[rec.method] ?? { label: rec.method, cls: 'bg-slate-50 text-slate-600 border-slate-200' }
+  const { t, i18n } = useTranslation('teacher')
+  const m = methodMeta(rec.method, t)
   const st = STATUS[rec.status] ?? null
   const date = rec.paidAt
-    ? new Date(rec.paidAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })
+    ? new Date(rec.paidAt).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' })
     : '—'
   const amountCls = rec.status === 'approved' ? 'text-emerald-600' : rec.status === 'rejected' ? 'text-slate-400 line-through' : 'text-slate-700'
   return (
@@ -325,15 +345,15 @@ function StudentHistoryRow({ rec, onShot, onCancel, busy }) {
           <div className="text-xs text-slate-400">{date} · <span className={`px-1.5 py-0.5 rounded-full border ${m.cls}`}>{m.label}</span></div>
         </div>
         <ShotButton url={rec.screenshotUrl} onShot={onShot} />
-        {st && <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${st.cls}`}>{st.label}</span>}
+        {st && <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${st.cls}`}>{t(st.labelKey)}</span>}
         <div className={`text-base font-semibold shrink-0 tabular-nums w-20 text-right ${amountCls}`}>{fmt(rec.amount)}</div>
       </div>
       {rec.status === 'rejected' && rec.rejectionReason && (
-        <div className="text-xs text-red-500 mt-1.5">Причина: {rec.rejectionReason}</div>
+        <div className="text-xs text-red-500 mt-1.5">{t('payments.reasonLabel')} {rec.rejectionReason}</div>
       )}
       {onCancel && (
         <div className="mt-2">
-          <Button size="sm" variant="secondary" onClick={onCancel} loading={busy}>Отменить заявку</Button>
+          <Button size="sm" variant="secondary" onClick={onCancel} loading={busy}>{t('payments.cancelRequest')}</Button>
         </div>
       )}
     </div>
@@ -341,11 +361,12 @@ function StudentHistoryRow({ rec, onShot, onCancel, busy }) {
 }
 
 function StudentDebts() {
+  const { t } = useTranslation('teacher')
   const { data, loading } = useFetch(getDebt)
   const navigate = useNavigate()
 
   if (loading) return <SkeletonList />
-  if (!data?.length) return <EmptyState emoji="💳" title="Долгов нет" text="У вас пока нет начислений." />
+  if (!data?.length) return <EmptyState emoji="💳" title={t('payments.noDebtsTitle')} text={t('payments.noDebtsText')} />
 
   return (
     <div>
@@ -362,7 +383,7 @@ function StudentDebts() {
             action={
               <Button size="sm" disabled={!row.teacher?.id || Math.max(0, row.balance) <= 0}
                 onClick={() => navigate(`/pay/${row.teacher.id}`)}>
-                Оплатить
+                {t('payments.pay')}
               </Button>
             }
           />
@@ -374,6 +395,8 @@ function StudentDebts() {
 
 // Учитель: долг по каждому ученику + модалка внесения оплаты (со способом).
 function TeacherDebts() {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const { user } = useAuth()
   const { data, loading, reload } = useFetch(getDebtsForTeacher)
   const [selected, setSelected] = useState(null)
@@ -392,7 +415,7 @@ function TeacherDebts() {
   // Валидация перед показом ConfirmDialog
   const trySubmit = () => {
     const value = Number(amount)
-    if (!amount || Number.isNaN(value) || value <= 0) { setErr('Введите сумму больше 0'); return }
+    if (!amount || Number.isNaN(value) || value <= 0) { setErr(t('payments.enterAmount')); return }
     setConfirmOpen(true)
   }
 
@@ -401,16 +424,16 @@ function TeacherDebts() {
     setSaving(true)
     try {
       await recordPayment(selected.id, Number(amount), method)
-      toast.success('Оплата внесена')
+      toast.success(t('payments.paymentRecorded'))
       setSelected(null)
       reload()
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка записи оплаты')
+      toast.error(e.response?.data?.error || t('payments.recordError'))
     } finally { setSaving(false) }
   }
 
   if (loading) return <SkeletonList />
-  if (!data?.length) return <EmptyState emoji="🎓" title="Пока нет учеников" text="Когда появятся ученики, здесь будет их долг." />
+  if (!data?.length) return <EmptyState emoji="🎓" title={t('payments.noStudentsTitle')} text={t('payments.noStudentsText')} />
 
   // Сначала должники (по убыванию долга), затем остальные
   const sorted = [...data].sort((a, b) => Math.max(0, b.balance) - Math.max(0, a.balance))
@@ -429,7 +452,7 @@ function TeacherDebts() {
             balance={row.balance}
             action={
               <Button size="sm" variant={Math.max(0, row.balance) > 0 ? 'primary' : 'secondary'} onClick={() => open(row.student)}>
-                Внести
+                {t('payments.record')}
               </Button>
             }
           />
@@ -438,14 +461,14 @@ function TeacherDebts() {
 
       <Modal open={!!selected} onClose={close}>
         <div className="p-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-1">Внести оплату</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-1">{t('payments.recordModalTitle')}</h2>
           <p className="text-sm text-slate-400 mb-5">{selected?.name}</p>
-          <Input label="Сумма, zł" type="number" value={amount}
+          <Input label={t('payments.amountLabel')} type="number" value={amount}
             onChange={(e) => { setAmount(e.target.value); setErr('') }} error={err} />
 
           {/* Способ оплаты */}
           <div className="mt-4">
-            <label className="block text-sm text-slate-600 mb-1.5">Способ оплаты</label>
+            <label className="block text-sm text-slate-600 mb-1.5">{t('payments.methodLabel')}</label>
             <div className="grid grid-cols-3 gap-2">
               {manualMethods.map((m) => (
                 <button key={m} type="button" onClick={() => setMethod(m)}
@@ -454,15 +477,15 @@ function TeacherDebts() {
                       ? 'border-blue-500 bg-blue-50 text-blue-700'
                       : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
                   }`}>
-                  {METHOD[m].label}
+                  {methodMeta(m, t).label}
                 </button>
               ))}
             </div>
           </div>
 
           <div className="flex gap-3 mt-6">
-            <Button variant="secondary" className="flex-1" onClick={close} disabled={saving}>Отмена</Button>
-            <Button className="flex-1" onClick={trySubmit} loading={saving}>Записать</Button>
+            <Button variant="secondary" className="flex-1" onClick={close} disabled={saving}>{tc('cancel')}</Button>
+            <Button className="flex-1" onClick={trySubmit} loading={saving}>{t('payments.recordSubmit')}</Button>
           </div>
         </div>
       </Modal>
@@ -471,9 +494,9 @@ function TeacherDebts() {
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         onConfirm={submit}
-        title="Записать оплату?"
-        message={`Записать ${Number(amount)} zł от ${selected?.name ?? ''}? Отменить потом нельзя.`}
-        confirmLabel="Записать"
+        title={t('payments.confirmTitle')}
+        message={t('payments.confirmMsg', { amount: Number(amount), name: selected?.name ?? '' })}
+        confirmLabel={t('payments.recordSubmit')}
       />
     </div>
   )
@@ -482,6 +505,7 @@ function TeacherDebts() {
 /* ══════════════════ ИСТОРИЯ ОПЛАТ (учитель) ══════════════════ */
 // Переключатели: На проверке (N) | Поступления | Отклонённые
 function PaymentHistory() {
+  const { t } = useTranslation('teacher')
   const [status, setStatus] = useState('pending')
   const [shot, setShot]     = useState(null) // url скрина для лайтбокса
 
@@ -492,9 +516,9 @@ function PaymentHistory() {
   return (
     <div>
       <StatusToggle value={status} onChange={setStatus} tabs={[
-        { key: 'pending',  label: 'На проверке', count: pendingCount },
-        { key: 'approved', label: 'Поступления' },
-        { key: 'rejected', label: 'Отклонённые' },
+        { key: 'pending',  label: t('payments.toggleReviewTeacher'), count: pendingCount },
+        { key: 'approved', label: t('payments.toggleReceipts') },
+        { key: 'rejected', label: t('payments.toggleRejectedTeacher') },
       ]} />
 
       {status === 'pending'
@@ -508,32 +532,34 @@ function PaymentHistory() {
 
 // Очередь проверки: карточки оплат ученика со скрином + Одобрить/Отклонить
 function PendingReview({ items, loading, reload, onShot }) {
+  const { t, i18n } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [busy, setBusy]           = useState(null)
   const [rejecting, setRejecting] = useState(null)
   const [reason, setReason]       = useState('')
 
   const approve = async (id) => {
     setBusy(id)
-    try { await approvePayment(id); toast.success('Оплата подтверждена'); reload() }
-    catch (e) { toast.error(e.response?.data?.error || 'Ошибка') }
+    try { await approvePayment(id); toast.success(t('payments.paymentApproved')); reload() }
+    catch (e) { toast.error(e.response?.data?.error || tc('error')) }
     finally { setBusy(null) }
   }
   const doReject = async () => {
     setBusy(rejecting.id)
-    try { await rejectPayment(rejecting.id, reason.trim()); toast.success('Оплата отклонена'); setRejecting(null); setReason(''); reload() }
-    catch (e) { toast.error(e.response?.data?.error || 'Ошибка') }
+    try { await rejectPayment(rejecting.id, reason.trim()); toast.success(t('payments.paymentRejected')); setRejecting(null); setReason(''); reload() }
+    catch (e) { toast.error(e.response?.data?.error || tc('error')) }
     finally { setBusy(null) }
   }
 
   if (loading) return <SkeletonList />
-  if (!items?.length) return <EmptyState emoji="✅" title="Нет оплат на проверке" text="Здесь появятся оплаты учеников со скриншотом — их нужно подтвердить или отклонить." />
+  if (!items?.length) return <EmptyState emoji="✅" title={t('payments.noPendingTitle')} text={t('payments.noPendingText')} />
 
   return (
     <>
       <div className="space-y-2.5">
         {items.map((r) => {
-          const m = METHOD[r.method] ?? { label: r.method, cls: 'bg-slate-50 text-slate-600 border-slate-200' }
-          const date = r.paidAt ? new Date(r.paidAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
+          const m = methodMeta(r.method, t)
+          const date = r.paidAt ? new Date(r.paidAt).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
           return (
             <div key={r.id} className="rounded-2xl border border-amber-200 bg-amber-50/40 p-4">
               <div className="flex items-center gap-3">
@@ -548,8 +574,8 @@ function PendingReview({ items, loading, reload, onShot }) {
                 <div className="text-base font-semibold text-slate-900 shrink-0 tabular-nums w-20 text-right">{fmt(r.amount)}</div>
               </div>
               <div className="flex gap-2 mt-3">
-                <Button size="sm" variant="secondary" className="flex-1" onClick={() => setRejecting(r)} loading={busy === r.id}>Отклонить</Button>
-                <Button size="sm" className="flex-1" onClick={() => approve(r.id)} loading={busy === r.id}>Одобрить</Button>
+                <Button size="sm" variant="secondary" className="flex-1" onClick={() => setRejecting(r)} loading={busy === r.id}>{t('payments.reject')}</Button>
+                <Button size="sm" className="flex-1" onClick={() => approve(r.id)} loading={busy === r.id}>{t('payments.approve')}</Button>
               </div>
             </div>
           )
@@ -559,15 +585,15 @@ function PendingReview({ items, loading, reload, onShot }) {
       {/* Модалка отклонения с необязательной причиной */}
       <Modal open={!!rejecting} onClose={() => { if (busy === null) { setRejecting(null); setReason('') } }} maxWidth="max-w-sm">
         <div className="p-6">
-          <h3 className="text-base font-semibold text-slate-900 mb-1">Отклонить оплату</h3>
+          <h3 className="text-base font-semibold text-slate-900 mb-1">{t('payments.rejectModalTitle')}</h3>
           <p className="text-sm text-slate-400 mb-4">{rejecting?.student?.name} · {fmt(rejecting?.amount)}</p>
-          <label className="block text-xs font-medium text-slate-500 mb-1">Причина (необязательно, увидит ученик)</label>
+          <label className="block text-xs font-medium text-slate-500 mb-1">{t('payments.rejectReasonLabel')}</label>
           <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={3}
-            placeholder="Напр.: сумма не совпадает / оплата не поступила"
+            placeholder={t('payments.rejectReasonPlaceholder')}
             className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 resize-none mb-4" />
           <div className="flex gap-2">
-            <Button variant="secondary" className="flex-1" onClick={() => { setRejecting(null); setReason('') }}>Отмена</Button>
-            <Button className="flex-1" onClick={doReject} loading={busy === rejecting?.id}>Отклонить</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => { setRejecting(null); setReason('') }}>{tc('cancel')}</Button>
+            <Button className="flex-1" onClick={doReject} loading={busy === rejecting?.id}>{t('payments.reject')}</Button>
           </div>
         </div>
       </Modal>
@@ -578,6 +604,7 @@ function PendingReview({ items, loading, reload, onShot }) {
 // Список одобренных/отклонённых оплат (учитель).
 // Для «Поступлений» — разбивка по способам (Наличные/Карта/Перевод/Онлайн) + фильтр по датам.
 function HistoryList({ status, onShot }) {
+  const { t } = useTranslation('teacher')
   const { user } = useAuth()
   const isApproved = status === 'approved'
   const [method, setMethod] = useState('')
@@ -604,8 +631,8 @@ function HistoryList({ status, onShot }) {
       {loading ? (
         <SkeletonList />
       ) : !records.length ? (
-        <EmptyState emoji="🧾" title="Записей нет"
-          text={isApproved ? 'Подтверждённые оплаты появятся здесь.' : 'Отклонённых оплат нет.'} />
+        <EmptyState emoji="🧾" title={t('payments.noRecordsTitle')}
+          text={isApproved ? t('payments.approvedEmptyTeacher') : t('payments.rejectedEmptyTeacher')} />
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
           {records.map((r) => <HistoryRow key={r.id} rec={r} onShot={onShot} />)}
@@ -616,9 +643,10 @@ function HistoryList({ status, onShot }) {
 }
 
 function HistoryRow({ rec, onShot }) {
-  const m = METHOD[rec.method] ?? { label: rec.method, cls: 'bg-slate-50 text-slate-600 border-slate-200' }
+  const { t, i18n } = useTranslation('teacher')
+  const m = methodMeta(rec.method, t)
   const date = rec.paidAt
-    ? new Date(rec.paidAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })
+    ? new Date(rec.paidAt).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' })
     : '—'
   const amountCls = rec.status === 'rejected' ? 'text-slate-400 line-through' : 'text-emerald-600'
   return (
@@ -636,7 +664,7 @@ function HistoryRow({ rec, onShot }) {
         <div className={`text-base font-semibold shrink-0 tabular-nums w-20 text-right ${amountCls}`}>{fmt(rec.amount)}</div>
       </div>
       {rec.status === 'rejected' && rec.rejectionReason && (
-        <div className="text-xs text-red-500 mt-1.5 ml-13 pl-0.5">Причина: {rec.rejectionReason}</div>
+        <div className="text-xs text-red-500 mt-1.5 ml-13 pl-0.5">{t('payments.reasonLabel')} {rec.rejectionReason}</div>
       )}
     </div>
   )
@@ -644,10 +672,11 @@ function HistoryRow({ rec, onShot }) {
 
 // Карточка строки долга: аватар, суммы, прогресс оплаты, остаток, действие.
 function DebtCard({ name, sub, charged, paid, balance, action }) {
+  const { t } = useTranslation('teacher')
   const bal = Number(balance) || 0
   const pct = Number(charged) > 0 ? Math.min(100, Math.round((Number(paid) / Number(charged)) * 100)) : 0
   const balanceColor = bal > 0 ? 'text-amber-600' : bal < 0 ? 'text-emerald-600' : 'text-slate-400'
-  const balanceLabel = bal < 0 ? 'Переплата' : 'Остаток'
+  const balanceLabel = bal < 0 ? t('payments.overpaid') : t('payments.balanceWord')
 
   return (
     <div className="p-4 rounded-2xl border border-slate-200 bg-white">

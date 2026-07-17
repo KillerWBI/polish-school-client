@@ -9,6 +9,7 @@ import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import PageContainer from '../../components/ui/PageContainer'
 
 export default function NotesPage() {
   const { data: notes, loading, reload } = useFetch(getNotes)
@@ -24,7 +25,7 @@ export default function NotesPage() {
   }
 
   return (
-    <div className="p-5 sm:p-8 max-w-3xl">
+    <PageContainer>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
@@ -44,7 +45,7 @@ export default function NotesPage() {
         <EmptyState emoji="📝" title="Заметок пока нет" text="Записывайте важное с уроков — всё в одном месте."
           action={<Button size="sm" onClick={() => setEditor({ note: null })}>Создать заметку</Button>} />
       ) : (
-        <div className="grid sm:grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {notes.map(n => (
             <div key={n.id} className="rounded-2xl border border-slate-200 bg-white p-4 flex flex-col">
               {n.title && <div className="font-medium text-slate-900 mb-1">{n.title}</div>}
@@ -80,7 +81,7 @@ export default function NotesPage() {
         confirmLabel="Удалить"
         busy={busy}
       />
-    </div>
+    </PageContainer>
   )
 }
 

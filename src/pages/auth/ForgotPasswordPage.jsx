@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { forgotPassword } from '../../api/auth.api'
 
 // Запрос ссылки на сброс пароля. Ответ всегда «успех» — не палим, есть ли email.
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation('app')
   const [email, setEmail]         = useState('')
   const [sent, setSent]           = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -11,13 +13,13 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Неверный email'); return }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError(t('auth.invalidEmail')); return }
     setSubmitting(true); setError('')
     try {
       await forgotPassword(email.trim())
       setSent(true)
     } catch (err) {
-      setError(err.response?.data?.error || 'Не удалось отправить письмо')
+      setError(err.response?.data?.error || t('auth.forgotSendFail'))
     } finally {
       setSubmitting(false)
     }
@@ -33,23 +35,20 @@ export default function ForgotPasswordPage() {
 
         {sent ? (
           <>
-            <h1 className="text-xl font-semibold text-slate-900">Проверьте почту</h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Если <b className="text-slate-700">{email}</b> зарегистрирован — мы отправили ссылку для сброса пароля.
-              Ссылка действует 1 час.
-            </p>
+            <h1 className="text-xl font-semibold text-slate-900">{t('auth.forgotSentTitle')}</h1>
+            <p className="mt-2 text-sm text-slate-500">{t('auth.forgotSentBody', { email })}</p>
             <Link to="/login" className="mt-6 inline-block text-sm text-blue-600 hover:text-blue-700 font-medium">
-              ← Вернуться ко входу
+              {t('auth.backToLogin')}
             </Link>
           </>
         ) : (
           <>
-            <h1 className="text-xl font-semibold text-slate-900">Сброс пароля</h1>
-            <p className="mt-1 text-sm text-slate-500">Укажите email — пришлём ссылку для нового пароля.</p>
+            <h1 className="text-xl font-semibold text-slate-900">{t('auth.forgotTitle')}</h1>
+            <p className="mt-1 text-sm text-slate-500">{t('auth.forgotSubtitle')}</p>
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1.5">Email</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">{t('auth.emailLabel')}</label>
                 <input
                   type="email" value={email} autoComplete="email" placeholder="you@mail.com"
                   onChange={(e) => { setEmail(e.target.value); setError('') }}
@@ -65,12 +64,12 @@ export default function ForgotPasswordPage() {
                 className="w-full h-11 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
               >
                 {submitting && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-                Отправить ссылку
+                {t('auth.forgotBtn')}
               </button>
             </form>
 
             <Link to="/login" className="mt-6 inline-block text-sm text-slate-500 hover:text-slate-900">
-              ← Вернуться ко входу
+              {t('auth.backToLogin')}
             </Link>
           </>
         )}

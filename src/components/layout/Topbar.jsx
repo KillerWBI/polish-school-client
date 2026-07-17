@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Search, Bell, Users, FileText, Wallet, UserPlus, CheckCircle2, CalendarCheck, XCircle, X, HelpCircle } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import { getGroups } from '../../api/groups.api'
@@ -18,10 +19,12 @@ const NOTIF_META = {
   payment_submitted: { Icon: Wallet,       cls: 'bg-amber-50 text-amber-600' },
   payment_approved:  { Icon: CheckCircle2, cls: 'bg-emerald-50 text-emerald-600' },
   payment_rejected:  { Icon: XCircle,      cls: 'bg-red-50 text-red-600' },
+  review_due:        { Icon: CalendarCheck,cls: 'bg-blue-50 text-blue-600' },
   _default:          { Icon: Bell,         cls: 'bg-slate-100 text-slate-500' },
 }
 
 export default function Topbar() {
+  const { t } = useTranslation('app')
   const { user, isTeacher } = useAuth()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -32,7 +35,7 @@ export default function Topbar() {
       <div className="ml-auto flex items-center gap-2">
         <button
           onClick={() => navigate(`/help${helpSection ? `#${helpSection}` : ''}`)}
-          title="Помощь по этой странице"
+          title={t('topbar.helpTooltip')}
           className="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-colors cursor-pointer">
           <HelpCircle size={18} />
         </button>
@@ -44,7 +47,7 @@ export default function Topbar() {
           </span>
           <span className="text-left leading-tight">
             <span className="block text-xs font-medium text-slate-900 max-w-[110px] truncate">{user?.name?.split(' ')[0] ?? '—'}</span>
-            <span className="block text-[10px] text-slate-400">{isTeacher ? 'Преподаватель' : 'Студент'}</span>
+            <span className="block text-[10px] text-slate-400">{isTeacher ? t('role.teacher') : t('role.student')}</span>
           </span>
         </button>
       </div>
@@ -54,6 +57,8 @@ export default function Topbar() {
 
 /* ── Рабочий поиск: группы + ученики ── */
 export function SearchBox({ isTeacher, navigate }) {
+  const { t } = useTranslation('app')
+  const { t: tc } = useTranslation('common')
   const [q, setQ] = useState('')
   const [open, setOpen] = useState(false)
   const [groups, setGroups] = useState(null)
@@ -87,17 +92,17 @@ export function SearchBox({ isTeacher, navigate }) {
         value={q}
         onFocus={() => { setOpen(true); load() }}
         onChange={(e) => { setQ(e.target.value); setOpen(true) }}
-        placeholder="Поиск: группа или ученик…"
+        placeholder={t('topbar.searchPlaceholder')}
         className="w-full h-10 pl-10 pr-9 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15 transition"
       />
       {q && <button onClick={() => setQ('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"><X className="w-4 h-4" /></button>}
 
       {open && query.length > 0 && (
         <div className="absolute left-0 right-0 mt-2 rounded-xl border border-slate-200 bg-white shadow-lg z-50 overflow-hidden py-1 max-h-[380px] overflow-y-auto">
-          {groups === null && <div className="px-4 py-3 text-sm text-slate-400">Загрузка…</div>}
-          {empty && <div className="px-4 py-3 text-sm text-slate-400">Ничего не найдено по «{q}»</div>}
+          {groups === null && <div className="px-4 py-3 text-sm text-slate-400">{tc('loading')}</div>}
+          {empty && <div className="px-4 py-3 text-sm text-slate-400">{t('topbar.notFound', { q })}</div>}
 
-          {gMatch.length > 0 && <div className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">Группы</div>}
+          {gMatch.length > 0 && <div className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">{t('nav.groups')}</div>}
           {gMatch.map(g => (
             <button key={g.id} onClick={() => go(`/groups/${g.id}`)}
               className="w-full flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 cursor-pointer text-left">
@@ -106,7 +111,7 @@ export function SearchBox({ isTeacher, navigate }) {
             </button>
           ))}
 
-          {sMatch.length > 0 && <div className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">Ученики</div>}
+          {sMatch.length > 0 && <div className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">{t('nav.students')}</div>}
           {sMatch.map(s => (
             <button key={s.id} onClick={() => go('/students')}
               className="w-full flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 cursor-pointer text-left">
@@ -122,6 +127,7 @@ export function SearchBox({ isTeacher, navigate }) {
 
 /* ── Рабочие уведомления (реальные, из /notifications) ── */
 export function NotifBell({ navigate }) {
+  const { t } = useTranslation('app')
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState([])
   const [unread, setUnread] = useState(0)
@@ -174,17 +180,17 @@ export function NotifBell({ navigate }) {
       {open && (
         <div className="absolute right-0 mt-2 w-80 rounded-xl border border-slate-200 bg-white shadow-lg z-50 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-            <span className="text-sm font-semibold text-slate-900">Уведомления</span>
+            <span className="text-sm font-semibold text-slate-900">{t('topbar.notifications')}</span>
             {unread > 0 && (
               <button onClick={readAll} className="text-[11px] text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
-                Прочитать все
+                {t('topbar.markAllRead')}
               </button>
             )}
           </div>
           {items.length === 0 ? (
             <div className="px-4 py-8 text-center">
               <span className="inline-flex w-10 h-10 rounded-xl bg-slate-100 text-slate-400 items-center justify-center mb-2"><Bell className="w-5 h-5" /></span>
-              <p className="text-sm text-slate-400">Новых уведомлений нет</p>
+              <p className="text-sm text-slate-400">{t('topbar.noNotifications')}</p>
             </div>
           ) : (
             <div className="py-1 max-h-[380px] overflow-y-auto">

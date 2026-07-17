@@ -5,6 +5,7 @@ import { getMaterials } from '../../api/materials.api'
 import { safeUrl } from '../../utils/safeUrl'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import PageContainer from '../../components/ui/PageContainer'
 
 // Иконка по типу материала: link | file | text
 const TYPE_ICON = { link: Link2, file: FileText, text: Type }
@@ -25,7 +26,7 @@ export default function MaterialsPage() {
   }, [data, q])
 
   return (
-    <div className="p-5 sm:p-8 max-w-3xl">
+    <PageContainer>
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
           <FolderOpen className="w-5 h-5 text-white" />
@@ -52,13 +53,13 @@ export default function MaterialsPage() {
           {!lessons.length ? (
             <EmptyState emoji="🔍" title="Ничего не найдено" text="Попробуйте изменить запрос." />
           ) : (
-            <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2 items-start">
               {lessons.map(l => <LessonMaterials key={`${l.kind}-${l.id}`} lesson={l} />)}
             </div>
           )}
         </>
       )}
-    </div>
+    </PageContainer>
   )
 }
 

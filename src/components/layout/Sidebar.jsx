@@ -1,66 +1,68 @@
 import { useState, useEffect } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import useAuth from '../../hooks/useAuth'
 import { safeUrl } from '../../utils/safeUrl'
+import LanguageSwitcher from '../ui/LanguageSwitcher'
 
-// Светлый сайдбар (Cemdash-стиль).
+// Светлый сайдбар (Cemdash-стиль). label/section — ключи app.json, резолвятся t() при рендере.
 const PLAN_LABEL = { free: 'Free', pro: 'Pro', school: 'School' }
 
 const TEACHER_SECTIONS = [
-  { label: 'Главное', items: [
-    { path: '/dashboard', label: 'Дашборд',   icon: IconDashboard },
-    { path: '/calendar',  label: 'Расписание', icon: IconCalendar },
+  { label: 'nav.sectionMain', items: [
+    { path: '/dashboard', label: 'nav.dashboard', icon: IconDashboard },
+    { path: '/calendar',  label: 'nav.calendar',  icon: IconCalendar },
   ]},
-  { label: 'Учёба', items: [
-    { path: '/groups',             label: 'Группы',           icon: IconGroups },
-    { path: '/individual-courses', label: 'Инд. курсы',       icon: IconIndividual },
-    { path: '/students',           label: 'Ученики',          icon: IconStudents },
-    { path: '/homework',           label: 'Домашние задания', icon: IconHomework },
-    { path: '/attendance',         label: 'Посещаемость',     icon: IconCheck },
-    { path: '/materials',          label: 'Материалы',        icon: IconFolder },
+  { label: 'nav.sectionStudy', items: [
+    { path: '/groups',             label: 'nav.groups',            icon: IconGroups },
+    { path: '/individual-courses', label: 'nav.individualCourses', icon: IconIndividual },
+    { path: '/students',           label: 'nav.students',          icon: IconStudents },
+    { path: '/homework',           label: 'nav.homework',          icon: IconHomework },
+    { path: '/attendance',         label: 'nav.attendance',        icon: IconCheck },
+    { path: '/materials',          label: 'nav.materials',         icon: IconFolder },
   ]},
-  { label: 'Инструменты', items: [
-    { path: '/quiz',    label: 'AI-тесты',  icon: IconSparkles },
-    { path: '/quizzes', label: 'Мои тесты', icon: IconList },
+  { label: 'nav.sectionTools', items: [
+    { path: '/quiz',    label: 'nav.aiQuiz',    icon: IconSparkles },
+    { path: '/quizzes', label: 'nav.myQuizzes', icon: IconList },
   ]},
-  { label: 'Финансы', items: [
-    { path: '/payments', label: 'Оплата', icon: IconPayment },
+  { label: 'nav.sectionFinance', items: [
+    { path: '/payments', label: 'nav.payments', icon: IconPayment },
   ]},
 ]
 
 const STUDENT_SECTIONS = [
-  { label: 'Главное', items: [
-    { path: '/dashboard',   label: 'Дашборд',    icon: IconDashboard },
-    { path: '/calendar',    label: 'Расписание', icon: IconCalendar },
-    { path: '/my-progress', label: 'Прогресс',   icon: IconProgress },
+  { label: 'nav.sectionMain', items: [
+    { path: '/dashboard',   label: 'nav.dashboard', icon: IconDashboard },
+    { path: '/calendar',    label: 'nav.calendar',  icon: IconCalendar },
+    { path: '/study',       label: 'nav.dailySession', icon: IconDaily },
+    { path: '/my-progress', label: 'nav.progress',  icon: IconProgress },
   ]},
-  { label: 'Учёба', items: [
-    { path: '/groups',     label: 'Мои группы',       icon: IconGroups },
-    { path: '/homework',   label: 'Домашние задания', icon: IconHomework },
-    { path: '/attendance', label: 'Посещаемость',     icon: IconCheck },
-    { path: '/materials',  label: 'Материалы',        icon: IconFolder },
-    { path: '/my-lessons', label: 'Мои занятия',      icon: IconNotebook },
+  { label: 'nav.sectionStudy', items: [
+    { path: '/groups',     label: 'nav.myGroups',   icon: IconGroups },
+    { path: '/homework',   label: 'nav.homework',   icon: IconHomework },
+    { path: '/attendance', label: 'nav.attendance', icon: IconCheck },
+    { path: '/materials',  label: 'nav.materials',  icon: IconFolder },
+    { path: '/my-lessons', label: 'nav.myLessons',  icon: IconNotebook },
   ]},
-  { label: 'Инструменты', items: [
-    { path: '/quiz',     label: 'AI-тесты',   icon: IconSparkles },
-    { path: '/quizzes',  label: 'Мои тесты',  icon: IconList },
-    { path: '/topics',   label: 'Мои темы',   icon: IconTarget },
-    { path: '/vocab',    label: 'Словарь',    icon: IconVocab },
-    { path: '/my-notes', label: 'Заметки',    icon: IconNote },
+  { label: 'nav.sectionTools', items: [
+    { path: '/quiz',     label: 'nav.aiQuiz',    icon: IconSparkles },
+    { path: '/quizzes',  label: 'nav.myQuizzes', icon: IconList },
+    { path: '/topics',   label: 'nav.topics',    icon: IconTarget },
+    { path: '/vocab',    label: 'nav.vocab',     icon: IconVocab },
+    { path: '/my-notes', label: 'nav.notes',     icon: IconNote },
   ]},
-  { label: 'Финансы', items: [
-    { path: '/payments', label: 'Оплата', icon: IconPayment },
+  { label: 'nav.sectionFinance', items: [
+    { path: '/payments', label: 'nav.payments', icon: IconPayment },
   ]},
 ]
 
 const ADMIN_EXTRA_SECTION = {
-  label: 'Администрирование',
-  items: [{ path: '/admin', label: 'Панель управления', icon: IconShield }],
+  label: 'nav.sectionAdmin',
+  items: [{ path: '/admin', label: 'nav.adminPanel', icon: IconShield }],
 }
 
-const ROLE_DISPLAY = { teacher: 'Преподаватель', student: 'Студент', admin: 'Администратор' }
-
 export default function Sidebar({ onClose }) {
+  const { t } = useTranslation('app')
   const { user, logout, isTeacher } = useAuth()
   const navigate = useNavigate()
   const isAdmin = user?.role === 'admin'
@@ -101,7 +103,7 @@ export default function Sidebar({ onClose }) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-xs font-medium text-[#0F172A] truncate leading-tight">{user?.name?.split(' ')[0] ?? '—'}</div>
-            <div className="text-[10px] text-[#94A3B8] truncate mt-0.5">{ROLE_DISPLAY[user?.role] ?? 'Пользователь'}</div>
+            <div className="text-[10px] text-[#94A3B8] truncate mt-0.5">{user?.role ? t(`role.${user.role}`) : t('sidebar.user')}</div>
           </div>
           {isTeacher && (
             <Link to="/plans" onClick={onClose}
@@ -120,12 +122,12 @@ export default function Sidebar({ onClose }) {
       <nav data-tour="nav" className="flex-1 px-3 py-2 overflow-y-auto space-y-5">
         {sections.map(section => (
           <div key={section.label}>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A0AAB8] px-2.5 mb-1.5">{section.label}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A0AAB8] px-2.5 mb-1.5">{t(section.label)}</p>
             <div className="space-y-0.5">
               {section.items.map(({ path, label, icon: Icon }) => (
                 <NavLink key={path} to={path} onClick={onClose} className={linkClass}>
                   <Icon />
-                  <span className="truncate flex-1">{label}</span>
+                  <span className="truncate flex-1">{t(label)}</span>
                 </NavLink>
               ))}
             </div>
@@ -138,15 +140,16 @@ export default function Sidebar({ onClose }) {
         {installPrompt && (
           <button onClick={handleInstall}
             className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer">
-            <IconInstall /> Установить приложение
+            <IconInstall /> {t('sidebar.install')}
           </button>
         )}
         <NavLink to="/help" onClick={onClose} className={linkClass}>
-          <IconHelp /> Помощь
+          <IconHelp /> {t('sidebar.help')}
         </NavLink>
         <NavLink to="/support" onClick={onClose} className={linkClass}>
-          <IconSupport /> Поддержка
+          <IconSupport /> {t('sidebar.support')}
         </NavLink>
+        <div className="px-1 py-1"><LanguageSwitcher className="w-full" /></div>
         <NavLink to="/settings" onClick={onClose} className={({ isActive }) =>
           `flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-colors ${
             isActive
@@ -154,14 +157,14 @@ export default function Sidebar({ onClose }) {
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}>
           <IconProfile />
-          <span className="flex-1">Настройки</span>
+          <span className="flex-1">{t('sidebar.settings')}</span>
           {isTeacher && !user?.paymentDetails && (
             <span className="w-4 h-4 rounded-full bg-amber-400 text-white text-[9px] font-bold flex items-center justify-center shrink-0">!</span>
           )}
         </NavLink>
         <button onClick={handleLogout}
           className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] text-[#94A3B8] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-colors cursor-pointer">
-          <IconLogout /> Выйти
+          <IconLogout /> {t('sidebar.logout')}
         </button>
       </div>
     </aside>
@@ -188,6 +191,7 @@ function IconVocab()   { return <svg className="w-[15px] h-[15px] shrink-0" fill
 function IconNotebook(){ return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M4 4a2 2 0 0 1 2-2h11a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2V4z" strokeLinejoin="round"/><path d="M8 2v20M12 7h3M12 11h3" strokeLinecap="round"/></svg> }
 function IconNote()    { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z" strokeLinejoin="round"/><path d="M15 3v6h6" strokeLinejoin="round"/></svg> }
 function IconProgress(){ return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M3 3v18h18" strokeLinecap="round"/><path d="M7 14l3-4 3 3 4-6" strokeLinecap="round" strokeLinejoin="round"/></svg> }
+function IconDaily()   { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M9 15l2 2 4-4" strokeLinecap="round" strokeLinejoin="round"/></svg> }
 function IconTarget()  { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg> }
 function IconFolder()  { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" strokeLinejoin="round"/></svg> }
 function IconSupport() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3" strokeLinecap="round"/></svg> }

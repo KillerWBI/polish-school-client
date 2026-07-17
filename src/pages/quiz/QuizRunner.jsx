@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Check, X, Copy, RotateCcw } from 'lucide-react'
 import Button from '../../components/ui/Button'
@@ -12,6 +13,7 @@ const sameSet = (a = [], b = []) =>
 // Плюс «Показать ключ», «Копировать» и (если передан onSave) «Сохранить результат».
 // savedAnswers — открыть уже пройденным (история): показываем ответы + результат, а не с нуля.
 export default function QuizRunner({ quiz, savedAnswers, onCheck }) {
+  const { t } = useTranslation('app')
   const questions = Array.isArray(quiz?.questions) ? quiz.questions : []
   const type = quiz?.type
   // Хуки вызываются до любых ранних возвратов (правило хуков)
@@ -21,8 +23,8 @@ export default function QuizRunner({ quiz, savedAnswers, onCheck }) {
   const [attemptSaved, setAttemptSaved] = useState(false) // прохождение сохранено (один раз)
   const reveal = checked || showKey
 
-  if (!quiz) return <p className="text-sm text-slate-400">Тест не загружен.</p>
-  if (!questions.length) return <p className="text-sm text-slate-400">В этом тесте нет вопросов.</p>
+  if (!quiz) return <p className="text-sm text-slate-400">{t('quiz.notLoaded')}</p>
+  if (!questions.length) return <p className="text-sm text-slate-400">{t('quiz.noQuestions')}</p>
 
   const pick = (qi, oi) => {
     if (checked) return
@@ -46,8 +48,8 @@ export default function QuizRunner({ quiz, savedAnswers, onCheck }) {
   }, 0)
 
   const copy = async () => {
-    try { await navigator.clipboard.writeText(quizToText(quiz)); toast.success('Скопировано') }
-    catch { toast.error('Не удалось скопировать') }
+    try { await navigator.clipboard.writeText(quizToText(quiz, t)); toast.success(t('quiz.copied')) }
+    catch { toast.error(t('quiz.copyFail')) }
   }
 
   // «Проверить»: показываем результат и (если задан onCheck) сохраняем прохождение в историю — один раз.
@@ -66,32 +68,32 @@ export default function QuizRunner({ quiz, savedAnswers, onCheck }) {
       <div className="flex flex-wrap items-center gap-2 mb-4">
         {!checked ? (
           <>
-            <Button size="sm" onClick={check}>Проверить</Button>
+            <Button size="sm" onClick={check}>{t('quiz.check')}</Button>
             <button onClick={() => setShowKey((v) => !v)}
               className="h-9 px-3 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
-              {showKey ? 'Скрыть ключ' : 'Показать ключ'}
+              {showKey ? t('quiz.hideKey') : t('quiz.showKey')}
             </button>
           </>
         ) : (
           <>
             {isObjective(type) ? (
               <span className="inline-flex items-center h-9 px-3 rounded-lg bg-blue-50 text-blue-700 text-sm font-medium">
-                Результат: {correctCount} / {total}
+                {t('quiz.result', { c: correctCount, t: total })}
               </span>
             ) : (
               <span className="inline-flex items-center h-9 px-3 rounded-lg bg-slate-100 text-slate-600 text-sm">
-                Открытые вопросы — сверьте с образцом
+                {t('quiz.openReview')}
               </span>
             )}
             <button onClick={reset}
               className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
-              <RotateCcw className="w-4 h-4" /> Пройти заново
+              <RotateCcw className="w-4 h-4" /> {t('quiz.retry')}
             </button>
           </>
         )}
         <button onClick={copy}
           className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors ml-auto">
-          <Copy className="w-4 h-4" /> Копировать
+          <Copy className="w-4 h-4" /> {t('quiz.copy')}
         </button>
       </div>
 
@@ -107,6 +109,7 @@ export default function QuizRunner({ quiz, savedAnswers, onCheck }) {
 }
 
 function QuestionItem({ q, qi, type, sel, reveal, onPick, onOpen }) {
+  const { t } = useTranslation('app')
   const answer = Array.isArray(q.answer) ? q.answer : []
   const multiple = type === 'multiple'
 
@@ -117,11 +120,11 @@ function QuestionItem({ q, qi, type, sel, reveal, onPick, onOpen }) {
       {type === 'open' ? (
         <>
           <textarea rows={2} value={typeof sel === 'string' ? sel : ''} onChange={(e) => onOpen(qi, e.target.value)}
-            placeholder="Ваш ответ…"
+            placeholder={t('quiz.yourAnswer')}
             className="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15" />
           {reveal && q.sampleAnswer && (
             <div className="mt-2 text-sm text-emerald-800 bg-emerald-50 rounded-lg px-3 py-2">
-              <span className="text-xs text-emerald-600">Образец: </span>{q.sampleAnswer}
+              <span className="text-xs text-emerald-600">{t('quiz.sample')}</span>{q.sampleAnswer}
             </div>
           )}
         </>
@@ -167,13 +170,13 @@ function QuestionItem({ q, qi, type, sel, reveal, onPick, onOpen }) {
 }
 
 // Текстовая версия для копирования (вопросы + отмеченные ответы + пояснения)
-function quizToText(quiz) {
+function quizToText(quiz, t) {
   const lines = [quiz.topic, '']
   quiz.questions.forEach((q, i) => {
     lines.push(`${i + 1}. ${q.question}`)
     const answer = Array.isArray(q.answer) ? q.answer : []
     if (quiz.type === 'open') {
-      if (q.sampleAnswer) lines.push(`   Ответ: ${q.sampleAnswer}`)
+      if (q.sampleAnswer) lines.push(`   ${t('quiz.copyAnswer')}${q.sampleAnswer}`)
     } else {
       (q.options || []).forEach((opt, j) => lines.push(`   ${answer.includes(j) ? '✓' : '·'} ${opt}`))
     }

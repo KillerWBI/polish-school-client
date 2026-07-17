@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { uploadToCloudinary } from '../../../utils/uploadToCloudinary'
 
 // Обложка-баннер 3:1. Если url пуст — градиентный плейсхолдер.
 // В edit-режиме внизу справа кнопка «Заменить».
 export default function CoverUpload({ url, editable = false, onChange }) {
+  const { t } = useTranslation('teacher')
   const fileRef = useRef(null)
   const [uploading, setUploading] = useState(false)
 
@@ -12,7 +14,7 @@ export default function CoverUpload({ url, editable = false, onChange }) {
     const file = e.target.files?.[0]
     if (!file) return
     if (file.size > 8 * 1024 * 1024) {
-      toast.error('Файл больше 8 MB')
+      toast.error(t('profile.coverTooBig'))
       return
     }
     setUploading(true)
@@ -44,7 +46,7 @@ export default function CoverUpload({ url, editable = false, onChange }) {
             disabled={uploading}
             className="absolute bottom-3 right-3 px-3 py-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white text-xs font-medium cursor-pointer transition-colors disabled:cursor-not-allowed"
           >
-            {uploading ? 'Загрузка...' : '📷 Сменить обложку'}
+            {uploading ? t('profile.uploading') : t('profile.changeCover')}
           </button>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
         </>

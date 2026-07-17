@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import useFetch from '../../hooks/useFetch'
 import usePagedList from '../../hooks/usePagedList'
@@ -19,6 +20,7 @@ import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 
 export default function HomeworkPage() {
+  const { t } = useTranslation('teacher')
   const { isTeacher } = useAuth()
   const fetchHw = useCallback((page, limit) => getHomework({ page, limit }), [])
   const { items: homework, loading, loadingMore, hasMore, loadMore, reload } = usePagedList(fetchHw)
@@ -29,29 +31,27 @@ export default function HomeworkPage() {
     <div className="p-5 sm:p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Домашние задания</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">{t('homework.title')}</h1>
           <p className="text-sm text-slate-400 mt-0.5">
-            {isTeacher ? 'Создание и проверка работ' : 'Мои задания и оценки'}
+            {isTeacher ? t('homework.subtitleTeacher') : t('homework.subtitleStudent')}
           </p>
         </div>
         {isTeacher && (
-          <Button size="sm" onClick={() => setCreateModal(true)}>+ Создать ДЗ</Button>
+          <Button size="sm" onClick={() => setCreateModal(true)}>{t('homework.createBtn')}</Button>
         )}
       </div>
 
       {loading ? <SkeletonList /> : !homework?.length ? (
         <EmptyState
           emoji="✏️"
-          title="Заданий пока нет"
-          text={isTeacher
-            ? 'Создайте домашнее задание, привязав его к уроку.'
-            : 'Преподаватель ещё не задал домашних работ.'}
+          title={t('homework.emptyTitle')}
+          text={isTeacher ? t('homework.emptyTeacher') : t('homework.emptyStudent')}
           action={isTeacher
-            ? <Button size="sm" onClick={() => setCreateModal(true)}>Создать ДЗ</Button>
+            ? <Button size="sm" onClick={() => setCreateModal(true)}>{t('homework.createShort')}</Button>
             : null}
         />
       ) : (
-        <div className="space-y-3 max-w-4xl">
+        <div className="grid gap-3 lg:grid-cols-2 items-start">
           {homework.map(hw =>
             isTeacher
               ? <TeacherHWCard key={hw.id} hw={hw} onView={() => setSelected(hw)} onDelete={reload} />
@@ -60,7 +60,7 @@ export default function HomeworkPage() {
           {hasMore && (
             <div className="pt-2 flex justify-center">
               <Button variant="secondary" size="sm" loading={loadingMore} onClick={loadMore}>
-                Показать ещё
+                {t('homework.loadMore')}
               </Button>
             </div>
           )}
@@ -79,6 +79,7 @@ export default function HomeworkPage() {
 
 /* ── Карточка ДЗ для учителя ────────────────────────────────── */
 function TeacherHWCard({ hw, onView, onDelete }) {
+  const { t } = useTranslation('teacher')
   const [deleting,     setDeleting]     = useState(false)
   const [confirmOpen,  setConfirmOpen]  = useState(false)
 
@@ -97,12 +98,12 @@ function TeacherHWCard({ hw, onView, onDelete }) {
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-slate-900 truncate">{hw.description}</p>
         {hw.deadline && (
-          <p className="text-xs text-slate-400 mt-1">📅 До {formatDate(hw.deadline?.slice(0, 10))}</p>
+          <p className="text-xs text-slate-400 mt-1">📅 {t('homework.due')} {formatDate(hw.deadline?.slice(0, 10))}</p>
         )}
-        {hw.quiz && <p className="text-xs text-blue-600 mt-1">🧪 тест прикреплён</p>}
+        {hw.quiz && <p className="text-xs text-blue-600 mt-1">🧪 {t('homework.quizAttached')}</p>}
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        <span className="text-xs text-slate-400 hidden sm:block">Просмотр сдач</span>
+        <span className="text-xs text-slate-400 hidden sm:block">{t('homework.viewSubs')}</span>
         <button
           onClick={(e) => { e.stopPropagation(); setConfirmOpen(true) }}
           disabled={deleting}
@@ -120,8 +121,8 @@ function TeacherHWCard({ hw, onView, onDelete }) {
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleDelete}
-        title="Удалить задание?"
-        message="Это удалит задание и все сданные работы студентов."
+        title={t('homework.confirmTitle')}
+        message={t('homework.confirmMsg')}
         busy={deleting}
       />
     </div>
@@ -130,6 +131,8 @@ function TeacherHWCard({ hw, onView, onDelete }) {
 
 /* ── Карточка ДЗ для студента со сдачей ────────────────────── */
 function StudentHWCard({ hw, onSubmitted }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   // Бэкенд включает HomeworkSubmissions[] (отфильтрованные по studentId)
   const submission = hw.HomeworkSubmissions?.[0] ?? null
 
@@ -146,10 +149,10 @@ function StudentHWCard({ hw, onSubmitted }) {
   const takeAttempt = async (answers, score, total) => {
     try {
       await submitHomeworkQuizAttempt(hw.id, { answers, score, total })
-      toast.success('Тест отправлен учителю')
+      toast.success(t('homework.quizSent'))
       setQuizDone(true)
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Не удалось отправить тест')
+      toast.error(e.response?.data?.error || t('homework.quizSendFail'))
     }
   }
 
@@ -158,7 +161,7 @@ function StudentHWCard({ hw, onSubmitted }) {
     if (!f) return
     // Максимум 10 МБ
     if (f.size > 10 * 1024 * 1024) {
-      setError('Файл слишком большой (максимум 10 МБ)')
+      setError(t('homework.fileTooBig'))
       return
     }
     setError('')
@@ -180,7 +183,7 @@ function StudentHWCard({ hw, onSubmitted }) {
       setOpen(false)
     } catch (e) {
       setUploading(false)
-      setError(e.response?.data?.error || e.message || 'Ошибка сдачи')
+      setError(e.response?.data?.error || e.message || t('homework.submitError'))
     } finally {
       setSubmitting(false)
     }
@@ -199,8 +202,8 @@ function StudentHWCard({ hw, onSubmitted }) {
 
         {hw.deadline && (
           <p className={`text-xs mt-1 ${isOverdue && !submission ? 'text-red-600' : 'text-slate-400'}`}>
-            📅 До {formatDate(hw.deadline.slice(0, 10))}
-            {isOverdue && !submission && ' — просрочено'}
+            📅 {t('homework.due')} {formatDate(hw.deadline.slice(0, 10))}
+            {isOverdue && !submission && ` — ${t('homework.overdueWord')}`}
           </p>
         )}
 
@@ -208,11 +211,11 @@ function StudentHWCard({ hw, onSubmitted }) {
         {hw.quiz && (
           <div className="mt-3">
             {quizDone ? (
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700">✓ Тест пройден</span>
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700">✓ {t('homework.quizDone')}</span>
             ) : (
               <button onClick={() => setQuizOpen(true)}
                 className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
-                📝 Пройти тест
+                📝 {t('homework.takeQuiz')}
               </button>
             )}
           </div>
@@ -227,14 +230,14 @@ function StudentHWCard({ hw, onSubmitted }) {
                 <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.41 17.17a2 2 0 0 1-2.83-2.83l8.49-8.48" strokeLinecap="round"/>
                 </svg>
-                Открыть прикреплённый файл
+                {t('homework.openAttached')}
               </a>
             )}
             {submission.comment && (
               <p className="text-xs text-slate-600">💬 {submission.comment}</p>
             )}
             {submission.status === 'graded' && (
-              <p className="text-xs font-semibold text-blue-600">🏆 Оценка: {submission.grade}/100</p>
+              <p className="text-xs font-semibold text-blue-600">🏆 {t('homework.grade', { grade: submission.grade })}</p>
             )}
           </div>
         )}
@@ -243,7 +246,7 @@ function StudentHWCard({ hw, onSubmitted }) {
         {!submission && (
           <button onClick={() => setOpen(o => !o)}
             className="mt-3 text-xs text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-medium">
-            {open ? '↑ Скрыть' : '📤 Сдать задание'}
+            {open ? t('homework.hideForm') : t('homework.submitAssignment')}
           </button>
         )}
       </div>
@@ -254,7 +257,7 @@ function StudentHWCard({ hw, onSubmitted }) {
           {/* Прикрепить файл */}
           <div>
             <label className="text-xs text-slate-400 block mb-1.5">
-              Прикрепить файл (PDF или фото, необязательно, макс. 10 МБ)
+              {t('homework.attachLabel')}
             </label>
             <label className={`flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-colors ${
               file
@@ -265,7 +268,7 @@ function StudentHWCard({ hw, onSubmitted }) {
                 <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.41 17.17a2 2 0 0 1-2.83-2.83l8.49-8.48" strokeLinecap="round"/>
               </svg>
               <span className="text-sm text-slate-600 truncate flex-1">
-                {file ? file.name : 'Выбрать файл…'}
+                {file ? file.name : t('homework.chooseFile')}
               </span>
               {file && (
                 <button type="button" onClick={(e) => { e.preventDefault(); setFile(null) }}
@@ -278,9 +281,9 @@ function StudentHWCard({ hw, onSubmitted }) {
 
           {/* Комментарий */}
           <div>
-            <label className="text-xs text-slate-400 block mb-1.5">Комментарий (необязательно)</label>
+            <label className="text-xs text-slate-400 block mb-1.5">{t('homework.commentLabel')}</label>
             <textarea value={comment} onChange={e => setComment(e.target.value)}
-              rows={2} placeholder="Напишите что-нибудь учителю…"
+              rows={2} placeholder={t('homework.commentPlaceholder')}
               className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none" />
           </div>
 
@@ -289,12 +292,12 @@ function StudentHWCard({ hw, onSubmitted }) {
           <div className="flex gap-2">
             <Button variant="secondary" size="sm" className="flex-1"
               onClick={() => { setOpen(false); setFile(null); setComment(''); setError('') }}>
-              Отмена
+              {tc('cancel')}
             </Button>
             <Button size="sm" className="flex-1"
               loading={submitting || uploading}
               onClick={handleSubmit}>
-              {uploading ? 'Загрузка файла…' : 'Сдать'}
+              {uploading ? t('homework.uploading') : t('homework.submit')}
             </Button>
           </div>
         </div>
@@ -304,7 +307,7 @@ function StudentHWCard({ hw, onSubmitted }) {
       <Modal open={quizOpen} onClose={() => setQuizOpen(false)} maxWidth="max-w-2xl">
         <div className="p-6">
           <h3 className="text-lg font-semibold text-slate-900 mb-1">{hw.quiz?.topic}</h3>
-          <p className="text-sm text-slate-400 mb-4">Ответь и нажми «Проверить» — результат уйдёт учителю и в твою историю тестов.</p>
+          <p className="text-sm text-slate-400 mb-4">{t('homework.quizModalHint')}</p>
           {hw.quiz && <QuizRunner quiz={hw.quiz} onCheck={takeAttempt} />}
         </div>
       </Modal>
@@ -313,6 +316,7 @@ function StudentHWCard({ hw, onSubmitted }) {
 }
 
 function StatusBadge({ submission, isOverdue }) {
+  const { t } = useTranslation('teacher')
   if (!submission) {
     return (
       <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full border ${
@@ -320,26 +324,28 @@ function StatusBadge({ submission, isOverdue }) {
           ? 'bg-red-50 text-red-600 border-red-200'
           : 'bg-slate-50 text-slate-400 border-slate-200'
       }`}>
-        {isOverdue ? 'Просрочено' : 'Не сдано'}
+        {isOverdue ? t('homework.overdueBadge') : t('homework.notSubmitted')}
       </span>
     )
   }
   if (submission.status === 'graded') {
     return (
       <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-        ✓ Оценено: {submission.grade}/100
+        ✓ {t('homework.gradedBadge', { grade: submission.grade })}
       </span>
     )
   }
   return (
     <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-      ✓ На проверке
+      ✓ {t('homework.reviewing')}
     </span>
   )
 }
 
 /* ── Создание ДЗ (только teacher) ───────────────────────────── */
 function CreateHWModal({ open, onClose, onCreated }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const { data: lessons }    = useFetch(getLessons, [])
   const { data: indLessons } = useFetch(getIndividualLessons, [])
   const { data: quizzes }    = useFetch(getQuizzes, [])
@@ -354,10 +360,10 @@ function CreateHWModal({ open, onClose, onCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!form.description.trim()) return setError('Введите описание')
+    if (!form.description.trim()) return setError(t('homework.validDesc'))
     const isGroup = form.lessonType === 'group'
-    if (isGroup && !form.lessonId)               return setError('Выберите групповой урок')
-    if (!isGroup && !form.individualLessonId)     return setError('Выберите индивидуальный урок')
+    if (isGroup && !form.lessonId)               return setError(t('homework.chooseGroupLesson'))
+    if (!isGroup && !form.individualLessonId)     return setError(t('homework.chooseLesson'))
     setSaving(true); setError('')
     try {
       await createHomework({
@@ -370,7 +376,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
       onCreated(); onClose()
       setForm({ description: '', deadline: '', lessonType: 'group', lessonId: '', individualLessonId: '', quizId: '' })
     } catch (e) {
-      setError(e.response?.data?.error || 'Ошибка создания')
+      setError(e.response?.data?.error || t('homework.createError'))
     } finally {
       setSaving(false)
     }
@@ -379,15 +385,15 @@ function CreateHWModal({ open, onClose, onCreated }) {
   return (
     <Modal open={open} onClose={onClose} maxWidth="max-w-md">
       <div className="p-6 sm:p-7">
-        <h2 className="text-xl font-semibold text-slate-900 mb-5">Новое ДЗ</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mb-5">{t('homework.newTitle')}</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="text-xs text-slate-400 block mb-1">Описание задания</label>
+            <label className="text-xs text-slate-400 block mb-1">{t('homework.descLabel')}</label>
             <textarea
               value={form.description}
               onChange={e => set('description', e.target.value)}
               rows={3}
-              placeholder="Что нужно сделать..."
+              placeholder={t('homework.descPlaceholder')}
               className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none"
             />
           </div>
@@ -402,39 +408,39 @@ function CreateHWModal({ open, onClose, onCreated }) {
                     ? 'bg-blue-50 border-blue-200 text-blue-700'
                     : 'bg-white border-slate-200 text-slate-400 hover:text-slate-900'
                 }`}>
-                {t === 'group' ? 'Групповой урок' : 'Инд. урок'}
+                {t === 'group' ? t('homework.typeGroup') : t('homework.typeIndividual')}
               </button>
             ))}
           </div>
 
           {form.lessonType === 'group' ? (
             <div>
-              <label className="text-xs text-slate-400 block mb-1">Урок</label>
+              <label className="text-xs text-slate-400 block mb-1">{t('homework.lessonLabel')}</label>
               <select
                 value={form.lessonId}
                 onChange={e => set('lessonId', e.target.value)}
                 className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
               >
-                <option value="">Выберите групповой урок</option>
+                <option value="">{t('homework.chooseGroupLesson')}</option>
                 {(lessons || []).map(l => (
                   <option key={l.id} value={l.id}>
-                    {formatDate(l.date)} {l.time} — {l.topic || l.Group?.name || 'Урок'}
+                    {formatDate(l.date)} {l.time} — {l.topic || l.Group?.name || t('homework.lessonFallback')}
                   </option>
                 ))}
               </select>
             </div>
           ) : (
             <div>
-              <label className="text-xs text-slate-400 block mb-1">Индивидуальный урок</label>
+              <label className="text-xs text-slate-400 block mb-1">{t('homework.indLessonLabel')}</label>
               <select
                 value={form.individualLessonId}
                 onChange={e => set('individualLessonId', e.target.value)}
                 className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
               >
-                <option value="">Выберите урок</option>
+                <option value="">{t('homework.chooseLesson')}</option>
                 {(indLessons || []).map(l => (
                   <option key={l.id} value={l.id}>
-                    {formatDate(l.date)} {l.time} — {l.topic || l.student?.name || 'Урок'}
+                    {formatDate(l.date)} {l.time} — {l.topic || l.student?.name || t('homework.lessonFallback')}
                   </option>
                 ))}
               </select>
@@ -442,30 +448,30 @@ function CreateHWModal({ open, onClose, onCreated }) {
           )}
 
           <div>
-            <label className="text-xs text-slate-400 block mb-1">Дедлайн (необязательно)</label>
+            <label className="text-xs text-slate-400 block mb-1">{t('homework.deadlineLabel')}</label>
             <input type="date" value={form.deadline} onChange={e => set('deadline', e.target.value)}
               className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
           </div>
 
           {/* Прикрепить тест (необязательно) */}
           <div>
-            <label className="text-xs text-slate-400 block mb-1">Прикрепить тест (необязательно)</label>
+            <label className="text-xs text-slate-400 block mb-1">{t('homework.attachQuiz')}</label>
             <select value={form.quizId} onChange={e => set('quizId', e.target.value)}
               className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500">
-              <option value="">Без теста</option>
+              <option value="">{t('homework.noQuiz')}</option>
               {libraryQuizzes.map(q => (
-                <option key={q.id} value={q.id}>{q.topic} · {q.count} вопр.</option>
+                <option key={q.id} value={q.id}>{q.topic} · {t('homework.questionsShort', { n: q.count })}</option>
               ))}
             </select>
             {!libraryQuizzes.length && (
-              <p className="text-[11px] text-slate-400 mt-1">Сохранённых тестов нет — создай в «AI-тесты» и нажми «Сохранить тест».</p>
+              <p className="text-[11px] text-slate-400 mt-1">{t('homework.noLibraryQuizzes')}</p>
             )}
           </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="flex gap-2 pt-1">
-            <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>Отмена</Button>
-            <Button type="submit" loading={saving} className="flex-1">Создать</Button>
+            <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>{tc('cancel')}</Button>
+            <Button type="submit" loading={saving} className="flex-1">{tc('create')}</Button>
           </div>
         </form>
       </div>
@@ -475,6 +481,8 @@ function CreateHWModal({ open, onClose, onCreated }) {
 
 /* ── Результаты прикреплённого теста (учитель видит ответы учеников) ── */
 function QuizAttempts({ hw }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const { data: attempts, loading } = useFetch(
     useCallback(() => getHomeworkQuizAttempts(hw.id), [hw.id]),
     [hw.id],
@@ -483,11 +491,11 @@ function QuizAttempts({ hw }) {
 
   return (
     <div className="mb-6 rounded-2xl border border-blue-100 bg-blue-50/40 p-4">
-      <div className="text-sm font-semibold text-slate-900 mb-2">🧪 Результаты теста «{hw.quiz.topic}»</div>
+      <div className="text-sm font-semibold text-slate-900 mb-2">🧪 {t('homework.resultsTitle', { topic: hw.quiz.topic })}</div>
       {loading ? (
-        <div className="text-sm text-slate-400">Загрузка…</div>
+        <div className="text-sm text-slate-400">{tc('loading')}</div>
       ) : !attempts?.length ? (
-        <div className="text-sm text-slate-400">Ученики ещё не проходили тест.</div>
+        <div className="text-sm text-slate-400">{t('homework.noAttempts')}</div>
       ) : (
         <div className="space-y-2">
           {attempts.map((a) => (
@@ -500,7 +508,7 @@ function QuizAttempts({ hw }) {
                     a.score === a.total ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700'
                   }`}>{a.score}/{a.total}</span>
                 )}
-                <span className="text-xs text-blue-600 shrink-0">{openId === a.id ? 'Скрыть' : 'Ответы'}</span>
+                <span className="text-xs text-blue-600 shrink-0">{openId === a.id ? t('homework.hide') : t('homework.answers')}</span>
               </button>
               {openId === a.id && (
                 <div className="px-3.5 pb-3.5 border-t border-slate-100 pt-3">
@@ -517,6 +525,8 @@ function QuizAttempts({ hw }) {
 
 /* ── Просмотр сдач (только teacher) ─────────────────────────── */
 function SubmissionsModal({ hw, onClose }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const { data: subs, loading, reload } = useFetch(
     useCallback(() => hw ? getSubmissions(hw.id) : Promise.resolve([]), [hw?.id]),
     [hw?.id]
@@ -540,14 +550,14 @@ function SubmissionsModal({ hw, onClose }) {
   return (
     <Modal open={!!hw} onClose={onClose} maxWidth="max-w-lg">
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1">Сдачи</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-1">{t('homework.subsTitle')}</h3>
         {hw && <p className="text-sm text-slate-400 mb-5 truncate">{hw.description}</p>}
 
         {/* Результаты прикреплённого теста (с ответами учеников) */}
         {hw?.quiz && <QuizAttempts hw={hw} />}
 
         {loading ? <PageSpinner /> : !subs?.length ? (
-          <EmptyState emoji="📭" title="Сдач пока нет" />
+          <EmptyState emoji="📭" title={t('homework.noSubs')} />
         ) : (
           <div className="space-y-3">
             {subs.map(s => {
@@ -567,35 +577,35 @@ function SubmissionsModal({ hw, onClose }) {
                               setGrades(g => ({ ...g, [s.id]: String(s.grade) })) // префилл текущей
                             }}
                             className="text-xs text-slate-400 hover:text-slate-900 underline cursor-pointer">
-                            Изменить
+                            {t('homework.change')}
                           </button>
                         )}
                       </div>
                     ) : (
-                      <span className="text-xs text-slate-500 px-2 py-0.5 rounded-full bg-slate-50">Не проверено</span>
+                      <span className="text-xs text-slate-500 px-2 py-0.5 rounded-full bg-slate-50">{t('homework.notChecked')}</span>
                     )}
                   </div>
                   {s.comment && <p className="text-xs text-slate-400 mb-2">{s.comment}</p>}
                   <a href={s.fileUrl} target="_blank" rel="noopener noreferrer"
                     className="text-xs text-blue-600 hover:text-blue-700 underline break-all">
-                    Открыть файл
+                    {t('homework.openFile')}
                   </a>
                   {isEditing && (
                     <div className="flex items-center gap-2 mt-3">
                       <input
-                        type="number" min="0" max="100" placeholder="Оценка"
+                        type="number" min="0" max="100" placeholder={t('homework.gradePlaceholder')}
                         value={grades[s.id] || ''}
                         onChange={e => setGrades(g => ({ ...g, [s.id]: e.target.value }))}
                         className="w-28 h-8 px-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
                       />
                       <Button size="sm" loading={saving === s.id} onClick={() => handleGrade(s.id)}>
-                        {isGraded ? 'Сохранить' : 'Поставить'}
+                        {isGraded ? tc('save') : t('homework.setGrade')}
                       </Button>
                       {isGraded && (
                         <button
                           onClick={() => setEditing(e => ({ ...e, [s.id]: false }))}
                           className="text-xs text-slate-400 hover:text-slate-900 cursor-pointer">
-                          Отмена
+                          {tc('cancel')}
                         </button>
                       )}
                     </div>

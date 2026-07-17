@@ -281,7 +281,7 @@ export default function HelpPage() {
 
   return (
     <div className="p-5 sm:p-8">
-      <div className="mb-6 max-w-4xl flex items-start justify-between gap-4">
+      <div className="mb-6 max-w-4xl mx-auto flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Помощь</h1>
           <p className="text-sm text-slate-500 mt-0.5">Как что делать в кабинете — коротко, с подсказками прямо на элементах.</p>
@@ -295,7 +295,7 @@ export default function HelpPage() {
       </div>
 
       {/* быстрые ссылки по разделам */}
-      <div className="flex flex-wrap gap-2 mb-8 max-w-4xl">
+      <div className="flex flex-wrap gap-2 mb-8 max-w-4xl mx-auto">
         {sections.map(s => (
           <button key={s.id} onClick={() => navigate(`/help#${s.id}`)}
             className="text-xs px-3 h-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer">
@@ -304,7 +304,7 @@ export default function HelpPage() {
         ))}
       </div>
 
-      <div className="max-w-4xl space-y-12">
+      <div className="max-w-4xl mx-auto space-y-12">
         {sections.map(s => (
           <section key={s.id} id={s.id} className="scroll-mt-24">
             <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
@@ -325,7 +325,7 @@ export default function HelpPage() {
         ))}
       </div>
 
-      <div className="max-w-4xl mt-12 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-500">
+      <div className="max-w-4xl mx-auto mt-12 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-500">
         Не нашёл ответа? Пиши — добавим. А внутренние подсказки будем расширять: планируем интерактивный тур прямо по интерфейсу.
       </div>
     </div>

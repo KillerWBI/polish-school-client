@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import useFetch from '../../hooks/useFetch'
 import useAuth from '../../hooks/useAuth'
 import { getGroups, getGroup } from '../../api/groups.api'
@@ -20,26 +21,28 @@ import EmptyState from '../../components/ui/EmptyState'
 
 /* ─── Статусы ──────────────────────────────────────────────── */
 const STATUS_BADGE = {
-  confirmed:       { label: 'Подтверждено',     cls: 'bg-green-500/15 text-emerald-600' },
-  pending_student: { label: 'Ждёт подтверждения', cls: 'bg-yellow-500/15 text-amber-600' },
-  disputed:        { label: 'Спор',             cls: 'bg-red-500/15 text-red-600' },
+  confirmed:       { key: 'attendance.statusConfirmed', cls: 'bg-green-500/15 text-emerald-600' },
+  pending_student: { key: 'attendance.statusPending',   cls: 'bg-yellow-500/15 text-amber-600' },
+  disputed:        { key: 'attendance.statusDisputed',  cls: 'bg-red-500/15 text-red-600' },
 }
 
 // Бейдж реального статуса записи (НЕ из галочки учителя, а из сохранённой записи).
 // confirmed показывает фактический present (был/не был); остальное — статус подтверждения.
 function ConfirmBadge({ rec }) {
+  const { t } = useTranslation('teacher')
   if (!rec) return null
   if (rec.status === 'confirmed') {
     return rec.present
-      ? <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/15 text-emerald-600 shrink-0">✓ Был · подтв.</span>
-      : <span className="text-xs px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-400 shrink-0">Не был · подтв.</span>
+      ? <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/15 text-emerald-600 shrink-0">✓ {t('attendance.wasConfirmed')}</span>
+      : <span className="text-xs px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-400 shrink-0">{t('attendance.wasNotConfirmed')}</span>
   }
   const b = STATUS_BADGE[rec.status]
-  return b ? <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${b.cls}`}>{b.label}</span> : null
+  return b ? <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${b.cls}`}>{t(b.key)}</span> : null
 }
 
 /* ─── Корневой компонент ────────────────────────────────────── */
 export default function AttendancePage() {
+  const { t } = useTranslation('teacher')
   const { isTeacher } = useAuth()
   const [mode, setMode] = useState('journal') // 'journal' | 'pending' | 'disputed'
 
@@ -55,11 +58,9 @@ export default function AttendancePage() {
     <div className="p-5 sm:p-8">
       {/* Заголовок */}
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">Посещаемость</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">{t('attendance.title')}</h1>
         <p className="text-sm text-slate-400 mt-0.5">
-          {isTeacher
-            ? 'Отметьте присутствие — студент подтвердит свою сторону'
-            : 'Ваши посещения и запросы на подтверждение'}
+          {isTeacher ? t('attendance.subtitleTeacher') : t('attendance.subtitleStudent')}
         </p>
       </div>
 
@@ -100,19 +101,20 @@ export default function AttendancePage() {
 
 /* ─── Верхние вкладки режима ────────────────────────────────── */
 function ModeBar({ mode, onChange, pendingCount, disputedCount, isTeacher }) {
+  const { t } = useTranslation('teacher')
   const tabs = [
     {
       key: 'journal',
-      label: isTeacher ? 'Журнал' : 'История',
+      label: isTeacher ? t('attendance.tabJournal') : t('attendance.tabHistory'),
     },
     {
       key: 'pending',
-      label: isTeacher ? 'Ожидают студентов' : 'Подтвердить',
+      label: isTeacher ? t('attendance.tabPendingTeacher') : t('attendance.tabPendingStudent'),
       count: pendingCount,
     },
     {
       key: 'disputed',
-      label: 'Спорные',
+      label: t('attendance.tabDisputed'),
       count: disputedCount,
     },
   ]
@@ -144,16 +146,18 @@ function ModeBar({ mode, onChange, pendingCount, disputedCount, isTeacher }) {
 
 /* ─── Вкладка: Ожидают подтверждения ───────────────────────── */
 function PendingView({ items, loading, isTeacher, reload }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [busy, setBusy] = useState({})
 
   const handleStudentConfirm = async (id, present) => {
     setBusy(b => ({ ...b, [id]: true }))
     try {
       await confirmAttendance(id, present)
-      toast.success(present ? 'Посещение подтверждено' : 'Отмечено как отсутствие')
+      toast.success(present ? t('attendance.confirmedToast') : t('attendance.absentToast'))
       reload()
     } catch (e) {
-      toast.error(errMsg(e, 'Ошибка'))
+      toast.error(errMsg(e, tc('error')))
     } finally {
       setBusy(b => ({ ...b, [id]: false }))
     }
@@ -163,19 +167,17 @@ function PendingView({ items, loading, isTeacher, reload }) {
   if (!items.length) return (
     <EmptyState
       emoji="✅"
-      title="Всё подтверждено"
-      text={isTeacher
-        ? 'Нет записей, ожидающих подтверждения от студентов.'
-        : 'Нет уроков, требующих вашего подтверждения.'}
+      title={t('attendance.allConfirmedTitle')}
+      text={isTeacher ? t('attendance.allConfirmedTeacher') : t('attendance.allConfirmedStudent')}
     />
   )
 
   return (
-    <div className="space-y-3 max-w-2xl">
+    <div className="grid gap-3 sm:grid-cols-2 items-start">
       <p className="text-sm text-slate-400 mb-4">
         {isTeacher
-          ? `${items.length} урок(ов) ждут подтверждения от студентов. Через 3 дня подтвердятся автоматически.`
-          : `Подтвердите или оспорьте своё присутствие на ${items.length} уроке(ах).`}
+          ? t('attendance.pendingHintTeacher', { n: items.length })
+          : t('attendance.pendingHintStudent', { n: items.length })}
       </p>
       {items.map(r => {
         const lesson = r.Lesson || r.IndividualLesson
@@ -186,7 +188,7 @@ function PendingView({ items, loading, isTeacher, reload }) {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="text-sm font-medium text-slate-900">
-                  {lesson?.topic || (r.lessonId ? 'Групповой урок' : 'Инд. урок')}
+                  {lesson?.topic || (r.lessonId ? t('attendance.groupLesson') : t('attendance.indLesson'))}
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5">
                   {lesson?.date ? formatDate(lesson.date) : '—'}
@@ -194,10 +196,10 @@ function PendingView({ items, loading, isTeacher, reload }) {
                   {r.Lesson?.Group?.name ? ` · ${r.Lesson.Group.name}` : ''}
                 </div>
                 {isTeacher && r.student && (
-                  <div className="text-xs text-slate-500 mt-1">Студент: {r.student.name}</div>
+                  <div className="text-xs text-slate-500 mt-1">{t('attendance.studentLabel')} {r.student.name}</div>
                 )}
                 <div className="text-xs text-amber-600/80 mt-1">
-                  Учитель отметил: {r.teacherMarked ? '✓ Присутствовал' : '✗ Отсутствовал'}
+                  {t('attendance.teacherMarkedLabel')} {r.teacherMarked ? `✓ ${t('attendance.wasThere')}` : `✗ ${t('attendance.wasNotThere')}`}
                 </div>
               </div>
 
@@ -209,14 +211,14 @@ function PendingView({ items, loading, isTeacher, reload }) {
                     onClick={() => handleStudentConfirm(r.id, true)}
                     className="px-3 py-1.5 rounded-lg bg-green-600/20 text-emerald-600 text-xs font-medium
                                hover:bg-green-600/30 transition-colors cursor-pointer disabled:opacity-50">
-                    Был
+                    {t('attendance.wasShort')}
                   </button>
                   <button
                     disabled={busy[r.id]}
                     onClick={() => handleStudentConfirm(r.id, false)}
                     className="px-3 py-1.5 rounded-lg bg-red-600/20 text-red-600 text-xs font-medium
                                hover:bg-red-600/30 transition-colors cursor-pointer disabled:opacity-50">
-                    Не был
+                    {t('attendance.wasNotShort')}
                   </button>
                 </div>
               )}
@@ -224,7 +226,7 @@ function PendingView({ items, loading, isTeacher, reload }) {
               {/* Учитель — только инфо, кнопок нет (студент должен ответить) */}
               {isTeacher && (
                 <span className="text-xs text-amber-600/70 shrink-0 mt-1">
-                  Ждём ответа
+                  {t('attendance.waitingReply')}
                 </span>
               )}
             </div>
@@ -237,16 +239,18 @@ function PendingView({ items, loading, isTeacher, reload }) {
 
 /* ─── Вкладка: Спорные ──────────────────────────────────────── */
 function DisputedView({ items, loading, isTeacher, reload }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [busy, setBusy] = useState({})
 
   const handleResolve = async (id, accept) => {
     setBusy(b => ({ ...b, [id]: true }))
     try {
       await resolveAttendanceDispute(id, accept)
-      toast.success(accept ? 'Принята версия студента' : 'Подтверждена версия учителя')
+      toast.success(accept ? t('attendance.acceptedStudent') : t('attendance.confirmedTeacher'))
       reload()
     } catch (e) {
-      toast.error(errMsg(e, 'Ошибка'))
+      toast.error(errMsg(e, tc('error')))
     } finally {
       setBusy(b => ({ ...b, [id]: false }))
     }
@@ -256,10 +260,10 @@ function DisputedView({ items, loading, isTeacher, reload }) {
     setBusy(b => ({ ...b, [id]: true }))
     try {
       await confirmAttendance(id, present)
-      toast.success('Ответ обновлён')
+      toast.success(t('attendance.answerUpdated'))
       reload()
     } catch (e) {
-      toast.error(errMsg(e, 'Ошибка'))
+      toast.error(errMsg(e, tc('error')))
     } finally {
       setBusy(b => ({ ...b, [id]: false }))
     }
@@ -269,17 +273,17 @@ function DisputedView({ items, loading, isTeacher, reload }) {
   if (!items.length) return (
     <EmptyState
       emoji="🤝"
-      title="Споров нет"
-      text="Все посещения согласованы между учителем и студентами."
+      title={t('attendance.noDisputesTitle')}
+      text={t('attendance.noDisputesText')}
     />
   )
 
   return (
-    <div className="space-y-3 max-w-2xl">
+    <div className="grid gap-3 sm:grid-cols-2 items-start">
       <p className="text-sm text-slate-400 mb-4">
         {isTeacher
-          ? `${items.length} спорных записей — ответы учителя и студента расходятся. Посещение не засчитывается до разрешения.`
-          : `${items.length} спорных записей — ваш ответ расходится с отметкой учителя.`}
+          ? t('attendance.disputeHintTeacher', { n: items.length })
+          : t('attendance.disputeHintStudent', { n: items.length })}
       </p>
       {items.map(r => {
         const lesson = r.Lesson || r.IndividualLesson
@@ -290,7 +294,7 @@ function DisputedView({ items, loading, isTeacher, reload }) {
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-slate-900">
-                  {lesson?.topic || (r.lessonId ? 'Групповой урок' : 'Инд. урок')}
+                  {lesson?.topic || (r.lessonId ? t('attendance.groupLesson') : t('attendance.indLesson'))}
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5">
                   {lesson?.date ? formatDate(lesson.date) : '—'}
@@ -298,7 +302,7 @@ function DisputedView({ items, loading, isTeacher, reload }) {
                   {r.Lesson?.Group?.name ? ` · ${r.Lesson.Group.name}` : ''}
                 </div>
                 {isTeacher && r.student && (
-                  <div className="text-xs text-slate-500 mt-1">Студент: {r.student.name}</div>
+                  <div className="text-xs text-slate-500 mt-1">{t('attendance.studentLabel')} {r.student.name}</div>
                 )}
 
                 {/* Кто что сказал */}
@@ -306,17 +310,17 @@ function DisputedView({ items, loading, isTeacher, reload }) {
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
                     r.teacherMarked ? 'bg-green-500/15 text-emerald-600' : 'bg-red-500/15 text-red-600'
                   }`}>
-                    Учитель: {r.teacherMarked ? 'был' : 'не был'}
+                    {t('attendance.teacherSaid')} {r.teacherMarked ? t('attendance.was') : t('attendance.wasNot')}
                   </span>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
                     r.studentMarked ? 'bg-green-500/15 text-emerald-600' : 'bg-red-500/15 text-red-600'
                   }`}>
-                    Студент: {r.studentMarked ? 'был' : 'не был'}
+                    {t('attendance.studentSaid')} {r.studentMarked ? t('attendance.was') : t('attendance.wasNot')}
                   </span>
                 </div>
 
                 <p className="text-xs text-red-600/70 mt-1">
-                  Посещение не засчитывается до разрешения спора
+                  {t('attendance.notCounted')}
                 </p>
               </div>
 
@@ -329,14 +333,14 @@ function DisputedView({ items, loading, isTeacher, reload }) {
                       onClick={() => handleResolve(r.id, true)}
                       className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium
                                  hover:bg-blue-100 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap">
-                      Принять студента
+                      {t('attendance.acceptStudent')}
                     </button>
                     <button
                       disabled={busy[r.id]}
                       onClick={() => handleResolve(r.id, false)}
                       className="px-3 py-1.5 rounded-lg bg-slate-50 text-slate-900 text-xs font-medium
                                  hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap">
-                      Настоять на своём
+                      {t('attendance.insist')}
                     </button>
                   </>
                 ) : (
@@ -347,14 +351,14 @@ function DisputedView({ items, loading, isTeacher, reload }) {
                       onClick={() => handleStudentUpdate(r.id, true)}
                       className="px-3 py-1.5 rounded-lg bg-green-600/20 text-emerald-600 text-xs font-medium
                                  hover:bg-green-600/30 transition-colors cursor-pointer disabled:opacity-50">
-                      Был
+                      {t('attendance.wasShort')}
                     </button>
                     <button
                       disabled={busy[r.id]}
                       onClick={() => handleStudentUpdate(r.id, false)}
                       className="px-3 py-1.5 rounded-lg bg-red-600/20 text-red-600 text-xs font-medium
                                  hover:bg-red-600/30 transition-colors cursor-pointer disabled:opacity-50">
-                      Не был
+                      {t('attendance.wasNotShort')}
                     </button>
                   </>
                 )}
@@ -369,9 +373,10 @@ function DisputedView({ items, loading, isTeacher, reload }) {
 
 /* ─── Переключатель типа урока (группа/инд.) ────────────────── */
 function LessonTypeSwitcher({ tab, onChange }) {
+  const { t } = useTranslation('teacher')
   return (
     <div className="flex gap-1 p-1 bg-slate-50 rounded-xl w-fit mb-5">
-      {[['group', 'Групповые'], ['individual', 'Индивидуальные']].map(([val, label]) => (
+      {[['group', t('attendance.typeGroup')], ['individual', t('attendance.typeIndividual')]].map(([val, label]) => (
         <button
           key={val}
           onClick={() => onChange(val)}
@@ -402,6 +407,7 @@ function TeacherView({ onSaved }) {
 
 /* ─── Журнал группы: ученики × даты уроков ─────────────────── */
 function GroupJournal({ onSaved }) {
+  const { t } = useTranslation('teacher')
   const { data: groups, loading } = useFetch(getGroups)
   const [groupId, setGroupId] = useState(null)
   const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7))
@@ -431,7 +437,7 @@ function GroupJournal({ onSaved }) {
 
   if (loading) return <SkeletonList />
   if (!groups?.length)
-    return <EmptyState emoji="👥" title="Групп нет" text="Сначала создайте группу — журнал появится здесь." />
+    return <EmptyState emoji="👥" title={t('attendance.noGroupsTitle')} text={t('attendance.noGroupsText')} />
 
   return (
     <div className="space-y-4">
@@ -448,6 +454,8 @@ function GroupJournal({ onSaved }) {
 
 /* Сама сетка: строки — ученики, колонки — уроки месяца, ячейки — отметки */
 function JournalTable({ groupId, month, onSaved }) {
+  const { t, i18n } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const { from, to } = monthBounds(month)
 
   const { data: group,   loading: gLoad } = useFetch(() => getGroup(groupId), [groupId])
@@ -517,20 +525,20 @@ function JournalTable({ groupId, month, onSaved }) {
         const recs = students.map(s => ({ studentId: s.id, present: !!effective(lid, s.id).present }))
         await saveAttendance(lid, recs)
       }
-      toast.success('Журнал сохранён — ученики получат запрос на подтверждение')
+      toast.success(t('attendance.journalSaved'))
       setEdits({})
       await reloadRecords(sorted)
       onSaved?.()
     } catch (e) {
-      toast.error(errMsg(e, 'Ошибка сохранения'))
+      toast.error(errMsg(e, t('attendance.saveError')))
     } finally { setSaving(false) }
   }
 
   if (gLoad || lLoad) return <SkeletonList />
   if (!students.length)
-    return <EmptyState emoji="👤" title="В группе нет учеников" text="Добавьте учеников в группу — они появятся строками журнала." />
+    return <EmptyState emoji="👤" title={t('attendance.noStudentsTitle')} text={t('attendance.noStudentsText')} />
   if (!sorted.length)
-    return <EmptyState emoji="📅" title="Нет уроков в этом месяце" text="Переключите месяц или создайте уроки для группы." />
+    return <EmptyState emoji="📅" title={t('attendance.noLessonsTitle')} text={t('attendance.noLessonsText')} />
 
   // Процент посещаемости ученика по подтверждённым записям месяца
   const studentPct = (sid) => {
@@ -547,11 +555,11 @@ function JournalTable({ groupId, month, onSaved }) {
       {dirtyLessons.length > 0 && (
         <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-blue-50 border border-blue-200">
           <span className="text-sm text-blue-800 flex-1">
-            Несохранённые изменения в {dirtyLessons.length} {plural(dirtyLessons.length, 'уроке', 'уроках', 'уроках')}
+            {t('attendance.unsavedChanges', { n: dirtyLessons.length })}
           </span>
           <button onClick={() => setEdits({})}
-            className="text-sm text-slate-500 hover:text-slate-900 cursor-pointer">Отменить</button>
-          <Button size="sm" onClick={handleSave} loading={saving}>Сохранить</Button>
+            className="text-sm text-slate-500 hover:text-slate-900 cursor-pointer">{tc('cancel')}</button>
+          <Button size="sm" onClick={handleSave} loading={saving}>{tc('save')}</Button>
         </div>
       )}
 
@@ -561,14 +569,14 @@ function JournalTable({ groupId, month, onSaved }) {
           <thead>
             <tr>
               <th className="sticky left-0 top-0 z-30 bg-slate-50 border-b border-r border-slate-200 px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider min-w-[180px]">
-                Ученик
+                {t('attendance.studentCol')}
               </th>
               {sorted.map(l => {
-                const h = dayHeader(l.date)
+                const h = dayHeader(l.date, i18n.language)
                 return (
                   <th key={l.id}
                     onClick={() => toggleColumn(l.id)}
-                    title={`${l.topic || 'Урок'} · ${formatDate(l.date)}${l.time ? ` · ${l.time}` : ''}\nКлик — отметить всех присутствующими`}
+                    title={`${l.topic || t('attendance.lessonFallback')} · ${formatDate(l.date)}${l.time ? ` · ${l.time}` : ''}\n${t('attendance.markAllTooltip')}`}
                     className="sticky top-0 z-20 bg-slate-50 border-b border-r border-slate-100 px-0 py-1.5 cursor-pointer hover:bg-slate-100 transition-colors select-none">
                     <div className="w-11 flex flex-col items-center leading-tight">
                       <span className="text-[10px] text-slate-400 uppercase">{h.wd}</span>
@@ -595,7 +603,7 @@ function JournalTable({ groupId, month, onSaved }) {
                       </div>
                       <div className="min-w-0">
                         <div className="text-sm font-medium text-slate-900 truncate">{s.name}</div>
-                        {s.isPlaceholder && <div className="text-[10px] text-amber-600">заглушка</div>}
+                        {s.isPlaceholder && <div className="text-[10px] text-amber-600">{t('attendance.placeholder')}</div>}
                       </div>
                     </div>
                   </td>
@@ -629,10 +637,11 @@ function JournalTable({ groupId, month, onSaved }) {
    confirmed → зелёный(был)/красный(не был); pending_student/disputed → жёлтый;
    спор дополнительно с красной рамкой; несохранённое — синяя рамка. */
 function JournalCell({ marked, present, status, dirty, onClick }) {
+  const { t } = useTranslation('teacher')
   let cls = 'text-slate-200 hover:bg-blue-50'
   let content = '·'
   if (marked) {
-    content = present ? '✓' : 'Н'
+    content = present ? '✓' : t('attendance.cellAbsent')
     if (dirty) {
       cls = present ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
     } else if (status === 'pending_student' || status === 'disputed') {
@@ -655,6 +664,7 @@ function JournalCell({ marked, present, status, dirty, onClick }) {
 }
 
 function JournalLegend({ loading }) {
+  const { t } = useTranslation('teacher')
   const Item = ({ box, label }) => (
     <span className="inline-flex items-center gap-1.5">
       <span className={`w-4 h-4 rounded ${box}`} />
@@ -663,19 +673,20 @@ function JournalLegend({ loading }) {
   )
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-500 px-1">
-      <Item box="bg-emerald-50 border border-emerald-200" label="был (подтв.)" />
-      <Item box="bg-red-50 border border-red-200" label="не был (подтв.)" />
-      <Item box="bg-amber-50 border border-amber-200" label="ждёт подтверждения" />
-      <Item box="bg-amber-50 ring-1 ring-red-400" label="спор" />
-      <Item box="ring-2 ring-blue-500" label="не сохранено" />
-      <span className="text-slate-400">· клик по дате — отметить всех присутствующими</span>
-      {loading && <span className="text-blue-600">обновление…</span>}
+      <Item box="bg-emerald-50 border border-emerald-200" label={t('attendance.legWasConfirmed')} />
+      <Item box="bg-red-50 border border-red-200" label={t('attendance.legNotConfirmed')} />
+      <Item box="bg-amber-50 border border-amber-200" label={t('attendance.legPending')} />
+      <Item box="bg-amber-50 ring-1 ring-red-400" label={t('attendance.legDispute')} />
+      <Item box="ring-2 ring-blue-500" label={t('attendance.legUnsaved')} />
+      <span className="text-slate-400">{t('attendance.legClickDate')}</span>
+      {loading && <span className="text-blue-600">{t('attendance.legUpdating')}</span>}
     </div>
   )
 }
 
 /* ─── Журнал индивидуальных уроков (список по датам) ────────── */
 function IndividualJournal({ onSaved }) {
+  const { t, i18n } = useTranslation('teacher')
   const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7))
   const [period, setPeriod] = useState('all')
   const { from, to } = monthBounds(month)
@@ -701,11 +712,11 @@ function IndividualJournal({ onSaved }) {
     setBusy(b => ({ ...b, [l.id]: true }))
     try {
       await saveAttendance(null, [{ studentId: l.studentId, present }], l.id)
-      toast.success(present ? 'Отмечено «был» — ждём подтверждения ученика' : 'Отмечено «не был»')
+      toast.success(present ? t('attendance.markedPresent') : t('attendance.markedAbsent'))
       await reload(lessons)
       onSaved?.()
     } catch (e) {
-      toast.error(errMsg(e, 'Ошибка сохранения'))
+      toast.error(errMsg(e, t('attendance.saveError')))
     } finally { setBusy(b => ({ ...b, [l.id]: false })) }
   }
 
@@ -724,7 +735,7 @@ function IndividualJournal({ onSaved }) {
         <MonthNav month={month} onChange={setMonth} />
       </div>
       {loading ? <SkeletonList /> : !filtered.length ? (
-        <EmptyState emoji="👤" title="Нет индивидуальных уроков" text="В этом месяце уроков нет — переключите месяц или измените фильтр." />
+        <EmptyState emoji="👤" title={t('attendance.noIndLessonsTitle')} text={t('attendance.noIndLessonsText')} />
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
           {filtered.map(l => {
@@ -734,13 +745,13 @@ function IndividualJournal({ onSaved }) {
             return (
               <div key={l.id} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50/60 transition-colors">
                 <div className="w-11 text-center shrink-0">
-                  <div className="text-sm font-semibold text-slate-700">{dayHeader(l.date).day}.{dayHeader(l.date).mon}</div>
-                  <div className="text-[10px] text-slate-400 uppercase">{dayHeader(l.date).wd}</div>
+                  <div className="text-sm font-semibold text-slate-700">{dayHeader(l.date, i18n.language).day}.{dayHeader(l.date, i18n.language).mon}</div>
+                  <div className="text-[10px] text-slate-400 uppercase">{dayHeader(l.date, i18n.language).wd}</div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-slate-900 truncate">{l.student?.name || 'Ученик'}</div>
+                  <div className="text-sm font-medium text-slate-900 truncate">{l.student?.name || t('attendance.studentFallback')}</div>
                   <div className="text-xs text-slate-400 truncate">
-                    {l.topic || 'Без темы'}{l.time ? ` · ${l.time}` : ''}
+                    {l.topic || t('attendance.noTopic')}{l.time ? ` · ${l.time}` : ''}
                   </div>
                 </div>
                 {marked && <ConfirmBadge rec={rec} />}
@@ -750,7 +761,7 @@ function IndividualJournal({ onSaved }) {
                       present === true ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}>✓</button>
                   <button disabled={busy[l.id]} onClick={() => mark(l, false)}
                     className={`h-8 w-9 rounded-lg text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 ${
-                      present === false ? 'bg-red-600 text-white' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}>Н</button>
+                      present === false ? 'bg-red-600 text-white' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}>{t('attendance.cellAbsent')}</button>
                 </div>
               </div>
             )
@@ -779,6 +790,7 @@ function GroupPills({ groups, value, onChange }) {
 }
 
 function MonthNav({ month, onChange }) {
+  const { i18n } = useTranslation('teacher')
   const Arrow = ({ dir }) => (
     <button onClick={() => onChange(shiftMonth(month, dir))}
       className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 cursor-pointer transition-colors">
@@ -790,7 +802,7 @@ function MonthNav({ month, onChange }) {
   return (
     <div className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1">
       <Arrow dir={-1} />
-      <span className="px-2 text-sm font-medium text-slate-700 capitalize min-w-[128px] text-center">{monthLabel(month)}</span>
+      <span className="px-2 text-sm font-medium text-slate-700 capitalize min-w-[128px] text-center">{monthLabel(month, i18n.language)}</span>
       <Arrow dir={1} />
     </div>
   )
@@ -805,16 +817,16 @@ function shiftMonth(ym, delta) {
   const [y, m] = ym.split('-').map(Number)
   return new Date(Date.UTC(y, m - 1 + delta, 1)).toISOString().slice(0, 7)
 }
-function monthLabel(ym) {
+function monthLabel(ym, lng = 'ru') {
   const [y, m] = ym.split('-').map(Number)
-  return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })
+  return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString(lng, { month: 'long', year: 'numeric' })
 }
-function dayHeader(dateStr) {
+function dayHeader(dateStr, lng = 'ru') {
   const d = new Date(`${dateStr}T00:00:00`)
   return {
     day: String(d.getDate()).padStart(2, '0'),
     mon: String(d.getMonth() + 1).padStart(2, '0'),
-    wd:  d.toLocaleDateString('ru-RU', { weekday: 'short' }),
+    wd:  d.toLocaleDateString(lng, { weekday: 'short' }),
   }
 }
 // Месяц последней отметки посещаемости (по дате урока). null — если отметок нет.
@@ -824,12 +836,6 @@ function bestMonth(records) {
     .filter(Boolean)
     .sort()
   return dates.length ? dates[dates.length - 1].slice(0, 7) : null
-}
-function plural(n, one, few, many) {
-  const m10 = n % 10, m100 = n % 100
-  if (m10 === 1 && m100 !== 11) return one
-  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few
-  return many
 }
 
 /* ─── Фильтр по периоду (сегодня / прошедшие / предстоящие) ─── */
@@ -843,11 +849,13 @@ function applyPeriod(items, getDate, period) {
 }
 
 function PeriodFilter({ value, onChange }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const opts = [
-    { key: 'all',      label: 'Все' },
-    { key: 'today',    label: 'Сегодня' },
-    { key: 'past',     label: 'Прошедшие' },
-    { key: 'upcoming', label: 'Предстоящие' },
+    { key: 'all',      label: tc('all') },
+    { key: 'today',    label: t('attendance.periodToday') },
+    { key: 'past',     label: t('attendance.periodPast') },
+    { key: 'upcoming', label: t('attendance.periodUpcoming') },
   ]
   return (
     <div className="flex gap-1 p-1 bg-slate-50 rounded-xl w-fit">
@@ -867,6 +875,8 @@ function PeriodFilter({ value, onChange }) {
 
 /* ─── Студент — история ─────────────────────────────────────── */
 function StudentView({ onDisputed }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
   const [tab,        setTab]        = useState('group')
   const [expandedId, setExpandedId] = useState(null)
   const [busy,       setBusy]       = useState({})
@@ -881,11 +891,11 @@ function StudentView({ onDisputed }) {
     setBusy(b => ({ ...b, [id]: true }))
     try {
       await confirmAttendance(id, !currentPresent)
-      toast.success('Отправлено в спор — учитель рассмотрит во вкладке «Спорные»')
+      toast.success(t('attendance.disputeSent'))
       reload()
       onDisputed?.()
     } catch (e) {
-      toast.error(errMsg(e, 'Ошибка'))
+      toast.error(errMsg(e, tc('error')))
     } finally {
       setBusy(b => ({ ...b, [id]: false }))
     }
@@ -915,9 +925,9 @@ function StudentView({ onDisputed }) {
   return (
     <div>
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <Stat label="Всего уроков" value={total} />
-        <Stat label="Посещено"     value={attended} color="text-emerald-600" />
-        <Stat label="Процент"      value={`${percent}%`} color="text-blue-600" />
+        <Stat label={t('attendance.statTotal')} value={total} />
+        <Stat label={t('attendance.statAttended')} value={attended} color="text-emerald-600" />
+        <Stat label={t('attendance.statPercent')} value={`${percent}%`} color="text-blue-600" />
       </div>
 
       <LessonTypeSwitcher tab={tab} onChange={(t) => { setTab(t); setExpandedId(null); setPeriod('all') }} />
@@ -928,8 +938,8 @@ function StudentView({ onDisputed }) {
       {attLoading ? <SkeletonList /> : !records.length ? (
         <EmptyState
           emoji="📋"
-          title="Записей нет"
-          text="Здесь появятся подтверждённые уроки."
+          title={t('attendance.noRecordsTitle')}
+          text={t('attendance.noRecordsText')}
         />
       ) : (
         <div className="space-y-2">
@@ -953,7 +963,7 @@ function StudentView({ onDisputed }) {
                   }`} />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-slate-900">
-                      {lesson?.topic || (r.lessonId ? 'Групповой урок' : 'Инд. урок')}
+                      {lesson?.topic || (r.lessonId ? t('attendance.groupLesson') : t('attendance.indLesson'))}
                     </div>
                     <div className="text-xs text-slate-400 mt-0.5">
                       {lesson?.date ? formatDate(lesson.date) : '—'}
@@ -964,12 +974,12 @@ function StudentView({ onDisputed }) {
                   <div className="flex items-center gap-2 shrink-0">
                     {lessonHw.length > 0 && (
                       <span className="text-xs bg-blue-600/20 text-blue-600 px-2 py-0.5 rounded-full">
-                        ДЗ {lessonHw.length}
+                        {t('attendance.hwBadge', { n: lessonHw.length })}
                       </span>
                     )}
                     {r.present
-                      ? <span className="text-xs bg-green-500/15 text-emerald-600 px-2.5 py-1 rounded-full">Присутствовал</span>
-                      : <span className="text-xs bg-red-500/15 text-red-600 px-2.5 py-1 rounded-full">Отсутствовал</span>
+                      ? <span className="text-xs bg-green-500/15 text-emerald-600 px-2.5 py-1 rounded-full">{t('attendance.wasThere')}</span>
+                      : <span className="text-xs bg-red-500/15 text-red-600 px-2.5 py-1 rounded-full">{t('attendance.wasNotThere')}</span>
                     }
                     <svg className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
                       fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -982,26 +992,26 @@ function StudentView({ onDisputed }) {
                   <div className="px-4 pb-4 border-t border-slate-200">
                     <div className="pt-3 flex items-center justify-between gap-3">
                       <span className="text-xs text-slate-400">
-                        Ваш ответ: {r.present ? 'был' : 'не был'}
+                        {t('attendance.yourAnswer')} {r.present ? t('attendance.was') : t('attendance.wasNot')}
                       </span>
                       <button
                         disabled={busy[r.id]}
                         onClick={() => handleDispute(r.id, r.present)}
                         className="text-xs px-3 py-1.5 rounded-lg bg-red-600/15 text-red-600 hover:bg-red-600/25 transition-colors cursor-pointer disabled:opacity-50">
-                        Оспорить (считаю иначе)
+                        {t('attendance.dispute')}
                       </button>
                     </div>
                     {lessonHw.length === 0 ? (
-                      <p className="text-sm text-slate-500 pt-3">Домашних заданий к этому уроку нет.</p>
+                      <p className="text-sm text-slate-500 pt-3">{t('attendance.noHw')}</p>
                     ) : (
                       <div className="pt-3">
-                        <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Домашние задания</p>
+                        <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">{t('attendance.hwHeading')}</p>
                         <div className="space-y-2">
                           {lessonHw.map(h => (
                             <div key={h.id} className="flex items-start justify-between gap-3 text-sm">
-                              <span className="text-slate-600">{h.title || h.description || 'Задание'}</span>
+                              <span className="text-slate-600">{h.title || h.description || t('attendance.taskFallback')}</span>
                               {h.deadline && (
-                                <span className="text-xs text-slate-500 shrink-0">до {formatDate(h.deadline)}</span>
+                                <span className="text-xs text-slate-500 shrink-0">{t('attendance.hwDue')} {formatDate(h.deadline)}</span>
                               )}
                             </div>
                           ))}

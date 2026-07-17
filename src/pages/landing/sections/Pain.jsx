@@ -1,14 +1,18 @@
+import { useTranslation } from 'react-i18next'
+
 // «Знакомо?» — хаос из десяти инструментов слева, порядок справа.
 // Раскладка намеренно асимметричная и «живая» (наклонённые карточки-заметки).
-const MESS = [
-  { t: 'Excel — долги', s: 'кто сколько должен?', rot: '-6deg', cls: 'top-0 left-2' },
-  { t: 'WhatsApp', s: '«вы оплатили?»', rot: '4deg', cls: 'top-16 left-40' },
-  { t: 'Тетрадь', s: 'посещаемость ✓✗✓', rot: '-3deg', cls: 'top-44 left-8' },
-  { t: 'Стикер на мониторе', s: 'Аня — ДЗ не сдала', rot: '7deg', cls: 'top-52 left-44' },
-  { t: 'Google Календарь', s: 'Пн 10:00, Ср 18:00…', rot: '-8deg', cls: 'top-28 left-24' },
+const MESS_POS = [
+  { k: 'mess1', rot: '-6deg', cls: 'top-0 left-2' },
+  { k: 'mess2', rot: '4deg', cls: 'top-16 left-40' },
+  { k: 'mess3', rot: '-3deg', cls: 'top-44 left-8' },
+  { k: 'mess4', rot: '7deg', cls: 'top-52 left-44' },
+  { k: 'mess5', rot: '-8deg', cls: 'top-28 left-24' },
 ]
 
 export default function Pain() {
+  const { t } = useTranslation('landing')
+  const MESS = MESS_POS.map((m) => ({ ...m, t: t(`pain.${m.k}t`), s: t(`pain.${m.k}s`) }))
   return (
     <section className="bg-[#0A0A0B] text-[#EDEDED] border-t border-[#141416]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28 grid lg:grid-cols-2 gap-14 items-center">
@@ -25,23 +29,22 @@ export default function Pain() {
               <div className="text-[11px] text-[#6E6E76] mt-0.5">{m.s}</div>
             </div>
           ))}
-          <div className="absolute -bottom-2 right-2 font-mono text-[11px] text-[#5A5A60]">и всё это — про одну группу</div>
+          <div className="absolute -bottom-2 right-2 font-mono text-[11px] text-[#5A5A60]">{t('pain.note')}</div>
         </div>
 
         {/* Порядок */}
         <div className="order-1 lg:order-2">
-          <p className="mono-label mb-4">// боль</p>
+          <p className="mono-label mb-4">{t('pain.label')}</p>
           <h2 className="font-display font-semibold text-3xl sm:text-[2.7rem] leading-[1.08] tracking-tight">
-            Ученики — в тетради, долги — в Excel, «кто оплатил» — в переписке.
+            {t('pain.title')}
           </h2>
           <p className="mt-5 text-[#9A9AA1] leading-relaxed">
-            Чем больше учеников — тем больше вкладок. Забыл отметить, потерял, посчитал не то.
-            Вечер уходит не на подготовку урока, а на сведение табличек.
+            {t('pain.text')}
           </p>
           <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#1E1E22] bg-[#0D0D0F] p-4">
             <span className="font-mono text-2xl text-brand-400">→</span>
             <p className="text-sm text-[#EDEDED]">
-              LinguaFlow собирает это в <span className="font-medium">один экран</span>: группы, посещаемость, ДЗ и долг считаются сами.
+              {t('pain.solution')}
             </p>
           </div>
         </div>

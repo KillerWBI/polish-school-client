@@ -5,7 +5,8 @@ const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 // Универсальная модалка с overlay, Esc, блокировкой скролла и focus trap (a11y)
-export default function Modal({ open, onClose, children, maxWidth = 'max-w-md' }) {
+// showClose — крестик в углу (важно на телефоне, где нет Esc); отключается для особых случаев.
+export default function Modal({ open, onClose, children, maxWidth = 'max-w-md', showClose = true }) {
   const contentRef = useRef(null)
 
   useEffect(() => {
@@ -57,6 +58,20 @@ export default function Modal({ open, onClose, children, maxWidth = 'max-w-md' }
         className={`relative w-full ${maxWidth} bg-white border border-slate-200 rounded-2xl shadow-[0_24px_64px_rgba(15,23,42,0.18)] animate-modal-in`}
       >
         {children}
+
+        {/* Крестик закрытия (после children — чтобы фокус по умолчанию шёл на контент, а не на него) */}
+        {showClose && onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Закрыть"
+            className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 bg-slate-100/70 hover:bg-slate-200 hover:text-slate-700 transition-colors"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        )}
       </div>
     </div>,
     document.body

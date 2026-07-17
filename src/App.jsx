@@ -39,6 +39,8 @@ const NotesPage                  = lazy(() => import('./pages/notes/NotesPage'))
 const ProgressPage               = lazy(() => import('./pages/progress/ProgressPage'))
 const MaterialsPage              = lazy(() => import('./pages/materials/MaterialsPage'))
 const TopicsPage                 = lazy(() => import('./pages/topics/TopicsPage'))
+const TopicDetailPage            = lazy(() => import('./pages/topics/TopicDetailPage'))
+const DailySessionPage           = lazy(() => import('./pages/study/DailySessionPage'))
 
 export default function App() {
   return (
@@ -90,6 +92,10 @@ export default function App() {
           {/* Только ученик — темы с адаптивными тестами */}
           <Route path="/topics"
             element={<RoleRoute role="student"><TopicsPage /></RoleRoute>} />
+          <Route path="/topics/:id"
+            element={<RoleRoute role="student"><TopicDetailPage /></RoleRoute>} />
+          <Route path="/study"
+            element={<RoleRoute role="student"><DailySessionPage /></RoleRoute>} />
 
           {/* Только ученик — журнал внешних занятий */}
           <Route path="/my-lessons"
