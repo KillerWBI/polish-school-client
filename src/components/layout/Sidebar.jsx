@@ -34,6 +34,7 @@ const STUDENT_SECTIONS = [
   { label: 'nav.sectionMain', items: [
     { path: '/dashboard',   label: 'nav.dashboard', icon: IconDashboard },
     { path: '/calendar',    label: 'nav.calendar',  icon: IconCalendar },
+    { path: '/study',       label: 'nav.dailySession', icon: IconDaily },
     { path: '/my-progress', label: 'nav.progress',  icon: IconProgress },
   ]},
   { label: 'nav.sectionStudy', items: [
@@ -190,6 +191,7 @@ function IconVocab()   { return <svg className="w-[15px] h-[15px] shrink-0" fill
 function IconNotebook(){ return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M4 4a2 2 0 0 1 2-2h11a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2V4z" strokeLinejoin="round"/><path d="M8 2v20M12 7h3M12 11h3" strokeLinecap="round"/></svg> }
 function IconNote()    { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z" strokeLinejoin="round"/><path d="M15 3v6h6" strokeLinejoin="round"/></svg> }
 function IconProgress(){ return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M3 3v18h18" strokeLinecap="round"/><path d="M7 14l3-4 3 3 4-6" strokeLinecap="round" strokeLinejoin="round"/></svg> }
+function IconDaily()   { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M9 15l2 2 4-4" strokeLinecap="round" strokeLinejoin="round"/></svg> }
 function IconTarget()  { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg> }
 function IconFolder()  { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" strokeLinejoin="round"/></svg> }
 function IconSupport() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3" strokeLinecap="round"/></svg> }

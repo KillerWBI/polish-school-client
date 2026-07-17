@@ -36,7 +36,7 @@ export default function StudentView() {
 
         {/* телефон */}
         <div className="flex justify-center lg:justify-end">
-          <div className="w-[270px] rounded-[2.2rem] border border-[#1E1E22] bg-[#0D0D0F] p-2.5 shadow-[0_40px_120px_-40px_rgba(139,92,246,0.3)]">
+          <div className="w-[270px] rounded-[2.2rem] border border-[#1E1E22] bg-[#0D0D0F] p-2.5 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.7)]">
             <div className="rounded-[1.7rem] overflow-hidden bg-[#F7F8FA]">
               {/* статус-бар */}
               <div className="h-7 bg-white flex items-center justify-center">

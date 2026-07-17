@@ -41,7 +41,7 @@ export default function IndividualCourseDetailPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [delBusy,     setDelBusy]     = useState(false)
 
-  if (loading) return <div className="p-5 sm:p-8 max-w-3xl"><SkeletonList count={4} /></div>
+  if (loading) return <div className="p-5 sm:p-7 max-w-[1240px] mx-auto"><SkeletonList count={4} /></div>
   if (!course) {
     return (
       <div className="p-5 sm:p-8">
@@ -67,7 +67,7 @@ export default function IndividualCourseDetailPage() {
     .map(s => `${weekdays[s.day] ?? ''} ${s.time}`).join(', ')
 
   return (
-    <div className="p-5 sm:p-8 max-w-4xl">
+    <div className="p-5 sm:p-7 max-w-[1240px] mx-auto">
       {/* Заголовок */}
       <div className="mb-6 flex items-start justify-between gap-3 flex-wrap">
         <div>

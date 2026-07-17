@@ -2,6 +2,14 @@ import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { Check, Minus, Sparkles } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
+import { openCheckout, paddleConfigured } from '../../utils/paddle'
+import { fetchMe } from '../../api/auth.api'
+
+// Price ID тарифа из .env (Paddle). Пока задан только Pro.
+const PRICE_BY_PLAN = {
+  pro:    import.meta.env.VITE_PADDLE_PRICE_PRO,
+  school: import.meta.env.VITE_PADDLE_PRICE_SCHOOL,
+}
 
 // Иерархия тарифов — для сравнения «выше/ниже текущего»
 const RANK = { free: 0, pro: 1, school: 2 }
@@ -19,8 +27,30 @@ const PLAN_NAME = { free: 'Free', pro: 'Pro', school: 'School' }
 
 export default function PlansPage() {
   const { t } = useTranslation('teacher')
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
   const current = user?.plan ?? 'free'
+
+  // Подтянуть свежий тариф (обновляется вебхуком Paddle асинхронно после оплаты)
+  const refetchMe = async () => {
+    try { const me = await fetchMe(); if (me) updateUser?.(me) } catch { /* тихо */ }
+  }
+
+  const handleUpgrade = async (planKey) => {
+    const priceId = PRICE_BY_PLAN[planKey]
+    // Paddle ещё не настроен (нет ключей/price) — прежнее поведение «скоро»
+    if (!paddleConfigured() || !priceId) { toast(t('plans.upgradeToast')); return }
+    try {
+      await openCheckout({
+        priceId, email: user?.email, userId: user?.id,
+        onSuccess: () => {
+          toast.success('Оплата принята — тариф обновится в течение минуты')
+          setTimeout(refetchMe, 4000)
+        },
+      })
+    } catch (e) {
+      toast.error(e.message || 'Не удалось открыть оплату')
+    }
+  }
 
   return (
     <div className="p-5 sm:p-8 max-w-5xl mx-auto">
@@ -31,7 +61,7 @@ export default function PlansPage() {
 
       <div className="grid sm:grid-cols-3 gap-4 items-start">
         {PLANS.map((p) => (
-          <PlanCard key={p.key} plan={p} current={current} />
+          <PlanCard key={p.key} plan={p} current={current} onUpgrade={handleUpgrade} />
         ))}
       </div>
 
@@ -42,7 +72,7 @@ export default function PlansPage() {
   )
 }
 
-function PlanCard({ plan, current }) {
+function PlanCard({ plan, current, onUpgrade }) {
   const { t } = useTranslation('teacher')
   const isCurrent = plan.key === current
   const isSchool  = plan.key === 'school'
@@ -51,7 +81,7 @@ function PlanCard({ plan, current }) {
   const isIncluded = planRank < curRank // тариф ниже текущего — уже входит в подписку
   const features = t(`plans.${FEATURE_KEY[plan.key]}`, { returnObjects: true })
 
-  const upgrade = () => toast(t('plans.upgradeToast'))
+  const upgrade = () => onUpgrade(plan.key)
 
   return (
     <div className={`relative rounded-2xl border bg-white p-5 flex flex-col ${

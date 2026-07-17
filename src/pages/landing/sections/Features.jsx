@@ -95,7 +95,7 @@ function FinanceMock() {
   return (
     <Card className="p-5 bg-white max-w-sm">
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-pink-accent flex items-center justify-center text-white text-sm font-semibold">М</div>
+        <div className="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white text-sm font-semibold">М</div>
         <div>
           <div className="text-sm font-medium text-[#0F172A]">{tr('features.finName')}</div>
           <div className="text-[11px] text-[#8A94A6]">{tr('features.finVisits')}</div>

@@ -67,7 +67,8 @@ src/
 │   └── ui/
 │       ├── Button.jsx             # primary/secondary/ghost/danger; sm/md/lg; loading; type="button" по умолчанию
 │       ├── Input.jsx              # floating label, светлая тема, error state
-│       ├── Modal.jsx              # portal, Esc, overlay click
+│       ├── PageContainer.jsx      # единый контейнер страницы: mx-auto + ширина (wide 1240 / form / narrow) — контент не прижат влево
+│       ├── Modal.jsx              # portal, Esc, overlay click, крестик (×, showClose) — закрытие на телефоне без Esc
 │       ├── ConfirmDialog.jsx      # диалог подтверждения деструктивных действий
 │       ├── Logo.jsx               # GSAP-анимация
 │       ├── Spinner.jsx            # + PageSpinner

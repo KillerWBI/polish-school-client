@@ -51,7 +51,7 @@ export default function HomeworkPage() {
             : null}
         />
       ) : (
-        <div className="space-y-3 max-w-4xl">
+        <div className="grid gap-3 lg:grid-cols-2 items-start">
           {homework.map(hw =>
             isTeacher
               ? <TeacherHWCard key={hw.id} hw={hw} onView={() => setSelected(hw)} onDelete={reload} />

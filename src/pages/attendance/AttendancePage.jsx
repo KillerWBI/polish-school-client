@@ -173,7 +173,7 @@ function PendingView({ items, loading, isTeacher, reload }) {
   )
 
   return (
-    <div className="space-y-3 max-w-2xl">
+    <div className="grid gap-3 sm:grid-cols-2 items-start">
       <p className="text-sm text-slate-400 mb-4">
         {isTeacher
           ? t('attendance.pendingHintTeacher', { n: items.length })
@@ -279,7 +279,7 @@ function DisputedView({ items, loading, isTeacher, reload }) {
   )
 
   return (
-    <div className="space-y-3 max-w-2xl">
+    <div className="grid gap-3 sm:grid-cols-2 items-start">
       <p className="text-sm text-slate-400 mb-4">
         {isTeacher
           ? t('attendance.disputeHintTeacher', { n: items.length })

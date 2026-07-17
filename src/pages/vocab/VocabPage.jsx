@@ -8,6 +8,7 @@ import Input from '../../components/ui/Input'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
+import PageContainer from '../../components/ui/PageContainer'
 
 const STATUS = {
   new:      { label: 'Новое',   cls: 'bg-slate-100 text-slate-600' },
@@ -19,7 +20,7 @@ export default function VocabPage() {
   const [tab, setTab] = useState('review')
 
   return (
-    <div className="p-5 sm:p-8 max-w-3xl">
+    <PageContainer>
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
           <BookMarked className="w-5 h-5 text-white" />
@@ -39,7 +40,7 @@ export default function VocabPage() {
       {tab === 'review' && <ReviewTab onEmptyAdd={() => setTab('add')} />}
       {tab === 'all'    && <AllTab />}
       {tab === 'add'    && <AddTab onAdded={() => setTab('all')} />}
-    </div>
+    </PageContainer>
   )
 }
 
@@ -87,7 +88,7 @@ function ReviewTab({ onEmptyAdd }) {
 
   const item = due[idx]
   return (
-    <div>
+    <div className="max-w-xl mx-auto">
       <div className="flex items-center justify-between mb-3 text-sm text-slate-500">
         <span>Осталось: {due.length - idx}</span>
         <span>Пройдено: {done}</span>
@@ -156,9 +157,9 @@ function AllTab() {
         ))}
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
+      <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3 items-start">
         {items.map(v => (
-          <div key={v.id} className="flex items-center gap-3 px-4 py-3">
+          <div key={v.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium text-slate-900 truncate">{v.word}</div>
               <div className="text-sm text-slate-500 truncate">{v.translation}</div>
@@ -206,7 +207,7 @@ function AddTab({ onAdded }) {
   }
 
   return (
-    <form onSubmit={submit} className="rounded-2xl border border-slate-200 bg-white p-6 space-y-4 max-w-md">
+    <form onSubmit={submit} className="rounded-2xl border border-slate-200 bg-white p-6 space-y-4 max-w-md mx-auto">
       <Input label="Слово / термин" value={word} onChange={e => setWord(e.target.value)} placeholder="слово, термин или понятие" />
       <Input label="Перевод / определение" value={translation} onChange={e => setTr(e.target.value)} placeholder="перевод или определение" />
       <div>

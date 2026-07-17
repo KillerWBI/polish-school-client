@@ -37,7 +37,7 @@ export default function Modes({ onPrimary }) {
           </div>
 
           {/* С учениками */}
-          <div className="rounded-2xl border border-brand-600/30 bg-gradient-to-br from-[#0A0A0B] to-[#12101A] p-7">
+          <div className="rounded-2xl border border-brand-600/30 bg-[#0D0D0F] p-7">
             <div className="font-mono text-[12px] text-brand-400 mb-4">{t('modes.bTag')}</div>
             <h3 className="font-display font-semibold text-2xl">{t('modes.bTitle')}</h3>
             <p className="mt-3 text-sm text-[#8A8A8F] leading-relaxed">

@@ -36,7 +36,7 @@ export default function GroupDetailPage() {
     useCallback(() => getGroup(id), [id])
   )
 
-  if (loading) return <div className="p-5 sm:p-8 max-w-4xl"><SkeletonList count={4} /></div>
+  if (loading) return <div className="p-5 sm:p-7 max-w-[1240px] mx-auto"><SkeletonList count={4} /></div>
   if (!group)  return <div className="p-8 text-slate-400">{t('groupDetail.notFound')}</div>
 
   const schedule = (group.schedule || [])
@@ -44,7 +44,7 @@ export default function GroupDetailPage() {
     .join(' · ')
 
   return (
-    <div className="p-5 sm:p-8 max-w-4xl">
+    <div className="p-5 sm:p-7 max-w-[1240px] mx-auto">
       <button onClick={() => navigate('/groups')}
         className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-900 mb-4 cursor-pointer transition-colors">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

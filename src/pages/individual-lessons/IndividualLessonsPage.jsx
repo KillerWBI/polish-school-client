@@ -77,7 +77,7 @@ export default function IndividualLessonsPage() {
           action={isTeacher ? <Button onClick={openCreate}>{t('indLessons.createShort')}</Button> : null}
         />
       ) : (
-        <div className="max-w-4xl space-y-6">
+        <div className="max-w-[1240px] space-y-6">
           {groups.map(([month, items]) => (
             <div key={month}>
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 capitalize">

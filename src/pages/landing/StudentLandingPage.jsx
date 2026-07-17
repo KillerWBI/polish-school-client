@@ -70,8 +70,7 @@ export default function StudentLandingPage() {
       <main>
         {/* ── Hero ── */}
         <section className="relative overflow-hidden">
-          <div className="absolute inset-0 landing-grid opacity-60 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_40%,transparent_100%)]" />
-          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full bg-brand-600/15 blur-[120px] pointer-events-none" />
+          <div className="absolute inset-0 landing-grid opacity-40 [mask-image:linear-gradient(#000,transparent)]" />
 
           <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-32 pb-20 sm:pt-40 sm:pb-24 grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
             <div>
@@ -122,7 +121,7 @@ export default function StudentLandingPage() {
 
             {/* Телефон-макет кабинета ученика */}
             <div className="relative mx-auto w-[280px]">
-              <div className="rounded-[2.4rem] border border-[#1E1E22] bg-[#0D0D0F] p-2.5 shadow-[0_40px_120px_-40px_rgba(139,92,246,0.35)]">
+              <div className="rounded-[2.4rem] border border-[#1E1E22] bg-[#0D0D0F] p-2.5 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.7)]">
                 <div className="rounded-[2rem] bg-[#F7F8FA] overflow-hidden">
                   <div className="h-9 flex items-center justify-center">
                     <span className="w-20 h-1.5 rounded-full bg-[#E2E5EA]" />
@@ -315,7 +314,6 @@ export default function StudentLandingPage() {
 
         {/* ── Финальный CTA ── */}
         <section className="border-t border-[#141416] relative overflow-hidden">
-          <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-brand-600/10 blur-[120px] pointer-events-none" />
           <div className="relative max-w-3xl mx-auto px-5 sm:px-8 py-24 text-center">
             <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight leading-[1.05]">
               {t('student.ctaTitle1')}<br />{t('student.ctaTitle2')}

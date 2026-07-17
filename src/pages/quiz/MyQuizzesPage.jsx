@@ -8,6 +8,7 @@ import useAuth from '../../hooks/useAuth'
 import { getQuizzes, deleteQuiz } from '../../api/quizzes.api'
 import Button from '../../components/ui/Button'
 import { SkeletonList } from '../../components/ui/Skeleton'
+import PageContainer from '../../components/ui/PageContainer'
 
 export default function MyQuizzesPage() {
   const { t, i18n } = useTranslation('app')
@@ -34,7 +35,7 @@ export default function MyQuizzesPage() {
     : t('quiz.emptyStudent')
 
   return (
-    <div className="p-5 sm:p-8 max-w-3xl mx-auto">
+    <PageContainer>
       <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">{t('quiz.myTitle')}</h1>
@@ -64,7 +65,7 @@ export default function MyQuizzesPage() {
           <Button size="sm" onClick={() => navigate('/quiz')}><Sparkles className="w-4 h-4" /> {t('quiz.createTest')}</Button>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3 items-start">
           {shown.map((q) => (
             <div key={q.id} className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-4 hover:border-blue-200 transition-colors">
               <button onClick={() => navigate(`/quizzes/${q.id}`)} className="flex-1 min-w-0 text-left">
@@ -100,7 +101,7 @@ export default function MyQuizzesPage() {
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   )
 }
 

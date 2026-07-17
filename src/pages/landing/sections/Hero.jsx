@@ -6,9 +6,8 @@ export default function Hero({ onPrimary, onSecondary }) {
   const { t: tc } = useTranslation('common')
   return (
     <section className="relative bg-[#0A0A0B] text-[#EDEDED] overflow-hidden">
-      {/* тонкая сетка-фон + мягкое свечение сверху */}
-      <div className="absolute inset-0 landing-grid opacity-60 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_40%,transparent_100%)]" />
-      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full bg-brand-600/15 blur-[120px] pointer-events-none" />
+      {/* тонкая сетка-фон (без цветных свечений — минимализм) */}
+      <div className="absolute inset-0 landing-grid opacity-40 [mask-image:linear-gradient(#000,transparent)]" />
 
       <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-32 pb-20 sm:pt-40 sm:pb-28">
         <p className="mono-label mb-5">{t('hero.label')}</p>
@@ -68,7 +67,7 @@ export default function Hero({ onPrimary, onSecondary }) {
         </div>
 
         {/* макет интерфейса (стилизованный «скрин», без картинки) */}
-        <div className="mt-16 rounded-2xl border border-[#1E1E22] bg-[#0D0D0F] overflow-hidden shadow-[0_40px_120px_-40px_rgba(139,92,246,0.25)]">
+        <div className="mt-16 rounded-2xl border border-[#1E1E22] bg-[#0D0D0F] overflow-hidden shadow-[0_30px_80px_-40px_rgba(0,0,0,0.7)]">
           {/* браузерная рамка */}
           <div className="flex items-center gap-2 px-4 h-9 border-b border-[#1E1E22] bg-[#0A0A0B]">
             <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
