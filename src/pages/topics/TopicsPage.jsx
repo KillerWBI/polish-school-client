@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Target, Plus, Trash2, ChevronRight, Lightbulb, Map } from 'lucide-react'
 import useFetch from '../../hooks/useFetch'
@@ -18,6 +19,7 @@ const masteryColor = (m) => m >= 70 ? 'bg-emerald-500' : m >= 40 ? 'bg-blue-500'
 const masteryText  = (m) => m >= 70 ? 'text-emerald-600' : m >= 40 ? 'text-blue-600' : 'text-amber-600'
 
 export default function TopicsPage() {
+  const { t } = useTranslation('student')
   const { data: topics, loading, reload } = useFetch(getTopics)
   const [createOpen, setCreateOpen] = useState(false)
   const [ideasOpen, setIdeasOpen]   = useState(false)
@@ -30,24 +32,24 @@ export default function TopicsPage() {
             <Target className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Учебные треки</h1>
-            <p className="text-sm text-slate-500">Самообучение по любой теме — с роадмапом и адаптивными тестами</p>
+            <h1 className="text-2xl font-semibold text-slate-900">{t('topics.title')}</h1>
+            <p className="text-sm text-slate-500">{t('topics.subtitle')}</p>
           </div>
         </div>
-        <Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4 mr-1" /> Тема</Button>
+        <Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4 mr-1" /> {t('topics.addTopic')}</Button>
       </div>
 
       <button onClick={() => setIdeasOpen(true)}
         className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 mb-6 transition-colors">
-        <Lightbulb className="w-4 h-4" /> Что можно изучать?
+        <Lightbulb className="w-4 h-4" /> {t('topics.whatToStudy')}
       </button>
 
       {loading ? (
         <SkeletonList />
       ) : !topics?.length ? (
-        <EmptyState emoji="🎯" title="Треков пока нет"
-          text="Добавьте тему по любому предмету — платформа разобьёт её на шаги и подберёт тесты под ваш уровень."
-          action={<Button size="sm" onClick={() => setCreateOpen(true)}>Создать трек</Button>} />
+        <EmptyState emoji="🎯" title={t('topics.emptyTitle')}
+          text={t('topics.emptyText')}
+          action={<Button size="sm" onClick={() => setCreateOpen(true)}>{t('topics.createTrack')}</Button>} />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {topics.map(t => <TopicCard key={t.id} topic={t} onDeleted={reload} />)}
@@ -61,6 +63,7 @@ export default function TopicsPage() {
 }
 
 function TopicCard({ topic, onDeleted }) {
+  const { t } = useTranslation('student')
   const navigate = useNavigate()
   const [confirmDel, setConfirmDel] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -70,7 +73,7 @@ function TopicCard({ topic, onDeleted }) {
   const doDelete = async () => {
     setBusy(true)
     try { await deleteTopic(topic.id); onDeleted() }
-    catch (e) { toast.error(e.response?.data?.error || 'Ошибка') }
+    catch (e) { toast.error(e.response?.data?.error || t('common:error')) }
     finally { setBusy(false) }
   }
 
@@ -82,7 +85,7 @@ function TopicCard({ topic, onDeleted }) {
             <div className="font-medium text-slate-900 truncate group-hover:text-blue-600 transition-colors">{topic.title}</div>
             <div className="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5">
               {topic.subject ? `${topic.subject} · ` : ''}
-              <Map className="w-3 h-3" /> {steps} {plural(steps, 'шаг', 'шага', 'шагов')} · {topic.attempts} практик
+              <Map className="w-3 h-3" /> {steps} {t('topics.steps', { count: steps })} · {topic.attempts} {t('topics.practices', { count: topic.attempts })}
             </div>
           </div>
           <div className={`text-lg font-bold shrink-0 tabular-nums ${masteryText(m)}`}>{m}%</div>
@@ -95,7 +98,7 @@ function TopicCard({ topic, onDeleted }) {
 
       <div className="flex items-center gap-2 mt-3">
         <Button size="sm" className="flex-1" onClick={() => navigate(`/topics/${topic.id}`)}>
-          Открыть трек <ChevronRight className="w-4 h-4 ml-1" />
+          {t('topics.openTrack')} <ChevronRight className="w-4 h-4 ml-1" />
         </Button>
         <button onClick={() => setConfirmDel(true)} className="text-slate-300 hover:text-red-500 transition-colors p-2">
           <Trash2 className="w-4 h-4" />
@@ -106,9 +109,9 @@ function TopicCard({ topic, onDeleted }) {
         open={confirmDel}
         onClose={() => setConfirmDel(false)}
         onConfirm={doDelete}
-        title="Удалить тему?"
-        message={`«${topic.title}» и вся история практик будут удалены.`}
-        confirmLabel="Удалить"
+        title={t('topics.deleteTitle')}
+        message={t('topics.deleteMsg', { title: topic.title })}
+        confirmLabel={t('common:delete')}
         busy={busy}
       />
     </div>
@@ -116,44 +119,37 @@ function TopicCard({ topic, onDeleted }) {
 }
 
 function CreateModal({ onClose, onCreated }) {
+  const { t } = useTranslation('student')
   const [title, setTitle]     = useState('')
   const [subject, setSubject] = useState('')
   const [busy, setBusy]       = useState(false)
 
   const submit = async () => {
-    if (!title.trim()) { toast.error('Укажите тему'); return }
+    if (!title.trim()) { toast.error(t('topics.enterTopic')); return }
     setBusy(true)
     try {
       await createTopic({ title, subject: subject || null })
-      toast.success('Трек создан')
+      toast.success(t('topics.trackCreated'))
       onCreated()
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка')
+      toast.error(e.response?.data?.error || t('common:error'))
     } finally { setBusy(false) }
   }
 
   return (
     <Modal open onClose={onClose} maxWidth="max-w-md">
       <div className="p-6">
-        <h3 className="text-base font-semibold text-slate-900 mb-1">Новый учебный трек</h3>
-        <p className="text-xs text-slate-500 mb-4">Разобьём тему на шаги и подберём тесты под ваш уровень.</p>
+        <h3 className="text-base font-semibold text-slate-900 mb-1">{t('topics.newTrack')}</h3>
+        <p className="text-xs text-slate-500 mb-4">{t('topics.newTrackSub')}</p>
         <div className="space-y-3">
-          <Input label="Тема" value={title} onChange={e => setTitle(e.target.value)} placeholder="напр. Present Perfect, Дроби, Клеточное дыхание" />
-          <Input label="Предмет (необязательно)" value={subject} onChange={e => setSubject(e.target.value)} placeholder="английский, математика, биология…" />
+          <Input label={t('topics.topicLabel')} value={title} onChange={e => setTitle(e.target.value)} placeholder={t('topics.topicPh')} />
+          <Input label={t('topics.subjectLabel')} value={subject} onChange={e => setSubject(e.target.value)} placeholder={t('topics.subjectPh')} />
         </div>
         <div className="flex gap-3 mt-6">
-          <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>Отмена</Button>
-          <Button className="flex-1" onClick={submit} loading={busy}>Создать</Button>
+          <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>{t('common:cancel')}</Button>
+          <Button className="flex-1" onClick={submit} loading={busy}>{t('common:create')}</Button>
         </div>
       </div>
     </Modal>
   )
-}
-
-// Русская плюрализация числительных
-function plural(n, one, few, many) {
-  const m10 = n % 10, m100 = n % 100
-  if (m10 === 1 && m100 !== 11) return one
-  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few
-  return many
 }
