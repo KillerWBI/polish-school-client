@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { StickyNote, Plus, Trash2, Pencil } from 'lucide-react'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import { getNotes, createNote, updateNote, deleteNote } from '../../api/notes.api'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
@@ -12,7 +12,7 @@ import EmptyState from '../../components/ui/EmptyState'
 import PageContainer from '../../components/ui/PageContainer'
 
 export default function NotesPage() {
-  const { data: notes, loading, reload } = useFetch(getNotes)
+  const { data: notes, loading, reload } = useApiQuery(['notes'], getNotes)
   const [editor, setEditor]     = useState(null)  // null | { note } | { note: null } (создание)
   const [confirmDel, setConfirmDel] = useState(null)
   const [busy, setBusy] = useState(false)

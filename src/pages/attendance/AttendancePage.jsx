@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
 import { getGroups, getGroup } from '../../api/groups.api'
 import { getLessons } from '../../api/lessons.api'
@@ -47,7 +47,7 @@ export default function AttendancePage() {
   const [mode, setMode] = useState('journal') // 'journal' | 'pending' | 'disputed'
 
   const { data: pending, loading: pendingLoading, reload: reloadPending } =
-    useFetch(getPendingAttendance)
+    useApiQuery(['pending-attendance'], getPendingAttendance)
 
   const pendingItems   = (pending || []).filter(r => r.status === 'pending_student')
   const disputedItems  = (pending || []).filter(r => r.status === 'disputed')
@@ -408,7 +408,7 @@ function TeacherView({ onSaved }) {
 /* ─── Журнал группы: ученики × даты уроков ─────────────────── */
 function GroupJournal({ onSaved }) {
   const { t } = useTranslation('teacher')
-  const { data: groups, loading } = useFetch(getGroups)
+  const { data: groups, loading } = useApiQuery(['groups'], getGroups)
   const [groupId, setGroupId] = useState(null)
   const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7))
 
@@ -420,11 +420,11 @@ function GroupJournal({ onSaved }) {
   // Открываем журнал на месяце ПОСЛЕДНЕЙ отметки посещаемости группы (там, где данные),
   // а не просто где есть уроки — иначе залипаем на пустом текущем месяце.
   // Результат привязываем к gid, иначе при смене группы сработаем по устаревшим данным.
-  const { data: attMeta } = useFetch(
+  const { data: attMeta } = useApiQuery(
+    ['attendance-meta', groupId],
     () => groupId
       ? getAttendance({ groupId, limit: 100 }).then(rs => ({ gid: groupId, rs: rs || [] }))
       : Promise.resolve({ gid: null, rs: [] }),
-    [groupId]
   )
   const pickedFor = useRef(null)
   useEffect(() => {
@@ -458,9 +458,10 @@ function JournalTable({ groupId, month, onSaved }) {
   const { t: tc } = useTranslation('common')
   const { from, to } = monthBounds(month)
 
-  const { data: group,   loading: gLoad } = useFetch(() => getGroup(groupId), [groupId])
-  const { data: lessons, loading: lLoad } = useFetch(
-    () => getLessons({ groupId, from, to, limit: 100 }), [groupId, from, to]
+  const { data: group,   loading: gLoad } = useApiQuery(['group', groupId], () => getGroup(groupId))
+  const { data: lessons, loading: lLoad } = useApiQuery(
+    ['lessons', { groupId, from, to, limit: 100 }],
+    () => getLessons({ groupId, from, to, limit: 100 })
   )
 
   // records: `${lessonId}:${studentId}` -> запись посещаемости
@@ -691,8 +692,9 @@ function IndividualJournal({ onSaved }) {
   const [period, setPeriod] = useState('all')
   const { from, to } = monthBounds(month)
 
-  const { data: lessons, loading } = useFetch(
-    () => getIndividualLessons({ from, to }), [from, to]
+  const { data: lessons, loading } = useApiQuery(
+    ['individual-lessons', { from, to }],
+    () => getIndividualLessons({ from, to })
   )
   const [records, setRecords] = useState({}) // lessonId -> запись
   const [busy, setBusy] = useState({})
@@ -882,8 +884,8 @@ function StudentView({ onDisputed }) {
   const [busy,       setBusy]       = useState({})
   const [period,     setPeriod]     = useState('all')
 
-  const { data: attendance, loading: attLoading, reload } = useFetch(getAttendance)
-  const { data: homework }                                = useFetch(getHomework)
+  const { data: attendance, loading: attLoading, reload } = useApiQuery(['attendance-all'], getAttendance)
+  const { data: homework }                                = useApiQuery(['homework'], getHomework)
 
   // Студент передумал по подтверждённой записи: шлём противоположный ответ →
   // расходится с отметкой учителя → запись становится спорной (disputed).

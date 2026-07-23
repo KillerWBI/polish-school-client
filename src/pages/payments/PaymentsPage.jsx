@@ -14,7 +14,7 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import { safeUrl } from '../../utils/safeUrl'
 import useAuth from '../../hooks/useAuth'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 
 const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
 
@@ -257,7 +257,7 @@ function StudentPaymentHistory() {
   const [shot, setShot]     = useState(null)
 
   // Pending грузим всегда — для счётчика на переключателе
-  const { data: pending, reload: reloadPending } = useFetch(() => getMyPaymentHistory({ status: 'pending' }), [])
+  const { data: pending, reload: reloadPending } = useApiQuery(['my-payment-history', 'pending'], () => getMyPaymentHistory({ status: 'pending' }))
   const pendingCount = (pending?.data || []).length
 
   return (
@@ -284,9 +284,9 @@ function StudentHistoryList({ status, onShot, onChanged }) {
   const [from, setFrom]     = useState('')
   const [to, setTo]         = useState('')
 
-  const { data, loading, reload } = useFetch(
+  const { data, loading, reload } = useApiQuery(
+    ['my-payment-history', status, from, to],
     () => getMyPaymentHistory({ status, from: from || undefined, to: to || undefined }),
-    [status, from, to],
   )
   const allRecords = data?.data ?? []
   const byMethod   = data?.summary?.byMethod ?? {}
@@ -362,7 +362,7 @@ function StudentHistoryRow({ rec, onShot, onCancel, busy }) {
 
 function StudentDebts() {
   const { t } = useTranslation('teacher')
-  const { data, loading } = useFetch(getDebt)
+  const { data, loading } = useApiQuery(['debt'], getDebt)
   const navigate = useNavigate()
 
   if (loading) return <SkeletonList />
@@ -398,7 +398,7 @@ function TeacherDebts() {
   const { t } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
   const { user } = useAuth()
-  const { data, loading, reload } = useFetch(getDebtsForTeacher)
+  const { data, loading, reload } = useApiQuery(['debts-for-teacher'], getDebtsForTeacher)
   const [selected, setSelected] = useState(null)
   const [amount, setAmount]     = useState('')
   const [method, setMethod]     = useState('cash')
@@ -510,7 +510,7 @@ function PaymentHistory() {
   const [shot, setShot]     = useState(null) // url скрина для лайтбокса
 
   // Pending грузим всегда — и для счётчика-бейджа, и для очереди проверки
-  const { data: pending, loading: pLoad, reload: reloadPending } = useFetch(getPendingPayments)
+  const { data: pending, loading: pLoad, reload: reloadPending } = useApiQuery(['pending-payments'], getPendingPayments)
   const pendingCount = (pending || []).length
 
   return (
@@ -611,9 +611,9 @@ function HistoryList({ status, onShot }) {
   const [from, setFrom]     = useState('')
   const [to, setTo]         = useState('')
 
-  const { data, loading } = useFetch(
+  const { data, loading } = useApiQuery(
+    ['payment-history', status, from, to],
     () => getPaymentHistory({ status, from: from || undefined, to: to || undefined }),
-    [status, from, to],
   )
   const allRecords = data?.data ?? []
   const byMethod   = data?.summary?.byMethod ?? {}

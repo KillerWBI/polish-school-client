@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ArrowLeft, Sparkles, Lightbulb, Lock, Check, History, Target, Layers, Repeat, PenLine, FileText, BookOpen, Link2, Grid3x3, Trash2, Share2 } from 'lucide-react'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import { getTopic, nextTopicQuiz, submitTopicAttempt, gradeOpenAnswers, suggestSources, getSources, deleteSource, importCardsFromText, shareTopic } from '../../api/topics.api'
 import { safeUrl } from '../../utils/safeUrl'
 import { getCards, getDueCards, generateCards, reviewCard } from '../../api/topicCards.api'
@@ -33,9 +33,9 @@ export default function TopicDetailPage() {
   const { t, i18n } = useTranslation('student')
   const { id } = useParams()
   const navigate = useNavigate()
-  const { data, loading, error, reload } = useFetch(useCallback((s) => getTopic(id, s), [id]))
-  const { data: cardsData, reload: reloadCards } = useFetch(useCallback((s) => getCards(id, undefined, s), [id]))
-  const { data: allSources, reload: reloadSources } = useFetch(useCallback((s) => getSources(id, undefined, s), [id]))
+  const { data, loading, error, reload } = useApiQuery(['topic', id], (s) => getTopic(id, s))
+  const { data: cardsData, reload: reloadCards } = useApiQuery(['topic-cards', id], (s) => getCards(id, undefined, s))
+  const { data: allSources, reload: reloadSources } = useApiQuery(['topic-sources', id], (s) => getSources(id, undefined, s))
   const [practiceStep, setPracticeStep] = useState(null) // шаг роадмапа, который практикуем
   const [cardsStep, setCardsStep]       = useState(null) // шаг, чьи карточки смотрим
   const [trackReview, setTrackReview]   = useState(false) // повторение due-карточек всего трека
@@ -389,7 +389,7 @@ function StepSourcesInline({ sources, onSuggest, onDeleteSource }) {
 /* ── Карточки шага: генерация / импорт из текста / обзор + источники ── */
 function StepCards({ topicId, step, onBack }) {
   const { t } = useTranslation('student')
-  const { data, loading, reload } = useFetch(useCallback((s) => getCards(topicId, step.id, s), [topicId, step.id]))
+  const { data, loading, reload } = useApiQuery(['topic-cards', topicId, step.id], (s) => getCards(topicId, step.id, s))
   const [gen, setGen]           = useState(false)
   const [importOpen, setImportOpen] = useState(false)
   const cards = data?.data || []
@@ -484,7 +484,7 @@ function ImportCardsModal({ topicId, step, onClose, onDone }) {
 /* ── Повторение due-карточек всего трека ── */
 function TrackReview({ topicId, onBack }) {
   const { t } = useTranslation('student')
-  const { data: cards, loading } = useFetch(useCallback((s) => getDueCards(topicId, s), [topicId]))
+  const { data: cards, loading } = useApiQuery(['topic-due-cards', topicId], (s) => getDueCards(topicId, s))
 
   return (
     <PageContainer width="form">

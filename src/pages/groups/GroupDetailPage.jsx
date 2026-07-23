@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
 import { getGroup, updateGroup, deleteGroup, addStudent, addPlaceholder, removeStudent, generateLessons } from '../../api/groups.api'
 import { getLessons, createLesson, updateLesson, deleteLesson } from '../../api/lessons.api'
@@ -32,9 +32,7 @@ export default function GroupDetailPage() {
     ? [t('groupDetail.tabStudents'), t('groupDetail.tabLessons'), t('groupDetail.tabSettings')]
     : [t('groupDetail.tabStudents'), t('groupDetail.tabLessons')]
 
-  const { data: group, loading, reload } = useFetch(
-    useCallback(() => getGroup(id), [id])
-  )
+  const { data: group, loading, reload } = useApiQuery(['group', id], () => getGroup(id))
 
   if (loading) return <div className="p-5 sm:p-7 max-w-[1240px] mx-auto"><SkeletonList count={4} /></div>
   if (!group)  return <div className="p-8 text-slate-400">{t('groupDetail.notFound')}</div>
@@ -199,7 +197,7 @@ function StudentsTab({ group, reload, isTeacher }) {
 
 function AddStudentModal({ open, onClose, groupId, existing, onAdded }) {
   const { t } = useTranslation('teacher')
-  const { data: all } = useFetch(getMyStudents, [])
+  const { data: all } = useApiQuery(['my-students'], getMyStudents)
   const [search, setSearch] = useState('')
   const [adding, setAdding] = useState(null)
   const [error, setError]   = useState('')
@@ -464,8 +462,9 @@ function LessonsTab({ group, isTeacher }) {
   const [createModal, setCreateModal] = useState(false)
   const [selected,    setSelected]    = useState(null) // урок для просмотра/редактирования
 
-  const { data: lessons, loading, reload } = useFetch(
-    useCallback(() => getLessons({ groupId: group.id }), [group.id])
+  const { data: lessons, loading, reload } = useApiQuery(
+    ['lessons', { groupId: group.id }],
+    () => getLessons({ groupId: group.id })
   )
 
   const today    = new Date().toISOString().slice(0, 10)

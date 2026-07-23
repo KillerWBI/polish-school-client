@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ArrowLeft, Upload, CheckCircle, Landmark, Smartphone, CreditCard, Globe, Copy } from 'lucide-react'
 import { getDebt, getTeacherPaymentInfo, studentPay } from '../../api/payments.api'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import { SkeletonList } from '../../components/ui/Skeleton'
@@ -28,8 +28,8 @@ export default function PayPage() {
   const { t } = useTranslation('teacher')
   const { teacherId } = useParams()
   const navigate = useNavigate()
-  const { data: debtData, loading: debtLoading } = useFetch(getDebt)
-  const { data: teacherInfo, loading: infoLoading } = useFetch(() => getTeacherPaymentInfo(teacherId))
+  const { data: debtData, loading: debtLoading } = useApiQuery(['debt'], getDebt)
+  const { data: teacherInfo, loading: infoLoading } = useApiQuery(['teacher-payment-info', teacherId], () => getTeacherPaymentInfo(teacherId))
 
   const [amount, setAmount]         = useState('')
   const [method, setMethod]         = useState('transfer')

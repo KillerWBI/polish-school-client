@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Target, Plus, Trash2, ChevronRight, Lightbulb, Map } from 'lucide-react'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import { getTopics, createTopic, deleteTopic } from '../../api/topics.api'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
@@ -20,7 +20,7 @@ const masteryText  = (m) => m >= 70 ? 'text-emerald-600' : m >= 40 ? 'text-blue-
 
 export default function TopicsPage() {
   const { t } = useTranslation('student')
-  const { data: topics, loading, reload } = useFetch(getTopics)
+  const { data: topics, loading, reload } = useApiQuery(['topics'], getTopics)
   const [createOpen, setCreateOpen] = useState(false)
   const [ideasOpen, setIdeasOpen]   = useState(false)
 

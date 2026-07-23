@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
 import { getGroups, createGroup, generateLessons } from '../../api/groups.api'
 import { getInvitations, respondInvitation } from '../../api/invitations.api'
@@ -22,7 +22,7 @@ export default function GroupsPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('teacher')
   const { isTeacher } = useAuth()
-  const { data: groups, loading, reload } = useFetch(getGroups)
+  const { data: groups, loading, reload } = useApiQuery(['groups'], getGroups)
   const [modal, setModal] = useState(false)
   const [page, setPage] = useState(1)
 
@@ -83,7 +83,7 @@ export default function GroupsPage() {
 function StudentInvitations({ onAccepted }) {
   const { t } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
-  const { data: invites, loading, reload } = useFetch(() => getInvitations('pending'))
+  const { data: invites, loading, reload } = useApiQuery(['invitations', 'pending'], () => getInvitations('pending'))
   const [busy, setBusy] = useState(null) // id обрабатываемого приглашения
 
   const respond = async (inv, status) => {

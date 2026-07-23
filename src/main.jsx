@@ -1,11 +1,13 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
 import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './store/authStore.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { initSentry } from './utils/sentry.js'
+import { queryClient } from './queryClient.js'
 import i18n from './i18n'
 import { runGeoDetect } from './i18n/detectLocale.js'
 
@@ -30,15 +32,17 @@ if ('serviceWorker' in navigator) {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
-      <AuthProvider>
-        <App />
-        <Toaster
-          theme="light"
-          position="top-right"
-          richColors
-          closeButton
-        />
-      </AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <App />
+          <Toaster
+            theme="light"
+            position="top-right"
+            richColors
+            closeButton
+          />
+        </AuthProvider>
+      </QueryClientProvider>
     </ErrorBoundary>
   </StrictMode>
 )

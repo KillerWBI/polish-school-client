@@ -2,7 +2,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { ArrowLeft, Trash2 } from 'lucide-react'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import { getQuiz, deleteQuiz } from '../../api/quizzes.api'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import QuizRunner from './QuizRunner'
@@ -12,7 +12,7 @@ export default function QuizViewPage() {
   const { t: tc } = useTranslation('common')
   const { id } = useParams()
   const navigate = useNavigate()
-  const { data: quiz, loading } = useFetch(() => getQuiz(id), [id])
+  const { data: quiz, loading } = useApiQuery(['quiz', id], () => getQuiz(id))
 
   if (loading) return <div className="p-5 sm:p-8 max-w-3xl mx-auto"><SkeletonList count={4} /></div>
 

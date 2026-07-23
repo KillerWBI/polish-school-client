@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Sparkles, Trash2, ChevronRight } from 'lucide-react'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
 import { getQuizzes, deleteQuiz } from '../../api/quizzes.api'
 import Button from '../../components/ui/Button'
@@ -13,7 +13,7 @@ import PageContainer from '../../components/ui/PageContainer'
 export default function MyQuizzesPage({ embedded, onCreate }) {
   const { t, i18n } = useTranslation('app')
   const { t: tc } = useTranslation('common')
-  const { data, loading, reload } = useFetch(getQuizzes)
+  const { data, loading, reload } = useApiQuery(['quizzes'], getQuizzes)
   const { isTeacher } = useAuth()
   const navigate = useNavigate()
   const [confirmId, setConfirmId] = useState(null)

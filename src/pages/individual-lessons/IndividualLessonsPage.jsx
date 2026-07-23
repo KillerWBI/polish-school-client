@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
 import {
   getIndividualLessons,
@@ -21,11 +21,8 @@ import EmptyState from '../../components/ui/EmptyState'
 export default function IndividualLessonsPage() {
   const { t, i18n } = useTranslation('teacher')
   const { isTeacher } = useAuth()
-  const { data: lessons, loading, reload } = useFetch(getIndividualLessons)
-  const { data: students } = useFetch(
-    () => isTeacher ? getMyStudents() : Promise.resolve([]),
-    [isTeacher]
-  )
+  const { data: lessons, loading, reload } = useApiQuery(['individual-lessons'], getIndividualLessons)
+  const { data: students } = useApiQuery(['my-students'], getMyStudents, { enabled: isTeacher })
 
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing]   = useState(null) // урок для редактирования

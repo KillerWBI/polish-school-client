@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Target, Sparkles, Share2 } from 'lucide-react'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import { getMyStudents, getTrackInsights, generateTargetedQuiz } from '../../api/students.api'
 import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
@@ -17,7 +17,7 @@ const PAGE_SIZE = 12
 
 export default function StudentsPage() {
   const { t } = useTranslation('teacher')
-  const { data: students, loading } = useFetch(getMyStudents)
+  const { data: students, loading } = useApiQuery(['my-students'], getMyStudents)
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
 

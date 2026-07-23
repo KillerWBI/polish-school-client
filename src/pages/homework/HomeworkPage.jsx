@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import usePagedList from '../../hooks/usePagedList'
 import useAuth from '../../hooks/useAuth'
 import { getHomework, createHomework, deleteHomework, submitHomework, getSubmissions, gradeSubmission, submitHomeworkQuizAttempt, getHomeworkQuizAttempts } from '../../api/homework.api'
@@ -346,9 +346,9 @@ function StatusBadge({ submission, isOverdue }) {
 function CreateHWModal({ open, onClose, onCreated }) {
   const { t } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
-  const { data: lessons }    = useFetch(getLessons, [])
-  const { data: indLessons } = useFetch(getIndividualLessons, [])
-  const { data: quizzes }    = useFetch(getQuizzes, [])
+  const { data: lessons }    = useApiQuery(['lessons'], getLessons)
+  const { data: indLessons } = useApiQuery(['individual-lessons'], getIndividualLessons)
+  const { data: quizzes }    = useApiQuery(['quizzes'], getQuizzes)
   const [form, setForm] = useState({ description: '', deadline: '', lessonType: 'group', lessonId: '', individualLessonId: '', quizId: '' })
   const [saving, setSaving] = useState(false)
   const [error,  setError]  = useState('')
@@ -483,10 +483,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
 function QuizAttempts({ hw }) {
   const { t } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
-  const { data: attempts, loading } = useFetch(
-    useCallback(() => getHomeworkQuizAttempts(hw.id), [hw.id]),
-    [hw.id],
-  )
+  const { data: attempts, loading } = useApiQuery(['hw-quiz-attempts', hw.id], () => getHomeworkQuizAttempts(hw.id))
   const [openId, setOpenId] = useState(null)
 
   return (
@@ -527,9 +524,8 @@ function QuizAttempts({ hw }) {
 function SubmissionsModal({ hw, onClose }) {
   const { t } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
-  const { data: subs, loading, reload } = useFetch(
-    useCallback(() => hw ? getSubmissions(hw.id) : Promise.resolve([]), [hw?.id]),
-    [hw?.id]
+  const { data: subs, loading, reload } = useApiQuery(
+    ['hw-submissions', hw?.id], () => getSubmissions(hw.id), { enabled: !!hw }
   )
   const [grades, setGrades]   = useState({})
   const [saving, setSaving]   = useState(null)

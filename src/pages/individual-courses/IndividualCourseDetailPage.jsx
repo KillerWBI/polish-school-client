@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
 import {
   getIndividualCourse, updateIndividualCourse,
@@ -28,11 +28,11 @@ export default function IndividualCourseDetailPage() {
   const { isTeacher } = useAuth()
   const weekdays = t('groups.weekdays', { returnObjects: true })
 
-  const { data: course,   loading,   reload }      = useFetch(() => getIndividualCourse(id), [id])
+  const { data: course,   loading,   reload }      = useApiQuery(['individual-course', id], () => getIndividualCourse(id))
   const student = course?.student // приходит из include курса (Student.id → name)
-  const { data: lessons,  reload: reloadLessons }  = useFetch(
-    () => getIndividualLessons({ individualCourseId: id }),
-    [id]
+  const { data: lessons,  reload: reloadLessons }  = useApiQuery(
+    ['individual-lessons', { individualCourseId: id }],
+    () => getIndividualLessons({ individualCourseId: id })
   )
 
   const [editOpen,    setEditOpen]    = useState(false)

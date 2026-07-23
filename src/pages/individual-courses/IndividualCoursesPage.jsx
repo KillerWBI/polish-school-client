@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
 import { getIndividualCourses, createIndividualCourse, generateIndividualLessons } from '../../api/individualCourses.api'
 import { getMyStudents } from '../../api/students.api'
@@ -20,11 +20,10 @@ export default function IndividualCoursesPage() {
   const { t } = useTranslation('teacher')
   const { isTeacher } = useAuth()
 
-  const { data: courses,  loading,        reload } = useFetch(getIndividualCourses)
+  const { data: courses,  loading,        reload } = useApiQuery(['individual-courses'], getIndividualCourses)
   // students — для пикера в модалке создания (там studentId = User.id → бэк резолвит в Student)
-  const { data: students }                          = useFetch(
-    () => isTeacher ? getMyStudents() : Promise.resolve([]),
-    [isTeacher]
+  const { data: students }                          = useApiQuery(
+    ['my-students'], getMyStudents, { enabled: isTeacher }
   )
 
   const [modal, setModal] = useState(false)
