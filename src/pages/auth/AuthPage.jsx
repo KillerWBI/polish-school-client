@@ -50,7 +50,7 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
   return (
     <div className="min-h-screen flex bg-[#F7F8FA]">
       {/* ЛЕВО — тёмная бренд-панель (десктоп) */}
-      <aside className="hidden lg:flex flex-col justify-between w-[44%] max-w-xl bg-[#0A0A0B] text-[#EDEDED] p-12 relative overflow-hidden">
+      <aside className="hidden lg:flex flex-col justify-between w-[44%] max-w-xl bg-[#18181C] text-[#EDEDED] p-12 relative overflow-hidden">
         <div className="absolute inset-0 landing-grid opacity-50 [mask-image:radial-gradient(ellipse_70%_60%_at_30%_20%,#000_30%,transparent_100%)]" />
         <div className="absolute -top-32 -left-20 w-[500px] h-[400px] rounded-full bg-brand-600/15 blur-[120px]" />
 

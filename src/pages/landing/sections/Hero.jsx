@@ -5,7 +5,7 @@ export default function Hero({ onPrimary, onSecondary }) {
   const { t } = useTranslation('landing')
   const { t: tc } = useTranslation('common')
   return (
-    <section className="relative bg-[#0A0A0B] text-[#EDEDED] overflow-hidden">
+    <section className="relative bg-[#18181C] text-[#EDEDED] overflow-hidden">
       {/* тонкая сетка-фон (без цветных свечений — минимализм) */}
       <div className="absolute inset-0 landing-grid opacity-40 [mask-image:linear-gradient(#000,transparent)]" />
 
@@ -22,11 +22,11 @@ export default function Hero({ onPrimary, onSecondary }) {
         </p>
 
         {/* терминал-блок */}
-        <div className="mt-8 max-w-lg rounded-xl border border-[#1E1E22] bg-[#0D0D0F] font-mono text-[13px] overflow-hidden">
-          <div className="flex items-center gap-1.5 px-3 h-8 border-b border-[#1E1E22]">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
+        <div className="mt-8 max-w-lg rounded-xl border border-[#303036] bg-[#1D1D22] font-mono text-[13px] overflow-hidden">
+          <div className="flex items-center gap-1.5 px-3 h-8 border-b border-[#303036]">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
             <span className="ml-2 text-[#5A5A60] text-[11px]">{t('hero.term')}</span>
           </div>
           <div className="p-4 space-y-1.5 text-[#8A8A8F]">
@@ -41,13 +41,13 @@ export default function Hero({ onPrimary, onSecondary }) {
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <button
             onClick={onPrimary}
-            className="h-11 px-6 rounded-lg bg-white text-[#0A0A0B] text-sm font-semibold hover:bg-[#EDEDED] transition-colors cursor-pointer"
+            className="h-11 px-6 rounded-lg bg-white text-[#18181C] text-sm font-semibold hover:bg-[#EDEDED] transition-colors cursor-pointer"
           >
             {t('hero.startFree')}
           </button>
           <button
             onClick={onSecondary}
-            className="h-11 px-6 rounded-lg border border-[#2A2A2E] text-[#EDEDED] text-sm hover:bg-white/[0.04] hover:border-[#3A3A40] transition-colors cursor-pointer"
+            className="h-11 px-6 rounded-lg border border-[#3C3C43] text-[#EDEDED] text-sm hover:bg-white/[0.04] hover:border-[#48484F] transition-colors cursor-pointer"
           >
             {tc('login')}
           </button>
@@ -58,21 +58,21 @@ export default function Hero({ onPrimary, onSecondary }) {
           <span className="text-[#8A8A8F]">{t('hero.stats1')}</span>
           <span>→</span>
           <span className="text-brand-400">{t('hero.stats2')}</span>
-          <span className="text-[#2A2A2E]">·</span>
+          <span className="text-[#3C3C43]">·</span>
           <span>{t('hero.stats3')}</span>
-          <span className="text-[#2A2A2E]">·</span>
+          <span className="text-[#3C3C43]">·</span>
           <span>{t('hero.stats4')}</span>
-          <span className="text-[#2A2A2E]">·</span>
+          <span className="text-[#3C3C43]">·</span>
           <span>{t('hero.stats5')}</span>
         </div>
 
         {/* макет интерфейса (стилизованный «скрин», без картинки) */}
-        <div className="mt-16 rounded-2xl border border-[#1E1E22] bg-[#0D0D0F] overflow-hidden shadow-[0_30px_80px_-40px_rgba(0,0,0,0.7)]">
+        <div className="mt-16 rounded-2xl border border-[#303036] bg-[#1D1D22] overflow-hidden shadow-[0_30px_80px_-40px_rgba(0,0,0,0.7)]">
           {/* браузерная рамка */}
-          <div className="flex items-center gap-2 px-4 h-9 border-b border-[#1E1E22] bg-[#0A0A0B]">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
+          <div className="flex items-center gap-2 px-4 h-9 border-b border-[#303036] bg-[#18181C]">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
             <span className="ml-3 font-mono text-[11px] text-[#5A5A60]">{t('hero.mockTab')}</span>
           </div>
           {/* «светлое» приложение внутри — намёк, что аппа светлая */}

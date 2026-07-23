@@ -5,7 +5,7 @@ export default function ForStudents({ onStudentLanding, onLogin }) {
   const { t } = useTranslation('landing')
   const { t: tc } = useTranslation('common')
   return (
-    <section id="students" className="bg-[#0D0D0F] text-[#EDEDED] border-t border-[#141416]">
+    <section id="students" className="bg-[#1D1D22] text-[#EDEDED] border-t border-[#26262B]">
       <div className="max-w-5xl mx-auto px-6 py-20 sm:py-28">
         <p className="mono-label mb-4">{t('forStudents.label')}</p>
         <h2 className="font-display font-bold text-3xl sm:text-4xl tracking-tight max-w-2xl">
@@ -29,7 +29,7 @@ export default function ForStudents({ onStudentLanding, onLogin }) {
             {t('forStudents.cta')}
           </button>
           <button onClick={onLogin}
-            className="h-11 px-6 rounded-lg border border-[#2A2A2E] text-[#EDEDED] text-sm hover:bg-white/[0.04] hover:border-[#3A3A40] transition-colors cursor-pointer">
+            className="h-11 px-6 rounded-lg border border-[#3C3C43] text-[#EDEDED] text-sm hover:bg-white/[0.04] hover:border-[#48484F] transition-colors cursor-pointer">
             {tc('login')}
           </button>
         </div>

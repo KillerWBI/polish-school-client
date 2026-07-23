@@ -14,7 +14,7 @@ export default function Pain() {
   const { t } = useTranslation('landing')
   const MESS = MESS_POS.map((m) => ({ ...m, t: t(`pain.${m.k}t`), s: t(`pain.${m.k}s`) }))
   return (
-    <section className="bg-[#0A0A0B] text-[#EDEDED] border-t border-[#141416]">
+    <section className="bg-[#18181C] text-[#EDEDED] border-t border-[#26262B]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28 grid lg:grid-cols-2 gap-14 items-center">
         {/* Хаос */}
         <div className="relative h-[340px] order-2 lg:order-1">
@@ -22,7 +22,7 @@ export default function Pain() {
           {MESS.map((m) => (
             <div
               key={m.t}
-              className={`absolute w-44 rounded-lg border border-[#242428] bg-[#111114] px-3 py-2.5 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.7)] ${m.cls}`}
+              className={`absolute w-44 rounded-lg border border-[#303036] bg-[#1D1D22] px-3 py-2.5 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.7)] ${m.cls}`}
               style={{ transform: `rotate(${m.rot})` }}
             >
               <div className="text-xs font-medium text-[#CFCFD4]">{m.t}</div>
@@ -41,7 +41,7 @@ export default function Pain() {
           <p className="mt-5 text-[#9A9AA1] leading-relaxed">
             {t('pain.text')}
           </p>
-          <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#1E1E22] bg-[#0D0D0F] p-4">
+          <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#303036] bg-[#1D1D22] p-4">
             <span className="font-mono text-2xl text-brand-400">→</span>
             <p className="text-sm text-[#EDEDED]">
               {t('pain.solution')}
