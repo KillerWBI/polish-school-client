@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import useFetch from '../../hooks/useFetch'
 import { getSession, reviewItem, getWeakSpots } from '../../api/study.api'
 import CardReview from '../topics/CardReview'
@@ -13,6 +14,7 @@ const weakColor = (m) => m >= 40 ? 'text-blue-600' : 'text-amber-600'
 
 // Ежедневная 5-мин сессия: карточки со всех треков + словарь, которым пора на повторение.
 export default function DailySessionPage() {
+  const { t } = useTranslation('student')
   const navigate = useNavigate()
   const { data, loading, reload } = useFetch(getSession)
   const { data: weak } = useFetch(getWeakSpots)
@@ -30,30 +32,30 @@ export default function DailySessionPage() {
           <CalendarCheck className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Ежедневная сессия</h1>
-          <p className="text-sm text-slate-500">Повторение того, что пора повторить — со всех треков и словаря</p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t('study.title')}</h1>
+          <p className="text-sm text-slate-500">{t('study.subtitle')}</p>
         </div>
       </div>
 
       {!items.length ? (
-        <EmptyState emoji="🎉" title="На сегодня всё повторено"
-          text="Возвращайтесь позже — карточки появятся здесь по расписанию. Добавляйте новые на шагах треков и в словаре." />
+        <EmptyState emoji="🎉" title={t('study.emptyTitle')}
+          text={t('study.emptyText')} />
       ) : !started ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center max-w-xl mx-auto">
           <div className="text-4xl mb-3">🗂️</div>
-          <div className="text-lg font-semibold text-slate-900 mb-1">К повторению: {meta.total}</div>
+          <div className="text-lg font-semibold text-slate-900 mb-1">{t('study.toReview', { count: meta.total })}</div>
           <div className="flex items-center justify-center gap-4 text-sm text-slate-500 mb-5">
-            <span className="inline-flex items-center gap-1.5"><Layers className="w-4 h-4" /> Треки: {meta.cards}</span>
-            <span className="inline-flex items-center gap-1.5"><BookMarked className="w-4 h-4" /> Словарь: {meta.vocab}</span>
+            <span className="inline-flex items-center gap-1.5"><Layers className="w-4 h-4" /> {t('study.tracksCount', { count: meta.cards })}</span>
+            <span className="inline-flex items-center gap-1.5"><BookMarked className="w-4 h-4" /> {t('study.vocabCount', { count: meta.vocab })}</span>
           </div>
-          <Button onClick={() => setStarted(true)}>Начать повторение</Button>
+          <Button onClick={() => setStarted(true)}>{t('study.start')}</Button>
         </div>
       ) : (
         <CardReview
           cards={items}
           onReview={(card, correct) => reviewItem(card.kind, card.id, correct)}
           onDone={() => { setStarted(false); reload() }}
-          hint="Вспомните ответ, затем переверните карточку"
+          hint={t('study.cardHint')}
         />
       )}
 
@@ -61,16 +63,16 @@ export default function DailySessionPage() {
       {!started && weak?.length > 0 && (
         <div className="mt-8">
           <h2 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-1.5">
-            <AlertTriangle className="w-4 h-4 text-amber-500" /> Слабые места
+            <AlertTriangle className="w-4 h-4 text-amber-500" /> {t('study.weakTitle')}
           </h2>
-          <p className="text-xs text-slate-500 mb-3">Подтемы, где обладание пока низкое — стоит вернуться и попрактиковать.</p>
+          <p className="text-xs text-slate-500 mb-3">{t('study.weakSub')}</p>
           <div className="space-y-2">
             {weak.map((w) => (
               <button key={`${w.topicId}-${w.stepId}`} onClick={() => navigate(`/topics/${w.topicId}`)}
                 className="w-full text-left rounded-xl border border-slate-200 bg-white p-3 hover:border-amber-300 transition-colors flex items-center gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="text-sm text-slate-900 truncate">{w.stepTitle}</div>
-                  <div className="text-xs text-slate-400 mt-0.5 truncate">{w.topicTitle} · {w.attempts} практик</div>
+                  <div className="text-xs text-slate-400 mt-0.5 truncate">{w.topicTitle} · {w.attempts} {t('topics.practices', { count: w.attempts })}</div>
                 </div>
                 <span className={`text-sm font-semibold shrink-0 tabular-nums ${weakColor(w.mastery)}`}>{w.mastery}%</span>
                 <ChevronRight className="w-4 h-4 text-slate-300 shrink-0" />

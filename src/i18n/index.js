@@ -27,12 +27,17 @@ import ruTeacher from './locales/ru/teacher.json'
 import enTeacher from './locales/en/teacher.json'
 import plTeacher from './locales/pl/teacher.json'
 import ukTeacher from './locales/uk/teacher.json'
+// student: страницы ученика (треки/словарь/сессия/заметки/прогресс…) — ru/en/pl/uk; es/fr/de фолбэк на en
+import ruStudent from './locales/ru/student.json'
+import enStudent from './locales/en/student.json'
+import plStudent from './locales/pl/student.json'
+import ukStudent from './locales/uk/student.json'
 
 const resources = {
-  ru: { common: ruCommon, landing: ruLanding, app: ruApp, teacher: ruTeacher },
-  pl: { common: plCommon, landing: plLanding, app: plApp, teacher: plTeacher },
-  uk: { common: ukCommon, landing: ukLanding, app: ukApp, teacher: ukTeacher },
-  en: { common: enCommon, landing: enLanding, app: enApp, teacher: enTeacher },
+  ru: { common: ruCommon, landing: ruLanding, app: ruApp, teacher: ruTeacher, student: ruStudent },
+  pl: { common: plCommon, landing: plLanding, app: plApp, teacher: plTeacher, student: plStudent },
+  uk: { common: ukCommon, landing: ukLanding, app: ukApp, teacher: ukTeacher, student: ukStudent },
+  en: { common: enCommon, landing: enLanding, app: enApp, teacher: enTeacher, student: enStudent },
   es: { common: esCommon },
   fr: { common: frCommon },
   de: { common: deCommon },
@@ -49,7 +54,7 @@ i18n
     resources,
     supportedLngs: SUPPORTED,
     fallbackLng: FALLBACK,
-    ns: ['common', 'landing', 'app', 'teacher'],
+    ns: ['common', 'landing', 'app', 'teacher', 'student'],
     defaultNS: 'common',
     load: 'languageOnly', // 'pl-PL' → 'pl'
     interpolation: { escapeValue: false },
