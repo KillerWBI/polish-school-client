@@ -400,15 +400,15 @@ function CreateHWModal({ open, onClose, onCreated }) {
 
           {/* Тип урока */}
           <div className="flex gap-2">
-            {['group', 'individual'].map(t => (
-              <button key={t} type="button"
-                onClick={() => set('lessonType', t)}
+            {['group', 'individual'].map(lt => (
+              <button key={lt} type="button"
+                onClick={() => set('lessonType', lt)}
                 className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-all ${
-                  form.lessonType === t
+                  form.lessonType === lt
                     ? 'bg-blue-50 border-blue-200 text-blue-700'
                     : 'bg-white border-slate-200 text-slate-400 hover:text-slate-900'
                 }`}>
-                {t === 'group' ? t('homework.typeGroup') : t('homework.typeIndividual')}
+                {lt === 'group' ? t('homework.typeGroup') : t('homework.typeIndividual')}
               </button>
             ))}
           </div>
