@@ -136,8 +136,9 @@
 - [x] **Учебные треки — Фаза 1 (MVP) ✅ 2026-07-14** (роадмап+практика по шагам+разбор+обладание по подтемам+мягкий гейт). Спец: `LEARNING-TRACKS.md`. Отложено (Фаза 2+): открытый ИИ-ответ и карточки, SR/повторение, источники, i18n этих страниц.
 
 ### ⚪ Техдолг
-- [ ] **TanStack Query** вместо `useFetch` (кэш/авто-refetch) — крупная задача
+- [x] **TanStack Query** вместо `useFetch` — ✅ 2026-07-24. Общий `queryClient` (staleTime 20с). `hooks/useApiQuery.js` (обёртка с интерфейсом `useFetch`: `data/loading/error/reload`), `reload()=refetch`. Все 20 страниц мигрированы, `useFetch.js` удалён. Повторный заход — из кэша, обновление в фоне.
 - [ ] **Recharts lazy в Dashboard** — `AnalyticsChart` статически в DashboardPage → в main bundle
+- [ ] **Cold start бэка** (Railway free-tier спит → первый запрос ~6с) — keep-alive пинг / платный тариф / co-locate БД
 
 ---
 
