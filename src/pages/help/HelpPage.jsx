@@ -171,10 +171,10 @@ const TEACHER_SECTIONS = [
   },
   {
     id: 'pwa', title: 'Установка как приложение', items: [
-      { q: 'Как установить LinguaFlow на телефон (Android / iPhone)?', a: 'Android: открой сайт в Chrome → три точки (⋮) → «Добавить на главный экран» → «Установить». iPhone: открой в Safari → кнопка «Поделиться» (прямоугольник со стрелкой) → «На экран «Домой»».',
+      { q: 'Как установить Diklaro на телефон (Android / iPhone)?', a: 'Android: открой сайт в Chrome → три точки (⋮) → «Добавить на главный экран» → «Установить». iPhone: открой в Safari → кнопка «Поделиться» (прямоугольник со стрелкой) → «На экран «Домой»».',
         visual: <Shot><div className="flex gap-3 items-start"><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">Android</span><div className="text-[9px] text-slate-500 leading-relaxed">Chrome → ⋮ →<br/>Добавить на<br/>главный экран</div></div><div className="w-px bg-slate-200" /><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">iPhone</span><div className="text-[9px] text-slate-500 leading-relaxed">Safari → □↑ →<br/>На экран<br/>«Домой»</div></div></div></Shot> },
-      { q: 'Как установить на компьютер?', a: 'В Chrome/Edge в адресной строке появляется значок «Установить» (экран со стрелкой) — кликни и подтверди. Или через меню: «Установить LinguaFlow». После установки откроется как отдельное окно без браузера.',
-        visual: <Shot><Mark label="в адресной строке браузера"><div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56"><span className="flex-1">app.linguaflow...</span><span className="text-blue-600">⊕</span></div></Mark></Shot> },
+      { q: 'Как установить на компьютер?', a: 'В Chrome/Edge в адресной строке появляется значок «Установить» (экран со стрелкой) — кликни и подтверди. Или через меню: «Установить Diklaro». После установки откроется как отдельное окно без браузера.',
+        visual: <Shot><Mark label="в адресной строке браузера"><div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56"><span className="flex-1">app.diklario...</span><span className="text-blue-600">⊕</span></div></Mark></Shot> },
       { q: 'Будет ли работать без интернета?', a: 'Частично: страницы, которые уже были открыты, загрузятся из кэша. Создавать уроки и вносить данные без сети нельзя — нужна синхронизация с сервером.',
         visual: <Shot><div className="w-52 rounded-xl bg-white border border-slate-200 p-3 space-y-1"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500" /><span className="text-[10px] text-slate-600">Кэш страниц — доступно</span></div><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-red-400" /><span className="text-[10px] text-slate-600">Создание данных — нет</span></div></div></Shot> },
     ],
@@ -252,10 +252,10 @@ const STUDENT_SECTIONS = [
   },
   {
     id: 'pwa', title: 'Установка как приложение', items: [
-      { q: 'Как установить LinguaFlow на телефон (Android / iPhone)?', a: 'Android: открой сайт в Chrome → три точки (⋮) → «Добавить на главный экран» → «Установить». iPhone: открой в Safari → кнопка «Поделиться» (прямоугольник со стрелкой) → «На экран «Домой»».',
+      { q: 'Как установить Diklaro на телефон (Android / iPhone)?', a: 'Android: открой сайт в Chrome → три точки (⋮) → «Добавить на главный экран» → «Установить». iPhone: открой в Safari → кнопка «Поделиться» (прямоугольник со стрелкой) → «На экран «Домой»».',
         visual: <Shot><div className="flex gap-3 items-start"><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">Android</span><div className="text-[9px] text-slate-500 leading-relaxed">Chrome → ⋮ →<br/>Добавить на<br/>главный экран</div></div><div className="w-px bg-slate-200" /><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">iPhone</span><div className="text-[9px] text-slate-500 leading-relaxed">Safari → □↑ →<br/>На экран<br/>«Домой»</div></div></div></Shot> },
-      { q: 'Как установить на компьютер?', a: 'В Chrome/Edge в адресной строке появляется значок «Установить» — кликни и подтверди. После установки LinguaFlow откроется как отдельное окно.',
-        visual: <Shot><Mark label="в адресной строке браузера"><div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56"><span className="flex-1">app.linguaflow...</span><span className="text-blue-600">⊕</span></div></Mark></Shot> },
+      { q: 'Как установить на компьютер?', a: 'В Chrome/Edge в адресной строке появляется значок «Установить» — кликни и подтверди. После установки Diklaro откроется как отдельное окно.',
+        visual: <Shot><Mark label="в адресной строке браузера"><div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56"><span className="flex-1">app.diklario...</span><span className="text-blue-600">⊕</span></div></Mark></Shot> },
     ],
   },
 ]

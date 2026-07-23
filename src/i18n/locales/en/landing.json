@@ -23,7 +23,7 @@
     "stats3": "solo or with students",
     "stats4": "free to start",
     "stats5": "works on mobile too",
-    "mockTab": "linguaflow — dashboard",
+    "mockTab": "diklario — dashboard",
     "kpiDebt": "Owed",
     "kpiToday": "Lessons today",
     "kpiHw": "To grade",
@@ -34,7 +34,7 @@
     "label": "// the pain",
     "title": "Students in a notebook, debts in Excel, «who paid?» in chats.",
     "text": "The more students you have, the more tabs. You forget to mark, lose track, miscalculate. Your evening goes to reconciling spreadsheets, not preparing lessons.",
-    "solution": "LinguaFlow brings it all into one screen: groups, attendance, assignments and balance are calculated for you.",
+    "solution": "Diklaro brings it all into one screen: groups, attendance, assignments and balance are calculated for you.",
     "note": "and all this — for a single group",
     "mess1t": "Excel — debts", "mess1s": "who owes what?",
     "mess2t": "Messenger", "mess2s": "«did you pay?»",
@@ -139,7 +139,7 @@
     "title": "About the platform, in short",
     "subtitle": "Answers to the questions that come up before signing up.",
     "note": "Still have questions? Sign up and try it — it's free and takes a couple of minutes.",
-    "q1": "What is LinguaFlow?",
+    "q1": "What is Diklaro?",
     "a1": "A teacher's workspace. Groups, schedule, lessons, homework, attendance and finances — in one place, instead of a dozen tabs, chats and spreadsheets. You always see who owes what, what's assigned and who submitted, who was in class. If they wish, a student gets a personal portal with schedule, grades, materials and progress.",
     "q2": "How much does it cost?",
     "a2": "The basic plan is free — enough to run your first students. For unlimited work there's the Pro plan. Subscription payments are coming soon; for now the limits don't block your work.",
@@ -160,6 +160,8 @@
     "how": "how it works",
     "faq": "questions",
     "support": "support",
+    "privacy": "privacy",
+    "terms": "terms",
     "start": "get started",
     "madeFor": "made for teachers and students"
   },
@@ -169,7 +171,7 @@
   },
   "forStudents": {
     "label": "// are you a student?",
-    "title": "Studying with a teacher on LinguaFlow?",
+    "title": "Studying with a teacher on Diklaro?",
     "text": "Create a student account — and keep everything in one place. Your teacher invites you to the group by username, and you instantly see the schedule, assignments and your progress.",
     "f1": "schedule and lesson links",
     "f2": "assignments and deadlines",
@@ -245,7 +247,7 @@
     "step3t": "Studying in one place", "step3d": "Then it's all at hand: schedule, assignments, grades, attendance, balance, materials and progress.",
     "faqLabel": "// questions",
     "faqTitle": "Frequently asked",
-    "sq1": "What does LinguaFlow give a student?",
+    "sq1": "What does Diklaro give a student?",
     "sa1": "All your studies in one place: schedule with lesson links, homework with deadlines, grades, attendance and balance. Plus personal tools — learning progress, lesson materials, notes and vocabulary. No need to scroll chats and remember what's assigned and when the lesson is.",
     "sq2": "Is it paid for the student?",
     "sa2": "The student portal is free. You pay the teacher for the lessons themselves, and the platform shows how much is charged and paid. You can send a payment right in the app with a confirmation — the teacher approves it.",
@@ -260,7 +262,7 @@
     "sq7": "Is my data safe?",
     "sa7": "Yes. The teacher sees only what's related to your lessons. Access to your data by outsiders is impossible.",
     "ctaTitle1": "Study", "ctaTitle2": "without the chaos",
-    "footerBrand": "LinguaFlow · student page",
+    "footerBrand": "Diklaro · student page",
     "footerCross": "Are you a teacher? → to the teacher page"
   }
 }

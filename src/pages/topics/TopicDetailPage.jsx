@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { ArrowLeft, Sparkles, Lightbulb, Lock, Check, History, Target, Layers, Repeat, PenLine, FileText, BookOpen, Link2, Grid3x3, Trash2 } from 'lucide-react'
+import { ArrowLeft, Sparkles, Lightbulb, Lock, Check, History, Target, Layers, Repeat, PenLine, FileText, BookOpen, Link2, Grid3x3, Trash2, Share2 } from 'lucide-react'
 import useFetch from '../../hooks/useFetch'
-import { getTopic, nextTopicQuiz, submitTopicAttempt, gradeOpenAnswers, suggestSources, getSources, deleteSource, importCardsFromText } from '../../api/topics.api'
+import { getTopic, nextTopicQuiz, submitTopicAttempt, gradeOpenAnswers, suggestSources, getSources, deleteSource, importCardsFromText, shareTopic } from '../../api/topics.api'
 import { safeUrl } from '../../utils/safeUrl'
 import { getCards, getDueCards, generateCards, reviewCard } from '../../api/topicCards.api'
 import { getQuiz } from '../../api/quizzes.api'
@@ -36,6 +36,7 @@ export default function TopicDetailPage() {
   const [trackReview, setTrackReview]   = useState(false) // повторение due-карточек всего трека
   const [ideasOpen, setIdeasOpen]       = useState(false)
   const [reviewId, setReviewId]         = useState(null) // id попытки для разбора
+  const [sharing, setSharing]           = useState(false) // тоггл «поделиться с учителем»
 
   if (loading) return <PageContainer><SkeletonList /></PageContainer>
   if (error || !data?.topic) {
@@ -50,6 +51,18 @@ export default function TopicDetailPage() {
   const { topic, attempts } = data
   const roadmap = (Array.isArray(topic.roadmap) ? topic.roadmap : []).slice().sort((a, b) => a.order - b.order)
   const m = Math.round(topic.masteryPercent || 0)
+
+  // Поделиться треком с учителем — учитель увидит слабые места и сможет дать адресный тест
+  const toggleShare = async () => {
+    setSharing(true)
+    try {
+      const r = await shareTopic(topic.id, !topic.sharedWithTeacher)
+      toast.success(r.sharedWithTeacher ? 'Трек виден вашему учителю' : 'Доступ учителя отозван')
+      reload()
+    } catch (e) {
+      toast.error(e.response?.data?.error || 'Ошибка')
+    } finally { setSharing(false) }
+  }
 
   const dueCount   = cardsData?.meta?.dueCount ?? 0
   const totalCards = cardsData?.data?.length ?? 0
@@ -127,10 +140,20 @@ export default function TopicDetailPage() {
           🎯 {topic.goal}
         </p>
       )}
-      <button onClick={() => setIdeasOpen(true)}
-        className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 mb-5 transition-colors">
-        <Lightbulb className="w-4 h-4" /> Что можно изучать?
-      </button>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-5">
+        <button onClick={() => setIdeasOpen(true)}
+          className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 transition-colors">
+          <Lightbulb className="w-4 h-4" /> Что можно изучать?
+        </button>
+        <button onClick={toggleShare} disabled={sharing}
+          className={`inline-flex items-center gap-1.5 text-sm transition-colors disabled:opacity-50 ${
+            topic.sharedWithTeacher ? 'text-emerald-600 hover:text-emerald-700' : 'text-slate-500 hover:text-slate-700'
+          }`}
+          title="Учитель увидит слабые места этого трека и сможет дать адресный тест">
+          <Share2 className="w-4 h-4" />
+          {topic.sharedWithTeacher ? 'Виден учителю · отозвать' : 'Поделиться с учителем'}
+        </button>
+      </div>
 
       {/* Карта знаний — компактный heatmap обладания по шагам (экспериментально) */}
       <KnowledgeMap roadmap={roadmap} />

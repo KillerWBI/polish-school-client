@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import Logo from '../../../components/ui/Logo'
 
 // Футер лендинга — тёмный тех-моно.
 export default function Footer({ onPrimary }) {
@@ -11,8 +12,8 @@ export default function Footer({ onPrimary }) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-[2px] bg-brand-500" />
-              <span className="font-mono text-sm font-semibold">LinguaFlow</span>
+              <Logo size={22} />
+              <span className="font-mono text-sm font-semibold">Diklaro</span>
             </div>
             <p className="text-sm text-[#6E6E76] max-w-xs">{t('footer.tagline')}</p>
           </div>
@@ -27,8 +28,13 @@ export default function Footer({ onPrimary }) {
         </div>
 
         <div className="mt-12 pt-6 border-t border-[#141416] flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[12px] text-[#5A5A60]">
-          <span>© {new Date().getFullYear()} LinguaFlow</span>
-          <span>{t('footer.madeFor')}</span>
+          <span>© {new Date().getFullYear()} Diklaro</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
+            <Link to="/privacy" className="hover:text-white transition-colors">{t('footer.privacy', 'конфиденциальность')}</Link>
+            <Link to="/terms"   className="hover:text-white transition-colors">{t('footer.terms', 'условия')}</Link>
+            <span className="hidden sm:inline text-[#3A3A40]">·</span>
+            <span>{t('footer.madeFor')}</span>
+          </div>
         </div>
       </div>
     </footer>

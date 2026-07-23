@@ -1,4 +1,4 @@
-// Service worker LinguaFlow — оффлайн-оболочка PWA.
+// Service worker Diklaro — оффлайн-оболочка PWA.
 // Стратегии:
 //   навигация (страницы SPA) — network-first: всегда тянем свежий HTML (деплой не залипает),
 //     оффлайн → отдаём кэшированный index.html;

@@ -9,7 +9,10 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import ResetPasswordPage  from './pages/auth/ResetPasswordPage'
 import VerifyEmailPage    from './pages/auth/VerifyEmailPage'
 import SupportPage        from './pages/support/SupportPage'
+import PrivacyPage        from './pages/legal/PrivacyPage'
+import TermsPage          from './pages/legal/TermsPage'
 import AppLayout          from './components/layout/AppLayout'
+import CookieBanner       from './components/ui/CookieBanner'
 import PrivateRoute       from './components/layout/PrivateRoute'
 import RoleRoute          from './components/layout/RoleRoute'
 import DashboardPage      from './pages/dashboard/DashboardPage'
@@ -31,6 +34,7 @@ const HelpPage                   = lazy(() => import('./pages/help/HelpPage'))
 const PlansPage                  = lazy(() => import('./pages/plans/PlansPage'))
 const QuizGeneratorPage          = lazy(() => import('./pages/quiz/QuizGeneratorPage'))
 const MyQuizzesPage              = lazy(() => import('./pages/quiz/MyQuizzesPage'))
+const TestsPage                  = lazy(() => import('./pages/quiz/TestsPage'))
 const QuizViewPage               = lazy(() => import('./pages/quiz/QuizViewPage'))
 const AdminPage                  = lazy(() => import('./pages/admin/AdminPage'))
 const VocabPage                  = lazy(() => import('./pages/vocab/VocabPage'))
@@ -56,6 +60,8 @@ export default function App() {
         <Route path="/reset-password"  element={<ResetPasswordPage />} />
         <Route path="/verify-email"    element={<VerifyEmailPage />} />
         <Route path="/support"         element={<SupportPage />} />
+        <Route path="/privacy"         element={<PrivacyPage />} />
+        <Route path="/terms"           element={<TermsPage />} />
 
         {/* Кабинет — Suspense внутри AppLayout вокруг <Outlet /> */}
         <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
@@ -110,6 +116,7 @@ export default function App() {
             element={<RoleRoute role="student"><ProgressPage /></RoleRoute>} />
 
           {/* AI-тесты — обе роли (учитель: библиотека; ученик: личные тесты + результаты) */}
+          <Route path="/tests"       element={<TestsPage />} />
           <Route path="/quiz"        element={<QuizGeneratorPage />} />
           <Route path="/quizzes"     element={<MyQuizzesPage />} />
           <Route path="/quizzes/:id" element={<QuizViewPage />} />
@@ -121,6 +128,7 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <CookieBanner />
     </BrowserRouter>
   )
 }

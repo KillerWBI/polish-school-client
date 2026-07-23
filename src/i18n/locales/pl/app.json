@@ -16,14 +16,17 @@
     "homework": "Prace domowe",
     "attendance": "Obecność",
     "materials": "Materiały",
-    "myLessons": "Moje zajęcia",
+    "myLessons": "Zajęcia zewnętrzne",
     "aiQuiz": "Testy AI",
     "myQuizzes": "Moje testy",
-    "topics": "Moje tematy",
+    "topics": "Ścieżki nauki",
     "vocab": "Słownik",
     "notes": "Notatki",
     "payments": "Płatności",
-    "adminPanel": "Panel administratora"
+    "adminPanel": "Panel administratora",
+    "tests": "Testy",
+    "sectionWithTeacher": "Z nauczycielem",
+    "sectionSelf": "Samodzielnie"
   },
   "sidebar": {
     "install": "Zainstaluj aplikację",
@@ -104,8 +107,18 @@
     "headlineTeacher2": "u uczniów.",
     "headlineStudent1": "Cała nauka —",
     "headlineStudent2": "w jednym miejscu.",
-    "teacherBullets": ["grupy, lekcje, plan", "obecność i zadania", "zadłużenie liczy się samo", "solo lub z uczniami"],
-    "studentBullets": ["plan i linki do lekcji", "zadania i terminy", "oceny i postępy", "obecność i zadłużenie"],
+    "teacherBullets": [
+      "grupy, lekcje, plan",
+      "obecność i zadania",
+      "zadłużenie liczy się samo",
+      "solo lub z uczniami"
+    ],
+    "studentBullets": [
+      "plan i linki do lekcji",
+      "zadania i terminy",
+      "oceny i postępy",
+      "obecność i zadłużenie"
+    ],
     "panelFoot": "darmowe na start · także z telefonu",
     "backHome": "← na stronę główną",
     "headTeacher": "Konto nauczyciela",
@@ -248,7 +261,20 @@
     "hwCompletionHint": "Liczone są tylko zadania po terminie",
     "submittedOf": "Oddano {{done}} z {{total}}",
     "weekPrefix": "t",
-    "months": ["sty", "lut", "mar", "kwi", "maj", "cze", "lip", "sie", "wrz", "paź", "lis", "gru"],
+    "months": [
+      "sty",
+      "lut",
+      "mar",
+      "kwi",
+      "maj",
+      "cze",
+      "lip",
+      "sie",
+      "wrz",
+      "paź",
+      "lis",
+      "gru"
+    ],
     "rangeDay": "ostatnie 30 dni",
     "rangeWeek": "bieżący + 7 tygodni",
     "rangeMonth": "ostatnie 6 miesięcy"

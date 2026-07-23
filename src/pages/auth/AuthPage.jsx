@@ -56,7 +56,7 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
 
         <Link to="/" className="relative flex items-center gap-2 w-fit">
           <span className="w-2 h-2 rounded-[2px] bg-brand-500" />
-          <span className="font-mono text-sm font-semibold">LinguaFlow</span>
+          <span className="font-mono text-sm font-semibold">Diklaro</span>
         </Link>
 
         <div className="relative">
@@ -84,7 +84,7 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
         <div className="lg:hidden flex items-center justify-between px-6 h-16 border-b border-[#EAECEF]">
           <Link to="/" className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-[2px] bg-brand-500" />
-            <span className="font-mono text-sm font-semibold text-[#0F172A]">LinguaFlow</span>
+            <span className="font-mono text-sm font-semibold text-[#0F172A]">Diklaro</span>
           </Link>
           <Link to="/" className="text-sm text-[#64748B] hover:text-[#0F172A]">{t('authPage.backHome')}</Link>
         </div>

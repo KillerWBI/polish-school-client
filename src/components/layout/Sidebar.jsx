@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import useAuth from '../../hooks/useAuth'
 import { safeUrl } from '../../utils/safeUrl'
 import LanguageSwitcher from '../ui/LanguageSwitcher'
+import Logo from '../ui/Logo'
 
 // Светлый сайдбар (Cemdash-стиль). label/section — ключи app.json, резолвятся t() при рендере.
 const PLAN_LABEL = { free: 'Free', pro: 'Pro', school: 'School' }
@@ -22,8 +23,7 @@ const TEACHER_SECTIONS = [
     { path: '/materials',          label: 'nav.materials',         icon: IconFolder },
   ]},
   { label: 'nav.sectionTools', items: [
-    { path: '/quiz',    label: 'nav.aiQuiz',    icon: IconSparkles },
-    { path: '/quizzes', label: 'nav.myQuizzes', icon: IconList },
+    { path: '/tests', label: 'nav.tests', icon: IconList },
   ]},
   { label: 'nav.sectionFinance', items: [
     { path: '/payments', label: 'nav.payments', icon: IconPayment },
@@ -32,27 +32,24 @@ const TEACHER_SECTIONS = [
 
 const STUDENT_SECTIONS = [
   { label: 'nav.sectionMain', items: [
-    { path: '/dashboard',   label: 'nav.dashboard', icon: IconDashboard },
-    { path: '/calendar',    label: 'nav.calendar',  icon: IconCalendar },
-    { path: '/study',       label: 'nav.dailySession', icon: IconDaily },
-    { path: '/my-progress', label: 'nav.progress',  icon: IconProgress },
+    { path: '/dashboard', label: 'nav.dashboard',    icon: IconDashboard },
+    { path: '/calendar',  label: 'nav.calendar',     icon: IconCalendar },
+    { path: '/study',     label: 'nav.dailySession', icon: IconDaily },
   ]},
-  { label: 'nav.sectionStudy', items: [
+  { label: 'nav.sectionWithTeacher', items: [
     { path: '/groups',     label: 'nav.myGroups',   icon: IconGroups },
     { path: '/homework',   label: 'nav.homework',   icon: IconHomework },
     { path: '/attendance', label: 'nav.attendance', icon: IconCheck },
     { path: '/materials',  label: 'nav.materials',  icon: IconFolder },
-    { path: '/my-lessons', label: 'nav.myLessons',  icon: IconNotebook },
+    { path: '/payments',   label: 'nav.payments',   icon: IconPayment },
   ]},
-  { label: 'nav.sectionTools', items: [
-    { path: '/quiz',     label: 'nav.aiQuiz',    icon: IconSparkles },
-    { path: '/quizzes',  label: 'nav.myQuizzes', icon: IconList },
-    { path: '/topics',   label: 'nav.topics',    icon: IconTarget },
-    { path: '/vocab',    label: 'nav.vocab',     icon: IconVocab },
-    { path: '/my-notes', label: 'nav.notes',     icon: IconNote },
-  ]},
-  { label: 'nav.sectionFinance', items: [
-    { path: '/payments', label: 'nav.payments', icon: IconPayment },
+  { label: 'nav.sectionSelf', items: [
+    { path: '/topics',      label: 'nav.topics',    icon: IconTarget },
+    { path: '/tests',       label: 'nav.tests',     icon: IconList },
+    { path: '/vocab',       label: 'nav.vocab',     icon: IconVocab },
+    { path: '/my-notes',    label: 'nav.notes',     icon: IconNote },
+    { path: '/my-lessons',  label: 'nav.myLessons', icon: IconNotebook },
+    { path: '/my-progress', label: 'nav.progress',  icon: IconProgress },
   ]},
 ]
 
@@ -91,8 +88,8 @@ export default function Sidebar({ onClose }) {
       {/* Лого */}
       <Link to="/dashboard" onClick={onClose}
         className="flex items-center gap-2.5 px-5 h-16 border-b border-[#F0F2F5]">
-        <span className="w-6 h-6 rounded-lg bg-slate-900 text-white flex items-center justify-center font-mono text-xs font-bold">L</span>
-        <span className="font-mono text-sm font-semibold text-[#0F172A] tracking-tight">LinguaFlow</span>
+        <Logo size={26} />
+        <span className="font-mono text-sm font-semibold text-[#0F172A] tracking-tight">Diklaro</span>
       </Link>
 
       {/* Профиль */}
@@ -105,16 +102,14 @@ export default function Sidebar({ onClose }) {
             <div className="text-xs font-medium text-[#0F172A] truncate leading-tight">{user?.name?.split(' ')[0] ?? '—'}</div>
             <div className="text-[10px] text-[#94A3B8] truncate mt-0.5">{user?.role ? t(`role.${user.role}`) : t('sidebar.user')}</div>
           </div>
-          {isTeacher && (
-            <Link to="/plans" onClick={onClose}
-              className={`text-[9px] font-medium rounded px-1.5 py-0.5 shrink-0 border transition-colors ${
-                user?.plan && user.plan !== 'free'
-                  ? 'text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100'
-                  : 'text-[#64748B] border-[#E2E5EA] hover:border-blue-300 hover:text-blue-600'
-              }`}>
-              {PLAN_LABEL[user?.plan] ?? 'Free'}
-            </Link>
-          )}
+          <Link to="/plans" onClick={onClose}
+            className={`text-[9px] font-medium rounded px-1.5 py-0.5 shrink-0 border transition-colors ${
+              user?.plan && user.plan !== 'free'
+                ? 'text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100'
+                : 'text-[#64748B] border-[#E2E5EA] hover:border-blue-300 hover:text-blue-600'
+            }`}>
+            {PLAN_LABEL[user?.plan] ?? 'Free'}
+          </Link>
         </div>
       </div>
 

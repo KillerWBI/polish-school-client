@@ -27,3 +27,16 @@ export const deletePlaceholder = async (id) => {
   const { data } = await client.delete(`/students/${id}`)
   return data.data
 }
+
+// GET /students/:id/track-insights — слабые места ученика из расшаренных им треков
+// → { spots:[{topicId,topicTitle,stepId,stepTitle,mastery,attempts}], meta:{hasAccount,sharing,sharedCount,totalTracks} }
+export const getTrackInsights = async (id, signal) => {
+  const { data } = await client.get(`/students/${id}/track-insights`, { signal })
+  return data.data
+}
+
+// POST /students/:id/targeted-quiz — сгенерировать адресный тест по выбранным слабым подтемам → Quiz
+export const generateTargetedQuiz = async (id, spots, count) => {
+  const { data } = await client.post(`/students/${id}/targeted-quiz`, { spots, ...(count ? { count } : {}) })
+  return data.data
+}

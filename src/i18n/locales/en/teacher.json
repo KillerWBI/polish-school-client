@@ -37,7 +37,15 @@
     "addSlot": "+ Add slot",
     "enterName": "Enter a name",
     "createError": "Failed to create",
-    "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    "weekdays": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ]
   },
   "indCourses": {
     "titleTeacher": "Individual courses",
@@ -500,7 +508,7 @@
   },
   "admin": {
     "title": "Admin panel",
-    "subtitle": "Managing the LinguaFlow platform",
+    "subtitle": "Managing the Diklaro platform",
     "tabOverview": "Overview",
     "tabUsers": "Users",
     "tabSupport": "Support",
@@ -579,7 +587,7 @@
     "replyAndClose": "Reply and close",
     "planModalTitle": "Change plan",
     "freeDesc": "Basic — free",
-    "proDesc": "Extended — 49 zł/mo",
+    "proDesc": "Extended — $3.99/mo",
     "schoolDesc": "School — several teachers"
   },
   "indCourseDetail": {
@@ -747,42 +755,34 @@
   },
   "plans": {
     "title": "Plans",
-    "subtitle": "More groups, students and features as you grow.",
-    "footNote": "Subscription payment is being connected. For now, Free plan limits don't block your work.",
+    "subtitle": "All features on every plan. The only difference is the limits.",
+    "footNote": "Subscription billing via Paddle. The Free plan is forever.",
     "periodForever": "forever",
-    "periodMonth": "zł / mo",
-    "periodSoon": "soon",
+    "periodMonth": "/ mo",
     "popular": "Popular",
     "yourPlan": "Your plan",
     "included": "Included",
-    "soon": "Soon",
-    "upgrade": "Upgrade",
-    "upgradeToast": "Subscription payment coming soon — connecting the gateway",
-    "freeTagline": "For getting started and your first students",
-    "proTagline": "For unlimited work",
-    "schoolTagline": "Several teachers under one brand",
-    "freeFeatures": [
-      "Up to 2 groups",
-      "Up to 15 students",
-      "Lessons, homework, attendance, finances",
-      "Student portal: schedule, grades, progress",
-      "Individual courses and lessons",
-      "AI test generator",
-      "Email reminders for students"
-    ],
-    "proFeatures": [
-      "Unlimited groups and students",
-      "Lessons, homework, attendance, finances",
-      "Individual courses and lessons",
-      "Analytics and payment history",
-      "AI test generator",
-      "Email reminders for lessons and deadlines"
-    ],
-    "schoolFeatures": [
-      "All Pro features",
-      "Several teachers in one school",
-      "Shared brand and management",
-      "Priority support"
-    ]
+    "upgrade": "Choose",
+    "upgradeToast": "Subscription billing coming soon",
+    "freeName": "Free",
+    "standardName": "Standard",
+    "maxName": "Maximum",
+    "freeTagline": "To get started",
+    "standardTagline": "For active work",
+    "maxTagline": "Practically unlimited",
+    "allFeatures": "All features included",
+    "allFeaturesHint": "Groups, lessons, homework, attendance, finances, student portal, individual courses, AI tests, reminders",
+    "limitsTitle": "Limits:",
+    "upTo": "up to",
+    "limitGroups": "groups",
+    "limitStudents": "students",
+    "limitCourses": "individual courses",
+    "unlimitedNote": "— practically unlimited",
+    "freeCta": "Free",
+    "aiPerDay": "AI requests per day",
+    "limitTracks": "learning tracks",
+    "limitVocab": "vocabulary words",
+    "limitNotes": "notes",
+    "allFeaturesHintStudent": "Learning tracks, tests, flashcards, vocabulary, notes, error review, sources, daily session"
   }
 }

@@ -16,14 +16,17 @@
     "homework": "Homework",
     "attendance": "Attendance",
     "materials": "Materials",
-    "myLessons": "My lessons",
+    "myLessons": "External lessons",
     "aiQuiz": "AI tests",
     "myQuizzes": "My tests",
-    "topics": "My topics",
+    "topics": "Learning tracks",
     "vocab": "Vocabulary",
     "notes": "Notes",
     "payments": "Payments",
-    "adminPanel": "Admin panel"
+    "adminPanel": "Admin panel",
+    "tests": "Tests",
+    "sectionWithTeacher": "With teacher",
+    "sectionSelf": "On your own"
   },
   "sidebar": {
     "install": "Install app",
@@ -104,8 +107,18 @@
     "headlineTeacher2": "to your students.",
     "headlineStudent1": "All your studies —",
     "headlineStudent2": "in one place.",
-    "teacherBullets": ["groups, lessons, schedule", "attendance and homework", "balance counts itself", "solo or with students"],
-    "studentBullets": ["schedule and lesson links", "homework and deadlines", "grades and progress", "attendance and balance"],
+    "teacherBullets": [
+      "groups, lessons, schedule",
+      "attendance and homework",
+      "balance counts itself",
+      "solo or with students"
+    ],
+    "studentBullets": [
+      "schedule and lesson links",
+      "homework and deadlines",
+      "grades and progress",
+      "attendance and balance"
+    ],
     "panelFoot": "free to start · on mobile too",
     "backHome": "← home",
     "headTeacher": "Teacher account",
@@ -248,7 +261,20 @@
     "hwCompletionHint": "Only assignments with a passed deadline are counted",
     "submittedOf": "Submitted {{done}} of {{total}}",
     "weekPrefix": "w",
-    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "months": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
     "rangeDay": "last 30 days",
     "rangeWeek": "current + 7 weeks",
     "rangeMonth": "last 6 months"

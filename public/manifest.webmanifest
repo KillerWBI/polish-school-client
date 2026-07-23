@@ -1,6 +1,6 @@
 {
-  "name": "LinguaFlow — кокпит преподавателя",
-  "short_name": "LinguaFlow",
+  "name": "Diklaro — кокпит преподавателя",
+  "short_name": "Diklaro",
   "description": "Группы, уроки, ДЗ, посещаемость и финансы — в одном месте.",
   "start_url": "/dashboard",
   "scope": "/",

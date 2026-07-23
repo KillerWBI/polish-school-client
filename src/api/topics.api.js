@@ -22,6 +22,12 @@ export const deleteTopic = async (id) => {
   return data.data
 }
 
+// Поделиться треком с учителем (или отозвать доступ) → { id, sharedWithTeacher }
+export const shareTopic = async (id, shared) => {
+  const { data } = await client.patch(`/topics/${id}/share`, { shared })
+  return data.data
+}
+
 // Сгенерировать следующую практику по шагу (type: 'single' тест | 'open' открытый ответ)
 export const nextTopicQuiz = async (id, stepId, type = 'single') => {
   const { data } = await client.post(`/topics/${id}/next`, { stepId, type })
