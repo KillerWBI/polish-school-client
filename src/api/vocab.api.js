@@ -16,6 +16,20 @@ export const addVocab = async (payload) => {
   return data.data
 }
 
+// Массовое добавление: { items:[{word,translation,example?}], language?, nativeLanguage? }
+// → { data:[созданные], meta:{ added, skipped } }
+export const bulkAddVocab = async (payload) => {
+  const { data } = await client.post('/vocab/bulk', payload)
+  return data // возвращаем целиком ради meta (сколько добавлено/не влезло)
+}
+
+// AI-генерация набора: { language, nativeLanguage, topic, count, level }
+// → { data:[созданные], meta:{ generated, added, skipped } }
+export const generateVocab = async (payload) => {
+  const { data } = await client.post('/vocab/generate', payload)
+  return data
+}
+
 export const updateVocab = async (id, payload) => {
   const { data } = await client.put(`/vocab/${id}`, payload)
   return data.data

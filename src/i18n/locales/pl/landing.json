@@ -23,7 +23,7 @@
     "stats3": "solo lub z uczniami",
     "stats4": "darmowe na start",
     "stats5": "także z telefonu",
-    "mockTab": "linguaflow — panel",
+    "mockTab": "diklario — panel",
     "kpiDebt": "Zadłużenie",
     "kpiToday": "Lekcje dziś",
     "kpiHw": "Zadania do sprawdzenia",
@@ -34,7 +34,7 @@
     "label": "// ból",
     "title": "Uczniowie — w zeszycie, długi — w Excelu, „kto zapłacił” — w wiadomościach.",
     "text": "Im więcej uczniów, tym więcej kart. Zapomniałeś zaznaczyć, zgubiłeś, źle policzyłeś. Wieczór schodzi nie na przygotowanie lekcji, a na sklejanie tabelek.",
-    "solution": "LinguaFlow zbiera to na jednym ekranie: grupy, obecność, zadania i zadłużenie liczą się same.",
+    "solution": "Diklaro zbiera to na jednym ekranie: grupy, obecność, zadania i zadłużenie liczą się same.",
     "note": "a to wszystko — o jednej grupie",
     "mess1t": "Excel — długi", "mess1s": "kto ile jest winien?",
     "mess2t": "Komunikator", "mess2s": "„zapłaciłeś?”",
@@ -139,7 +139,7 @@
     "title": "Krótko o platformie",
     "subtitle": "Odpowiedzi na pytania, które pojawiają się przed rejestracją.",
     "note": "Zostały pytania? Zarejestruj się i wypróbuj — to darmowe i zajmuje kilka minut.",
-    "q1": "Czym jest LinguaFlow?",
+    "q1": "Czym jest Diklaro?",
     "a1": "Miejsce pracy nauczyciela. Grupy, plan, lekcje, prace domowe, obecność i finanse — w jednym miejscu, zamiast dziesiątek kart, czatów i arkuszy. Zawsze widzisz, kto ile jest winien, co zadane i kto oddał, kto był na zajęciach. Jeśli chcesz, uczeń dostaje własny panel z planem, ocenami, materiałami i postępami.",
     "q2": "Ile to kosztuje?",
     "a2": "Plan podstawowy jest darmowy i wystarcza, by prowadzić pierwszych uczniów. Do pracy bez ograniczeń jest plan Pro. Podłączenie płatności za subskrypcję jest w najbliższych planach; obecnie ograniczenia nie blokują pracy.",
@@ -160,6 +160,8 @@
     "how": "jak działa",
     "faq": "pytania",
     "support": "pomoc",
+    "privacy": "prywatność",
+    "terms": "regulamin",
     "start": "zacznij",
     "madeFor": "stworzone dla nauczycieli i uczniów"
   },
@@ -169,7 +171,7 @@
   },
   "forStudents": {
     "label": "// jesteś uczniem?",
-    "title": "Uczysz się z nauczycielem na LinguaFlow?",
+    "title": "Uczysz się z nauczycielem na Diklaro?",
     "text": "Załóż konto ucznia — i trzymaj wszystko w jednym miejscu. Nauczyciel zaprosi cię do grupy po nicku, a ty od razu zobaczysz plan, zadania i swoje postępy.",
     "f1": "plan i linki do lekcji",
     "f2": "zadania i terminy",
@@ -245,7 +247,7 @@
     "step3t": "Nauka w jednym miejscu", "step3d": "Dalej wszystko pod ręką: plan, zadania, oceny, obecność, zadłużenie, materiały i postępy.",
     "faqLabel": "// pytania",
     "faqTitle": "Częste pytania",
-    "sq1": "Co daje LinguaFlow uczniowi?",
+    "sq1": "Co daje Diklaro uczniowi?",
     "sa1": "Całą naukę w jednym miejscu: plan z linkami do zajęć, prace domowe z terminami, oceny, obecność i zadłużenie. Plus osobiste narzędzia — postępy nauki, materiały lekcji, notatki i słownik. Nie trzeba przewijać czatów i przypominać sobie, co zadane i kiedy zajęcia.",
     "sq2": "Czy dla ucznia to płatne?",
     "sa2": "Osobisty panel ucznia jest darmowy. Za same zajęcia płacisz nauczycielowi, a platforma pokazuje, ile naliczono i zapłacono. Wpłatę możesz wysłać prosto w aplikacji, dołączając potwierdzenie — nauczyciel ją zatwierdzi.",
@@ -260,7 +262,7 @@
     "sq7": "Czy moje dane są bezpieczne?",
     "sa7": "Tak. Nauczyciel widzi tylko to, co związane z twoimi zajęciami. Dostęp osób postronnych do twoich danych jest wykluczony.",
     "ctaTitle1": "Ucz się", "ctaTitle2": "bez chaosu",
-    "footerBrand": "LinguaFlow · strona dla uczniów",
+    "footerBrand": "Diklaro · strona dla uczniów",
     "footerCross": "Jesteś nauczycielem? → do strony dla nauczycieli"
   }
 }

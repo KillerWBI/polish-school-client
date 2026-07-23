@@ -37,7 +37,15 @@
     "addSlot": "+ Dodaj slot",
     "enterName": "Podaj nazwę",
     "createError": "Nie udało się utworzyć",
-    "weekdays": ["Nd", "Pn", "Wt", "Śr", "Cz", "Pt", "So"]
+    "weekdays": [
+      "Nd",
+      "Pn",
+      "Wt",
+      "Śr",
+      "Cz",
+      "Pt",
+      "So"
+    ]
   },
   "indCourses": {
     "titleTeacher": "Kursy indywidualne",
@@ -500,7 +508,7 @@
   },
   "admin": {
     "title": "Panel administratora",
-    "subtitle": "Zarządzanie platformą LinguaFlow",
+    "subtitle": "Zarządzanie platformą Diklaro",
     "tabOverview": "Przegląd",
     "tabUsers": "Użytkownicy",
     "tabSupport": "Wsparcie",
@@ -579,7 +587,7 @@
     "replyAndClose": "Odpowiedz i zamknij",
     "planModalTitle": "Zmień plan",
     "freeDesc": "Podstawowy — za darmo",
-    "proDesc": "Rozszerzony — 49 zł/mies",
+    "proDesc": "Rozszerzony — $3.99/mies",
     "schoolDesc": "Szkolny — kilku nauczycieli"
   },
   "indCourseDetail": {
@@ -747,42 +755,34 @@
   },
   "plans": {
     "title": "Plany",
-    "subtitle": "Więcej grup, uczniów i możliwości w miarę rozwoju.",
-    "footNote": "Płatność za subskrypcję jest podłączana. Na razie limity planu Free nie blokują pracy.",
+    "subtitle": "Wszystkie funkcje w każdym planie. Różnią się tylko limitami.",
+    "footNote": "Płatność za subskrypcję przez Paddle. Plan Darmowy — na zawsze.",
     "periodForever": "na zawsze",
-    "periodMonth": "zł / mies",
-    "periodSoon": "wkrótce",
+    "periodMonth": "/ mies.",
     "popular": "Popularny",
     "yourPlan": "Twój plan",
-    "included": "W pakiecie",
-    "soon": "Wkrótce",
-    "upgrade": "Ulepsz",
-    "upgradeToast": "Płatność za subskrypcję wkrótce — podłączamy bramkę",
-    "freeTagline": "Na start i pierwszych uczniów",
-    "proTagline": "Do pracy bez ograniczeń",
-    "schoolTagline": "Kilku nauczycieli pod jedną marką",
-    "freeFeatures": [
-      "Do 2 grup",
-      "Do 15 uczniów",
-      "Lekcje, zadania, obecność, finanse",
-      "Panel ucznia: plan, oceny, postępy",
-      "Kursy i lekcje indywidualne",
-      "Generator testów AI",
-      "Przypomnienia email dla uczniów"
-    ],
-    "proFeatures": [
-      "Grupy i uczniowie bez ograniczeń",
-      "Lekcje, zadania, obecność, finanse",
-      "Kursy i lekcje indywidualne",
-      "Analityka i historia płatności",
-      "Generator testów AI",
-      "Przypomnienia email o lekcjach i terminach"
-    ],
-    "schoolFeatures": [
-      "Wszystkie funkcje Pro",
-      "Kilku nauczycieli w jednej szkole",
-      "Wspólna marka i zarządzanie",
-      "Priorytetowe wsparcie"
-    ]
+    "included": "W zestawie",
+    "upgrade": "Wybierz",
+    "upgradeToast": "Płatność za subskrypcję wkrótce",
+    "freeName": "Darmowy",
+    "standardName": "Standardowy",
+    "maxName": "Maksymalny",
+    "freeTagline": "Na start",
+    "standardTagline": "Do aktywnej pracy",
+    "maxTagline": "Praktycznie bez ograniczeń",
+    "allFeatures": "Wszystkie funkcje w zestawie",
+    "allFeaturesHint": "Grupy, lekcje, zadania, obecność, finanse, panel ucznia, kursy indywidualne, testy AI, przypomnienia",
+    "limitsTitle": "Limity:",
+    "upTo": "do",
+    "limitGroups": "grup",
+    "limitStudents": "uczniów",
+    "limitCourses": "kursów indywidualnych",
+    "unlimitedNote": "— praktycznie bez ograniczeń",
+    "freeCta": "Za darmo",
+    "aiPerDay": "zapytań AI dziennie",
+    "limitTracks": "ścieżek nauki",
+    "limitVocab": "słów w słowniku",
+    "limitNotes": "notatek",
+    "allFeaturesHintStudent": "Ścieżki nauki, testy, fiszki, słownik, notatki, analiza błędów, źródła, codzienna sesja"
   }
 }

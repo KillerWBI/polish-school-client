@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -10,7 +10,7 @@ import Button from '../../components/ui/Button'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import PageContainer from '../../components/ui/PageContainer'
 
-export default function MyQuizzesPage() {
+export default function MyQuizzesPage({ embedded, onCreate }) {
   const { t, i18n } = useTranslation('app')
   const { t: tc } = useTranslation('common')
   const { data, loading, reload } = useFetch(getQuizzes)
@@ -34,17 +34,21 @@ export default function MyQuizzesPage() {
     ? (tab === 'passed' ? t('quiz.emptyPassed') : t('quiz.emptySaved'))
     : t('quiz.emptyStudent')
 
+  const Wrap = embedded ? Fragment : PageContainer
+
   return (
-    <PageContainer>
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t('quiz.myTitle')}</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            {isTeacher ? t('quiz.mySubtitleTeacher') : t('quiz.mySubtitleStudent')}
-          </p>
+    <Wrap>
+      {!embedded && (
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h1 className="text-2xl font-semibold text-slate-900">{t('quiz.myTitle')}</h1>
+            <p className="text-sm text-slate-500 mt-0.5">
+              {isTeacher ? t('quiz.mySubtitleTeacher') : t('quiz.mySubtitleStudent')}
+            </p>
+          </div>
+          <Button size="sm" onClick={() => onCreate ? onCreate() : navigate('/quiz')}><Sparkles className="w-4 h-4" /> {t('dashboard.create')}</Button>
         </div>
-        <Button size="sm" onClick={() => navigate('/quiz')}><Sparkles className="w-4 h-4" /> {t('dashboard.create')}</Button>
-      </div>
+      )}
 
       {isTeacher && (
         <div className="inline-flex p-0.5 mb-5 rounded-xl bg-slate-100 border border-slate-200">
@@ -101,7 +105,7 @@ export default function MyQuizzesPage() {
           ))}
         </div>
       )}
-    </PageContainer>
+    </Wrap>
   )
 }
 

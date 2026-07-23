@@ -37,7 +37,7 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white shadow-sm p-7">
         <Link to="/" className="flex items-center gap-2 w-fit mb-6">
           <span className="w-2 h-2 rounded-[2px] bg-blue-600" />
-          <span className="font-mono text-sm font-semibold text-slate-900">LinguaFlow</span>
+          <span className="font-mono text-sm font-semibold text-slate-900">Diklaro</span>
         </Link>
 
         {!token ? (

@@ -19,4 +19,4 @@ Disallow: /individual-lessons
 Disallow: /welcome
 Disallow: /plans
 
-Sitemap: https://linguaflow.app/sitemap.xml
+Sitemap: https://diklario.com/sitemap.xml

@@ -11,7 +11,7 @@ import { PageSpinner } from '../../components/ui/Spinner'
 import useAuth from '../../hooks/useAuth'
 import QuizRunner from './QuizRunner'
 
-export default function QuizGeneratorPage() {
+export default function QuizGeneratorPage({ embedded }) {
   const navigate = useNavigate()
   const { t } = useTranslation('app')
   const { isTeacher } = useAuth()
@@ -77,13 +77,15 @@ export default function QuizGeneratorPage() {
   }
 
   return (
-    <div className="p-5 sm:p-8 max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h1 className="flex items-center gap-2 text-2xl font-semibold text-slate-900">
-          <Sparkles className="w-6 h-6 text-blue-600" /> {t('quiz.genTitle')}
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">{t('quiz.genSubtitle')}</p>
-      </div>
+    <div className={embedded ? 'max-w-3xl' : 'p-5 sm:p-8 max-w-3xl mx-auto'}>
+      {!embedded && (
+        <div className="mb-6">
+          <h1 className="flex items-center gap-2 text-2xl font-semibold text-slate-900">
+            <Sparkles className="w-6 h-6 text-blue-600" /> {t('quiz.genTitle')}
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">{t('quiz.genSubtitle')}</p>
+        </div>
+      )}
 
       {/* Форма */}
       <form onSubmit={submit} className="rounded-2xl border border-slate-200 bg-white p-5 mb-6">

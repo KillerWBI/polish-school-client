@@ -35,7 +35,7 @@ export default function Header({ onLogin, onRegister }) {
           className="flex items-center gap-2 cursor-pointer group"
         >
           <span className="w-2 h-2 rounded-[2px] bg-brand-500 group-hover:bg-brand-400 transition-colors" />
-          <span className="font-mono text-sm font-semibold text-[#EDEDED] tracking-tight">LinguaFlow</span>
+          <span className="font-mono text-sm font-semibold text-[#EDEDED] tracking-tight">Diklaro</span>
         </button>
 
         {/* Нав — моно */}

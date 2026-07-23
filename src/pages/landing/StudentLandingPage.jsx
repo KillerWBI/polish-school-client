@@ -33,7 +33,7 @@ export default function StudentLandingPage() {
           <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="flex items-center gap-2 cursor-pointer group">
             <span className="w-2 h-2 rounded-[2px] bg-brand-500 group-hover:bg-brand-400 transition-colors" />
-            <span className="font-mono text-sm font-semibold tracking-tight">LinguaFlow</span>
+            <span className="font-mono text-sm font-semibold tracking-tight">Diklaro</span>
             <span className="font-mono text-[11px] text-[#5A5A60]">{t('student.brandTag')}</span>
           </button>
 

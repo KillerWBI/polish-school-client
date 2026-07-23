@@ -1,43 +1,51 @@
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { Check, Minus, Sparkles } from 'lucide-react'
+import { Check, Sparkles } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import { openCheckout, paddleConfigured } from '../../utils/paddle'
 import { fetchMe } from '../../api/auth.api'
+import { useCurrency, formatMoney } from '../../utils/money'
 
-// Price ID тарифа из .env (Paddle). Пока задан только Pro.
+// Внутренние ключи: free/pro/school → Бесплатный/Стандартный/Максимальный
+const RANK = { free: 0, pro: 1, school: 2 }
 const PRICE_BY_PLAN = {
-  pro:    import.meta.env.VITE_PADDLE_PRICE_PRO,
-  school: import.meta.env.VITE_PADDLE_PRICE_SCHOOL,
+  pro:    import.meta.env.VITE_PADDLE_PRICE_PRO,    // Стандартный ($3.99 ≈ 15 zł) — реальная валюта задаётся в Paddle
+  school: import.meta.env.VITE_PADDLE_PRICE_SCHOOL, // Максимальный ($7.99 ≈ 30 zł)
 }
 
-// Иерархия тарифов — для сравнения «выше/ниже текущего»
-const RANK = { free: 0, pro: 1, school: 2 }
+// Лимиты — СИНХРОННО с backend src/config/planLimits.js (по ролям)
+const LIMITS = {
+  teacher: {
+    free:   { groups: 3,   students: 25,   courses: 8,   aiPerDay: 30   },
+    pro:    { groups: 15,  students: 150,  courses: 40,  aiPerDay: 150  },
+    school: { groups: 200, students: 3000, courses: 500, aiPerDay: 1000 },
+  },
+  student: {
+    free:   { tracks: 3,   vocab: 100,   notes: 30,   aiPerDay: 20  },
+    pro:    { tracks: 20,  vocab: 1000,  notes: 500,  aiPerDay: 100 },
+    school: { tracks: 200, vocab: 10000, notes: 5000, aiPerDay: 500 },
+  },
+}
 
-// Тарифы учителя (SaaS). Структура (ok-флаги, цена) — в коде; тексты — в teacher:plans.*.
-// Оплата подписки подключится позже (платёжный шлюз) — кнопка «Улучшить» показывает «скоро».
 const PLANS = [
-  { key: 'free',   price: '0',  periodKey: 'periodForever', ok: [true, true, true, true, false, false, false] },
-  { key: 'pro',    price: '49', periodKey: 'periodMonth', highlight: true, ok: [true, true, true, true, true, true] },
-  { key: 'school', price: '—',  periodKey: 'periodSoon', ok: [true, true, true, true] },
+  { key: 'free',   price: '0',  periodKey: 'periodForever', nameKey: 'plans.freeName',     taglineKey: 'plans.freeTagline' },
+  { key: 'pro',    price: '3.99', periodKey: 'periodMonth', highlight: true, nameKey: 'plans.standardName', taglineKey: 'plans.standardTagline' },
+  { key: 'school', price: '7.99', periodKey: 'periodMonth', nameKey: 'plans.maxName',        taglineKey: 'plans.maxTagline' },
 ]
-const FEATURE_KEY = { free: 'freeFeatures', pro: 'proFeatures', school: 'schoolFeatures' }
-const TAGLINE_KEY = { free: 'freeTagline', pro: 'proTagline', school: 'schoolTagline' }
-const PLAN_NAME = { free: 'Free', pro: 'Pro', school: 'School' }
 
 export default function PlansPage() {
   const { t } = useTranslation('teacher')
-  const { user, updateUser } = useAuth()
+  const { user, updateUser, isStudent } = useAuth()
   const current = user?.plan ?? 'free'
+  const role = isStudent ? 'student' : 'teacher'
+  const money = useCurrency() // { cur, rates } — валюта пользователя по IP + курсы к USD
 
-  // Подтянуть свежий тариф (обновляется вебхуком Paddle асинхронно после оплаты)
   const refetchMe = async () => {
     try { const me = await fetchMe(); if (me) updateUser?.(me) } catch { /* тихо */ }
   }
 
   const handleUpgrade = async (planKey) => {
     const priceId = PRICE_BY_PLAN[planKey]
-    // Paddle ещё не настроен (нет ключей/price) — прежнее поведение «скоро»
     if (!paddleConfigured() || !priceId) { toast(t('plans.upgradeToast')); return }
     try {
       await openCheckout({
@@ -53,35 +61,53 @@ export default function PlansPage() {
   }
 
   return (
-    <div className="p-5 sm:p-8 max-w-5xl mx-auto">
+    <div className="p-5 sm:p-7 max-w-4xl mx-auto">
       <div className="mb-6 text-center">
         <h1 className="text-2xl font-semibold text-slate-900">{t('plans.title')}</h1>
         <p className="text-sm text-slate-500 mt-1">{t('plans.subtitle')}</p>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-4 items-start">
+      <div className="grid sm:grid-cols-3 gap-4 items-stretch">
         {PLANS.map((p) => (
-          <PlanCard key={p.key} plan={p} current={current} onUpgrade={handleUpgrade} />
+          <PlanCard key={p.key} plan={p} current={current} role={role} onUpgrade={handleUpgrade} money={money} />
         ))}
       </div>
 
-      <p className="text-center text-xs text-slate-400 mt-6">
-        {t('plans.footNote')}
-      </p>
+      <p className="text-center text-xs text-slate-400 mt-6">{t('plans.footNote')}</p>
     </div>
   )
 }
 
-function PlanCard({ plan, current, onUpgrade }) {
-  const { t } = useTranslation('teacher')
+function PlanCard({ plan, current, role, onUpgrade, money }) {
+  const { t, i18n } = useTranslation('teacher')
+  const isMax = plan.key === 'school'
+  const isPaid = plan.key !== 'free'
   const isCurrent = plan.key === current
-  const isSchool  = plan.key === 'school'
-  const planRank  = RANK[plan.key] ?? 0
-  const curRank   = RANK[current] ?? 0
-  const isIncluded = planRank < curRank // тариф ниже текущего — уже входит в подписку
-  const features = t(`plans.${FEATURE_KEY[plan.key]}`, { returnObjects: true })
+  const isIncluded = (RANK[plan.key] ?? 0) < (RANK[current] ?? 0) // ниже текущего — уже входит
+  const lim = LIMITS[role][plan.key]
 
-  const upgrade = () => onUpgrade(plan.key)
+  // Цена: у бесплатного — '0'; иначе показываем в валюте пользователя (по IP) с «≈», база — USD.
+  const usd = Number(plan.price)
+  const rate = money?.rates?.[money?.cur?.code]
+  const localised = isPaid && money?.cur?.code && money.cur.code !== 'USD' && rate
+  const priceText = plan.key === 'free'
+    ? plan.price
+    : localised
+      ? `≈ ${formatMoney(usd * rate, money.cur.code, i18n.language)}`
+      : `$${plan.price}`
+
+  const rows = role === 'student'
+    ? [
+        { n: lim.aiPerDay, label: t('plans.aiPerDay') },
+        { n: lim.tracks,   label: t('plans.limitTracks') },
+        { n: lim.vocab,    label: t('plans.limitVocab') },
+        { n: lim.notes,    label: t('plans.limitNotes') },
+      ]
+    : [
+        { n: lim.groups,   label: t('plans.limitGroups') },
+        { n: lim.students, label: t('plans.limitStudents') },
+        { n: lim.courses,  label: t('plans.limitCourses') },
+      ]
 
   return (
     <div className={`relative rounded-2xl border bg-white p-5 flex flex-col ${
@@ -94,26 +120,33 @@ function PlanCard({ plan, current, onUpgrade }) {
       )}
 
       <div className="mb-3">
-        <div className="text-base font-semibold text-slate-900">{PLAN_NAME[plan.key]}</div>
+        <div className="text-base font-semibold text-slate-900">{t(plan.nameKey)}</div>
         <div className="mt-1.5 flex items-baseline gap-1">
-          <span className="text-2xl font-semibold text-slate-900">{plan.price}</span>
+          <span className="text-2xl font-semibold text-slate-900">{priceText}</span>
           <span className="text-sm text-slate-400">{t(`plans.${plan.periodKey}`)}</span>
         </div>
-        <p className="text-xs text-slate-500 mt-1.5">{t(`plans.${TAGLINE_KEY[plan.key]}`)}</p>
+        {localised && <div className="text-[11px] text-slate-400 mt-0.5">≈ из ${plan.price} · точная сумма на оплате</div>}
+        <p className="text-xs text-slate-500 mt-1.5">{t(plan.taglineKey)}</p>
       </div>
 
+      {/* Все функции — на всех тарифах */}
+      <div className="mb-4 rounded-xl bg-slate-50 border border-slate-100 p-3">
+        <div className="flex items-center gap-1.5 text-sm font-medium text-slate-900">
+          <Check className="w-4 h-4 text-emerald-500 shrink-0" /> {t('plans.allFeatures')}
+        </div>
+        <p className="text-xs text-slate-400 mt-1">{role === 'student' ? t('plans.allFeaturesHintStudent') : t('plans.allFeaturesHint')}</p>
+      </div>
+
+      {/* Лимиты — в этом и разница между тарифами */}
+      <div className="text-xs font-medium text-slate-500 mb-2">{t('plans.limitsTitle')}</div>
       <ul className="space-y-2 mb-5 flex-1">
-        {features.map((text, i) => {
-          const ok = plan.ok[i]
-          return (
-            <li key={i} className="flex items-start gap-2 text-sm">
-              {ok
-                ? <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                : <Minus className="w-4 h-4 text-slate-300 shrink-0 mt-0.5" />}
-              <span className={ok ? 'text-slate-700' : 'text-slate-400'}>{text}</span>
-            </li>
-          )
-        })}
+        {rows.map((r, i) => (
+          <li key={i} className="flex items-center gap-2 text-sm">
+            <Check className={`w-4 h-4 shrink-0 ${isMax ? 'text-blue-500' : isPaid ? 'text-blue-400' : 'text-slate-400'}`} />
+            <span className="text-slate-700">{t('plans.upTo')} {r.n.toLocaleString(i18n.language)} {r.label}</span>
+          </li>
+        ))}
+        {isMax && <li className="text-xs text-slate-400 pl-6">{t('plans.unlimitedNote')}</li>}
       </ul>
 
       {isCurrent ? (
@@ -121,20 +154,19 @@ function PlanCard({ plan, current, onUpgrade }) {
           {t('plans.yourPlan')}
         </button>
       ) : isIncluded ? (
-        // Тариф ниже текущего — его возможности уже входят в вашу подписку
         <button disabled className="h-10 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm font-medium cursor-default inline-flex items-center justify-center gap-1.5">
           <Check className="w-4 h-4" /> {t('plans.included')}
         </button>
-      ) : isSchool ? (
-        <button disabled className="h-10 rounded-xl bg-slate-100 text-slate-400 text-sm font-medium cursor-default">
-          {t('plans.soon')}
-        </button>
-      ) : (
-        <button onClick={upgrade}
+      ) : isPaid ? (
+        <button onClick={() => onUpgrade(plan.key)}
           className={`h-10 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
             plan.highlight ? 'bg-blue-600 text-white hover:bg-blue-700' : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
           }`}>
           {t('plans.upgrade')}
+        </button>
+      ) : (
+        <button disabled className="h-10 rounded-xl bg-slate-50 text-slate-400 text-sm font-medium cursor-default">
+          {t('plans.freeCta')}
         </button>
       )}
     </div>
