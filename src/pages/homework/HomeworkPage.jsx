@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { keepPreviousData } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import useApiQuery from '../../hooks/useApiQuery'
-import usePagedList from '../../hooks/usePagedList'
 import useAuth from '../../hooks/useAuth'
 import { getHomework, createHomework, deleteHomework, submitHomework, getSubmissions, gradeSubmission, submitHomeworkQuizAttempt, getHomeworkQuizAttempts } from '../../api/homework.api'
 import { getLessons } from '../../api/lessons.api'
@@ -22,8 +22,18 @@ import EmptyState from '../../components/ui/EmptyState'
 export default function HomeworkPage() {
   const { t } = useTranslation('teacher')
   const { isTeacher } = useAuth()
-  const fetchHw = useCallback((page, limit) => getHomework({ page, limit }), [])
-  const { items: homework, loading, loadingMore, hasMore, loadMore, reload } = usePagedList(fetchHw)
+  // Кэшируется TanStack: повторный заход — мгновенно из кэша. «Показать ещё» растит лимит
+  // (новый ключ ['homework', limit]); keepPreviousData не даёт списку мигать при догрузке.
+  const [limit, setLimit] = useState(20)
+  const { data, loading, fetching, reload } = useApiQuery(
+    ['homework', limit],
+    () => getHomework({ page: 1, limit }),
+    { placeholderData: keepPreviousData },
+  )
+  const homework    = data || []
+  const hasMore     = homework.length === limit
+  const loadingMore = fetching
+  const loadMore    = () => setLimit(l => l + 20)
   const [createModal, setCreateModal] = useState(false)
   const [selected,    setSelected]    = useState(null)
 
