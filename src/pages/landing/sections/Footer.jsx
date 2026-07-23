@@ -7,7 +7,7 @@ export default function Footer({ onPrimary }) {
   const { t } = useTranslation('landing')
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   return (
-    <footer className="bg-[#0A0A0B] text-[#EDEDED] border-t border-[#1E1E22]">
+    <footer className="bg-[#18181C] text-[#EDEDED] border-t border-[#303036]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-14">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
           <div>
@@ -27,12 +27,12 @@ export default function Footer({ onPrimary }) {
           </nav>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-[#141416] flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[12px] text-[#5A5A60]">
+        <div className="mt-12 pt-6 border-t border-[#26262B] flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[12px] text-[#5A5A60]">
           <span>© {new Date().getFullYear()} Diklaro</span>
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
             <Link to="/privacy" className="hover:text-white transition-colors">{t('footer.privacy', 'конфиденциальность')}</Link>
             <Link to="/terms"   className="hover:text-white transition-colors">{t('footer.terms', 'условия')}</Link>
-            <span className="hidden sm:inline text-[#3A3A40]">·</span>
+            <span className="hidden sm:inline text-[#48484F]">·</span>
             <span>{t('footer.madeFor')}</span>
           </div>
         </div>

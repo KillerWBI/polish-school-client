@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 export default function StudentView() {
   const { t } = useTranslation('landing')
   return (
-    <section className="bg-[#0A0A0B] text-[#EDEDED] border-t border-[#141416]">
+    <section className="bg-[#18181C] text-[#EDEDED] border-t border-[#26262B]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28 grid lg:grid-cols-2 gap-14 items-center">
         {/* текст */}
         <div>
@@ -24,7 +24,7 @@ export default function StudentView() {
               ['💬', t('studentView.f5t'), t('studentView.f5d')],
             ].map(([e, ti, d]) => (
               <li key={ti} className="flex items-start gap-3">
-                <span className="w-8 h-8 rounded-lg border border-[#1E1E22] bg-[#0D0D0F] flex items-center justify-center text-sm shrink-0">{e}</span>
+                <span className="w-8 h-8 rounded-lg border border-[#303036] bg-[#1D1D22] flex items-center justify-center text-sm shrink-0">{e}</span>
                 <div>
                   <div className="text-sm font-medium text-[#EDEDED]">{ti}</div>
                   <div className="text-[13px] text-[#8A8A8F]">{d}</div>
@@ -36,7 +36,7 @@ export default function StudentView() {
 
         {/* телефон */}
         <div className="flex justify-center lg:justify-end">
-          <div className="w-[270px] rounded-[2.2rem] border border-[#1E1E22] bg-[#0D0D0F] p-2.5 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.7)]">
+          <div className="w-[270px] rounded-[2.2rem] border border-[#303036] bg-[#1D1D22] p-2.5 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.7)]">
             <div className="rounded-[1.7rem] overflow-hidden bg-[#F7F8FA]">
               {/* статус-бар */}
               <div className="h-7 bg-white flex items-center justify-center">

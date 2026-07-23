@@ -17,7 +17,7 @@ export default function LandingPage() {
   const toStudentLanding  = () => navigate('/for-students')      // лендинг ученика
 
   return (
-    <div className="relative overflow-x-hidden bg-[#0A0A0B]">
+    <div className="relative overflow-x-hidden bg-[#18181C]">
       <Header onLogin={toLogin} onRegister={toRegister} />
       <main>
         <Hero        onPrimary={toRegister} onSecondary={toLogin} />

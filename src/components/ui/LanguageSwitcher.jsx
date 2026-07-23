@@ -38,7 +38,7 @@ export default function LanguageSwitcher({ variant = 'light', className = '' }) 
 
   const isDark = variant === 'dark'
   const btnCls = isDark
-    ? 'text-[#B4B4BA] hover:text-white border border-[#2A2A2E] hover:border-[#3A3A40]'
+    ? 'text-[#B4B4BA] hover:text-white border border-[#3C3C43] hover:border-[#3A3A40]'
     : 'text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50'
 
   return (

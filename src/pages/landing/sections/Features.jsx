@@ -117,7 +117,7 @@ function FinanceMock() {
 export default function Features() {
   const { t } = useTranslation('landing')
   return (
-    <section id="features" className="bg-[#0A0A0B] text-[#EDEDED] border-t border-[#141416]">
+    <section id="features" className="bg-[#18181C] text-[#EDEDED] border-t border-[#26262B]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28">
         <p className="mono-label mb-3">{t('features.label')}</p>
         <h2 className="font-display font-semibold text-3xl sm:text-4xl tracking-tight max-w-2xl">

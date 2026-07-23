@@ -7,7 +7,7 @@ export default function ForWhom() {
     tag: t(`forWhom.c${i}tag`), quote: t(`forWhom.c${i}quote`), story: t(`forWhom.c${i}story`), stat: t(`forWhom.c${i}stat`),
   }))
   return (
-    <section className="bg-[#0D0D0F] text-[#EDEDED] border-t border-[#141416]">
+    <section className="bg-[#1D1D22] text-[#EDEDED] border-t border-[#26262B]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-14">
           <div>
@@ -23,7 +23,7 @@ export default function ForWhom() {
           {CASES.map((c, i) => (
             <div
               key={c.tag}
-              className={`grid lg:grid-cols-[220px_1fr] gap-6 lg:gap-10 rounded-2xl border border-[#1E1E22] bg-[#0A0A0B] p-6 sm:p-8 ${i % 2 ? 'lg:ml-16' : 'lg:mr-16'}`}
+              className={`grid lg:grid-cols-[220px_1fr] gap-6 lg:gap-10 rounded-2xl border border-[#303036] bg-[#18181C] p-6 sm:p-8 ${i % 2 ? 'lg:ml-16' : 'lg:mr-16'}`}
             >
               <div>
                 <span className="inline-block font-mono text-[11px] text-brand-400 border border-brand-600/30 rounded px-2 py-1">{c.tag}</span>

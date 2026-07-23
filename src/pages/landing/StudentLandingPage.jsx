@@ -24,10 +24,10 @@ export default function StudentLandingPage() {
   const scrollTo   = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
   return (
-    <div className="relative overflow-x-hidden bg-[#0A0A0B] text-[#EDEDED] min-h-screen">
+    <div className="relative overflow-x-hidden bg-[#18181C] text-[#EDEDED] min-h-screen">
       {/* ── Header ── */}
       <header className={`fixed top-0 inset-x-0 z-40 transition-colors duration-300 ${
-        scrolled ? 'bg-[#0A0A0B]/85 backdrop-blur-md border-b border-[#1E1E22]' : 'border-b border-transparent'
+        scrolled ? 'bg-[#18181C]/85 backdrop-blur-md border-b border-[#303036]' : 'border-b border-transparent'
       }`}>
         <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
           <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -48,7 +48,7 @@ export default function StudentLandingPage() {
             <RoleSwitch active="student" />
             {isAuthenticated ? (
               <button onClick={() => navigate('/dashboard')}
-                className="h-9 px-4 rounded-lg bg-white text-[#0A0A0B] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer">
+                className="h-9 px-4 rounded-lg bg-white text-[#18181C] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer">
                 {user?.name ? t('header.toDashboardName', { name: user.name.split(' ')[0] }) : t('header.toDashboard')}
               </button>
             ) : (
@@ -58,7 +58,7 @@ export default function StudentLandingPage() {
                   {tc('login')}
                 </button>
                 <button onClick={toRegister}
-                  className="h-9 px-4 rounded-lg bg-white text-[#0A0A0B] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer">
+                  className="h-9 px-4 rounded-lg bg-white text-[#18181C] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer">
                   {tc('register')}
                 </button>
               </>
@@ -82,11 +82,11 @@ export default function StudentLandingPage() {
                 {t('student.heroSubtitle')}
               </p>
 
-              <div className="mt-8 max-w-md rounded-xl border border-[#1E1E22] bg-[#0D0D0F] font-mono text-[13px] overflow-hidden">
-                <div className="flex items-center gap-1.5 px-3 h-8 border-b border-[#1E1E22]">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#2A2A2E]" />
+              <div className="mt-8 max-w-md rounded-xl border border-[#303036] bg-[#1D1D22] font-mono text-[13px] overflow-hidden">
+                <div className="flex items-center gap-1.5 px-3 h-8 border-b border-[#303036]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
                   <span className="ml-2 text-[#5A5A60] text-[11px]">{t('student.term')}</span>
                 </div>
                 <div className="p-4 space-y-1.5 text-[#8A8A8F]">
@@ -99,11 +99,11 @@ export default function StudentLandingPage() {
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <button onClick={toRegister}
-                  className="h-11 px-6 rounded-lg bg-white text-[#0A0A0B] text-sm font-semibold hover:bg-[#EDEDED] transition-colors cursor-pointer">
+                  className="h-11 px-6 rounded-lg bg-white text-[#18181C] text-sm font-semibold hover:bg-[#EDEDED] transition-colors cursor-pointer">
                   {t('student.createAccount')}
                 </button>
                 <button onClick={toLogin}
-                  className="h-11 px-6 rounded-lg border border-[#2A2A2E] text-[#EDEDED] text-sm hover:bg-white/[0.04] hover:border-[#3A3A40] transition-colors cursor-pointer">
+                  className="h-11 px-6 rounded-lg border border-[#3C3C43] text-[#EDEDED] text-sm hover:bg-white/[0.04] hover:border-[#48484F] transition-colors cursor-pointer">
                   {t('student.haveAccount')}
                 </button>
               </div>
@@ -112,16 +112,16 @@ export default function StudentLandingPage() {
                 <span className="text-[#8A8A8F]">{t('student.stat1')}</span>
                 <span>→</span>
                 <span className="text-brand-400">{t('student.stat2')}</span>
-                <span className="text-[#2A2A2E]">·</span>
+                <span className="text-[#3C3C43]">·</span>
                 <span>{t('student.stat3')}</span>
-                <span className="text-[#2A2A2E]">·</span>
+                <span className="text-[#3C3C43]">·</span>
                 <span>{t('student.stat4')}</span>
               </div>
             </div>
 
             {/* Телефон-макет кабинета ученика */}
             <div className="relative mx-auto w-[280px]">
-              <div className="rounded-[2.4rem] border border-[#1E1E22] bg-[#0D0D0F] p-2.5 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.7)]">
+              <div className="rounded-[2.4rem] border border-[#303036] bg-[#1D1D22] p-2.5 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.7)]">
                 <div className="rounded-[2rem] bg-[#F7F8FA] overflow-hidden">
                   <div className="h-9 flex items-center justify-center">
                     <span className="w-20 h-1.5 rounded-full bg-[#E2E5EA]" />
@@ -163,19 +163,19 @@ export default function StudentLandingPage() {
         </section>
 
         {/* ── Знакомо? (боль) ── */}
-        <section className="border-t border-[#141416] bg-[#0D0D0F]">
+        <section className="border-t border-[#26262B] bg-[#1D1D22]">
           <div className="max-w-5xl mx-auto px-5 sm:px-8 py-20 sm:py-24">
             <p className="mono-label mb-4">{t('student.painLabel')}</p>
             <h2 className="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-10">{t('student.painTitle')}</h2>
             <div className="grid sm:grid-cols-2 gap-3">
               {[t('student.pain1'), t('student.pain2'), t('student.pain3'), t('student.pain4')].map((tt) => (
-                <div key={tt} className="flex items-start gap-3 rounded-xl border border-[#1E1E22] bg-[#0A0A0B] p-4">
+                <div key={tt} className="flex items-start gap-3 rounded-xl border border-[#303036] bg-[#18181C] p-4">
                   <span className="text-[#5A5A60] font-mono text-sm shrink-0">✕</span>
                   <span className="text-sm text-[#B4B4BA] leading-relaxed">{tt}</span>
                 </div>
               ))}
             </div>
-            <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#1E1E22] bg-[#0A0A0B] p-4">
+            <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#303036] bg-[#18181C] p-4">
               <span className="font-mono text-2xl text-brand-400">→</span>
               <span className="text-[#EDEDED]">{t('student.painSolution')}</span>
             </div>
@@ -183,7 +183,7 @@ export default function StudentLandingPage() {
         </section>
 
         {/* ── Возможности: deep-dive с макетами ── */}
-        <section id="features" className="border-t border-[#141416]">
+        <section id="features" className="border-t border-[#26262B]">
           <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28 space-y-24">
             <p className="mono-label">{t('student.featLabel')}</p>
 
@@ -258,7 +258,7 @@ export default function StudentLandingPage() {
         </section>
 
         {/* ── Ещё коротко ── */}
-        <section className="border-t border-[#141416] bg-[#0D0D0F]">
+        <section className="border-t border-[#26262B] bg-[#1D1D22]">
           <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16">
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
@@ -267,7 +267,7 @@ export default function StudentLandingPage() {
                 [t('student.short3t'), t('student.short3d')],
                 [t('student.short4t'), t('student.short4d')],
               ].map(([tag, text]) => (
-                <div key={tag} className="rounded-2xl border border-[#1E1E22] bg-[#0A0A0B] p-5">
+                <div key={tag} className="rounded-2xl border border-[#303036] bg-[#18181C] p-5">
                   <p className="font-mono text-[11px] text-brand-400 mb-2">// {tag}</p>
                   <p className="text-sm text-[#B4B4BA] leading-relaxed">{text}</p>
                 </div>
@@ -277,7 +277,7 @@ export default function StudentLandingPage() {
         </section>
 
         {/* ── Как начать ── */}
-        <section id="how" className="border-t border-[#141416]">
+        <section id="how" className="border-t border-[#26262B]">
           <div className="max-w-4xl mx-auto px-5 sm:px-8 py-20 sm:py-24">
             <p className="mono-label mb-4">{t('student.howLabel')}</p>
             <h2 className="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-12">{t('student.howTitle')}</h2>
@@ -289,7 +289,7 @@ export default function StudentLandingPage() {
               ].map(([n, title, text]) => (
                 <div key={n} className="flex gap-5 items-start">
                   <div className="font-mono text-brand-400 text-xl shrink-0 w-10">{n}</div>
-                  <div className="border-b border-[#1E1E22] pb-6 flex-1">
+                  <div className="border-b border-[#303036] pb-6 flex-1">
                     <h3 className="font-semibold text-[#EDEDED] text-lg">{title}</h3>
                     <p className="text-[#8A8A8F] mt-1.5 leading-relaxed max-w-xl">{text}</p>
                   </div>
@@ -300,11 +300,11 @@ export default function StudentLandingPage() {
         </section>
 
         {/* ── FAQ ── */}
-        <section id="faq" className="border-t border-[#141416] bg-[#0D0D0F]">
+        <section id="faq" className="border-t border-[#26262B] bg-[#1D1D22]">
           <div className="max-w-3xl mx-auto px-5 sm:px-8 py-20 sm:py-24">
             <p className="mono-label mb-4">{t('student.faqLabel')}</p>
             <h2 className="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-10">{t('student.faqTitle')}</h2>
-            <div className="divide-y divide-[#1E1E22] border-t border-[#1E1E22]">
+            <div className="divide-y divide-[#303036] border-t border-[#303036]">
               {[1, 2, 3, 4, 5, 6, 7].map((i) => (
                 <FaqItem key={i} q={t(`student.sq${i}`)} a={t(`student.sa${i}`)} />
               ))}
@@ -313,18 +313,18 @@ export default function StudentLandingPage() {
         </section>
 
         {/* ── Финальный CTA ── */}
-        <section className="border-t border-[#141416] relative overflow-hidden">
+        <section className="border-t border-[#26262B] relative overflow-hidden">
           <div className="relative max-w-3xl mx-auto px-5 sm:px-8 py-24 text-center">
             <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight leading-[1.05]">
               {t('student.ctaTitle1')}<br />{t('student.ctaTitle2')}
             </h2>
             <div className="mt-9 flex flex-wrap gap-3 justify-center">
               <button onClick={toRegister}
-                className="h-12 px-7 rounded-lg bg-white text-[#0A0A0B] text-[15px] font-semibold hover:bg-[#EDEDED] transition-colors cursor-pointer">
+                className="h-12 px-7 rounded-lg bg-white text-[#18181C] text-[15px] font-semibold hover:bg-[#EDEDED] transition-colors cursor-pointer">
                 {t('student.createAccount')}
               </button>
               <button onClick={toLogin}
-                className="h-12 px-7 rounded-lg border border-[#2A2A2E] text-[#EDEDED] text-[15px] hover:bg-white/[0.04] hover:border-[#3A3A40] transition-colors cursor-pointer">
+                className="h-12 px-7 rounded-lg border border-[#3C3C43] text-[#EDEDED] text-[15px] hover:bg-white/[0.04] hover:border-[#48484F] transition-colors cursor-pointer">
                 {tc('login')}
               </button>
             </div>
@@ -333,7 +333,7 @@ export default function StudentLandingPage() {
       </main>
 
       {/* ── Footer + кросс-переход ── */}
-      <footer className="border-t border-[#141416]">
+      <footer className="border-t border-[#26262B]">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="font-mono text-[12px] text-[#5A5A60]">{t('student.footerBrand')}</span>
           <Link to="/" className="font-mono text-[13px] text-brand-400 hover:text-brand-300">
@@ -355,7 +355,7 @@ function FeatureRow({ tag, title, text, mockup, reverse }) {
         <p className="mt-4 text-[#8A8A8F] leading-relaxed max-w-md">{text}</p>
       </div>
       <div className={reverse ? 'lg:order-1' : ''}>
-        <div className="rounded-2xl border border-[#1E1E22] bg-[#0A0A0B] p-4 sm:p-5">
+        <div className="rounded-2xl border border-[#303036] bg-[#18181C] p-4 sm:p-5">
           <div className="rounded-xl bg-[#F7F8FA] p-3 sm:p-4">{mockup}</div>
         </div>
       </div>

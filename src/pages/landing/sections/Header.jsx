@@ -25,7 +25,7 @@ export default function Header({ onLogin, onRegister }) {
   return (
     <header
       className={`fixed top-0 inset-x-0 z-40 transition-colors duration-300 ${
-        scrolled ? 'bg-[#0A0A0B]/85 backdrop-blur-md border-b border-[#1E1E22]' : 'border-b border-transparent'
+        scrolled ? 'bg-[#18181C]/85 backdrop-blur-md border-b border-[#303036]' : 'border-b border-transparent'
       }`}
     >
       <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
@@ -53,7 +53,7 @@ export default function Header({ onLogin, onRegister }) {
           {isAuthenticated ? (
             <button
               onClick={() => navigate('/dashboard')}
-              className="h-9 px-4 rounded-lg bg-white text-[#0A0A0B] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer"
+              className="h-9 px-4 rounded-lg bg-white text-[#18181C] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer"
             >
               {user?.name ? t('header.toDashboardName', { name: user.name.split(' ')[0] }) : t('header.toDashboard')}
             </button>
@@ -67,7 +67,7 @@ export default function Header({ onLogin, onRegister }) {
               </button>
               <button
                 onClick={onRegister}
-                className="h-9 px-4 rounded-lg bg-white text-[#0A0A0B] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer"
+                className="h-9 px-4 rounded-lg bg-white text-[#18181C] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer"
               >
                 {tc('register')}
               </button>
