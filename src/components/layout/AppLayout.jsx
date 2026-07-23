@@ -18,8 +18,8 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-[#F1F3F6] flex">
-      {/* Десктопный sidebar */}
-      <div className="hidden lg:flex p-3 pr-0">
+      {/* Десктопный sidebar — верх заподлицо с топбаром (pt-0), отступы слева/снизу сохранены */}
+      <div className="hidden lg:flex p-3 pr-0 pt-0">
         <Sidebar />
       </div>
 

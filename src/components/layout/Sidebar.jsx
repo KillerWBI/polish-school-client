@@ -84,7 +84,7 @@ export default function Sidebar({ onClose }) {
     }`
 
   return (
-    <aside className="flex flex-col w-[240px] shrink-0 bg-white border border-[#EAECEF] rounded-2xl h-[calc(100vh-1.5rem)] sticky top-3 overflow-hidden shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+    <aside className="flex flex-col w-[240px] shrink-0 bg-white border border-[#EAECEF] rounded-2xl h-[calc(100vh-0.75rem)] sticky top-0 overflow-hidden shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
       {/* Лого */}
       <Link to="/dashboard" onClick={onClose}
         className="flex items-center gap-2.5 px-5 h-16 border-b border-[#F0F2F5]">
