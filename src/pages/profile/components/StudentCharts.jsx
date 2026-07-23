@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   ResponsiveContainer,
@@ -7,20 +6,16 @@ import {
   CartesianGrid, XAxis, YAxis, Tooltip,
 } from 'recharts'
 import { getStudentAnalytics } from '../../../api/analytics.api'
+import useApiQuery from '../../../hooks/useApiQuery'
 import { PageSpinner } from '../../../components/ui/Spinner'
 
 export default function StudentCharts({ studentId }) {
   const { t, i18n } = useTranslation('teacher')
-  const [data,    setData]    = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    setLoading(true)
-    getStudentAnalytics(studentId)
-      .then(setData)
-      .catch(() => setData(null))
-      .finally(() => setLoading(false))
-  }, [studentId])
+  const { data, loading } = useApiQuery(
+    ['student-analytics', studentId],
+    () => getStudentAnalytics(studentId),
+    { enabled: !!studentId },
+  )
 
   if (loading) return <PageSpinner />
   if (!data)  return <p className="text-sm text-slate-500">{t('profile.noData')}</p>

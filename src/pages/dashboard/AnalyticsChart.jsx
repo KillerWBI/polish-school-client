@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   ResponsiveContainer, BarChart, Bar, AreaChart, Area, LineChart, Line,
@@ -6,6 +6,7 @@ import {
 } from 'recharts'
 import { TrendingUp, Users, CalendarCheck, Award } from 'lucide-react'
 import { getTeacherAnalytics, getStudentAnalytics } from '../../api/analytics.api'
+import useApiQuery from '../../hooks/useApiQuery'
 
 const tip = {
   contentStyle: { background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, fontSize: 12, boxShadow: '0 8px 24px rgba(15,23,42,0.08)' },
@@ -110,13 +111,11 @@ export default function AnalyticsChart({ isTeacher, userId }) {
 function TeacherAnalytics({ userId }) {
   const { t } = useTranslation('app')
   const [period, setPeriod] = useState('month')
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    setLoading(true)
-    getTeacherAnalytics(userId, period).then(setData).catch(() => setData(null)).finally(() => setLoading(false))
-  }, [userId, period])
+  const { data, loading } = useApiQuery(
+    ['teacher-analytics', userId, period],
+    () => getTeacherAnalytics(userId, period),
+    { enabled: !!userId },
+  )
 
   const rev = data?.revenueByPeriod || []
   const students = data?.studentsByMonth || []
@@ -173,13 +172,11 @@ function TeacherAnalytics({ userId }) {
 /* ══════════ УЧЕНИК ══════════ */
 function StudentAnalytics({ userId }) {
   const { t, i18n } = useTranslation('app')
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    setLoading(true)
-    getStudentAnalytics(userId).then(setData).catch(() => setData(null)).finally(() => setLoading(false))
-  }, [userId])
+  const { data, loading } = useApiQuery(
+    ['student-analytics', userId],
+    () => getStudentAnalytics(userId),
+    { enabled: !!userId },
+  )
 
   const att = data?.attendanceByMonth || []
   const grades = [...(data?.grades || [])].reverse().map(g => ({

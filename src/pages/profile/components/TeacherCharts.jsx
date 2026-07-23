@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   ResponsiveContainer,
@@ -7,22 +7,17 @@ import {
   CartesianGrid, XAxis, YAxis, Tooltip, Legend,
 } from 'recharts'
 import { getTeacherAnalytics } from '../../../api/analytics.api'
+import useApiQuery from '../../../hooks/useApiQuery'
 import { PageSpinner } from '../../../components/ui/Spinner'
 
 export default function TeacherCharts({ userId }) {
   const { t } = useTranslation('teacher')
   const [period,  setPeriod]  = useState('month')
-  const [data,    setData]    = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  // Перезагружаем при смене периода
-  useEffect(() => {
-    setLoading(true)
-    getTeacherAnalytics(userId, period)
-      .then(setData)
-      .catch(() => setData(null))
-      .finally(() => setLoading(false))
-  }, [userId, period])
+  const { data, loading } = useApiQuery(
+    ['teacher-analytics', userId, period],
+    () => getTeacherAnalytics(userId, period),
+    { enabled: !!userId },
+  )
 
   if (loading && !data) return <PageSpinner />
 
