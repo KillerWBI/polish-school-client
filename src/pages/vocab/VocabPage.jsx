@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { BookMarked, Plus, Check, X, Trash2, Sparkles, ListPlus, PenLine, Lightbulb } from 'lucide-react'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import { getVocab, getDueVocab, addVocab, bulkAddVocab, generateVocab, reviewVocab, deleteVocab } from '../../api/vocab.api'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
@@ -64,7 +64,7 @@ function TabBtn({ active, onClick, children }) {
 /* ── Повторение (флеш-карточки) ── */
 function ReviewTab({ onEmptyAdd }) {
   const { t } = useTranslation('student')
-  const { data: due, loading, reload } = useFetch(getDueVocab)
+  const { data: due, loading, reload } = useApiQuery(['vocab-due'], getDueVocab)
   const [idx, setIdx]         = useState(0)
   const [flipped, setFlipped] = useState(false)
   const [busy, setBusy]       = useState(false)
@@ -133,9 +133,9 @@ function ReviewTab({ onEmptyAdd }) {
 function AllTab() {
   const { t } = useTranslation('student')
   const [langFilter, setLangFilter] = useState('') // '' = все, 'none' = без языка, иначе ISO-код
-  // Колбэк пересоздаётся при смене фильтра → useFetch перезагружает список с сервера.
-  const { data, loading, reload } = useFetch(
-    useCallback(() => getVocab({ limit: 200, ...(langFilter ? { language: langFilter } : {}) }), [langFilter])
+  const { data, loading, reload } = useApiQuery(
+    ['vocab', langFilter || 'all'],
+    () => getVocab({ limit: 200, ...(langFilter ? { language: langFilter } : {}) })
   )
   const [confirmDel, setConfirmDel] = useState(null)
   const [busy, setBusy] = useState(false)

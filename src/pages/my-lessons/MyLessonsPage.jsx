@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { NotebookPen, Plus, Check, Trash2, Wallet, Clock, CalendarDays, GraduationCap } from 'lucide-react'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import { getMyLessons, getMyLessonsStats, createMyLesson, payMyLesson, deleteMyLesson } from '../../api/myLessons.api'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
@@ -18,8 +18,8 @@ export default function MyLessonsPage() {
   const [tab, setTab] = useState('schedule')
   const [createOpen, setCreateOpen] = useState(false)
 
-  const { data: lessons, loading, reload } = useFetch(getMyLessons)
-  const { data: stats, reload: reloadStats } = useFetch(getMyLessonsStats)
+  const { data: lessons, loading, reload } = useApiQuery(['my-lessons'], getMyLessons)
+  const { data: stats, reload: reloadStats } = useApiQuery(['my-lessons-stats'], getMyLessonsStats)
 
   const refresh = () => { reload(); reloadStats() }
 

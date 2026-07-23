@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import { getSession, reviewItem, getWeakSpots } from '../../api/study.api'
 import CardReview from '../topics/CardReview'
 import Button from '../../components/ui/Button'
@@ -16,8 +16,8 @@ const weakColor = (m) => m >= 40 ? 'text-blue-600' : 'text-amber-600'
 export default function DailySessionPage() {
   const { t } = useTranslation('student')
   const navigate = useNavigate()
-  const { data, loading, reload } = useFetch(getSession)
-  const { data: weak } = useFetch(getWeakSpots)
+  const { data, loading, reload } = useApiQuery(['study-session'], getSession)
+  const { data: weak } = useApiQuery(['weak-spots'], getWeakSpots)
   const [started, setStarted] = useState(false)
 
   const items = data?.data || []

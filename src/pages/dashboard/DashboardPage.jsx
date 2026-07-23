@@ -5,7 +5,7 @@ import {
   CalendarDays, FileText, Wallet, CheckCircle2, Plus, Award, Clock,
   ChevronRight, CalendarClock, Inbox, MoreHorizontal, AlertCircle,
 } from 'lucide-react'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
 import AnalyticsChart from './AnalyticsChart'
 import { getDashboard, getActivity } from '../../api/dashboard.api'
@@ -25,8 +25,8 @@ function TeacherDashboard() {
   const { t } = useTranslation('app')
   const { user } = useAuth()
   const navigate = useNavigate()
-  const { data, loading }  = useFetch(getDashboard)
-  const { data: activity } = useFetch(getActivity)
+  const { data, loading }  = useApiQuery(['dashboard'], getDashboard)
+  const { data: activity } = useApiQuery(['dashboard-activity'], getActivity)
   // Онбординг-чеклист: показываем, пока учитель не прошёл старт (флаг в localStorage).
   const [hideChecklist, setHideChecklist] = useState(() => localStorage.getItem('lf_onboarding_done') === '1')
   const dismissChecklist = useCallback(() => {
@@ -81,8 +81,8 @@ function StudentDashboard() {
   const { t } = useTranslation('app')
   const { user } = useAuth()
   const navigate = useNavigate()
-  const { data, loading }  = useFetch(getDashboard)
-  const { data: activity } = useFetch(getActivity)
+  const { data, loading }  = useApiQuery(['dashboard'], getDashboard)
+  const { data: activity } = useApiQuery(['dashboard-activity'], getActivity)
   if (loading) return <SkeletonDashboard />
 
   const kpi     = data?.kpi ?? {}
@@ -138,9 +138,9 @@ function PaymentDetailsBanner({ navigate }) {
 /* ══════════════════ ОНБОРДИНГ (быстрый старт) ══════════════════ */
 function StartChecklist({ navigate, onDone }) {
   const { t } = useTranslation('app')
-  const { data: groups }   = useFetch(getGroups)
-  const { data: students } = useFetch(getMyStudents)
-  const { data: homework } = useFetch(getHomework)
+  const { data: groups }   = useApiQuery(['groups'], getGroups)
+  const { data: students } = useApiQuery(['my-students'], getMyStudents)
+  const { data: homework } = useApiQuery(['homework'], getHomework)
 
   const ready = !!groups && !!students && !!homework
   const steps = ready ? [

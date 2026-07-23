@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { FolderOpen, Link2, FileText, Type, Search } from 'lucide-react'
-import useFetch from '../../hooks/useFetch'
+import useApiQuery from '../../hooks/useApiQuery'
 import { getMaterials } from '../../api/materials.api'
 import { safeUrl } from '../../utils/safeUrl'
 import { SkeletonList } from '../../components/ui/Skeleton'
@@ -11,7 +11,7 @@ import PageContainer from '../../components/ui/PageContainer'
 const TYPE_ICON = { link: Link2, file: FileText, text: Type }
 
 export default function MaterialsPage() {
-  const { data, loading } = useFetch(getMaterials)
+  const { data, loading } = useApiQuery(['materials'], getMaterials)
   const [q, setQ] = useState('')
 
   const lessons = useMemo(() => {
