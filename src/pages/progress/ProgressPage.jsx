@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
 import {
   ResponsiveContainer, AreaChart, Area, LineChart, Line,
   CartesianGrid, XAxis, YAxis, Tooltip,
 } from 'recharts'
 import { Flame, CalendarCheck, Award, BookMarked, Clock } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
+import useApiQuery from '../../hooks/useApiQuery'
 import { getMyProgress } from '../../api/progress.api'
 import { getStudentAnalytics } from '../../api/analytics.api'
 import { SkeletonDashboard } from '../../components/ui/Skeleton'
@@ -17,21 +17,13 @@ const AX = { stroke: '#CBD5E1', fontSize: 11, tickLine: false, axisLine: false }
 
 export default function ProgressPage() {
   const { user } = useAuth()
-  const [progress, setProgress]   = useState(null)
-  const [analytics, setAnalytics] = useState(null)
-  const [loading, setLoading]     = useState(true)
-
-  useEffect(() => {
-    let alive = true
-    Promise.all([
-      getMyProgress().catch(() => null),
-      user?.id ? getStudentAnalytics(user.id).catch(() => null) : Promise.resolve(null),
-    ]).then(([p, a]) => {
-      if (!alive) return
-      setProgress(p); setAnalytics(a); setLoading(false)
-    })
-    return () => { alive = false }
-  }, [user?.id])
+  const { data: progress, loading: pLoad } = useApiQuery(['my-progress'], getMyProgress)
+  const { data: analytics, loading: aLoad } = useApiQuery(
+    ['student-analytics', user?.id],
+    () => getStudentAnalytics(user.id),
+    { enabled: !!user?.id },
+  )
+  const loading = pLoad || aLoad
 
   if (loading) return <div className="p-5 sm:p-8"><SkeletonDashboard /></div>
 

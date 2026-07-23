@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Users, GraduationCap, LayoutGrid, DollarSign, Search, Shield, ChevronLeft, ChevronRight, RefreshCw, LifeBuoy } from 'lucide-react'
 import { getAdminStats, getAdminUsers, deactivateUser, activateUser, setUserRole, setUserPlan, getSupportTickets, replySupportTicket } from '../../api/admin.api'
+import useApiQuery from '../../hooks/useApiQuery'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import Modal from '../../components/ui/Modal'
 import Button from '../../components/ui/Button'
@@ -53,15 +54,7 @@ export default function AdminPage() {
 function OverviewTab() {
   const { t } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
-  const [stats, setStats] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    getAdminStats()
-      .then(setStats)
-      .catch(() => toast.error(t('admin.statsError')))
-      .finally(() => setLoading(false))
-  }, [t])
+  const { data: stats, loading } = useApiQuery(['admin-stats'], getAdminStats)
 
   if (loading) return <div className="h-40 flex items-center justify-center text-sm text-slate-400">{tc('loading')}</div>
   if (!stats)  return null
