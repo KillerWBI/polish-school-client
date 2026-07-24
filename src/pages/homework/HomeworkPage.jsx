@@ -18,6 +18,7 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { PageSpinner } from '../../components/ui/Spinner'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import Tooltip from '../../components/ui/Tooltip'
 
 export default function HomeworkPage() {
   const { t } = useTranslation('teacher')
@@ -47,7 +48,9 @@ export default function HomeworkPage() {
           </p>
         </div>
         {isTeacher && (
-          <Button size="sm" onClick={() => setCreateModal(true)}>{t('homework.createBtn')}</Button>
+          <Tooltip text={t('homework.tipCreate')} side="left">
+            <Button size="sm" onClick={() => setCreateModal(true)}>{t('homework.createBtn')}</Button>
+          </Tooltip>
         )}
       </div>
 
@@ -113,16 +116,20 @@ function TeacherHWCard({ hw, onView, onDelete }) {
         {hw.quiz && <p className="text-xs text-blue-600 mt-1">🧪 {t('homework.quizAttached')}</p>}
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        <span className="text-xs text-slate-400 hidden sm:block">{t('homework.viewSubs')}</span>
-        <button
-          onClick={(e) => { e.stopPropagation(); setConfirmOpen(true) }}
-          disabled={deleting}
-          className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-600 transition-all cursor-pointer p-1 disabled:opacity-50"
-        >
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6" strokeLinecap="round"/>
-          </svg>
-        </button>
+        <Tooltip text={t('homework.tipCard')} side="left">
+          <span className="text-xs text-slate-400 hidden sm:block">{t('homework.viewSubs')}</span>
+        </Tooltip>
+        <Tooltip text={t('homework.tipDelete')} side="left">
+          <button
+            onClick={(e) => { e.stopPropagation(); setConfirmOpen(true) }}
+            disabled={deleting}
+            className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-600 transition-all cursor-pointer p-1 disabled:opacity-50"
+          >
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6" strokeLinecap="round"/>
+            </svg>
+          </button>
+        </Tooltip>
         <svg className="w-4 h-4 text-slate-500 group-hover:text-blue-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path d="M9 18l6-6-6-6" strokeLinecap="round"/>
         </svg>
@@ -465,7 +472,9 @@ function CreateHWModal({ open, onClose, onCreated }) {
 
           {/* Прикрепить тест (необязательно) */}
           <div>
-            <label className="text-xs text-slate-400 block mb-1">{t('homework.attachQuiz')}</label>
+            <Tooltip text={t('homework.tipAttachQuiz')} side="top">
+              <label className="text-xs text-slate-400 mb-1 inline-flex items-center gap-1 cursor-help border-b border-dotted border-slate-300">{t('homework.attachQuiz')}</label>
+            </Tooltip>
             <select value={form.quizId} onChange={e => set('quizId', e.target.value)}
               className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500">
               <option value="">{t('homework.noQuiz')}</option>
