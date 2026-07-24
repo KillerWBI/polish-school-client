@@ -11,8 +11,10 @@
   "groups": {
     "titleTeacher": "Groups",
     "titleStudent": "My groups",
-    "subtitleTeacher": "Manage your study groups",
+    "subtitleTeacher": "Student groups: schedule, members, lessons and homework",
     "subtitleStudent": "Groups I'm studying in",
+    "tipCreate": "A group is a class of students with a shared schedule. Inside it you run lessons, homework and attendance.",
+    "tipCard": "Open the group: list of students, lessons, schedule and settings.",
     "createBtn": "+ Create group",
     "emptyTeacherTitle": "No groups yet",
     "emptyStudentTitle": "You're not in any groups yet",
