@@ -9,6 +9,7 @@ const CATEGORIES = [
   ['question', 'Вопрос'],
   ['problem',  'Проблема'],
   ['billing',  'Оплата / тариф'],
+  ['idea',     'Идея / предложение'],
 ]
 
 // Публичная страница обращения в поддержку (доступна и гостю, и залогиненному).
@@ -20,7 +21,9 @@ export default function SupportPage() {
     subject:  '',
     category: 'question',
     message:  '',
+    reason:   '', // только для идеи: зачем это нужно / что улучшит
   })
+  const isIdea = form.category === 'idea'
   const [busy, setBusy] = useState(false)
   const [sent, setSent] = useState(false)
 
@@ -32,9 +35,20 @@ export default function SupportPage() {
       toast.error('Заполните все поля')
       return
     }
+    if (isIdea && !form.reason.trim()) {
+      toast.error('Напишите, зачем это нужно и что улучшит')
+      return
+    }
     setBusy(true)
     try {
-      await submitSupportTicket(form)
+      // Идею шлём как обычное обращение (бэкенд-категория идеи пока нет): причину и суть
+      // вкладываем в сообщение, а в теме помечаем «💡 Идея», чтобы её было видно в поддержке.
+      const message = isIdea
+        ? `${form.message.trim()}\n\nЗачем это нужно и что улучшит:\n${form.reason.trim()}`
+        : form.message
+      const subject  = isIdea ? `💡 Идея: ${form.subject}` : form.subject
+      const category = isIdea ? 'question' : form.category
+      await submitSupportTicket({ name: form.name, email: form.email, subject, category, message })
       setSent(true)
     } catch (err) {
       toast.error(err.response?.data?.error || 'Не удалось отправить обращение')
@@ -90,10 +104,10 @@ export default function SupportPage() {
 
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Тип обращения</label>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map(([key, label]) => (
                   <button key={key} type="button" onClick={() => setForm(f => ({ ...f, category: key }))}
-                    className={`flex-1 h-10 rounded-xl border text-sm font-medium transition-colors ${
+                    className={`h-10 px-2 rounded-xl border text-sm font-medium transition-colors ${
                       form.category === key ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
                     }`}>
                     {label}
@@ -104,14 +118,28 @@ export default function SupportPage() {
 
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Тема</label>
-              <input className={inputCls} value={form.subject} onChange={set('subject')} placeholder="Коротко о проблеме" />
+              <input className={inputCls} value={form.subject} onChange={set('subject')}
+                placeholder={isIdea ? 'Коротко о вашей идее' : 'Коротко о проблеме'} />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">Сообщение</label>
-              <textarea rows={5} value={form.message} onChange={set('message')} placeholder="Опишите подробно…"
+              <label className="block text-xs font-medium text-slate-500 mb-1">
+                {isIdea ? 'Опишите идею' : 'Сообщение'}
+              </label>
+              <textarea rows={isIdea ? 4 : 5} value={form.message} onChange={set('message')}
+                placeholder={isIdea ? 'Что вы предлагаете добавить или изменить…' : 'Опишите подробно…'}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-shadow resize-none" />
             </div>
+
+            {isIdea && (
+              <div>
+                <label className="block text-xs font-medium text-slate-500 mb-1">Зачем это нужно и что улучшит</label>
+                <textarea rows={3} value={form.reason} onChange={set('reason')}
+                  placeholder="Например: сэкономит время на проверке, поможет ученикам не забывать про задания…"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-shadow resize-none" />
+                <p className="mt-1 text-[11px] text-slate-400">Пара слов о причине помогает нам понять, кому и чем идея полезна.</p>
+              </div>
+            )}
 
             <button type="submit" disabled={busy}
               className="w-full h-11 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">

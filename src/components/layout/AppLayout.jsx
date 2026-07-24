@@ -5,7 +5,6 @@ import { PageSpinner } from '../ui/Spinner'
 import useAuth from '../../hooks/useAuth'
 import Sidebar from './Sidebar'
 import Topbar, { SearchBox, NotifBell } from './Topbar'
-import HelpFab from './HelpFab'
 import Tour from '../tour/Tour'
 import EmailVerificationBanner from '../auth/EmailVerificationBanner'
 
@@ -73,9 +72,6 @@ export default function AppLayout() {
           </div>
         </main>
       </div>
-
-      {/* Плавающая кнопка помощи — на каждой странице */}
-      <HelpFab />
 
       {/* Интерактивный тур (авто-старт для новичка-учителя) */}
       <Tour autoStart={isTeacher} />

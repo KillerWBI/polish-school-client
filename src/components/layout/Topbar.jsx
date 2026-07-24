@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Search, Bell, Users, FileText, Wallet, UserPlus, CheckCircle2, CalendarCheck, XCircle, X, HelpCircle } from 'lucide-react'
+import { Search, Bell, Users, FileText, Wallet, UserPlus, CheckCircle2, CalendarCheck, XCircle, X } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import { getGroups } from '../../api/groups.api'
 import { getMyStudents } from '../../api/students.api'
 import { getNotifications, markNotificationRead, markAllNotificationsRead } from '../../api/notifications.api'
-import { helpSectionFor } from '../../utils/helpSection'
 import { safeUrl } from '../../utils/safeUrl'
+import Tooltip from '../ui/Tooltip'
 
 // Иконка + цвет по типу уведомления
 const NOTIF_META = {
@@ -27,29 +27,25 @@ export default function Topbar() {
   const { t } = useTranslation('app')
   const { user, isTeacher } = useAuth()
   const navigate = useNavigate()
-  const { pathname } = useLocation()
-  const helpSection = helpSectionFor(pathname)
   return (
     <header className="hidden lg:flex items-center gap-4 h-16 px-6 bg-white border-b border-slate-200">
       <SearchBox isTeacher={isTeacher} navigate={navigate} />
       <div className="ml-auto flex items-center gap-2">
-        <button
-          onClick={() => navigate(`/help${helpSection ? `#${helpSection}` : ''}`)}
-          title={t('topbar.helpTooltip')}
-          className="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-colors cursor-pointer">
-          <HelpCircle size={18} />
-        </button>
-        <NotifBell isTeacher={isTeacher} navigate={navigate} />
-        <button onClick={() => navigate('/profile')}
-          className="flex items-center gap-2.5 h-10 pl-1 pr-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer">
-          <span className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-semibold overflow-hidden">
-            {user?.avatar ? <img src={safeUrl(user.avatar)} alt="" className="w-full h-full object-cover" /> : (user?.name?.[0]?.toUpperCase() ?? '?')}
-          </span>
-          <span className="text-left leading-tight">
-            <span className="block text-xs font-medium text-slate-900 max-w-[110px] truncate">{user?.name?.split(' ')[0] ?? '—'}</span>
-            <span className="block text-[10px] text-slate-400">{isTeacher ? t('role.teacher') : t('role.student')}</span>
-          </span>
-        </button>
+        <Tooltip text="Уведомления: новые задания, оценки, оплаты и приглашения" side="bottom">
+          <NotifBell isTeacher={isTeacher} navigate={navigate} />
+        </Tooltip>
+        <Tooltip text="Открыть ваш профиль и настройки аккаунта" side="bottom">
+          <button onClick={() => navigate('/profile')}
+            className="flex items-center gap-2.5 h-10 pl-1 pr-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer">
+            <span className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-semibold overflow-hidden">
+              {user?.avatar ? <img src={safeUrl(user.avatar)} alt="" className="w-full h-full object-cover" /> : (user?.name?.[0]?.toUpperCase() ?? '?')}
+            </span>
+            <span className="text-left leading-tight">
+              <span className="block text-xs font-medium text-slate-900 max-w-[110px] truncate">{user?.name?.split(' ')[0] ?? '—'}</span>
+              <span className="block text-[10px] text-slate-400">{isTeacher ? t('role.teacher') : t('role.student')}</span>
+            </span>
+          </button>
+        </Tooltip>
       </div>
     </header>
   )
