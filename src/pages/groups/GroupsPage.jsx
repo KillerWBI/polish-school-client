@@ -12,6 +12,7 @@ import Input from '../../components/ui/Input'
 import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import Pagination from '../../components/ui/Pagination'
+import Tooltip from '../../components/ui/Tooltip'
 
 const PAGE_SIZE = 12
 
@@ -44,7 +45,9 @@ export default function GroupsPage() {
           </p>
         </div>
         {isTeacher && (
-          <Button size="sm" onClick={() => setModal(true)}>{t('groups.createBtn')}</Button>
+          <Tooltip text={t('groups.tipCreate')} side="left">
+            <Button size="sm" onClick={() => setModal(true)}>{t('groups.createBtn')}</Button>
+          </Tooltip>
         )}
       </div>
 
@@ -139,9 +142,10 @@ function GroupCard({ group, onClick }) {
     .join(', ')
 
   return (
+    <Tooltip text={t('groups.tipCard')} side="top" className="w-full">
     <button
       onClick={onClick}
-      className="text-left p-5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white hover:shadow-sm hover:border-blue-200 transition-all duration-200 group"
+      className="w-full text-left p-5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white hover:shadow-sm hover:border-blue-200 transition-all duration-200 group"
     >
       <div className="flex items-start justify-between gap-2 mb-3">
         <h3 className="font-semibold text-slate-900 group-hover:text-blue-700 transition-colors">
@@ -156,6 +160,7 @@ function GroupCard({ group, onClick }) {
         💰 {group.pricePerLesson} {t('groups.perLesson')}
       </p>
     </button>
+    </Tooltip>
   )
 }
 
