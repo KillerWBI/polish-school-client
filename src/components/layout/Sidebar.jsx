@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import useAuth from '../../hooks/useAuth'
 import { safeUrl } from '../../utils/safeUrl'
 import LanguageSwitcher from '../ui/LanguageSwitcher'
+import Tooltip from '../ui/Tooltip'
 import Logo from '../ui/Logo'
 
 // Светлый сайдбар (Cemdash-стиль). label/section — ключи app.json, резолвятся t() при рендере.
@@ -77,7 +78,7 @@ export default function Sidebar({ onClose }) {
   const handleLogout = () => { logout(); navigate('/') }
 
   const linkClass = ({ isActive }) =>
-    `flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-colors ${
+    `w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-colors ${
       isActive
         ? 'bg-blue-50 text-blue-700 font-medium'
         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -138,12 +139,16 @@ export default function Sidebar({ onClose }) {
             <IconInstall /> {t('sidebar.install')}
           </button>
         )}
-        <NavLink to="/help" onClick={onClose} className={linkClass}>
-          <IconHelp /> {t('sidebar.help')}
-        </NavLink>
-        <NavLink to="/support" onClick={onClose} className={linkClass}>
-          <IconSupport /> {t('sidebar.support')}
-        </NavLink>
+        <Tooltip className="w-full" side="right" text="Инструкции: что делает каждая страница и как ей пользоваться, шаг за шагом">
+          <NavLink to="/help" onClick={onClose} className={linkClass}>
+            <IconHelp /> {t('sidebar.help')}
+          </NavLink>
+        </Tooltip>
+        <Tooltip className="w-full" side="right" text="Задать вопрос, сообщить о проблеме или предложить идею — ответим на вашу почту">
+          <NavLink to="/support" onClick={onClose} className={linkClass}>
+            <IconSupport /> {t('sidebar.support')}
+          </NavLink>
+        </Tooltip>
         <div className="px-1 py-1"><LanguageSwitcher className="w-full" /></div>
         <NavLink to="/settings" onClick={onClose} className={({ isActive }) =>
           `flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-colors ${
