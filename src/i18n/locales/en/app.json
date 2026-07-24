@@ -342,6 +342,16 @@
     "justNow": "just now",
     "minutesShort": "{{n}} min",
     "hoursShort": "{{n}} h",
-    "yesterday": "yesterday"
+    "yesterday": "yesterday",
+    "tipLessonsToday": "How many lessons you have today. Click to open the calendar with your schedule.",
+    "tipUngraded": "Homework that students submitted but you haven't checked and graded yet. Click to go to grading.",
+    "tipDebt": "How much students owe you in total for lessons. Click to open payments.",
+    "tipAttendance": "The share of lessons attended by students this month. Click to open the attendance journal.",
+    "tipLessonsWeek": "How many lessons you have in the next 7 days. Click to open the calendar.",
+    "tipHwPending": "Homework you still need to do and submit. Click to go to homework.",
+    "tipAttendanceStudent": "The share of lessons you attended this month. Click to open the attendance journal.",
+    "tipMyDebt": "How much you owe teachers for lessons. Click to open payments.",
+    "tipCreate": "Quickly create a lesson, homework, or add a student.",
+    "tipMonthChip": "The metrics below are calculated for the current month."
   }
 }

@@ -14,6 +14,7 @@ import { getMyStudents } from '../../api/students.api'
 import { getHomework } from '../../api/homework.api'
 import { formatDate } from '../../utils/formatDate'
 import { SkeletonDashboard } from '../../components/ui/Skeleton'
+import Tooltip from '../../components/ui/Tooltip'
 
 export default function DashboardPage() {
   const { isTeacher } = useAuth()
@@ -51,10 +52,10 @@ function TeacherDashboard() {
       {!hideChecklist && <StartChecklist navigate={navigate} onDone={dismissChecklist} />}
 
       <div data-tour="kpi" className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
-        <Kpi Icon={CalendarDays} accent="blue"    label={t('dashboard.lessonsToday')}  value={kpi.lessonsToday ?? 0} pill={kpi.lessonsToday > 0 ? { t: t('dashboard.pillToday'), tone: 'info' } : { t: t('dashboard.pillEmpty'), tone: 'muted' }} onClick={() => navigate('/calendar')} />
-        <Kpi Icon={FileText}     accent="amber"   label={t('dashboard.ungradedLabel')} value={kpi.ungradedSubmissions ?? 0} pill={kpi.ungradedSubmissions > 0 ? { t: t('dashboard.pillWaitYou'), tone: 'warn' } : { t: t('dashboard.pillDone'), tone: 'good' }} onClick={() => navigate('/homework')} />
-        <Kpi Icon={Wallet}       accent="slate"   label={t('dashboard.debtStudents')}   value={fmtMoney(kpi.totalDebt)} pill={kpi.totalDebt > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
-        <Kpi Icon={CheckCircle2} accent="emerald" label={t('dashboard.attendance')}    value={kpi.attendancePercent != null ? `${kpi.attendancePercent}%` : '—'} pill={{ t: t('dashboard.pillMonth'), tone: 'muted' }} onClick={() => navigate('/attendance')} />
+        <Kpi Icon={CalendarDays} accent="blue"    tip={t('dashboard.tipLessonsToday')} label={t('dashboard.lessonsToday')}  value={kpi.lessonsToday ?? 0} pill={kpi.lessonsToday > 0 ? { t: t('dashboard.pillToday'), tone: 'info' } : { t: t('dashboard.pillEmpty'), tone: 'muted' }} onClick={() => navigate('/calendar')} />
+        <Kpi Icon={FileText}     accent="amber"   tip={t('dashboard.tipUngraded')}     label={t('dashboard.ungradedLabel')} value={kpi.ungradedSubmissions ?? 0} pill={kpi.ungradedSubmissions > 0 ? { t: t('dashboard.pillWaitYou'), tone: 'warn' } : { t: t('dashboard.pillDone'), tone: 'good' }} onClick={() => navigate('/homework')} />
+        <Kpi Icon={Wallet}       accent="slate"   tip={t('dashboard.tipDebt')}         label={t('dashboard.debtStudents')}   value={fmtMoney(kpi.totalDebt)} pill={kpi.totalDebt > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
+        <Kpi Icon={CheckCircle2} accent="emerald" tip={t('dashboard.tipAttendance')}   label={t('dashboard.attendance')}    value={kpi.attendancePercent != null ? `${kpi.attendancePercent}%` : '—'} pill={{ t: t('dashboard.pillMonth'), tone: 'muted' }} onClick={() => navigate('/attendance')} />
       </div>
 
       <AnalyticsChart isTeacher userId={user?.id} />
@@ -93,10 +94,10 @@ function StudentDashboard() {
   return (
     <Page firstName={user?.name?.split(' ')[0]} navigate={navigate}>
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
-        <Kpi Icon={CalendarDays} accent="blue"    label={t('dashboard.lessonsWeek')} value={kpi.lessonsThisWeek ?? 0} pill={{ t: t('dashboard.pill7days'), tone: 'info' }} onClick={() => navigate('/calendar')} />
-        <Kpi Icon={FileText}     accent="amber"   label={t('dashboard.hwToSubmit')}       value={kpi.pendingHomework ?? 0} pill={kpi.pendingHomework > 0 ? { t: t('dashboard.pillNotSubmitted'), tone: 'warn' } : { t: t('dashboard.pillAllSubmitted'), tone: 'good' }} onClick={() => navigate('/homework')} />
-        <Kpi Icon={CheckCircle2} accent="emerald" label={t('dashboard.attendance')}     value={kpi.attendancePercent != null ? `${kpi.attendancePercent}%` : '—'} pill={{ t: t('dashboard.pillMonth'), tone: 'muted' }} onClick={() => navigate('/attendance')} />
-        <Kpi Icon={Wallet}       accent="slate"   label={t('dashboard.myDebt')}         value={fmtMoney(kpi.myDebt)} pill={kpi.myDebt > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
+        <Kpi Icon={CalendarDays} accent="blue"    tip={t('dashboard.tipLessonsWeek')}        label={t('dashboard.lessonsWeek')} value={kpi.lessonsThisWeek ?? 0} pill={{ t: t('dashboard.pill7days'), tone: 'info' }} onClick={() => navigate('/calendar')} />
+        <Kpi Icon={FileText}     accent="amber"   tip={t('dashboard.tipHwPending')}          label={t('dashboard.hwToSubmit')}       value={kpi.pendingHomework ?? 0} pill={kpi.pendingHomework > 0 ? { t: t('dashboard.pillNotSubmitted'), tone: 'warn' } : { t: t('dashboard.pillAllSubmitted'), tone: 'good' }} onClick={() => navigate('/homework')} />
+        <Kpi Icon={CheckCircle2} accent="emerald" tip={t('dashboard.tipAttendanceStudent')} label={t('dashboard.attendance')}     value={kpi.attendancePercent != null ? `${kpi.attendancePercent}%` : '—'} pill={{ t: t('dashboard.pillMonth'), tone: 'muted' }} onClick={() => navigate('/attendance')} />
+        <Kpi Icon={Wallet}       accent="slate"   tip={t('dashboard.tipMyDebt')}             label={t('dashboard.myDebt')}         value={fmtMoney(kpi.myDebt)} pill={kpi.myDebt > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
       </div>
 
       <AnalyticsChart userId={user?.id} />
@@ -206,9 +207,11 @@ function Page({ firstName, navigate, createOptions, children }) {
           <p className="text-sm text-slate-400 mt-1.5 capitalize">{t('dashboard.greetingName', { name: firstName ?? '—' })} · {dateLabel}</p>
         </div>
         <div className="flex items-center gap-2.5">
-          <span className="hidden sm:flex items-center gap-2 h-10 px-3.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-600">
-            <CalendarDays className="w-4 h-4 text-slate-400" /> {t('dashboard.thisMonth')}
-          </span>
+          <Tooltip text={t('dashboard.tipMonthChip')} side="bottom">
+            <span className="hidden sm:flex items-center gap-2 h-10 px-3.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-600">
+              <CalendarDays className="w-4 h-4 text-slate-400" /> {t('dashboard.thisMonth')}
+            </span>
+          </Tooltip>
           {createOptions && <CreateDropdown navigate={navigate} items={createOptions} />}
         </div>
       </div>
@@ -230,17 +233,19 @@ const PILL = {
   info:  'bg-blue-50 text-blue-700',
   muted: 'bg-slate-100 text-slate-500',
 }
-function Kpi({ Icon, accent = 'blue', label, value, pill, onClick }) {
+function Kpi({ Icon, accent = 'blue', label, value, pill, onClick, tip }) {
   return (
-    <button onClick={onClick}
-      className="text-left w-full p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300 transition-all cursor-pointer">
-      <div className="flex items-center justify-between">
-        <span className={`w-10 h-10 rounded-xl flex items-center justify-center ${ACCENT[accent]}`}><Icon className="w-5 h-5" strokeWidth={2} /></span>
-        {pill && <span className={`text-[11px] px-2 py-1 rounded-full font-medium ${PILL[pill.tone]}`}>{pill.t}</span>}
-      </div>
-      <div className="mt-4 text-[28px] font-semibold text-slate-900 leading-none tracking-tight">{value}</div>
-      <div className="mt-1.5 text-[13px] text-slate-500">{label}</div>
-    </button>
+    <Tooltip text={tip} side="bottom" className="w-full">
+      <button onClick={onClick}
+        className="text-left w-full p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300 transition-all cursor-pointer">
+        <div className="flex items-center justify-between">
+          <span className={`w-10 h-10 rounded-xl flex items-center justify-center ${ACCENT[accent]}`}><Icon className="w-5 h-5" strokeWidth={2} /></span>
+          {pill && <span className={`text-[11px] px-2 py-1 rounded-full font-medium ${PILL[pill.tone]}`}>{pill.t}</span>}
+        </div>
+        <div className="mt-4 text-[28px] font-semibold text-slate-900 leading-none tracking-tight">{value}</div>
+        <div className="mt-1.5 text-[13px] text-slate-500">{label}</div>
+      </button>
+    </Tooltip>
   )
 }
 
@@ -371,10 +376,12 @@ function CreateDropdown({ navigate, items }) {
   }, [])
   return (
     <div ref={ref} data-tour="create" className="relative">
-      <button onClick={() => setOpen(v => !v)}
-        className="flex items-center gap-1.5 h-10 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors cursor-pointer">
-        <Plus className="w-4 h-4" /> {t('dashboard.create')}
-      </button>
+      <Tooltip text={t('dashboard.tipCreate')} side="left">
+        <button onClick={() => setOpen(v => !v)}
+          className="flex items-center gap-1.5 h-10 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors cursor-pointer">
+          <Plus className="w-4 h-4" /> {t('dashboard.create')}
+        </button>
+      </Tooltip>
       {open && (
         <div className="absolute right-0 mt-2 w-44 rounded-xl border border-slate-200 bg-white shadow-lg z-50 overflow-hidden py-1">
           {items.map(item => (
