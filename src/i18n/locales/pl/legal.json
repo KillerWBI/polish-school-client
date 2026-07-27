@@ -1,0 +1,92 @@
+{
+  "backHome": "Strona główna",
+  "effectiveDate": "Data wejścia w życie: {{date}}",
+  "footerPrivacy": "Prywatność",
+  "footerTerms": "Regulamin",
+  "footerSupport": "Pomoc",
+  "updated": "19 lipca 2026 r.",
+  "privacy": {
+    "title": "Polityka prywatności",
+    "intro": "Niniejsza Polityka opisuje, w jaki sposób Artem Proskurovskyi (osoba fizyczna, Poznań, Polska) („Operator”, „my”) zbiera, wykorzystuje i chroni dane osobowe użytkowników serwisu Diklaro dostępnego pod adresem diklario.com („Serwis”). Korzystając z Serwisu, akceptujesz niniejszą Politykę.",
+    "s1t": "Jakie dane zbieramy",
+    "s1": [
+      "Dane konta: imię, e-mail, nazwa użytkownika, hasło (w postaci zaszyfrowanej), rola (nauczyciel/uczeń), język interfejsu, awatar.",
+      "Dane edukacyjne: grupy, lekcje, zadania domowe, obecność, oceny, materiały, osobisty słownik, ścieżki nauki i wyniki ćwiczeń.",
+      "Dane płatnicze: przetwarzane przez dostawcę płatności (Paddle); nie przechowujemy danych kart bankowych. Nauczyciele mogą podawać własne dane do przyjmowania płatności od uczniów.",
+      "Dane techniczne: adres IP, typ urządzenia i przeglądarki, pliki cookie, dzienniki błędów."
+    ],
+    "s2t": "Cele i podstawy prawne przetwarzania",
+    "s2": [
+      "Przetwarzamy dane w celu: udostępniania i działania Serwisu, uwierzytelniania, wysyłania powiadomień i e-maili, wsparcia, obsługi płatności za subskrypcję, zapewnienia bezpieczeństwa i ulepszania produktu.",
+      "Podstawy prawne (RODO, art. 6): wykonanie umowy (świadczenie Serwisu), zgoda (np. newslettery), prawnie uzasadniony interes (bezpieczeństwo, analityka), obowiązek prawny."
+    ],
+    "s3t": "Udostępnianie danych podmiotom trzecim (podmioty przetwarzające)",
+    "s3lead": "Do działania Serwisu korzystamy z zewnętrznych dostawców, którzy przetwarzają dane w naszym imieniu:",
+    "s3": [
+      "Hosting i baza danych — Neon (PostgreSQL), Railway (backend), Vercel (frontend).",
+      "Przechowywanie plików — Cloudinary (awatary, okładki, załączniki).",
+      "Poczta e-mail — Resend (e-maile potwierdzające, powiadomienia, odpowiedzi pomocy).",
+      "Płatności — Paddle (merchant of record; obsługa subskrypcji i podatków).",
+      "Monitorowanie błędów — Sentry.",
+      "Funkcje AI — zewnętrzny dostawca modelu (np. Groq): do generowania testów, słów i planów przekazywane są treści zadań i tematów (bez zbędnych danych osobowych)."
+    ],
+    "s3end": "Nie sprzedajemy danych osobowych.",
+    "s4t": "Międzynarodowy transfer danych",
+    "s4": "Serwery i podmioty przetwarzające mogą znajdować się poza Twoim krajem, w tym poza EOG. W takich przypadkach transfer odbywa się z zastosowaniem odpowiednich zabezpieczeń (np. standardowych klauzul umownych).",
+    "s5t": "Pliki cookie",
+    "s5": "Używamy ściśle niezbędnych plików cookie do uwierzytelniania (sesja, token dostępu) i działania Serwisu. Bez nich logowanie jest niemożliwe. Pliki analityczne/marketingowe — tylko za Twoją zgodą (jeśli dotyczy).",
+    "s6t": "Okres przechowywania",
+    "s6": "Przechowujemy dane, dopóki Twoje konto jest aktywne i tak długo, jak jest to niezbędne do celów przetwarzania lub wymagane prawem. Po usunięciu konta dane są usuwane lub anonimizowane w rozsądnym terminie, z wyjątkiem danych, które musimy przechowywać (np. dla księgowości).",
+    "s7t": "Twoje prawa",
+    "s7": [
+      "Zgodnie z obowiązującym prawem (w tym RODO) masz prawo do: dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia lub sprzeciwu wobec przetwarzania, żądania przenoszenia, cofnięcia zgody oraz wniesienia skargi do organu nadzorczego ds. ochrony danych.",
+      "Aby skorzystać z praw, napisz do nas (patrz sekcja „Kontakt”)."
+    ],
+    "s8t": "Bezpieczeństwo",
+    "s8": "Stosujemy środki techniczne i organizacyjne: szyfrowanie połączenia (HTTPS), przechowywanie haseł w postaci skrótów, tokeny dostępu w bezpiecznych plikach cookie, ograniczanie liczby żądań, kontrolę dostępu. Mimo to żadna metoda przesyłania danych nie jest całkowicie bezpieczna.",
+    "s9t": "Osoby niepełnoletnie",
+    "s9": "Z Serwisu mogą korzystać uczniowie. Jeśli nie osiągnąłeś wieku, w którym możesz samodzielnie wyrazić zgodę na przetwarzanie danych w Twoim kraju, korzystanie jest możliwe tylko za zgodą rodzica lub opiekuna prawnego.",
+    "s10t": "Zmiany Polityki",
+    "s10": "Możemy aktualizować niniejszą Politykę. O istotnych zmianach informujemy poprzez Serwis lub e-mailem. Data aktualnej wersji jest podana na górze strony.",
+    "s11t": "Kontakt",
+    "s11": "W sprawach prywatności: topchannel1914@gmail.com lub przez formularz pomocy."
+  },
+  "terms": {
+    "title": "Regulamin",
+    "intro": "Niniejszy Regulamin reguluje korzystanie z serwisu Diklaro (diklario.com, „Serwis”) świadczonego przez Artema Proskurovskyiego (osoba fizyczna, Poznań, Polska) („Operator”, „my”). Rejestrując się lub korzystając z Serwisu, akceptujesz niniejszy Regulamin. Jeśli się nie zgadzasz — nie korzystaj z Serwisu.",
+    "s1t": "Opis Serwisu",
+    "s1": "Diklaro to platforma online dla nauczycieli i uczniów w dowolnym przedmiocie: prowadzenie grup, lekcji, zadań domowych, obecności i finansów, a także samodzielna nauka z adaptacyjnymi narzędziami AI (testy, słownik, ścieżki nauki). Funkcjonalność może się zmieniać i rozwijać.",
+    "s2t": "Rejestracja i konto",
+    "s2": "Zobowiązujesz się podawać prawdziwe dane, aktualizować je i nie udostępniać dostępu osobom trzecim. Ponosisz odpowiedzialność za działania wykonane na Twoim koncie oraz za bezpieczeństwo hasła. Powiadom nas o nieautoryzowanym dostępie.",
+    "s3t": "Plany, subskrypcja i płatność",
+    "s3": [
+      "Serwis jest dostępny w planie bezpłatnym i planach płatnych (np. Standardowy i Maksymalny) z limitami. Płatne subskrypcje są obsługiwane przez dostawcę Paddle, który występuje jako merchant of record i obsługuje płatności oraz podatki.",
+      "Subskrypcja odnawia się automatycznie na wybrany okres, dopóki jej nie anulujesz. Ceny mogą się zmieniać; o istotnych zmianach informujemy z wyprzedzeniem. Należne podatki (np. VAT) nalicza dostawca płatności."
+    ],
+    "s4t": "Zwrot środków",
+    "s4": [
+      "Po dokonaniu płatności środki nie podlegają zwrotowi. Po anulowaniu subskrypcji dostęp do planu płatnego pozostaje do końca już opłaconego okresu, po czym automatyczne odnowienie nie następuje.",
+      "Zasada ta nie ogranicza praw konsumentów wynikających z bezwzględnie obowiązującego prawa ani obowiązujących zasad dostawcy płatności Paddle. Pytania dotyczące płatności — przez formularz pomocy."
+    ],
+    "s5t": "Treści użytkownika",
+    "s5": "Zachowujesz prawa do treści, które przesyłasz (materiały, zadania, słowa, notatki). Udostępniając treści, udzielasz Operatorowi ograniczonej licencji na ich przechowywanie i przetwarzanie wyłącznie w celu działania Serwisu. Odpowiadasz za legalność swoich treści i posiadanie niezbędnych praw.",
+    "s6t": "Dozwolone użytkowanie",
+    "s6": "Zabrania się: naruszania prawa i praw osób trzecich, zamieszczania treści szkodliwych, obraźliwych lub nielegalnych, prób uzyskania nieautoryzowanego dostępu, zakłócania działania Serwisu, wysyłania spamu, wykorzystywania Serwisu do zautomatyzowanego zbierania danych bez zezwolenia.",
+    "s7t": "Funkcje AI",
+    "s7": "Serwis korzysta z modeli sztucznej inteligencji do generowania testów, słów, planów i oceny odpowiedzi. Wyniki są dostarczane „tak jak są”, mogą zawierać nieścisłości i nie stanowią profesjonalnej porady. Ważne informacje weryfikuj samodzielnie.",
+    "s8t": "Własność intelektualna",
+    "s8": "Prawa do samego Serwisu, jego kodu, projektu, znaków towarowych i materiałów należą do Operatora i są chronione prawem. Korzystanie z Serwisu nie przenosi na Ciebie tych praw, poza prawem do korzystania z Serwisu na warunkach niniejszego dokumentu.",
+    "s9t": "Wyłączenie gwarancji",
+    "s9": "Serwis jest udostępniany „tak jak jest” i „w miarę dostępności”, bez jakiejkolwiek gwarancji nieprzerwanego lub bezbłędnego działania. Nie gwarantujemy, że Serwis spełni wszystkie Twoje oczekiwania.",
+    "s10t": "Ograniczenie odpowiedzialności",
+    "s10": "W maksymalnym zakresie dozwolonym przez prawo Operator nie ponosi odpowiedzialności za szkody pośrednie, utracone korzyści lub utratę danych powstałe w związku z korzystaniem lub niemożnością korzystania z Serwisu.",
+    "s11t": "Zawieszenie i zakończenie",
+    "s11": "Możemy ograniczyć lub zakończyć dostęp w przypadku naruszenia niniejszego Regulaminu. Możesz w każdej chwili zaprzestać korzystania i usunąć konto.",
+    "s12t": "Zmiany Regulaminu",
+    "s12": "Możemy aktualizować niniejszy Regulamin. Dalsze korzystanie z Serwisu po wejściu zmian w życie oznacza ich akceptację. Data aktualnej wersji jest podana na górze strony.",
+    "s13t": "Prawo właściwe i spory",
+    "s13": "Niniejszy Regulamin podlega prawu Rzeczypospolitej Polskiej. Spory rozstrzyga właściwy sąd według siedziby Operatora (Poznań, Polska), o ile bezwzględnie obowiązujące przepisy o ochronie konsumentów nie stanowią inaczej.",
+    "s14t": "Kontakt",
+    "s14": "Pytania dotyczące Regulaminu: topchannel1914@gmail.com lub przez formularz pomocy."
+  }
+}
