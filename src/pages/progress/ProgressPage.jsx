@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import {
   ResponsiveContainer, AreaChart, Area, LineChart, Line,
   CartesianGrid, XAxis, YAxis, Tooltip,
@@ -17,6 +18,7 @@ const tip = {
 const AX = { stroke: '#CBD5E1', fontSize: 11, tickLine: false, axisLine: false }
 
 export default function ProgressPage() {
+  const { t, i18n } = useTranslation('student')
   const { user } = useAuth()
   const { data: progress, loading: pLoad } = useApiQuery(['my-progress'], getMyProgress)
   const { data: analytics, loading: aLoad } = useApiQuery(
@@ -36,26 +38,26 @@ export default function ProgressPage() {
   return (
     <div className="p-5 sm:p-8 max-w-[1100px]">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">Мой прогресс</h1>
-        <p className="text-sm text-slate-500 mt-0.5">Учёба, посещаемость, оценки и активность в одном месте</p>
+        <h1 className="text-2xl font-semibold text-slate-900">{t('progress.title')}</h1>
+        <p className="text-sm text-slate-500 mt-0.5">{t('progress.subtitle')}</p>
       </div>
 
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <Stat Icon={Flame}        cls="bg-orange-50 text-orange-600"   value={`${streak} дн`}  label="Дней подряд" tip="Сколько дней подряд вы занимались без пропусков. Пропустите день — счётчик обнулится." />
-        <Stat Icon={CalendarCheck} cls="bg-emerald-50 text-emerald-600" value={attended}         label="Уроков посещено" />
-        <Stat Icon={Award}        cls="bg-blue-50 text-blue-600"        value={gradesAvg || '—'} label="Средняя оценка" />
-        <Stat Icon={Clock}        cls="bg-violet-50 text-violet-600"    value={`${extHours} ч`}  label="Внешних занятий" />
+        <Stat Icon={Flame}        cls="bg-orange-50 text-orange-600"   value={`${streak} ${t('progress.daysShort', 'дн')}`}  label={t('progress.statStreak')} tip={t('progress.statStreakTip')} />
+        <Stat Icon={CalendarCheck} cls="bg-emerald-50 text-emerald-600" value={attended}         label={t('progress.statAttended')} />
+        <Stat Icon={Award}        cls="bg-blue-50 text-blue-600"        value={gradesAvg || '—'} label={t('progress.statGrade')} />
+        <Stat Icon={Clock}        cls="bg-violet-50 text-violet-600"    value={`${extHours} ${t('progress.hoursShort', 'ч')}`}  label={t('progress.statExternal')} />
       </div>
 
       {/* Heatmap активности */}
-      <Card title="Активность за последние ~17 недель" subtitle="Уроки, задания, словарь и занятия">
+      <Card title={t('progress.heatTitle')} subtitle={t('progress.heatSub')}>
         <Heatmap days={progress?.activityByDay ?? []} />
       </Card>
 
       <div className="grid lg:grid-cols-2 gap-4 mt-4">
         {/* Посещаемость */}
-        <Card title="Посещаемость по месяцам">
+        <Card title={t('progress.attTitle')}>
           {analytics?.attendanceByMonth?.length ? (
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={analytics.attendanceByMonth} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
@@ -68,7 +70,7 @@ export default function ProgressPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
                 <XAxis dataKey="bucket" {...AX} />
                 <YAxis {...AX} domain={[0, 100]} />
-                <Tooltip {...tip} formatter={(v) => [`${v}%`, 'Посещаемость']} />
+                <Tooltip {...tip} formatter={(v) => [`${v}%`, t('progress.attName')]} />
                 <Area type="monotone" dataKey="percent" stroke="#10b981" strokeWidth={2} fill="url(#att)" />
               </AreaChart>
             </ResponsiveContainer>
@@ -76,14 +78,14 @@ export default function ProgressPage() {
         </Card>
 
         {/* Оценки */}
-        <Card title="Динамика оценок">
+        <Card title={t('progress.gradesTitle')}>
           {analytics?.grades?.length ? (
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={[...analytics.grades].reverse()} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-                <XAxis dataKey="at" {...AX} tickFormatter={(v) => new Date(v).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })} />
+                <XAxis dataKey="at" {...AX} tickFormatter={(v) => new Date(v).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' })} />
                 <YAxis {...AX} domain={[0, 100]} />
-                <Tooltip {...tip} labelFormatter={(v) => new Date(v).toLocaleDateString('ru-RU')} formatter={(v) => [v, 'Оценка']} />
+                <Tooltip {...tip} labelFormatter={(v) => new Date(v).toLocaleDateString(i18n.language)} formatter={(v) => [v, t('progress.gradeName')]} />
                 <Line type="monotone" dataKey="grade" stroke="#2563eb" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
@@ -93,12 +95,12 @@ export default function ProgressPage() {
 
       <div className="grid lg:grid-cols-2 gap-4 mt-4">
         {/* ДЗ */}
-        <Card title="Домашние задания">
+        <Card title={t('progress.hwTitle')}>
           <HwProgress stats={analytics?.homeworkStats} />
         </Card>
 
         {/* Словарь */}
-        <Card title="Словарь">
+        <Card title={t('progress.vocabTitle')}>
           <VocabBar vocab={progress?.vocab} />
         </Card>
       </div>
@@ -133,11 +135,13 @@ function Card({ title, subtitle, children }) {
 }
 
 function Blank() {
-  return <div className="h-[200px] flex items-center justify-center text-sm text-slate-400">Пока нет данных</div>
+  const { t } = useTranslation('student')
+  return <div className="h-[200px] flex items-center justify-center text-sm text-slate-400">{t('progress.blank')}</div>
 }
 
 /* ── Heatmap (GitHub-style) ── */
 function Heatmap({ days }) {
+  const { t } = useTranslation('student')
   const map = new Map(days.map(d => [d.date, d.count]))
   const WEEKS = 17
   const total = WEEKS * 7
@@ -162,53 +166,55 @@ function Heatmap({ days }) {
         {columns.map((col, ci) => (
           <div key={ci} className="flex flex-col gap-1">
             {col.map((cell) => (
-              <div key={cell.key} title={`${cell.key}: ${cell.count} активностей`}
+              <div key={cell.key} title={t('progress.heatCell', { date: cell.key, count: cell.count })}
                 className={`w-3.5 h-3.5 rounded-sm ${level(cell.count)}`} />
             ))}
           </div>
         ))}
       </div>
       <div className="flex items-center gap-2 mt-3 text-xs text-slate-400">
-        <span>меньше</span>
+        <span>{t('progress.less')}</span>
         <span className="w-3 h-3 rounded-sm bg-slate-100" />
         <span className="w-3 h-3 rounded-sm bg-emerald-200" />
         <span className="w-3 h-3 rounded-sm bg-emerald-400" />
         <span className="w-3 h-3 rounded-sm bg-emerald-600" />
-        <span>больше</span>
+        <span>{t('progress.more')}</span>
       </div>
     </div>
   )
 }
 
 function HwProgress({ stats }) {
+  const { t } = useTranslation('student')
   const s = stats ?? { submitted: 0, total: 0, percent: 0 }
   return (
     <div className="py-4">
       <div className="flex items-end justify-between mb-2">
         <span className="text-3xl font-bold text-slate-900">{s.percent}%</span>
-        <span className="text-sm text-slate-400">{s.submitted} из {s.total} сдано</span>
+        <span className="text-sm text-slate-400">{t('progress.hwSubmitted', { done: s.submitted, total: s.total })}</span>
       </div>
       <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
         <div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${s.percent}%` }} />
       </div>
-      <p className="text-xs text-slate-400 mt-2">Учитываются задания с прошедшим сроком сдачи</p>
+      <p className="text-xs text-slate-400 mt-2">{t('progress.hwNote')}</p>
     </div>
   )
 }
 
 function VocabBar({ vocab }) {
+  const { t } = useTranslation('student')
   const v = vocab ?? { new: 0, learning: 0, known: 0, total: 0 }
-  if (!v.total) return <div className="py-6 text-center text-sm text-slate-400">Словарь пуст — добавьте слова</div>
+  if (!v.total) return <div className="py-6 text-center text-sm text-slate-400">{t('progress.vocabEmpty')}</div>
   const seg = [
-    { label: 'Новые', value: v.new, cls: 'bg-slate-300' },
-    { label: 'Учу', value: v.learning, cls: 'bg-amber-400' },
-    { label: 'Знаю', value: v.known, cls: 'bg-emerald-500' },
+    { label: t('progress.vocabNew'), value: v.new, cls: 'bg-slate-300' },
+    { label: t('progress.vocabLearning'), value: v.learning, cls: 'bg-amber-400' },
+    { label: t('progress.vocabKnown'), value: v.known, cls: 'bg-emerald-500' },
   ]
   return (
     <div className="py-4">
       <div className="flex items-center gap-1 mb-3">
         <BookMarked className="w-4 h-4 text-slate-400" />
-        <span className="text-sm text-slate-600">{v.total} слов</span>
+        <span className="text-sm text-slate-600">{t('progress.vocabWords', { n: v.total })}</span>
       </div>
       <div className="h-3 rounded-full overflow-hidden flex">
         {seg.map(s => s.value > 0 && (
