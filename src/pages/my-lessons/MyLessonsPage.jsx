@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { NotebookPen, Plus, Check, Trash2, Wallet, Clock, CalendarDays, GraduationCap } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
@@ -13,9 +14,9 @@ import PageContainer from '../../components/ui/PageContainer'
 import Tooltip from '../../components/ui/Tooltip'
 
 const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
-const TYPE_LABEL = { external: 'С репетитором', self_study: 'Сам' }
 
 export default function MyLessonsPage() {
+  const { t } = useTranslation('student')
   const [tab, setTab] = useState('schedule')
   const [createOpen, setCreateOpen] = useState(false)
 
@@ -32,29 +33,29 @@ export default function MyLessonsPage() {
             <NotebookPen className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Мои занятия</h1>
-            <p className="text-sm text-slate-500">Учёт уроков вне платформы и самостоятельных</p>
+            <h1 className="text-2xl font-semibold text-slate-900">{t('myLessons.title')}</h1>
+            <p className="text-sm text-slate-500">{t('myLessons.subtitle')}</p>
           </div>
         </div>
-        <Tooltip text="Записать занятие, которого нет в приложении — с репетитором вне платформы или самостоятельное. Для вашего учёта времени и оплат." side="left">
-          <Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4 mr-1" /> Занятие</Button>
+        <Tooltip text={t('myLessons.tipCreate')} side="left">
+          <Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4 mr-1" /> {t('myLessons.addBtn')}</Button>
         </Tooltip>
       </div>
 
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <Kpi Icon={CalendarDays} label="Занятий"  value={stats?.lessons ?? 0} color="bg-blue-50 text-blue-600" />
-        <Kpi Icon={Clock}        label="Часов"    value={stats?.hours ?? 0}   color="bg-violet-50 text-violet-600" />
-        <Kpi Icon={Wallet}       label="Долг"     value={fmt(stats?.debt)}    color="bg-amber-50 text-amber-600" />
-        <Kpi Icon={Check}        label="Оплачено" value={fmt(stats?.paid)}    color="bg-emerald-50 text-emerald-600" />
+        <Kpi Icon={CalendarDays} label={t('myLessons.kpiLessons')} value={stats?.lessons ?? 0} color="bg-blue-50 text-blue-600" />
+        <Kpi Icon={Clock}        label={t('myLessons.kpiHours')}   value={stats?.hours ?? 0}   color="bg-violet-50 text-violet-600" />
+        <Kpi Icon={Wallet}       label={t('myLessons.kpiDebt')}    value={fmt(stats?.debt)}    color="bg-amber-50 text-amber-600" />
+        <Kpi Icon={Check}        label={t('myLessons.kpiPaid')}    value={fmt(stats?.paid)}    color="bg-emerald-50 text-emerald-600" />
       </div>
 
       {/* Табы */}
       <div className="inline-flex p-0.5 mb-5 rounded-xl bg-slate-100 border border-slate-200">
-        <TabBtn active={tab === 'schedule'} onClick={() => setTab('schedule')}>Занятия</TabBtn>
-        <TabBtn active={tab === 'teachers'} onClick={() => setTab('teachers')}>Учителя</TabBtn>
-        <TabBtn active={tab === 'subjects'} onClick={() => setTab('subjects')}>Предметы</TabBtn>
-        <TabBtn active={tab === 'debt'}     onClick={() => setTab('debt')}>Долг</TabBtn>
+        <TabBtn active={tab === 'schedule'} onClick={() => setTab('schedule')}>{t('myLessons.tabSchedule')}</TabBtn>
+        <TabBtn active={tab === 'teachers'} onClick={() => setTab('teachers')}>{t('myLessons.tabTeachers')}</TabBtn>
+        <TabBtn active={tab === 'subjects'} onClick={() => setTab('subjects')}>{t('myLessons.tabSubjects')}</TabBtn>
+        <TabBtn active={tab === 'debt'}     onClick={() => setTab('debt')}>{t('myLessons.tabDebt')}</TabBtn>
       </div>
 
       {tab === 'schedule' && <ScheduleTab lessons={lessons} loading={loading} onRefresh={refresh} onAdd={() => setCreateOpen(true)} />}
@@ -90,29 +91,31 @@ function TabBtn({ active, onClick, children }) {
 
 /* ── Список занятий ── */
 function ScheduleTab({ lessons, loading, onRefresh, onAdd, debtMode }) {
+  const { t, i18n } = useTranslation('student')
   const [busy, setBusy] = useState(null)
   const [confirmDel, setConfirmDel] = useState(null)
+  const typeLabel = (type) => t(type === 'external' ? 'myLessons.typeExternal' : 'myLessons.typeSelf')
 
   const pay = async (id) => {
     setBusy(id)
-    try { await payMyLesson(id); toast.success('Отмечено оплаченным'); onRefresh() }
-    catch (e) { toast.error(e.response?.data?.error || 'Ошибка') }
+    try { await payMyLesson(id); toast.success(t('myLessons.paidToast')); onRefresh() }
+    catch (e) { toast.error(e.response?.data?.error || t('common:error')) }
     finally { setBusy(null) }
   }
 
   const doDelete = async () => {
     setBusy(confirmDel.id)
     try { await deleteMyLesson(confirmDel.id); setConfirmDel(null); onRefresh() }
-    catch (e) { toast.error(e.response?.data?.error || 'Ошибка') }
+    catch (e) { toast.error(e.response?.data?.error || t('common:error')) }
     finally { setBusy(null) }
   }
 
   if (loading) return <SkeletonList />
   if (!lessons?.length) {
     return debtMode
-      ? <EmptyState emoji="✅" title="Долгов нет" text="Все занятия оплачены." />
-      : <EmptyState emoji="📝" title="Записей пока нет" text="Добавьте первое занятие для учёта."
-          action={onAdd && <Button size="sm" onClick={onAdd}>Добавить занятие</Button>} />
+      ? <EmptyState emoji="✅" title={t('myLessons.noDebtsTitle')} text={t('myLessons.noDebtsText')} />
+      : <EmptyState emoji="📝" title={t('myLessons.emptyTitle')} text={t('myLessons.emptyText')}
+          action={onAdd && <Button size="sm" onClick={onAdd}>{t('myLessons.addLesson')}</Button>} />
   }
 
   return (
@@ -122,17 +125,17 @@ function ScheduleTab({ lessons, loading, onRefresh, onAdd, debtMode }) {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-medium text-slate-900">{l.subject}</span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">{TYPE_LABEL[l.type]}</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">{typeLabel(l.type)}</span>
               {Number(l.pricePerLesson) > 0 && (
                 <span className={`text-xs px-2 py-0.5 rounded-full ${l.isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                  {l.isPaid ? 'Оплачено' : `Долг ${fmt(l.pricePerLesson)}`}
+                  {l.isPaid ? t('myLessons.paidBadge') : t('myLessons.debtBadge', { amount: fmt(l.pricePerLesson) })}
                 </span>
               )}
             </div>
             <div className="text-sm text-slate-500 mt-1">
-              {new Date(l.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}
+              {new Date(l.date).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' })}
               {l.time && ` · ${l.time}`}
-              {l.durationMin && ` · ${l.durationMin} мин`}
+              {l.durationMin && ` · ${l.durationMin} ${t('myLessons.minShort')}`}
               {l.teacherLabel && ` · ${l.teacherLabel}`}
             </div>
             {l.topic && <div className="text-sm text-slate-600 mt-1">{l.topic}</div>}
@@ -141,7 +144,7 @@ function ScheduleTab({ lessons, loading, onRefresh, onAdd, debtMode }) {
           <div className="flex flex-col gap-1.5 shrink-0">
             {!l.isPaid && Number(l.pricePerLesson) > 0 && (
               <Button size="sm" variant="secondary" onClick={() => pay(l.id)} loading={busy === l.id}>
-                <Check className="w-3.5 h-3.5 mr-1" /> Оплатил
+                <Check className="w-3.5 h-3.5 mr-1" /> {t('myLessons.payBtn')}
               </Button>
             )}
             <button onClick={() => setConfirmDel(l)} className="text-slate-300 hover:text-red-500 transition-colors self-end p-1">
@@ -155,9 +158,9 @@ function ScheduleTab({ lessons, loading, onRefresh, onAdd, debtMode }) {
         open={!!confirmDel}
         onClose={() => setConfirmDel(null)}
         onConfirm={doDelete}
-        title="Удалить занятие?"
-        message="Запись будет удалена из журнала."
-        confirmLabel="Удалить"
+        title={t('myLessons.deleteTitle')}
+        message={t('myLessons.deleteMsg')}
+        confirmLabel={t('common:delete')}
         busy={busy === confirmDel?.id}
       />
     </div>
@@ -166,8 +169,9 @@ function ScheduleTab({ lessons, loading, onRefresh, onAdd, debtMode }) {
 
 /* ── Разбивка по учителям / предметам ── */
 function BreakdownTab({ map, kind }) {
+  const { t } = useTranslation('student')
   const entries = Object.entries(map || {})
-  if (!entries.length) return <EmptyState emoji="📊" title="Нет данных" text="Добавьте занятия, чтобы увидеть разбивку." />
+  if (!entries.length) return <EmptyState emoji="📊" title={t('myLessons.noDataTitle')} text={t('myLessons.noDataText')} />
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
@@ -179,12 +183,12 @@ function BreakdownTab({ map, kind }) {
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium text-slate-900 truncate">{name}</div>
             <div className="text-xs text-slate-400">
-              {v.lessons} занятий{kind === 'subject' && v.minutes ? ` · ${Math.round(v.minutes / 6) / 10} ч` : ''}
+              {t('myLessons.lessonsCount', { n: v.lessons })}{kind === 'subject' && v.minutes ? ` · ${Math.round(v.minutes / 6) / 10} ${t('myLessons.hoursShort')}` : ''}
             </div>
           </div>
           {kind === 'teacher' && (
             <div className={`text-sm font-semibold shrink-0 ${v.debt > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
-              {v.debt > 0 ? `Долг ${fmt(v.debt)}` : 'Оплачено'}
+              {v.debt > 0 ? t('myLessons.debtBadge', { amount: fmt(v.debt) }) : t('myLessons.paidBadge')}
             </div>
           )}
         </div>
@@ -195,12 +199,13 @@ function BreakdownTab({ map, kind }) {
 
 /* ── Модалка создания ── */
 function CreateModal({ onClose, onCreated }) {
+  const { t } = useTranslation('student')
   const [f, setF] = useState({ subject: '', teacherLabel: '', date: '', time: '', durationMin: '', topic: '', notes: '', pricePerLesson: '', type: 'external', isPaid: false })
   const [busy, setBusy] = useState(false)
   const set = (k) => (e) => setF(s => ({ ...s, [k]: e.target.value }))
 
   const submit = async () => {
-    if (!f.subject.trim() || !f.date) { toast.error('Укажите предмет и дату'); return }
+    if (!f.subject.trim() || !f.date) { toast.error(t('myLessons.validSubjectDate')); return }
     setBusy(true)
     try {
       await createMyLesson({
@@ -215,20 +220,20 @@ function CreateModal({ onClose, onCreated }) {
         isPaid: f.isPaid,
         type: f.type,
       })
-      toast.success('Занятие добавлено')
+      toast.success(t('myLessons.addedToast'))
       onCreated()
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Ошибка')
+      toast.error(e.response?.data?.error || t('common:error'))
     } finally { setBusy(false) }
   }
 
   return (
     <Modal open onClose={onClose} maxWidth="max-w-md">
       <div className="p-6">
-        <h3 className="text-base font-semibold text-slate-900 mb-4">Новое занятие</h3>
+        <h3 className="text-base font-semibold text-slate-900 mb-4">{t('myLessons.newTitle')}</h3>
 
         <div className="flex gap-2 mb-4">
-          {[['external', 'С репетитором'], ['self_study', 'Самостоятельно']].map(([k, label]) => (
+          {[['external', t('myLessons.modeExternal')], ['self_study', t('myLessons.modeSelf')]].map(([k, label]) => (
             <button key={k} type="button" onClick={() => setF(s => ({ ...s, type: k }))}
               className={`flex-1 h-10 rounded-xl border text-sm font-medium transition-colors ${f.type === k ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'}`}>
               {label}
@@ -237,21 +242,21 @@ function CreateModal({ onClose, onCreated }) {
         </div>
 
         <div className="space-y-3">
-          <Input label="Предмет" value={f.subject} onChange={set('subject')} placeholder="математика, английский, музыка…" />
+          <Input label={t('myLessons.fSubject')} value={f.subject} onChange={set('subject')} placeholder={t('myLessons.fSubjectPh')} />
           {f.type === 'external' && (
-            <Input label="Преподаватель / источник" value={f.teacherLabel} onChange={set('teacherLabel')} placeholder="Пан Войтек" />
+            <Input label={t('myLessons.fTeacher')} value={f.teacherLabel} onChange={set('teacherLabel')} placeholder={t('myLessons.fTeacherPh')} />
           )}
           <div className="grid grid-cols-2 gap-3">
-            <Input label="Дата" type="date" value={f.date} onChange={set('date')} />
-            <Input label="Время" type="time" value={f.time} onChange={set('time')} />
+            <Input label={t('myLessons.fDate')} type="date" value={f.date} onChange={set('date')} />
+            <Input label={t('myLessons.fTime')} type="time" value={f.time} onChange={set('time')} />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Input label="Длительность (мин)" type="number" value={f.durationMin} onChange={set('durationMin')} placeholder="60" />
-            <Input label="Цена (zł)" type="number" value={f.pricePerLesson} onChange={set('pricePerLesson')} placeholder="0" />
+            <Input label={t('myLessons.fDuration')} type="number" value={f.durationMin} onChange={set('durationMin')} placeholder="60" />
+            <Input label={t('myLessons.fPrice')} type="number" value={f.pricePerLesson} onChange={set('pricePerLesson')} placeholder="0" />
           </div>
-          <Input label="Тема" value={f.topic} onChange={set('topic')} placeholder="Прошедшее время" />
+          <Input label={t('myLessons.fTopic')} value={f.topic} onChange={set('topic')} placeholder={t('myLessons.fTopicPh')} />
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Заметки</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">{t('myLessons.fNotes')}</label>
             <textarea value={f.notes} onChange={set('notes')} rows={2}
               className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 resize-none" />
           </div>
@@ -259,14 +264,14 @@ function CreateModal({ onClose, onCreated }) {
             <label className="flex items-center gap-2 text-sm text-slate-600">
               <input type="checkbox" checked={f.isPaid} onChange={e => setF(s => ({ ...s, isPaid: e.target.checked }))}
                 className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-              Уже оплачено
+              {t('myLessons.alreadyPaid')}
             </label>
           )}
         </div>
 
         <div className="flex gap-3 mt-6">
-          <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>Отмена</Button>
-          <Button className="flex-1" onClick={submit} loading={busy}>Добавить</Button>
+          <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>{t('common:cancel')}</Button>
+          <Button className="flex-1" onClick={submit} loading={busy}>{t('myLessons.addSubmit')}</Button>
         </div>
       </div>
     </Modal>
