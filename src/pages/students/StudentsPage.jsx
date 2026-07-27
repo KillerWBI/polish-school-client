@@ -119,7 +119,7 @@ function StudentCard({ s }) {
         <Tooltip text={t('students.tipWeakSpots')} side="top">
           <button onClick={() => setInsightsOpen(true)}
             className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors">
-            <Target className="w-3.5 h-3.5" /> Слабые места
+            <Target className="w-3.5 h-3.5" /> {t('students.weakBtn')}
           </button>
         </Tooltip>
       )}
@@ -131,6 +131,7 @@ function StudentCard({ s }) {
 
 /* ── Слабые места ученика (из расшаренных треков) + генерация адресного теста ── */
 function WeakSpotsModal({ student, onClose }) {
+  const { t } = useTranslation('teacher')
   const [data, setData]       = useState(null)
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState(() => new Set())
@@ -141,7 +142,7 @@ function WeakSpotsModal({ student, onClose }) {
     let alive = true
     getTrackInsights(student.id)
       .then((d) => { if (alive) { setData(d); setSelected(new Set((d.spots || []).map(spotKey))) } })
-      .catch((e) => { if (alive) toast.error(e.response?.data?.error || 'Ошибка загрузки') })
+      .catch((e) => { if (alive) toast.error(e.response?.data?.error || t('students.loadError')) })
       .finally(() => { if (alive) setLoading(false) })
     return () => { alive = false }
   }, [student.id])
@@ -158,9 +159,9 @@ function WeakSpotsModal({ student, onClose }) {
     try {
       const q = await generateTargetedQuiz(student.id, chosen.map((s) => ({ topicId: s.topicId, stepTitle: s.stepTitle })))
       setQuiz(q)
-      toast.success('Адресный тест создан и добавлен в вашу библиотеку тестов')
+      toast.success(t('students.quizCreated'))
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Не удалось создать тест')
+      toast.error(e.response?.data?.error || t('students.quizFail'))
     } finally { setGen(false) }
   }
 
@@ -170,37 +171,37 @@ function WeakSpotsModal({ student, onClose }) {
     <Modal open onClose={onClose} maxWidth="max-w-lg">
       <div className="p-6">
         <h3 className="text-base font-semibold text-slate-900 mb-1 flex items-center gap-2">
-          <Target className="w-4 h-4 text-blue-600" /> Слабые места · {student.name}
+          <Target className="w-4 h-4 text-blue-600" /> {t('students.weakTitle')} · {student.name}
         </h3>
-        <p className="text-xs text-slate-500 mb-4">Из треков самообучения, которыми ученик поделился с вами.</p>
+        <p className="text-xs text-slate-500 mb-4">{t('students.weakSub')}</p>
 
         {loading ? (
-          <div className="py-12 text-center text-sm text-slate-400">Загрузка…</div>
+          <div className="py-12 text-center text-sm text-slate-400">{t('common:loading')}</div>
         ) : quiz ? (
           <div className="text-center py-6">
             <div className="w-11 h-11 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3">
               <Sparkles className="w-5 h-5" />
             </div>
-            <p className="text-sm font-medium text-slate-900 mb-1">Тест готов</p>
-            <p className="text-xs text-slate-500 mb-4">«{quiz.topic}» ({quiz.questions?.length || 0} вопр.) добавлен в вашу библиотеку тестов.</p>
+            <p className="text-sm font-medium text-slate-900 mb-1">{t('students.quizReadyTitle')}</p>
+            <p className="text-xs text-slate-500 mb-4">{t('students.quizReadyText', { topic: quiz.topic, n: quiz.questions?.length || 0 })}</p>
             <p className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 mb-4 text-left">
-              Чтобы задать его ученику — создайте <b>ДЗ</b> на нужном уроке и прикрепите этот тест из библиотеки.
+              {t('students.quizReadyHint')}
             </p>
-            <Button variant="secondary" className="w-full" onClick={onClose}>Закрыть</Button>
+            <Button variant="secondary" className="w-full" onClick={onClose}>{t('common:close')}</Button>
           </div>
         ) : !meta.sharing ? (
           <div className="text-center py-8">
             <Share2 className="w-6 h-6 text-slate-300 mx-auto mb-3" />
             <p className="text-sm text-slate-500">
               {meta.totalTracks > 0
-                ? `У ученика есть треки (${meta.totalTracks}), но он ещё не поделился ими с вами.`
-                : 'У ученика пока нет треков самообучения.'}
+                ? t('students.notSharedTracks', { n: meta.totalTracks })
+                : t('students.noTracks')}
             </p>
-            <p className="text-xs text-slate-400 mt-2">Ученик включает доступ кнопкой «Поделиться с учителем» на странице трека.</p>
+            <p className="text-xs text-slate-400 mt-2">{t('students.shareHint')}</p>
           </div>
         ) : !spots.length ? (
           <div className="text-center py-8">
-            <p className="text-sm text-slate-600">🎉 Ученик делится треками ({meta.sharedCount}), слабых мест сейчас нет.</p>
+            <p className="text-sm text-slate-600">{t('students.noWeak', { n: meta.sharedCount })}</p>
           </div>
         ) : (
           <>
@@ -224,7 +225,7 @@ function WeakSpotsModal({ student, onClose }) {
               })}
             </div>
             <Button className="w-full" onClick={generate} loading={gen} disabled={!chosen.length}>
-              <Sparkles className="w-4 h-4 mr-1" /> Сгенерировать адресный тест{chosen.length ? ` (${chosen.length})` : ''}
+              <Sparkles className="w-4 h-4 mr-1" /> {t('students.generateBtn')}{chosen.length ? ` (${chosen.length})` : ''}
             </Button>
           </>
         )}

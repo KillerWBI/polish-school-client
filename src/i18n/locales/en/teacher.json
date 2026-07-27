@@ -8,7 +8,21 @@
     "notFound": "Nothing found",
     "placeholder": "no account",
     "tipPlaceholder": "This student was added by you manually and doesn't use the app — you keep their records yourself. You can link them to a real account later.",
-    "tipWeakSpots": "Topics from self-study where the student is weakest. You can create a targeted quiz on the selected ones right away."
+    "tipWeakSpots": "Topics from self-study where the student is weakest. You can create a targeted quiz on the selected ones right away.",
+    "weakBtn": "Weak spots",
+    "loadError": "Loading error",
+    "quizCreated": "Targeted quiz created and added to your quiz library",
+    "quizFail": "Couldn't create the quiz",
+    "weakTitle": "Weak spots",
+    "weakSub": "From the self-study tracks the student shared with you.",
+    "quizReadyTitle": "Quiz ready",
+    "quizReadyText": "\"{{topic}}\" ({{n}} questions) added to your quiz library.",
+    "quizReadyHint": "To assign it to the student — create homework on the right lesson and attach this quiz from the library.",
+    "notSharedTracks": "The student has tracks ({{n}}) but hasn't shared them with you yet.",
+    "noTracks": "The student has no self-study tracks yet.",
+    "shareHint": "The student enables access with the \"Share with teacher\" button on the track page.",
+    "noWeak": "🎉 The student shares tracks ({{n}}); no weak spots right now.",
+    "generateBtn": "Generate targeted quiz"
   },
   "groups": {
     "titleTeacher": "Groups",
