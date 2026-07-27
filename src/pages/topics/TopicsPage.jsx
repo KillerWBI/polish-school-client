@@ -12,6 +12,7 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import PageContainer from '../../components/ui/PageContainer'
+import Tooltip from '../../components/ui/Tooltip'
 import IdeasModal from './IdeasModal'
 
 // Цвет прогресса обладания темой
@@ -36,7 +37,9 @@ export default function TopicsPage() {
             <p className="text-sm text-slate-500">{t('topics.subtitle')}</p>
           </div>
         </div>
-        <Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4 mr-1" /> {t('topics.addTopic')}</Button>
+        <Tooltip text={t('topics.tipCreate')} side="left">
+          <Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4 mr-1" /> {t('topics.addTopic')}</Button>
+        </Tooltip>
       </div>
 
       <button onClick={() => setIdeasOpen(true)}
@@ -97,9 +100,11 @@ function TopicCard({ topic, onDeleted }) {
       </button>
 
       <div className="flex items-center gap-2 mt-3">
-        <Button size="sm" className="flex-1" onClick={() => navigate(`/topics/${topic.id}`)}>
-          {t('topics.openTrack')} <ChevronRight className="w-4 h-4 ml-1" />
-        </Button>
+        <Tooltip text={t('topics.tipCard')} side="top" className="flex-1">
+          <Button size="sm" className="w-full" onClick={() => navigate(`/topics/${topic.id}`)}>
+            {t('topics.openTrack')} <ChevronRight className="w-4 h-4 ml-1" />
+          </Button>
+        </Tooltip>
         <button onClick={() => setConfirmDel(true)} className="text-slate-300 hover:text-red-500 transition-colors p-2">
           <Trash2 className="w-4 h-4" />
         </button>

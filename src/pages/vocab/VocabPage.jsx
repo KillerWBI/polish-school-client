@@ -12,6 +12,7 @@ import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import PageContainer from '../../components/ui/PageContainer'
+import Tooltip from '../../components/ui/Tooltip'
 
 const STATUS = {
   new:      { cls: 'bg-slate-100 text-slate-600' },
@@ -38,7 +39,7 @@ export default function VocabPage() {
       </div>
 
       <div className="inline-flex p-0.5 mb-6 rounded-xl bg-slate-100 border border-slate-200">
-        <TabBtn active={tab === 'review'} onClick={() => setTab('review')}>{t('vocab.tabReview')}</TabBtn>
+        <Tooltip text={t('vocab.tipTabReview')} side="bottom"><TabBtn active={tab === 'review'} onClick={() => setTab('review')}>{t('vocab.tabReview')}</TabBtn></Tooltip>
         <TabBtn active={tab === 'all'}    onClick={() => setTab('all')}>{t('vocab.tabAll')}</TabBtn>
         <TabBtn active={tab === 'add'}    onClick={() => setTab('add')}>{t('vocab.tabAdd')}</TabBtn>
       </div>
@@ -267,9 +268,9 @@ function AddTab({ onAdded }) {
 
       {/* Переключатель режима добавления */}
       <div className="inline-flex p-0.5 mb-5 rounded-xl bg-slate-100 border border-slate-200">
-        <ModeBtn active={mode === 'one'}  onClick={() => setMode('one')}><PenLine className="w-4 h-4" /> {t('vocab.modeOne')}</ModeBtn>
-        <ModeBtn active={mode === 'bulk'} onClick={() => setMode('bulk')}><ListPlus className="w-4 h-4" /> {t('vocab.modeBulk')}</ModeBtn>
-        <ModeBtn active={mode === 'ai'}   onClick={() => setMode('ai')}><Sparkles className="w-4 h-4" /> {t('vocab.modeAi')}</ModeBtn>
+        <Tooltip text={t('vocab.tipModeOne')} side="bottom"><ModeBtn active={mode === 'one'}  onClick={() => setMode('one')}><PenLine className="w-4 h-4" /> {t('vocab.modeOne')}</ModeBtn></Tooltip>
+        <Tooltip text={t('vocab.tipModeBulk')} side="bottom"><ModeBtn active={mode === 'bulk'} onClick={() => setMode('bulk')}><ListPlus className="w-4 h-4" /> {t('vocab.modeBulk')}</ModeBtn></Tooltip>
+        <Tooltip text={t('vocab.tipModeAi')} side="bottom"><ModeBtn active={mode === 'ai'}   onClick={() => setMode('ai')}><Sparkles className="w-4 h-4" /> {t('vocab.modeAi')}</ModeBtn></Tooltip>
       </div>
 
       {mode === 'one'  && <OneForm  lang={lang} native={native} onAdded={onAdded} />}
