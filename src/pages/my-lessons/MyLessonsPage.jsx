@@ -10,6 +10,7 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import PageContainer from '../../components/ui/PageContainer'
+import Tooltip from '../../components/ui/Tooltip'
 
 const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
 const TYPE_LABEL = { external: 'С репетитором', self_study: 'Сам' }
@@ -35,7 +36,9 @@ export default function MyLessonsPage() {
             <p className="text-sm text-slate-500">Учёт уроков вне платформы и самостоятельных</p>
           </div>
         </div>
-        <Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4 mr-1" /> Занятие</Button>
+        <Tooltip text="Записать занятие, которого нет в приложении — с репетитором вне платформы или самостоятельное. Для вашего учёта времени и оплат." side="left">
+          <Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4 mr-1" /> Занятие</Button>
+        </Tooltip>
       </div>
 
       {/* KPI */}

@@ -10,6 +10,7 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import PageContainer from '../../components/ui/PageContainer'
+import Tooltip from '../../components/ui/Tooltip'
 
 export default function NotesPage() {
   const { data: notes, loading, reload } = useApiQuery(['notes'], getNotes)
@@ -36,7 +37,9 @@ export default function NotesPage() {
             <p className="text-sm text-slate-500">Личный конспект — доступен только вам</p>
           </div>
         </div>
-        <Button size="sm" onClick={() => setEditor({ note: null })}><Plus className="w-4 h-4 mr-1" /> Заметка</Button>
+        <Tooltip text="Создать личную заметку — видна только вам. Удобно для конспектов и напоминаний." side="left">
+          <Button size="sm" onClick={() => setEditor({ note: null })}><Plus className="w-4 h-4 mr-1" /> Заметка</Button>
+        </Tooltip>
       </div>
 
       {loading ? (

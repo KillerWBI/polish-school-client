@@ -8,6 +8,7 @@ import Button from '../../components/ui/Button'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import PageContainer from '../../components/ui/PageContainer'
+import Tooltip from '../../components/ui/Tooltip'
 import { CalendarCheck, Layers, BookMarked, AlertTriangle, ChevronRight } from 'lucide-react'
 
 const weakColor = (m) => m >= 40 ? 'text-blue-600' : 'text-amber-600'
@@ -48,7 +49,9 @@ export default function DailySessionPage() {
             <span className="inline-flex items-center gap-1.5"><Layers className="w-4 h-4" /> {t('study.tracksCount', { count: meta.cards })}</span>
             <span className="inline-flex items-center gap-1.5"><BookMarked className="w-4 h-4" /> {t('study.vocabCount', { count: meta.vocab })}</span>
           </div>
-          <Button onClick={() => setStarted(true)}>{t('study.start')}</Button>
+          <Tooltip text={t('study.tipStart')} side="top">
+            <Button onClick={() => setStarted(true)}>{t('study.start')}</Button>
+          </Tooltip>
         </div>
       ) : (
         <CardReview
