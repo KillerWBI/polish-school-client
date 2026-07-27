@@ -163,6 +163,7 @@
     "chatGroup": "Czat grupy"
   },
   "quiz": {
+    "tipCreate": "Utwórz test z pomocą AI na dowolny temat. Gotowy test możesz rozwiązać sam lub dołączyć do zadania domowego.",
     "defaultLanguage": "polski",
     "diffEasy": "Łatwy",
     "diffMedium": "Średni",
@@ -280,6 +281,16 @@
     "rangeMonth": "ostatnie 6 miesięcy"
   },
   "dashboard": {
+    "tipLessonsToday": "Ile masz dziś lekcji. Kliknij, aby otworzyć kalendarz z planem.",
+    "tipUngraded": "Zadania, które uczniowie oddali, ale jeszcze ich nie sprawdziłeś i nie oceniłeś. Kliknij, aby przejść do oceniania.",
+    "tipDebt": "Ile uczniowie łącznie są Ci winni za zajęcia. Kliknij, aby otworzyć płatności.",
+    "tipAttendance": "Jaki procent zajęć odwiedzili uczniowie w tym miesiącu. Kliknij, aby otworzyć dziennik obecności.",
+    "tipLessonsWeek": "Ile masz lekcji w ciągu najbliższych 7 dni. Kliknij, aby otworzyć kalendarz.",
+    "tipHwPending": "Zadania, które musisz jeszcze wykonać i oddać. Kliknij, aby przejść do zadań domowych.",
+    "tipAttendanceStudent": "Jaki procent zajęć odwiedziłeś w tym miesiącu. Kliknij, aby otworzyć dziennik obecności.",
+    "tipMyDebt": "Ile jesteś winien nauczycielom za zajęcia. Kliknij, aby otworzyć płatności.",
+    "tipCreate": "Szybko utwórz lekcję, zadanie domowe lub dodaj ucznia.",
+    "tipMonthChip": "Wskaźniki poniżej liczone są za bieżący miesiąc.",
     "title": "Panel",
     "greetingName": "Cześć, {{name}}",
     "thisMonth": "Ten miesiąc",

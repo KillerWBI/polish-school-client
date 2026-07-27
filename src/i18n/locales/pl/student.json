@@ -1,5 +1,7 @@
 {
   "topics": {
+    "tipCreate": "Ścieżka nauki to temat, którego uczysz się sam. Platforma podzieli go na kroki i będzie dawać testy na Twoim poziomie. Nauczyciel nie jest potrzebny.",
+    "tipCard": "Otwórz ścieżkę: kroki tematu, praktyka na każdym kroku i historia Twoich prób.",
     "title": "Ścieżki nauki",
     "subtitle": "Samodzielna nauka dowolnego tematu — z mapą kroków i adaptacyjnymi testami",
     "addTopic": "Temat",
@@ -26,6 +28,7 @@
     "subjectPh": "angielski, matematyka, biologia…"
   },
   "study": {
+    "tipStart": "Pokażemy karty ze wszystkich Twoich ścieżek i słownika, które dziś trzeba powtórzyć. Zajmie kilka minut.",
     "title": "Sesja dzienna",
     "subtitle": "Powtórka tego, co zaległe — ze wszystkich ścieżek i słownika",
     "emptyTitle": "Na dziś wszystko powtórzone",
@@ -59,6 +62,10 @@
     "gotIt": "Rozumiem"
   },
   "vocab": {
+    "tipModeOne": "Dodaj jedno słowo ręcznie — słowo i jego tłumaczenie.",
+    "tipModeBulk": "Wklej od razu wiele słów jako listę — każde w nowej linii.",
+    "tipModeAi": "AI samo dobierze zestaw słów do Twojego tematu i poziomu — pozostanie tylko się ich nauczyć.",
+    "tipTabReview": "Karty, które trzeba dziś powtórzyć. Słowa, które już znasz, pokazujemy rzadziej (powtórki interwałowe).",
     "statusNew": "Nowe", "statusLearning": "Uczę się", "statusKnown": "Znam",
     "title": "Słownik",
     "subtitle": "Słowa, terminy i pojęcia — jako fiszki z powtórkami",

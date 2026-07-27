@@ -25,6 +25,8 @@
     "generateBtn": "Wygeneruj ukierunkowany test"
   },
   "groups": {
+    "tipCreate": "Grupa to klasa uczniów ze wspólnym planem. W jej ramach prowadzisz lekcje, zadania i obecność.",
+    "tipCard": "Otwórz grupę: lista uczniów, lekcje, plan i ustawienia.",
     "titleTeacher": "Grupy",
     "titleStudent": "Moje grupy",
     "subtitleTeacher": "Zarządzanie grupami",
@@ -64,6 +66,7 @@
     ]
   },
   "indCourses": {
+    "tipCreate": "Kurs indywidualny to regularne zajęcia z jednym uczniem. Ustaw plan, a lekcje utworzą się automatycznie na kilka miesięcy naprzód.",
     "titleTeacher": "Kursy indywidualne",
     "titleStudent": "Moje kursy",
     "subtitleTeacher": "Kontrakt-plan z konkretnym uczniem",
@@ -90,6 +93,7 @@
     "createError": "Nie udało się utworzyć kursu"
   },
   "indLessons": {
+    "tipCreate": "Jednorazowe zajęcia indywidualne z jednym uczniem. Do regularnych zajęć według planu wygodniejsze są „Kursy indywidualne”.",
     "title": "Lekcje indywidualne",
     "subtitle": "Pojedyncze lekcje i lekcje z serii — twórz ręcznie lub wg planu kursu",
     "createBtn": "+ Utwórz lekcję",
@@ -135,6 +139,10 @@
     "saveError": "Błąd zapisu"
   },
   "homework": {
+    "tipCreate": "Zadanie jest powiązane z lekcją. Uczniowie je otrzymają, wykonają i oddadzą — Ty sprawdzisz i wystawisz ocenę.",
+    "tipCard": "Otwórz prace oddane przez uczniów i wystaw oceny.",
+    "tipDelete": "Usuń to zadanie i wszystkie oddane do niego prace.",
+    "tipAttachQuiz": "Możesz dołączyć test — uczeń rozwiąże go bezpośrednio w zadaniu, a wynik przyjdzie do Ciebie automatycznie.",
     "title": "Prace domowe",
     "subtitleTeacher": "Tworzenie i sprawdzanie prac",
     "subtitleStudent": "Moje zadania i oceny",
@@ -201,6 +209,11 @@
     "setGrade": "Wystaw"
   },
   "attendance": {
+    "tipTabJournal": "Dziennik: zaznaczaj, kto był na lekcji. Wiersze to uczniowie, kolumny to daty lekcji.",
+    "tipTabPending": "Lekcje, na których zaznaczyłeś obecność, ale uczeń jeszcze nie potwierdził swojej strony.",
+    "tipTabDisputed": "Wpisy, w których Twoja ocena i odpowiedź ucznia się różnią — obecność nie jest liczona, dopóki spór nie zostanie rozstrzygnięty.",
+    "tipAcceptStudent": "Zgódź się z wersją ucznia — jego odpowiedź stanie się ostateczna.",
+    "tipInsist": "Zostaw swoją ocenę bez zmian — stanie się ostateczna.",
     "title": "Obecność",
     "subtitleTeacher": "Zaznacz obecność — uczeń potwierdzi swoją stronę",
     "subtitleStudent": "Twoja obecność i prośby o potwierdzenie",
@@ -291,6 +304,11 @@
     "cellAbsent": "N"
   },
   "payments": {
+    "tipCharged": "Suma za wszystkie odbyte i potwierdzone lekcje — ile uczeń miał zapłacić.",
+    "tipPaid": "Ile uczeń już zapłacił (liczone są tylko potwierdzone płatności).",
+    "tipBalance": "Pozostało do zapłaty: naliczone minus zapłacone. Zero — brak długu.",
+    "tipRecord": "Zapisz płatność, którą uczeń przekazał Ci bezpośrednio — gotówką, przelewem lub w inny sposób.",
+    "tipTabPending": "Płatności wysłane przez uczniów ze zrzutem ekranu. Potwierdź, że pieniądze dotarły, lub odrzuć z powodem.",
     "mCash": "Gotówka",
     "mCard": "Karta",
     "mTransfer": "Przelew",
