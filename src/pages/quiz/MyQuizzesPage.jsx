@@ -9,6 +9,7 @@ import { getQuizzes, deleteQuiz } from '../../api/quizzes.api'
 import Button from '../../components/ui/Button'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import PageContainer from '../../components/ui/PageContainer'
+import Tooltip from '../../components/ui/Tooltip'
 
 export default function MyQuizzesPage({ embedded, onCreate }) {
   const { t, i18n } = useTranslation('app')
@@ -46,7 +47,9 @@ export default function MyQuizzesPage({ embedded, onCreate }) {
               {isTeacher ? t('quiz.mySubtitleTeacher') : t('quiz.mySubtitleStudent')}
             </p>
           </div>
-          <Button size="sm" onClick={() => onCreate ? onCreate() : navigate('/quiz')}><Sparkles className="w-4 h-4" /> {t('dashboard.create')}</Button>
+          <Tooltip text={t('quiz.tipCreate')} side="left">
+            <Button size="sm" onClick={() => onCreate ? onCreate() : navigate('/quiz')}><Sparkles className="w-4 h-4" /> {t('dashboard.create')}</Button>
+          </Tooltip>
         </div>
       )}
 
