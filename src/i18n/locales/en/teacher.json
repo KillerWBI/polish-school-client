@@ -6,7 +6,9 @@
     "emptyText": "Students appear after you add them to a group or they accept an invitation.",
     "searchPlaceholder": "Search by name, username or email",
     "notFound": "Nothing found",
-    "placeholder": "placeholder"
+    "placeholder": "no account",
+    "tipPlaceholder": "This student was added by you manually and doesn't use the app — you keep their records yourself. You can link them to a real account later.",
+    "tipWeakSpots": "Topics from self-study where the student is weakest. You can create a targeted quiz on the selected ones right away."
   },
   "groups": {
     "titleTeacher": "Groups",
@@ -55,6 +57,7 @@
     "subtitleTeacher": "Schedule-contract with a specific student",
     "subtitleStudent": "Your one-on-one lessons with the teacher",
     "createBtn": "+ Create course",
+    "tipCreate": "An individual course is regular lessons with one student. Set a schedule and lessons are created automatically for months ahead.",
     "emptyTeacherTitle": "No courses yet",
     "emptyStudentTitle": "You have no individual courses",
     "emptyTeacherText": "Create a course with a specific student and generate lessons on a schedule.",
@@ -79,6 +82,7 @@
     "title": "Individual lessons",
     "subtitle": "One-off lessons and lessons from series — create manually or by course schedule",
     "createBtn": "+ Create lesson",
+    "tipCreate": "A one-off individual lesson with one student. For regular scheduled lessons, use \"Individual courses\".",
     "emptyTitle": "No lessons yet",
     "emptyTeacher": "Create a one-off lesson with the button above — or generate a series in «Individual courses».",
     "emptyStudent": "Your individual lessons will appear here.",

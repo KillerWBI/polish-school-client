@@ -17,6 +17,7 @@ import Input from '../../components/ui/Input'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import Tooltip from '../../components/ui/Tooltip'
 
 export default function IndividualLessonsPage() {
   const { t, i18n } = useTranslation('teacher')
@@ -63,7 +64,11 @@ export default function IndividualLessonsPage() {
           <h1 className="text-2xl font-semibold text-slate-900">{t('indLessons.title')}</h1>
           <p className="text-sm text-slate-500 mt-0.5">{t('indLessons.subtitle')}</p>
         </div>
-        {isTeacher && <Button onClick={openCreate}>{t('indLessons.createBtn')}</Button>}
+        {isTeacher && (
+          <Tooltip text={t('indLessons.tipCreate')} side="left">
+            <Button onClick={openCreate}>{t('indLessons.createBtn')}</Button>
+          </Tooltip>
+        )}
       </div>
 
       {loading ? <SkeletonList /> : !lessons?.length ? (

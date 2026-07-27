@@ -11,6 +11,7 @@ import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import Tooltip from '../../components/ui/Tooltip'
 
 // value = номер дня (0=Вс..6=Сб); порядок отображения Пн→Вс
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0]
@@ -40,7 +41,9 @@ export default function IndividualCoursesPage() {
           </p>
         </div>
         {isTeacher && (
-          <Button size="sm" onClick={() => setModal(true)}>{t('indCourses.createBtn')}</Button>
+          <Tooltip text={t('indCourses.tipCreate')} side="left">
+            <Button size="sm" onClick={() => setModal(true)}>{t('indCourses.createBtn')}</Button>
+          </Tooltip>
         )}
       </div>
 
