@@ -343,5 +343,17 @@
     "minutesShort": "{{n}} min",
     "hoursShort": "{{n}} godz",
     "yesterday": "wczoraj"
+  },
+  "materials": {
+    "title": "Materiały",
+    "subtitle": "Wszystkie pliki i linki z lekcji w jednym miejscu",
+    "emptyTitle": "Nie ma jeszcze materiałów",
+    "emptyText": "Tu pojawią się pliki i linki dołączone do lekcji.",
+    "searchPh": "Szukaj po temacie, grupie, nazwie",
+    "notFound": "Nic nie znaleziono",
+    "notFoundText": "Spróbuj zmienić zapytanie.",
+    "lessonNoTopic": "Lekcja bez tematu",
+    "note": "Notatka",
+    "material": "Materiał"
   }
 }

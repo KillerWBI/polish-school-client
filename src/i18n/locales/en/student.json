@@ -211,5 +211,25 @@
     "diffMedium": "Medium",
     "diffHard": "Hard",
     "retry": "Retry"
+  },
+  "notes": {
+    "title": "My notes",
+    "subtitle": "A personal notebook — visible only to you",
+    "tipCreate": "Create a personal note — visible only to you. Handy for summaries and reminders.",
+    "addBtn": "Note",
+    "emptyTitle": "No notes yet",
+    "emptyText": "Write down what matters from your lessons — all in one place.",
+    "createBtn": "Create a note",
+    "deleteTitle": "Delete note?",
+    "deleteMsg": "The note will be deleted permanently.",
+    "empty": "The note can't be empty",
+    "saved": "Note saved",
+    "created": "Note created",
+    "editTitle": "Edit note",
+    "newTitle": "New note",
+    "titleLabel": "Title (optional)",
+    "titlePh": "Lesson, May 15",
+    "textLabel": "Text",
+    "textPh": "What's important to remember…"
   }
 }

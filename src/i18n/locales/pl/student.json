@@ -206,5 +206,25 @@
     "diffMedium": "Średni",
     "diffHard": "Trudny",
     "retry": "Ponów"
+  },
+  "notes": {
+    "title": "Moje notatki",
+    "subtitle": "Osobisty notatnik — widoczny tylko dla Ciebie",
+    "tipCreate": "Utwórz osobistą notatkę — widoczna tylko dla Ciebie. Przydatne do streszczeń i przypomnień.",
+    "addBtn": "Notatka",
+    "emptyTitle": "Nie ma jeszcze notatek",
+    "emptyText": "Zapisuj to, co ważne z lekcji — wszystko w jednym miejscu.",
+    "createBtn": "Utwórz notatkę",
+    "deleteTitle": "Usunąć notatkę?",
+    "deleteMsg": "Notatka zostanie trwale usunięta.",
+    "empty": "Notatka nie może być pusta",
+    "saved": "Notatka zapisana",
+    "created": "Notatka utworzona",
+    "editTitle": "Edytuj notatkę",
+    "newTitle": "Nowa notatka",
+    "titleLabel": "Tytuł (opcjonalnie)",
+    "titlePh": "Lekcja, 15 maja",
+    "textLabel": "Treść",
+    "textPh": "Co warto zapamiętać…"
   }
 }
