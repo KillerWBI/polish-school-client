@@ -8,6 +8,7 @@ import useApiQuery from '../../hooks/useApiQuery'
 import { getMyProgress } from '../../api/progress.api'
 import { getStudentAnalytics } from '../../api/analytics.api'
 import { SkeletonDashboard } from '../../components/ui/Skeleton'
+import UiTooltip from '../../components/ui/Tooltip'
 
 const tip = {
   contentStyle: { background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, fontSize: 12, boxShadow: '0 8px 24px rgba(15,23,42,0.08)' },
@@ -41,14 +42,14 @@ export default function ProgressPage() {
 
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <Stat Icon={Flame}        cls="bg-orange-50 text-orange-600"   value={`${streak} дн`}  label="Streak активности" />
+        <Stat Icon={Flame}        cls="bg-orange-50 text-orange-600"   value={`${streak} дн`}  label="Дней подряд" tip="Сколько дней подряд вы занимались без пропусков. Пропустите день — счётчик обнулится." />
         <Stat Icon={CalendarCheck} cls="bg-emerald-50 text-emerald-600" value={attended}         label="Уроков посещено" />
         <Stat Icon={Award}        cls="bg-blue-50 text-blue-600"        value={gradesAvg || '—'} label="Средняя оценка" />
         <Stat Icon={Clock}        cls="bg-violet-50 text-violet-600"    value={`${extHours} ч`}  label="Внешних занятий" />
       </div>
 
       {/* Heatmap активности */}
-      <Card title="Активность за последние ~17 недель" subtitle="Уроки, ДЗ, словарь и занятия">
+      <Card title="Активность за последние ~17 недель" subtitle="Уроки, задания, словарь и занятия">
         <Heatmap days={progress?.activityByDay ?? []} />
       </Card>
 
@@ -105,15 +106,17 @@ export default function ProgressPage() {
   )
 }
 
-function Stat({ Icon, cls, value, label }) {
+function Stat({ Icon, cls, value, label, tip }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-white border border-slate-200 p-4">
-      <span className={`w-11 h-11 rounded-xl flex items-center justify-center ${cls}`}><Icon className="w-5 h-5" /></span>
-      <div>
-        <div className="text-xl font-semibold text-slate-900 leading-none">{value}</div>
-        <div className="text-xs text-slate-400 mt-1">{label}</div>
+    <UiTooltip text={tip} side="top" className="w-full">
+      <div className="w-full flex items-center gap-3 rounded-2xl bg-white border border-slate-200 p-4">
+        <span className={`w-11 h-11 rounded-xl flex items-center justify-center ${cls}`}><Icon className="w-5 h-5" /></span>
+        <div>
+          <div className="text-xl font-semibold text-slate-900 leading-none">{value}</div>
+          <div className="text-xs text-slate-400 mt-1">{label}</div>
+        </div>
       </div>
-    </div>
+    </UiTooltip>
   )
 }
 
@@ -188,7 +191,7 @@ function HwProgress({ stats }) {
       <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
         <div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${s.percent}%` }} />
       </div>
-      <p className="text-xs text-slate-400 mt-2">Учитываются задания с прошедшим дедлайном</p>
+      <p className="text-xs text-slate-400 mt-2">Учитываются задания с прошедшим сроком сдачи</p>
     </div>
   )
 }

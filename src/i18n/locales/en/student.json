@@ -34,6 +34,7 @@
     "tracksCount": "Tracks: {{count}}",
     "vocabCount": "Vocabulary: {{count}}",
     "start": "Start review",
+    "tipStart": "We'll show cards from all your tracks and vocabulary that are due for review today. Takes a couple of minutes.",
     "cardHint": "Recall the answer, then flip the card",
     "weakTitle": "Weak spots",
     "weakSub": "Subtopics where your mastery is still low — worth going back and practising."
