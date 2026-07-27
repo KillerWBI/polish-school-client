@@ -354,5 +354,17 @@
     "tipMyDebt": "How much you owe teachers for lessons. Click to open payments.",
     "tipCreate": "Quickly create a lesson, homework, or add a student.",
     "tipMonthChip": "The metrics below are calculated for the current month."
+  },
+  "materials": {
+    "title": "Materials",
+    "subtitle": "All files and links from your lessons in one place",
+    "emptyTitle": "No materials yet",
+    "emptyText": "Files and links attached to lessons will appear here.",
+    "searchPh": "Search by topic, group, name",
+    "notFound": "Nothing found",
+    "notFoundText": "Try changing your query.",
+    "lessonNoTopic": "Lesson without a topic",
+    "note": "Note",
+    "material": "Material"
   }
 }

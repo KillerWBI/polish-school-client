@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FolderOpen, Link2, FileText, Type, Search } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getMaterials } from '../../api/materials.api'
@@ -11,6 +12,7 @@ import PageContainer from '../../components/ui/PageContainer'
 const TYPE_ICON = { link: Link2, file: FileText, text: Type }
 
 export default function MaterialsPage() {
+  const { t } = useTranslation('app')
   const { data, loading } = useApiQuery(['materials'], getMaterials)
   const [q, setQ] = useState('')
 
@@ -32,26 +34,26 @@ export default function MaterialsPage() {
           <FolderOpen className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Материалы</h1>
-          <p className="text-sm text-slate-500">Все файлы и ссылки с уроков в одном месте</p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t('materials.title')}</h1>
+          <p className="text-sm text-slate-500">{t('materials.subtitle')}</p>
         </div>
       </div>
 
       {loading ? (
         <SkeletonList />
       ) : !data?.length ? (
-        <EmptyState emoji="📎" title="Материалов пока нет"
-          text="Здесь появятся файлы и ссылки, прикреплённые к урокам." />
+        <EmptyState emoji="📎" title={t('materials.emptyTitle')}
+          text={t('materials.emptyText')} />
       ) : (
         <>
           <div className="relative mb-5 max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input value={q} onChange={e => setQ(e.target.value)} placeholder="Поиск по теме, группе, названию"
+            <input value={q} onChange={e => setQ(e.target.value)} placeholder={t('materials.searchPh')}
               className="w-full h-10 pl-10 pr-4 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15" />
           </div>
 
           {!lessons.length ? (
-            <EmptyState emoji="🔍" title="Ничего не найдено" text="Попробуйте изменить запрос." />
+            <EmptyState emoji="🔍" title={t('materials.notFound')} text={t('materials.notFoundText')} />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 items-start">
               {lessons.map(l => <LessonMaterials key={`${l.kind}-${l.id}`} lesson={l} />)}
@@ -64,11 +66,12 @@ export default function MaterialsPage() {
 }
 
 function LessonMaterials({ lesson }) {
-  const date = new Date(lesson.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+  const { t, i18n } = useTranslation('app')
+  const date = new Date(lesson.date).toLocaleDateString(i18n.language, { day: 'numeric', month: 'long', year: 'numeric' })
   return (
     <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
       <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/60">
-        <div className="text-sm font-medium text-slate-900">{lesson.topic || 'Урок без темы'}</div>
+        <div className="text-sm font-medium text-slate-900">{lesson.topic || t('materials.lessonNoTopic')}</div>
         <div className="text-xs text-slate-400 mt-0.5">
           {date}{lesson.groupName && ` · ${lesson.groupName}`}
         </div>
@@ -81,8 +84,9 @@ function LessonMaterials({ lesson }) {
 }
 
 function MaterialRow({ m }) {
+  const { t } = useTranslation('app')
   const Icon = TYPE_ICON[m.type] ?? FileText
-  const title = m.title || (m.type === 'text' ? 'Заметка' : m.url || 'Материал')
+  const title = m.title || (m.type === 'text' ? t('materials.note') : m.url || t('materials.material'))
   const href = (m.type === 'link' || m.type === 'file') ? safeUrl(m.url) : null
 
   const inner = (
