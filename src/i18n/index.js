@@ -37,12 +37,17 @@ import ruLegal from './locales/ru/legal.json'
 import enLegal from './locales/en/legal.json'
 import plLegal from './locales/pl/legal.json'
 import ukLegal from './locales/uk/legal.json'
+// help: справка — ru + en (pl/uk пока фолбэк на en; в JSX ещё и русский дефолт в t())
+import ruHelp from './locales/ru/help.json'
+import enHelp from './locales/en/help.json'
+import plHelp from './locales/pl/help.json'
+import ukHelp from './locales/uk/help.json'
 
 const resources = {
-  ru: { common: ruCommon, landing: ruLanding, app: ruApp, teacher: ruTeacher, student: ruStudent, legal: ruLegal },
-  pl: { common: plCommon, landing: plLanding, app: plApp, teacher: plTeacher, student: plStudent, legal: plLegal },
-  uk: { common: ukCommon, landing: ukLanding, app: ukApp, teacher: ukTeacher, student: ukStudent, legal: ukLegal },
-  en: { common: enCommon, landing: enLanding, app: enApp, teacher: enTeacher, student: enStudent, legal: enLegal },
+  ru: { common: ruCommon, landing: ruLanding, app: ruApp, teacher: ruTeacher, student: ruStudent, legal: ruLegal, help: ruHelp },
+  pl: { common: plCommon, landing: plLanding, app: plApp, teacher: plTeacher, student: plStudent, legal: plLegal, help: plHelp },
+  uk: { common: ukCommon, landing: ukLanding, app: ukApp, teacher: ukTeacher, student: ukStudent, legal: ukLegal, help: ukHelp },
+  en: { common: enCommon, landing: enLanding, app: enApp, teacher: enTeacher, student: enStudent, legal: enLegal, help: enHelp },
   es: { common: esCommon },
   fr: { common: frCommon },
   de: { common: deCommon },
@@ -59,7 +64,7 @@ i18n
     resources,
     supportedLngs: SUPPORTED,
     fallbackLng: FALLBACK,
-    ns: ['common', 'landing', 'app', 'teacher', 'student', 'legal'],
+    ns: ['common', 'landing', 'app', 'teacher', 'student', 'legal', 'help'],
     defaultNS: 'common',
     load: 'languageOnly', // 'pl-PL' → 'pl'
     interpolation: { escapeValue: false },

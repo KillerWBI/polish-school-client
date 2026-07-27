@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import useAuth from '../../hooks/useAuth'
 
 /* ─── Примитивы визуализации ─────────────────────────────────
@@ -261,10 +262,13 @@ const STUDENT_SECTIONS = [
 ]
 
 export default function HelpPage() {
+  const { t } = useTranslation('help')
   const { hash } = useLocation()
   const navigate = useNavigate()
   const { isTeacher } = useAuth()
   const sections = isTeacher ? TEACHER_SECTIONS : STUDENT_SECTIONS
+  // Роль-префикс ключей (t = teacher, s = student). Русский текст из массива — дефолт-фолбэк.
+  const role = isTeacher ? 't' : 's'
 
   // Скролл к нужной секции по якорю (из кнопки «?» на странице)
   useEffect(() => {
@@ -283,13 +287,13 @@ export default function HelpPage() {
     <div className="p-5 sm:p-8">
       <div className="mb-6 max-w-4xl mx-auto flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Помощь</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Как что делать в кабинете — коротко, с подсказками прямо на элементах.</p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t('title')}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{t('subtitle')}</p>
         </div>
         {isTeacher && (
           <button onClick={startTour}
             className="shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-sm font-medium hover:bg-blue-100 transition-colors cursor-pointer">
-            <span className="text-[10px]">▶</span> Пройти тур
+            <span className="text-[10px]">▶</span> {t('startTour')}
           </button>
         )}
       </div>
@@ -299,7 +303,7 @@ export default function HelpPage() {
         {sections.map(s => (
           <button key={s.id} onClick={() => navigate(`/help#${s.id}`)}
             className="text-xs px-3 h-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer">
-            {s.title}
+            {t(`${role}.${s.id}.title`, s.title)}
           </button>
         ))}
       </div>
@@ -308,14 +312,14 @@ export default function HelpPage() {
         {sections.map(s => (
           <section key={s.id} id={s.id} className="scroll-mt-24">
             <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />{s.title}
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />{t(`${role}.${s.id}.title`, s.title)}
             </h2>
             <div className="space-y-4">
               {s.items.map((it, i) => (
                 <div key={i} className="grid md:grid-cols-2 gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-900">{it.q}</h3>
-                    <p className="text-sm text-slate-500 mt-2 leading-relaxed">{it.a}</p>
+                    <h3 className="text-sm font-semibold text-slate-900">{t(`${role}.${s.id}.q${i}`, it.q)}</h3>
+                    <p className="text-sm text-slate-500 mt-2 leading-relaxed">{t(`${role}.${s.id}.a${i}`, it.a)}</p>
                   </div>
                   <div>{it.visual}</div>
                 </div>
@@ -326,7 +330,7 @@ export default function HelpPage() {
       </div>
 
       <div className="max-w-4xl mx-auto mt-12 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-500">
-        Не нашёл ответа? Пиши — добавим. А внутренние подсказки будем расширять: планируем интерактивный тур прямо по интерфейсу.
+        {t('footer')}
       </div>
     </div>
   )
