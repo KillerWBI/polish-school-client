@@ -9,6 +9,7 @@ import EmptyState from '../../components/ui/EmptyState'
 import Pagination from '../../components/ui/Pagination'
 import Modal from '../../components/ui/Modal'
 import Button from '../../components/ui/Button'
+import Tooltip from '../../components/ui/Tooltip'
 
 // Ключ слабого места (тема+подтема) — для выбора чекбоксами
 const spotKey = (s) => `${s.topicId}::${s.stepTitle}`
@@ -99,9 +100,11 @@ function StudentCard({ s }) {
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-slate-900 truncate">{s.name}</span>
             {s.isPlaceholder && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
-                {t('students.placeholder')}
-              </span>
+              <Tooltip text={t('students.tipPlaceholder')} side="top">
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 shrink-0 cursor-help">
+                  {t('students.placeholder')}
+                </span>
+              </Tooltip>
             )}
           </div>
           {s.username && <div className="text-xs text-slate-400 truncate">@{s.username}</div>}
@@ -113,10 +116,12 @@ function StudentCard({ s }) {
 
       {/* Слабые места из самообучения — только для реальных учеников (у заглушки нет аккаунта) */}
       {!s.isPlaceholder && (
-        <button onClick={() => setInsightsOpen(true)}
-          className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors">
-          <Target className="w-3.5 h-3.5" /> Слабые места
-        </button>
+        <Tooltip text={t('students.tipWeakSpots')} side="top">
+          <button onClick={() => setInsightsOpen(true)}
+            className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors">
+            <Target className="w-3.5 h-3.5" /> Слабые места
+          </button>
+        </Tooltip>
       )}
 
       {insightsOpen && <WeakSpotsModal student={s} onClose={() => setInsightsOpen(false)} />}
