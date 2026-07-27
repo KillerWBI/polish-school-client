@@ -12,6 +12,7 @@ import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
+import Tooltip from '../../components/ui/Tooltip'
 import { safeUrl } from '../../utils/safeUrl'
 import useAuth from '../../hooks/useAuth'
 import useApiQuery from '../../hooks/useApiQuery'
@@ -207,10 +208,13 @@ function TabBtn({ active, onClick, children }) {
 }
 
 /* Ячейка сводки (на уровне модуля — не пересоздаётся на каждый рендер) */
-function SummaryCell({ label, value, accent }) {
+function SummaryCell({ label, value, accent, tip }) {
   return (
     <div className="flex-1 p-4">
-      <div className="text-xs text-slate-500 mb-1">{label}</div>
+      {/* Подпись с подсказкой (пунктир = можно навести и прочитать пояснение) */}
+      <Tooltip text={tip} side="top">
+        <div className={`text-xs text-slate-500 mb-1 ${tip ? 'inline-flex items-center border-b border-dotted border-slate-300 cursor-help' : ''}`}>{label}</div>
+      </Tooltip>
       <div className={`text-xl font-semibold ${accent}`}>{fmt(value)}</div>
     </div>
   )
@@ -227,9 +231,9 @@ function Summary({ rows }) {
 
   return (
     <div className="flex rounded-2xl border border-slate-200 bg-white divide-x divide-slate-100 mb-5">
-      <SummaryCell label={t('payments.sumCharged')} value={sum.charged} accent="text-slate-900" />
-      <SummaryCell label={t('payments.sumPaid')}    value={sum.paid}    accent="text-emerald-600" />
-      <SummaryCell label={t('payments.sumBalance')} value={sum.debt}    accent={sum.debt > 0 ? 'text-amber-600' : 'text-slate-400'} />
+      <SummaryCell label={t('payments.sumCharged')} tip={t('payments.tipCharged')} value={sum.charged} accent="text-slate-900" />
+      <SummaryCell label={t('payments.sumPaid')}    tip={t('payments.tipPaid')}    value={sum.paid}    accent="text-emerald-600" />
+      <SummaryCell label={t('payments.sumBalance')} tip={t('payments.tipBalance')} value={sum.debt}    accent={sum.debt > 0 ? 'text-amber-600' : 'text-slate-400'} />
     </div>
   )
 }
@@ -451,9 +455,11 @@ function TeacherDebts() {
             paid={row.paid}
             balance={row.balance}
             action={
-              <Button size="sm" variant={Math.max(0, row.balance) > 0 ? 'primary' : 'secondary'} onClick={() => open(row.student)}>
-                {t('payments.record')}
-              </Button>
+              <Tooltip text={t('payments.tipRecord')} side="left">
+                <Button size="sm" variant={Math.max(0, row.balance) > 0 ? 'primary' : 'secondary'} onClick={() => open(row.student)}>
+                  {t('payments.record')}
+                </Button>
+              </Tooltip>
             }
           />
         ))}

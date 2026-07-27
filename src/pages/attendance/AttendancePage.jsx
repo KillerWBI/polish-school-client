@@ -18,6 +18,7 @@ import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import Tooltip from '../../components/ui/Tooltip'
 
 /* ─── Статусы ──────────────────────────────────────────────── */
 const STATUS_BADGE = {
@@ -102,43 +103,48 @@ export default function AttendancePage() {
 /* ─── Верхние вкладки режима ────────────────────────────────── */
 function ModeBar({ mode, onChange, pendingCount, disputedCount, isTeacher }) {
   const { t } = useTranslation('teacher')
+  // tip у каждой вкладки — поясняет её смысл (для учителя; спорные — общее для обеих ролей)
   const tabs = [
     {
       key: 'journal',
       label: isTeacher ? t('attendance.tabJournal') : t('attendance.tabHistory'),
+      tip: isTeacher ? t('attendance.tipTabJournal') : undefined,
     },
     {
       key: 'pending',
       label: isTeacher ? t('attendance.tabPendingTeacher') : t('attendance.tabPendingStudent'),
       count: pendingCount,
+      tip: isTeacher ? t('attendance.tipTabPending') : undefined,
     },
     {
       key: 'disputed',
       label: t('attendance.tabDisputed'),
       count: disputedCount,
+      tip: t('attendance.tipTabDisputed'),
     },
   ]
 
   return (
     <div className="flex gap-1 p-1 bg-slate-50 rounded-xl w-fit mb-6">
-      {tabs.map(t => (
-        <button
-          key={t.key}
-          onClick={() => onChange(t.key)}
-          className={`relative px-4 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-            mode === t.key
-              ? 'bg-white text-blue-700 shadow-sm'
-              : 'text-slate-500 hover:text-slate-900'
-          }`}>
-          {t.label}
-          {t.count > 0 && (
-            <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-xs font-semibold ${
-              mode === t.key ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'
+      {tabs.map(tab => (
+        <Tooltip key={tab.key} text={tab.tip} side="bottom">
+          <button
+            onClick={() => onChange(tab.key)}
+            className={`relative px-4 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+              mode === tab.key
+                ? 'bg-white text-blue-700 shadow-sm'
+                : 'text-slate-500 hover:text-slate-900'
             }`}>
-              {t.count}
-            </span>
-          )}
-        </button>
+            {tab.label}
+            {tab.count > 0 && (
+              <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-xs font-semibold ${
+                mode === tab.key ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'
+              }`}>
+                {tab.count}
+              </span>
+            )}
+          </button>
+        </Tooltip>
       ))}
     </div>
   )
@@ -328,20 +334,25 @@ function DisputedView({ items, loading, isTeacher, reload }) {
               <div className="flex flex-col gap-2 shrink-0">
                 {isTeacher ? (
                   <>
-                    <button
-                      disabled={busy[r.id]}
-                      onClick={() => handleResolve(r.id, true)}
-                      className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium
-                                 hover:bg-blue-100 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap">
-                      {t('attendance.acceptStudent')}
-                    </button>
-                    <button
-                      disabled={busy[r.id]}
-                      onClick={() => handleResolve(r.id, false)}
-                      className="px-3 py-1.5 rounded-lg bg-slate-50 text-slate-900 text-xs font-medium
-                                 hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap">
-                      {t('attendance.insist')}
-                    </button>
+                    {/* Разрешение спора: принять версию ученика или настоять на своей отметке */}
+                    <Tooltip text={t('attendance.tipAcceptStudent')} side="left">
+                      <button
+                        disabled={busy[r.id]}
+                        onClick={() => handleResolve(r.id, true)}
+                        className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium
+                                   hover:bg-blue-100 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap">
+                        {t('attendance.acceptStudent')}
+                      </button>
+                    </Tooltip>
+                    <Tooltip text={t('attendance.tipInsist')} side="left">
+                      <button
+                        disabled={busy[r.id]}
+                        onClick={() => handleResolve(r.id, false)}
+                        className="px-3 py-1.5 rounded-lg bg-slate-50 text-slate-900 text-xs font-medium
+                                   hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap">
+                        {t('attendance.insist')}
+                      </button>
+                    </Tooltip>
                   </>
                 ) : (
                   <>
