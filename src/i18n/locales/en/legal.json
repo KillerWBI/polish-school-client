@@ -1,0 +1,92 @@
+{
+  "backHome": "Home",
+  "effectiveDate": "Effective date: {{date}}",
+  "footerPrivacy": "Privacy",
+  "footerTerms": "Terms of Use",
+  "footerSupport": "Support",
+  "updated": "July 19, 2026",
+  "privacy": {
+    "title": "Privacy Policy",
+    "intro": "This Policy describes how Artem Proskurovskyi (an individual, Poznań, Poland) (the \"Operator\", \"we\") collects, uses and protects the personal data of users of the Diklaro service available at diklario.com (the \"Service\"). By using the Service, you agree to this Policy.",
+    "s1t": "What data we collect",
+    "s1": [
+      "Account data: name, e-mail, username, password (encrypted), role (teacher/student), interface language, avatar.",
+      "Learning data: groups, lessons, homework, attendance, grades, materials, personal vocabulary, learning tracks and practice results.",
+      "Payment data: processed by the payment provider (Paddle); we do not store bank card data. Teachers may provide their own details to receive payments from students.",
+      "Technical data: IP address, device and browser type, cookies, error logs."
+    ],
+    "s2t": "Purposes and legal bases for processing",
+    "s2": [
+      "We process data to: provide and operate the Service, authenticate users, send notifications and emails, provide support, process subscription payments, ensure security and improve the product.",
+      "Legal bases (GDPR, Art. 6): performance of a contract (providing the Service), consent (e.g. mailings), legitimate interest (security, analytics), legal obligation."
+    ],
+    "s3t": "Sharing data with third parties (sub-processors)",
+    "s3lead": "To operate the Service we use third-party providers that process data on our behalf:",
+    "s3": [
+      "Hosting and database — Neon (PostgreSQL), Railway (backend), Vercel (frontend).",
+      "File storage — Cloudinary (avatars, covers, attachments).",
+      "Email — Resend (confirmation emails, notifications, support replies).",
+      "Payments — Paddle (merchant of record; handling subscriptions and taxes).",
+      "Error monitoring — Sentry.",
+      "AI features — a third-party model provider (e.g. Groq): task and topic wording is sent for generating quizzes, words and roadmaps (without unnecessary personal data)."
+    ],
+    "s3end": "We do not sell personal data.",
+    "s4t": "International data transfers",
+    "s4": "Servers and sub-processors may be located outside your country, including outside the EEA. In such cases, transfers are made with appropriate safeguards (e.g. standard contractual clauses).",
+    "s5t": "Cookies",
+    "s5": "We use strictly necessary cookies for authentication (session, access token) and operation of the Service. Without them, signing in is impossible. Analytics/marketing cookies — only with your consent (where applicable).",
+    "s6t": "Retention period",
+    "s6": "We keep data while your account is active and as long as necessary for the processing purposes or required by law. After you delete your account, data is deleted or anonymized within a reasonable period, except for data we are required to keep (e.g. for accounting).",
+    "s7t": "Your rights",
+    "s7": [
+      "Under applicable law (including GDPR) you have the right to: access your data, correct it, delete it, restrict or object to processing, request portability, withdraw consent, and lodge a complaint with a data protection supervisory authority.",
+      "To exercise your rights, contact us (see the \"Contacts\" section)."
+    ],
+    "s8t": "Security",
+    "s8": "We apply technical and organizational measures: connection encryption (HTTPS), storing passwords as hashes, access tokens in secure cookies, rate limiting, access control. Nevertheless, no method of data transmission is completely secure.",
+    "s9t": "Minors",
+    "s9": "Students may use the Service. If you have not reached the age at which you can independently consent to data processing in your country, use is only possible with the consent of a parent or legal guardian.",
+    "s10t": "Changes to the Policy",
+    "s10": "We may update this Policy. We communicate material changes via the Service or by e-mail. The date of the current version is shown at the top of the page.",
+    "s11t": "Contacts",
+    "s11": "For privacy questions: topchannel1914@gmail.com or via the support form."
+  },
+  "terms": {
+    "title": "Terms of Use",
+    "intro": "These Terms govern the use of the Diklaro service (diklario.com, the \"Service\") provided by Artem Proskurovskyi (an individual, Poznań, Poland) (the \"Operator\", \"we\"). By registering or using the Service, you accept these Terms. If you do not agree, do not use the Service.",
+    "s1t": "Description of the Service",
+    "s1": "Diklaro is an online platform for teachers and students in any subject: managing groups, lessons, homework, attendance and finances, as well as self-study with adaptive AI tools (quizzes, vocabulary, learning tracks). Functionality may change and expand.",
+    "s2t": "Registration and account",
+    "s2": "You agree to provide accurate data, keep it up to date and not share access with third parties. You are responsible for actions taken under your account and for keeping your password safe. Notify us of any unauthorized access.",
+    "s3t": "Plans, subscription and payment",
+    "s3": [
+      "The Service is available on a free plan and paid plans (e.g. Standard and Maximum) with volume limits. Paid subscriptions are handled through the provider Paddle, which acts as merchant of record and processes payments and taxes.",
+      "The subscription renews automatically for the chosen period until you cancel it. Prices may change; we notify you in advance of significant changes. Applicable taxes (e.g. VAT) are calculated by the payment provider."
+    ],
+    "s4t": "Refunds",
+    "s4": [
+      "After a payment is made, funds are non-refundable. If you cancel the subscription, access to the paid plan remains until the end of the already-paid period, after which automatic renewal does not occur.",
+      "This rule does not limit consumer rights provided by mandatory law, nor the applicable rules of the payment provider Paddle. Payment questions — via the support form."
+    ],
+    "s5t": "User content",
+    "s5": "You retain rights to the content you upload (materials, assignments, words, notes). By providing content, you grant the Operator a limited license to store and process it solely to operate the Service. You are responsible for the legality of your content and for having the necessary rights.",
+    "s6t": "Acceptable use",
+    "s6": "It is prohibited to: violate the law and third-party rights, post malicious, offensive or illegal content, attempt to gain unauthorized access, disrupt the Service, send spam, use the Service for automated data collection without permission.",
+    "s7t": "AI features",
+    "s7": "The Service uses artificial intelligence models to generate quizzes, words, roadmaps and to grade answers. Results are provided \"as is\", may contain inaccuracies and are not professional advice. Verify important information yourself.",
+    "s8t": "Intellectual property",
+    "s8": "Rights to the Service itself, its code, design, trademarks and materials belong to the Operator and are protected by law. Using the Service does not transfer these rights to you, except the right to use the Service under this document.",
+    "s9t": "Disclaimer of warranties",
+    "s9": "The Service is provided \"as is\" and \"as available\", without any warranty of uninterrupted or error-free operation. We do not guarantee that the Service meets all your expectations.",
+    "s10t": "Limitation of liability",
+    "s10": "To the maximum extent permitted by law, the Operator is not liable for indirect losses, lost profits or data loss arising from the use of or inability to use the Service.",
+    "s11t": "Suspension and termination",
+    "s11": "We may restrict or terminate access in case of a breach of these Terms. You may stop using the Service and delete your account at any time.",
+    "s12t": "Changes to the Terms",
+    "s12": "We may update these Terms. Continued use of the Service after the changes take effect means acceptance. The date of the current version is shown at the top of the page.",
+    "s13t": "Governing law and disputes",
+    "s13": "These Terms are governed by the law of the Republic of Poland. Disputes are resolved in the competent court at the Operator's location (Poznań, Poland), unless otherwise required by mandatory consumer protection rules.",
+    "s14t": "Contacts",
+    "s14": "Questions about the Terms: topchannel1914@gmail.com or via the support form."
+  }
+}

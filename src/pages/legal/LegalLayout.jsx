@@ -1,14 +1,16 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Scale } from 'lucide-react'
 
 // Общий каркас юридических страниц: шапка с возвратом, читаемый контент, нижние ссылки.
 // props: title (заголовок), updated (дата вступления в силу), children (секции).
 export default function LegalLayout({ title, updated, children }) {
+  const { t } = useTranslation('legal')
   return (
     <div className="min-h-screen bg-[#F1F3F6]">
       <div className="max-w-3xl mx-auto px-4 py-10">
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> На главную
+          <ArrowLeft className="w-4 h-4" /> {t('backHome')}
         </Link>
 
         <div className="flex items-center gap-3 mb-2">
@@ -17,18 +19,18 @@ export default function LegalLayout({ title, updated, children }) {
           </div>
           <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
         </div>
-        <p className="text-xs text-slate-400 mb-8">Дата вступления в силу: {updated}</p>
+        <p className="text-xs text-slate-400 mb-8">{t('effectiveDate', { date: updated })}</p>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 space-y-7 text-sm leading-relaxed text-slate-700">
           {children}
         </div>
 
         <div className="mt-6 text-center text-xs text-slate-400">
-          <Link to="/privacy" className="hover:text-slate-600 transition-colors">Конфиденциальность</Link>
+          <Link to="/privacy" className="hover:text-slate-600 transition-colors">{t('footerPrivacy')}</Link>
           <span className="mx-2">·</span>
-          <Link to="/terms" className="hover:text-slate-600 transition-colors">Условия использования</Link>
+          <Link to="/terms" className="hover:text-slate-600 transition-colors">{t('footerTerms')}</Link>
           <span className="mx-2">·</span>
-          <Link to="/support" className="hover:text-slate-600 transition-colors">Поддержка</Link>
+          <Link to="/support" className="hover:text-slate-600 transition-colors">{t('footerSupport')}</Link>
         </div>
       </div>
     </div>

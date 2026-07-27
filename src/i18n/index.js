@@ -32,12 +32,17 @@ import ruStudent from './locales/ru/student.json'
 import enStudent from './locales/en/student.json'
 import plStudent from './locales/pl/student.json'
 import ukStudent from './locales/uk/student.json'
+// legal: юр-страницы (конфиденциальность/условия) — ru/en/pl/uk; es/fr/de фолбэк на en
+import ruLegal from './locales/ru/legal.json'
+import enLegal from './locales/en/legal.json'
+import plLegal from './locales/pl/legal.json'
+import ukLegal from './locales/uk/legal.json'
 
 const resources = {
-  ru: { common: ruCommon, landing: ruLanding, app: ruApp, teacher: ruTeacher, student: ruStudent },
-  pl: { common: plCommon, landing: plLanding, app: plApp, teacher: plTeacher, student: plStudent },
-  uk: { common: ukCommon, landing: ukLanding, app: ukApp, teacher: ukTeacher, student: ukStudent },
-  en: { common: enCommon, landing: enLanding, app: enApp, teacher: enTeacher, student: enStudent },
+  ru: { common: ruCommon, landing: ruLanding, app: ruApp, teacher: ruTeacher, student: ruStudent, legal: ruLegal },
+  pl: { common: plCommon, landing: plLanding, app: plApp, teacher: plTeacher, student: plStudent, legal: plLegal },
+  uk: { common: ukCommon, landing: ukLanding, app: ukApp, teacher: ukTeacher, student: ukStudent, legal: ukLegal },
+  en: { common: enCommon, landing: enLanding, app: enApp, teacher: enTeacher, student: enStudent, legal: enLegal },
   es: { common: esCommon },
   fr: { common: frCommon },
   de: { common: deCommon },
@@ -54,7 +59,7 @@ i18n
     resources,
     supportedLngs: SUPPORTED,
     fallbackLng: FALLBACK,
-    ns: ['common', 'landing', 'app', 'teacher', 'student'],
+    ns: ['common', 'landing', 'app', 'teacher', 'student', 'legal'],
     defaultNS: 'common',
     load: 'languageOnly', // 'pl-PL' → 'pl'
     interpolation: { escapeValue: false },
