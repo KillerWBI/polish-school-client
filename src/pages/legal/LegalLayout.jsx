@@ -30,6 +30,8 @@ export default function LegalLayout({ title, updated, children }) {
           <span className="mx-2">·</span>
           <Link to="/terms" className="hover:text-slate-600 transition-colors">{t('footerTerms')}</Link>
           <span className="mx-2">·</span>
+          <Link to="/refund" className="hover:text-slate-600 transition-colors">{t('footerRefund')}</Link>
+          <span className="mx-2">·</span>
           <Link to="/support" className="hover:text-slate-600 transition-colors">{t('footerSupport')}</Link>
         </div>
       </div>

@@ -21,6 +21,7 @@ export default function Footer({ onPrimary }) {
           <nav className="flex flex-wrap gap-x-8 gap-y-2 font-mono text-[13px] text-[#8A8A8F]">
             <button onClick={() => scrollTo('features')} className="hover:text-white transition-colors cursor-pointer">{t('footer.features')}</button>
             <button onClick={() => scrollTo('how')}      className="hover:text-white transition-colors cursor-pointer">{t('footer.how')}</button>
+            <button onClick={() => scrollTo('pricing')} className="hover:text-white transition-colors cursor-pointer">{t('footer.pricing')}</button>
             <button onClick={() => scrollTo('faq')}       className="hover:text-white transition-colors cursor-pointer">{t('footer.faq')}</button>
             <Link to="/support"                            className="hover:text-white transition-colors cursor-pointer">{t('footer.support')}</Link>
             <button onClick={onPrimary}                    className="hover:text-white transition-colors cursor-pointer">{t('footer.start')}</button>
@@ -32,6 +33,7 @@ export default function Footer({ onPrimary }) {
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
             <Link to="/privacy" className="hover:text-white transition-colors">{t('footer.privacy', 'конфиденциальность')}</Link>
             <Link to="/terms"   className="hover:text-white transition-colors">{t('footer.terms', 'условия')}</Link>
+            <Link to="/refund"  className="hover:text-white transition-colors">{t('footer.refund')}</Link>
             <span className="hidden sm:inline text-[#48484F]">·</span>
             <span>{t('footer.madeFor')}</span>
           </div>
