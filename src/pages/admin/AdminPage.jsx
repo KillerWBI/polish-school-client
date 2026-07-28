@@ -409,7 +409,7 @@ function UserRow({ user, onDeactivate, onActivate, onRole, onPlan }) {
 
               {(user.role === 'teacher' || user.role === 'admin') && (
                 <MenuSection label={t('admin.menuPlan')}>
-                  {['free', 'pro', 'school'].map(p => (
+                  {['free', 'basic', 'pro', 'school'].map(p => (
                     <MenuBtn key={p} active={user.plan === p}
                       onClick={() => { setOpen(false); onPlan(p) }}>
                       {PLAN_LABEL[p]}
@@ -664,6 +664,7 @@ function PlanModal({ user, currentPlan, onSelect, onConfirm, onClose, busy }) {
 
         <div className="space-y-2 mb-6">
           {[['free', 'Free', t('admin.freeDesc')],
+            ['basic', 'Basic', t('admin.basicDesc')],
             ['pro',  'Pro',  t('admin.proDesc')],
             ['school', 'School', t('admin.schoolDesc')]
           ].map(([p, label, desc]) => (

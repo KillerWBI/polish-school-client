@@ -621,7 +621,8 @@
     "replyAndClose": "Odpowiedz i zamknij",
     "planModalTitle": "Zmień plan",
     "freeDesc": "Podstawowy — za darmo",
-    "proDesc": "Rozszerzony — $3.99/mies",
+    "basicDesc": "Podstawowy — $1.99/mies",
+    "proDesc": "Standardowy — $3.99/mies",
     "schoolDesc": "Szkolny — kilku nauczycieli"
   },
   "indCourseDetail": {
@@ -799,9 +800,11 @@
     "upgrade": "Wybierz",
     "upgradeToast": "Płatność za subskrypcję wkrótce",
     "freeName": "Darmowy",
+    "basicName": "Podstawowy",
     "standardName": "Standardowy",
     "maxName": "Maksymalny",
     "freeTagline": "Na start",
+    "basicTagline": "Gdy darmowy przestaje wystarczać",
     "standardTagline": "Do aktywnej pracy",
     "maxTagline": "Praktycznie bez ograniczeń",
     "allFeatures": "Wszystkie funkcje w zestawie",
