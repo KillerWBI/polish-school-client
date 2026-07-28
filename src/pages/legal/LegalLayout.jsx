@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Scale } from 'lucide-react'
+import LanguageSwitcher from '../../components/ui/LanguageSwitcher'
 
 // Общий каркас юридических страниц: шапка с возвратом, читаемый контент, нижние ссылки.
 // props: title (заголовок), updated (дата вступления в силу), children (секции).
@@ -9,9 +10,14 @@ export default function LegalLayout({ title, updated, children }) {
   return (
     <div className="min-h-screen bg-[#F1F3F6]">
       <div className="max-w-3xl mx-auto px-4 py-10">
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> {t('backHome')}
-        </Link>
+        {/* Юр-страницы читают и не залогиненные (в т.ч. проверяющие платёжного провайдера),
+            поэтому переключатель языка нужен прямо здесь — иначе язык определяется только по IP. */}
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> {t('backHome')}
+          </Link>
+          <LanguageSwitcher />
+        </div>
 
         <div className="flex items-center gap-3 mb-2">
           <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
