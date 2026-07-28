@@ -621,7 +621,8 @@
     "replyAndClose": "Відповісти й закрити",
     "planModalTitle": "Змінити тариф",
     "freeDesc": "Базовий — безкоштовно",
-    "proDesc": "Розширений — $3.99/міс",
+    "basicDesc": "Базовий — $1.99/міс",
+    "proDesc": "Стандартний — $3.99/міс",
     "schoolDesc": "Шкільний — кілька викладачів"
   },
   "indCourseDetail": {
@@ -799,9 +800,11 @@
     "upgrade": "Обрати",
     "upgradeToast": "Оплата підписки незабаром",
     "freeName": "Безкоштовний",
+    "basicName": "Базовий",
     "standardName": "Стандартний",
     "maxName": "Максимальний",
     "freeTagline": "Для старту",
+    "basicTagline": "Коли безкоштовного вже мало",
     "standardTagline": "Для активної роботи",
     "maxTagline": "Практично без обмежень",
     "allFeatures": "Усі функції включено",

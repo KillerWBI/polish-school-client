@@ -8,7 +8,7 @@ import Tooltip from '../ui/Tooltip'
 import Logo from '../ui/Logo'
 
 // Светлый сайдбар (Cemdash-стиль). label/section — ключи app.json, резолвятся t() при рендере.
-const PLAN_LABEL = { free: 'Free', pro: 'Pro', school: 'School' }
+const PLAN_LABEL = { free: 'Free', basic: 'Basic', pro: 'Pro', school: 'School' }
 
 const TEACHER_SECTIONS = [
   { label: 'nav.sectionMain', items: [

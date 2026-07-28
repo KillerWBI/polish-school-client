@@ -6,29 +6,33 @@ import { openCheckout, paddleConfigured } from '../../utils/paddle'
 import { fetchMe } from '../../api/auth.api'
 import { useCurrency, formatMoney } from '../../utils/money'
 
-// Внутренние ключи: free/pro/school → Бесплатный/Стандартный/Максимальный
-const RANK = { free: 0, pro: 1, school: 2 }
+// Внутренние ключи: free/basic/pro/school → Бесплатный/Базовый/Стандартный/Максимальный
+const RANK = { free: 0, basic: 1, pro: 2, school: 3 }
 const PRICE_BY_PLAN = {
-  pro:    import.meta.env.VITE_PADDLE_PRICE_PRO,    // Стандартный ($3.99 ≈ 15 zł) — реальная валюта задаётся в Paddle
-  school: import.meta.env.VITE_PADDLE_PRICE_SCHOOL, // Максимальный ($7.99 ≈ 30 zł)
+  basic:  import.meta.env.VITE_PADDLE_PRICE_BASIC,  // Базовый ($1.99) — реальная валюта задаётся в Paddle
+  pro:    import.meta.env.VITE_PADDLE_PRICE_PRO,    // Стандартный ($3.99)
+  school: import.meta.env.VITE_PADDLE_PRICE_SCHOOL, // Максимальный ($7.99)
 }
 
 // Лимиты — СИНХРОННО с backend src/config/planLimits.js (по ролям)
 const LIMITS = {
   teacher: {
     free:   { groups: 3,   students: 25,   courses: 8,   aiPerDay: 30   },
+    basic:  { groups: 8,   students: 60,   courses: 20,  aiPerDay: 60   },
     pro:    { groups: 15,  students: 150,  courses: 40,  aiPerDay: 150  },
     school: { groups: 200, students: 3000, courses: 500, aiPerDay: 1000 },
   },
   student: {
     free:   { tracks: 3,   vocab: 100,   notes: 30,   aiPerDay: 20  },
+    basic:  { tracks: 8,   vocab: 300,   notes: 100,  aiPerDay: 40  },
     pro:    { tracks: 20,  vocab: 1000,  notes: 500,  aiPerDay: 100 },
     school: { tracks: 200, vocab: 10000, notes: 5000, aiPerDay: 500 },
   },
 }
 
 const PLANS = [
-  { key: 'free',   price: '0',  periodKey: 'periodForever', nameKey: 'plans.freeName',     taglineKey: 'plans.freeTagline' },
+  { key: 'free',   price: '0',    periodKey: 'periodForever', nameKey: 'plans.freeName',     taglineKey: 'plans.freeTagline' },
+  { key: 'basic',  price: '1.99', periodKey: 'periodMonth', nameKey: 'plans.basicName',      taglineKey: 'plans.basicTagline' },
   { key: 'pro',    price: '3.99', periodKey: 'periodMonth', highlight: true, nameKey: 'plans.standardName', taglineKey: 'plans.standardTagline' },
   { key: 'school', price: '7.99', periodKey: 'periodMonth', nameKey: 'plans.maxName',        taglineKey: 'plans.maxTagline' },
 ]
@@ -61,13 +65,13 @@ export default function PlansPage() {
   }
 
   return (
-    <div className="p-5 sm:p-7 max-w-4xl mx-auto">
+    <div className="p-5 sm:p-7 max-w-6xl mx-auto">
       <div className="mb-6 text-center">
         <h1 className="text-2xl font-semibold text-slate-900">{t('plans.title')}</h1>
         <p className="text-sm text-slate-500 mt-1">{t('plans.subtitle')}</p>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-4 items-stretch">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
         {PLANS.map((p) => (
           <PlanCard key={p.key} plan={p} current={current} role={role} onUpgrade={handleUpgrade} money={money} />
         ))}

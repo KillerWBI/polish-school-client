@@ -621,7 +621,8 @@
     "replyAndClose": "Reply and close",
     "planModalTitle": "Change plan",
     "freeDesc": "Basic — free",
-    "proDesc": "Extended — $3.99/mo",
+    "basicDesc": "Basic — $1.99/mo",
+    "proDesc": "Standard — $3.99/mo",
     "schoolDesc": "School — several teachers"
   },
   "indCourseDetail": {
@@ -799,9 +800,11 @@
     "upgrade": "Choose",
     "upgradeToast": "Subscription billing coming soon",
     "freeName": "Free",
+    "basicName": "Basic",
     "standardName": "Standard",
     "maxName": "Maximum",
     "freeTagline": "To get started",
+    "basicTagline": "When the free plan runs out",
     "standardTagline": "For active work",
     "maxTagline": "Practically unlimited",
     "allFeatures": "All features included",
