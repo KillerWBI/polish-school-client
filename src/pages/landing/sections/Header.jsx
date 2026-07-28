@@ -42,6 +42,7 @@ export default function Header({ onLogin, onRegister }) {
         <nav className="hidden md:flex items-center gap-8 font-mono text-[13px] text-[#8A8A8F]">
           <button onClick={() => scrollTo('features')} className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('header.features')}</button>
           <button onClick={() => scrollTo('how')}      className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('header.how')}</button>
+          <button onClick={() => scrollTo('pricing')} className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('header.pricing')}</button>
           <button onClick={() => scrollTo('faq')}       className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('header.faq')}</button>
           <button onClick={() => navigate('/support')}  className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('header.support')}</button>
         </nav>

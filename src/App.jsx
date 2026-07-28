@@ -11,6 +11,7 @@ import VerifyEmailPage    from './pages/auth/VerifyEmailPage'
 import SupportPage        from './pages/support/SupportPage'
 import PrivacyPage        from './pages/legal/PrivacyPage'
 import TermsPage          from './pages/legal/TermsPage'
+import RefundPage         from './pages/legal/RefundPage'
 import AppLayout          from './components/layout/AppLayout'
 import CookieBanner       from './components/ui/CookieBanner'
 import PrivateRoute       from './components/layout/PrivateRoute'
@@ -62,6 +63,7 @@ export default function App() {
         <Route path="/support"         element={<SupportPage />} />
         <Route path="/privacy"         element={<PrivacyPage />} />
         <Route path="/terms"           element={<TermsPage />} />
+        <Route path="/refund"          element={<RefundPage />} />
 
         {/* Кабинет — Suspense внутри AppLayout вокруг <Outlet /> */}
         <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>

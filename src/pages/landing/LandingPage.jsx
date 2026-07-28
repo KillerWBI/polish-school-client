@@ -7,6 +7,7 @@ import Modes from './sections/Modes'
 import StudentView from './sections/StudentView'
 import ForWhom from './sections/ForWhom'
 import ForStudents from './sections/ForStudents'
+import Pricing from './sections/Pricing'
 import Faq from './sections/Faq'
 import Footer from './sections/Footer'
 
@@ -27,6 +28,7 @@ export default function LandingPage() {
         <StudentView />
         <ForWhom />
         <ForStudents onStudentLanding={toStudentLanding} onLogin={toLogin} />
+        <Pricing     onPrimary={toRegister} />
         <Faq />
       </main>
       <Footer onPrimary={toRegister} />

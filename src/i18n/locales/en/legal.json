@@ -88,5 +88,31 @@
     "s13": "These Terms are governed by the law of the Republic of Poland. Disputes are resolved in the competent court at the Operator's location (Poznań, Poland), unless otherwise required by mandatory consumer protection rules.",
     "s14t": "Contacts",
     "s14": "Questions about the Terms: topchannel1914@gmail.com or via the support form."
-  }
+  },
+  "refund": {
+    "title": "Refund Policy",
+    "intro": "This page explains how to cancel a subscription and get a refund for Diklaro paid plans. Payments are processed by Paddle.com Market Ltd, acting as merchant of record, so refunds are issued through them.",
+    "s1t": "Free first",
+    "s1": "The free plan lasts indefinitely and requires no card. We recommend making sure the service suits you before subscribing to a paid plan.",
+    "s2t": "14-day refund",
+    "s2": "If the service is not right for you, contact us within 14 days of your first payment and we will refund it in full, no questions asked. For customers in the EU and the UK this right is guaranteed by law.",
+    "s3t": "Cancelling a subscription",
+    "s3": "You can cancel at any time. Paid features remain available until the end of the billing period you have already paid for, after which the account moves to the free plan automatically. Your data is not deleted.",
+    "s4t": "Unused time",
+    "s4": "After the first 14 days we do not issue partial refunds for unused days of the current billing period — you simply keep using the service until it ends. Exceptions are listed below.",
+    "s5t": "When we always refund",
+    "s5": [
+      "Duplicate charges or other technical payment errors.",
+      "A charge taken after you had already cancelled.",
+      "Extended service unavailability caused by us.",
+      "Any charge made without your consent, including fraudulent card use."
+    ],
+    "s6t": "How to request a refund",
+    "s6": "Contact us through the support form on this site. Include the email your account is registered with and the payment date. We reply within 3 business days.",
+    "s7t": "Processing time",
+    "s7": "Once approved, Paddle refunds to the original payment method. It takes 3 to 10 business days to arrive, depending on your bank.",
+    "s8t": "Changes to this policy",
+    "s8": "We may update this policy. Subscriptions already paid for are governed by the version in force at the time of payment. The effective date is shown at the top of this page."
+  },
+  "footerRefund": "Refunds"
 }

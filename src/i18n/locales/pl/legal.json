@@ -88,5 +88,31 @@
     "s13": "Niniejszy Regulamin podlega prawu Rzeczypospolitej Polskiej. Spory rozstrzyga właściwy sąd według siedziby Operatora (Poznań, Polska), o ile bezwzględnie obowiązujące przepisy o ochronie konsumentów nie stanowią inaczej.",
     "s14t": "Kontakt",
     "s14": "Pytania dotyczące Regulaminu: topchannel1914@gmail.com lub przez formularz pomocy."
-  }
+  },
+  "refund": {
+    "title": "Polityka zwrotów",
+    "intro": "Ta strona opisuje, jak anulować subskrypcję i odzyskać pieniądze za płatne plany Diklaro. Płatności obsługuje Paddle.com Market Ltd jako sprzedawca (merchant of record), dlatego zwroty realizowane są za jego pośrednictwem.",
+    "s1t": "Najpierw za darmo",
+    "s1": "Plan darmowy działa bezterminowo i nie wymaga podawania karty. Zalecamy najpierw upewnić się, że serwis Ci odpowiada, a dopiero potem wykupić plan płatny.",
+    "s2t": "Zwrot w ciągu 14 dni",
+    "s2": "Jeśli serwis Ci nie odpowiada, napisz do nas w ciągu 14 dni od pierwszej płatności — zwrócimy pełną kwotę bez podawania przyczyny. Dla klientów z UE i Wielkiej Brytanii to prawo gwarantuje ustawa.",
+    "s3t": "Anulowanie subskrypcji",
+    "s3": "Subskrypcję można anulować w dowolnym momencie. Dostęp do funkcji płatnych pozostaje do końca opłaconego okresu rozliczeniowego, po czym konto automatycznie przechodzi na plan darmowy. Dane nie są usuwane.",
+    "s4t": "Niewykorzystany okres",
+    "s4": "Po upływie 14 dni od pierwszej płatności nie zwracamy pieniędzy za niewykorzystane dni bieżącego okresu rozliczeniowego — po prostu korzystasz z serwisu do jego końca. Wyjątki wymieniono poniżej.",
+    "s5t": "Kiedy zawsze zwracamy pieniądze",
+    "s5": [
+      "Podwójne obciążenie lub inny błąd techniczny płatności.",
+      "Obciążenie po tym, jak subskrypcja została anulowana.",
+      "Długotrwała niedostępność serwisu z naszej winy.",
+      "Obciążenie bez Twojej zgody, w tym w wyniku oszustwa kartowego."
+    ],
+    "s6t": "Jak poprosić o zwrot",
+    "s6": "Napisz do nas przez formularz wsparcia na stronie. Podaj adres e-mail konta i datę płatności. Odpowiadamy w ciągu 3 dni roboczych.",
+    "s7t": "Czas realizacji",
+    "s7": "Po zatwierdzeniu Paddle wykonuje zwrot na tę samą metodę płatności. Zaksięgowanie trwa od 3 do 10 dni roboczych, zależnie od banku.",
+    "s8t": "Zmiany polityki",
+    "s8": "Możemy aktualizować tę politykę. Do już opłaconych subskrypcji stosuje się wersję obowiązującą w chwili płatności. Data wejścia w życie znajduje się u góry strony."
+  },
+  "footerRefund": "Zwroty"
 }
