@@ -26,7 +26,9 @@
     "adminPanel": "Admin panel",
     "tests": "Tests",
     "sectionWithTeacher": "With teacher",
-    "sectionSelf": "On your own"
+    "sectionSelf": "On your own",
+    "lessons": "Lessons",
+    "diary": "My diary"
   },
   "sidebar": {
     "install": "Install app",
@@ -34,7 +36,11 @@
     "support": "Support",
     "settings": "Settings",
     "logout": "Log out",
-    "user": "User"
+    "user": "User",
+    "openProfile": "Open my profile",
+    "planTooltip": "Plan {{plan}}. Compare plans and raise your limits",
+    "planUpgrade": "Get more capacity",
+    "planCurrent": "Your plan — {{plan}}"
   },
   "role": {
     "teacher": "Teacher",
@@ -49,7 +55,9 @@
     "notifications": "Notifications",
     "noNotifications": "No new notifications",
     "markAllRead": "Mark all as read",
-    "viewAll": "All notifications"
+    "viewAll": "All notifications",
+    "openMenu": "Open menu",
+    "notificationsTooltip": "Notifications: new assignments, grades, payments and invitations"
   },
   "verifyBanner": {
     "title": "Verify your email.",
@@ -399,5 +407,16 @@
     "reasonPh": "For example: saves time on grading, helps students not forget assignments…",
     "reasonHint": "A few words about the reason help us understand who benefits and how.",
     "submit": "Send message"
+  },
+  "lessons": {
+    "subtitle": "Group and one-to-one lessons in one place",
+    "tipGroups": "Student groups: schedule, members, lessons and homework",
+    "tipIndividual": "One-to-one lessons: own schedule and price per student"
+  },
+  "diary": {
+    "subtitle": "Your notes, lessons outside the platform and study statistics",
+    "tipNotes": "Personal notes and records",
+    "tipLessons": "Lessons outside the platform: hours, payments and debt",
+    "tipProgress": "How your studies are going: attendance, grades, vocabulary"
   }
 }

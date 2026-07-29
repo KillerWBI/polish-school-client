@@ -6,6 +6,7 @@ import { getMaterials } from '../../api/materials.api'
 import { safeUrl } from '../../utils/safeUrl'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconMaterials, IconSearch } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
 
 // Иконка по типу материала: link | file | text
@@ -42,7 +43,7 @@ export default function MaterialsPage() {
       {loading ? (
         <SkeletonList />
       ) : !data?.length ? (
-        <EmptyState emoji="📎" title={t('materials.emptyTitle')}
+        <EmptyState icon={IconMaterials} title={t('materials.emptyTitle')}
           text={t('materials.emptyText')} />
       ) : (
         <>
@@ -53,7 +54,7 @@ export default function MaterialsPage() {
           </div>
 
           {!lessons.length ? (
-            <EmptyState emoji="🔍" title={t('materials.notFound')} text={t('materials.notFoundText')} />
+            <EmptyState icon={IconSearch} title={t('materials.notFound')} text={t('materials.notFoundText')} />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 items-start">
               {lessons.map(l => <LessonMaterials key={`${l.kind}-${l.id}`} lesson={l} />)}

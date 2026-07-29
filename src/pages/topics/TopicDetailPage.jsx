@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { ArrowLeft, Sparkles, Lightbulb, Lock, Check, History, Target, Layers, Repeat, PenLine, FileText, BookOpen, Link2, Grid3x3, Trash2, Share2 } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getTopic, nextTopicQuiz, submitTopicAttempt, gradeOpenAnswers, suggestSources, getSources, deleteSource, importCardsFromText, shareTopic } from '../../api/topics.api'
@@ -13,6 +13,7 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconLayers, IconSuccess } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
 import IdeasModal from './IdeasModal'
 import CardReview from './CardReview'
@@ -419,7 +420,7 @@ function StepCards({ topicId, step, onBack }) {
       {loading ? (
         <div className="py-16 text-center text-sm text-slate-400"><Layers className="w-6 h-6 mx-auto mb-2 text-blue-400 animate-pulse" /> {t('common:loading')}</div>
       ) : !cards.length ? (
-        <EmptyState emoji="🗂️" title={t('detail.cardsEmptyTitle')}
+        <EmptyState icon={IconLayers} title={t('detail.cardsEmptyTitle')}
           text={t('detail.cardsEmptyText')}
           action={<Button onClick={doGen} loading={gen}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.genCards')}</Button>} />
       ) : (
@@ -497,7 +498,7 @@ function TrackReview({ topicId, onBack }) {
       {loading ? (
         <div className="py-16 text-center text-sm text-slate-400">{t('common:loading')}</div>
       ) : !cards?.length ? (
-        <EmptyState emoji="🎉" title={t('detail.trackReviewEmptyTitle')} text={t('detail.trackReviewEmptyText')} />
+        <EmptyState icon={IconSuccess} title={t('detail.trackReviewEmptyTitle')} text={t('detail.trackReviewEmptyText')} />
       ) : (
         <CardReview
           cards={cards}

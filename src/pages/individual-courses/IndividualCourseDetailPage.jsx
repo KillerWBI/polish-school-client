@@ -16,6 +16,7 @@ import Input from '../../components/ui/Input'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconCalendar, IconSearch } from '../../components/ui/icons'
 
 // value = номер дня (0=Вс..6=Сб); порядок отображения Пн→Вс
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0]
@@ -45,7 +46,7 @@ export default function IndividualCourseDetailPage() {
   if (!course) {
     return (
       <div className="p-5 sm:p-8">
-        <EmptyState emoji="🔍" title={t('indCourseDetail.notFoundTitle')} text={t('indCourseDetail.notFoundText')} />
+        <EmptyState icon={IconSearch} title={t('indCourseDetail.notFoundTitle')} text={t('indCourseDetail.notFoundText')} />
       </div>
     )
   }
@@ -114,7 +115,7 @@ export default function IndividualCourseDetailPage() {
         <h2 className="text-lg font-semibold text-slate-900 mb-3">{t('indCourseDetail.lessonsHeading')}</h2>
         {!lessons?.length ? (
           <EmptyState
-            emoji="📅"
+            icon={IconCalendar}
             title={t('indCourseDetail.noLessonsTitle')}
             text={isTeacher ? t('indCourseDetail.noLessonsTeacher') : t('indCourseDetail.noLessonsStudent')}
           />
@@ -282,8 +283,7 @@ function EditCourseModal({ open, onClose, course, onUpdated }) {
       onUpdated()
       onClose()
     } catch (e) {
-      const msg = errMsg(e, t('indCourseDetail.updateError'))
-      setError(msg); toast.error(msg)
+      setError(errMsg(e, t('indCourseDetail.updateError')))
     } finally {
       setSaving(false)
     }

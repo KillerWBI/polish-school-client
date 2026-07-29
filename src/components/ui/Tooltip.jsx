@@ -1,14 +1,14 @@
 import { useState, useRef } from 'react'
 
-// Подсказка при наведении: появляется через 1 секунду и простыми словами поясняет,
-// что делает элемент. Оборачивает любой элемент:
+// Подсказка при наведении: появляется через полсекунды и простыми словами поясняет,
+// что делает элемент. Пропадает сразу, как только курсор ушёл. Оборачивает любой элемент:
 //   <Tooltip text="Создать новую группу учеников"><button>…</button></Tooltip>
 // side — с какой стороны показывать (bottom по умолчанию).
 export default function Tooltip({ text, side = 'bottom', children, className = '' }) {
   const [show, setShow] = useState(false)
   const timer = useRef(null)
 
-  const open  = () => { timer.current = setTimeout(() => setShow(true), 1000) }
+  const open  = () => { timer.current = setTimeout(() => setShow(true), 500) }
   const close = () => { clearTimeout(timer.current); setShow(false) }
 
   if (!text) return children

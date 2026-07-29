@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { LifeBuoy, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { submitSupportTicket } from '../../api/support.api'
 import useAuth from '../../hooks/useAuth'

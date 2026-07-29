@@ -6,11 +6,15 @@ const opts = {
   className: 'rounded-xl',
 }
 
+// Одинаковый текст не должен показываться дважды: сам текст служит идентификатором,
+// поэтому повторное сообщение обновляет уже висящее, а не встаёт вторым в стопку.
+const base = (msg, o) => ({ ...opts, ...(typeof msg === 'string' ? { id: msg } : null), ...o })
+
 export const toast = {
-  success: (msg, o = {}) => sonner.success(msg, { ...opts, ...o }),
-  error:   (msg, o = {}) => sonner.error(msg,   { ...opts, duration: 5000, ...o }),
-  info:    (msg, o = {}) => sonner(msg,         { ...opts, ...o }),
-  loading: (msg, o = {}) => sonner.loading(msg, { ...opts, ...o }),
+  success: (msg, o = {}) => sonner.success(msg, base(msg, o)),
+  error:   (msg, o = {}) => sonner.error(msg,   base(msg, { duration: 5000, ...o })),
+  info:    (msg, o = {}) => sonner(msg,         base(msg, o)),
+  loading: (msg, o = {}) => sonner.loading(msg, base(msg, o)),
   dismiss: (id)          => sonner.dismiss(id),
 }
 

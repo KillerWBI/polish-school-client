@@ -10,6 +10,8 @@ import { getMyProgress } from '../../api/progress.api'
 import { getStudentAnalytics } from '../../api/analytics.api'
 import { SkeletonDashboard } from '../../components/ui/Skeleton'
 import UiTooltip from '../../components/ui/Tooltip'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 const tip = {
   contentStyle: { background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, fontSize: 12, boxShadow: '0 8px 24px rgba(15,23,42,0.08)' },
@@ -17,7 +19,8 @@ const tip = {
 }
 const AX = { stroke: '#CBD5E1', fontSize: 11, tickLine: false, axisLine: false }
 
-export default function ProgressPage() {
+// embedded — страница показана вкладкой внутри «Моего дневника», свою шапку не рисует.
+export default function ProgressPage({ embedded = false }) {
   const { t, i18n } = useTranslation('student')
   const { user } = useAuth()
   const { data: progress, loading: pLoad } = useApiQuery(['my-progress'], getMyProgress)
@@ -28,20 +31,15 @@ export default function ProgressPage() {
   )
   const loading = pLoad || aLoad
 
-  if (loading) return <div className="p-5 sm:p-8"><SkeletonDashboard /></div>
+  if (loading) return embedded ? <SkeletonDashboard /> : <PageContainer><SkeletonDashboard /></PageContainer>
 
   const streak    = progress?.streak ?? 0
   const attended  = analytics?.totals?.lessonsAttended ?? 0
   const gradesAvg = analytics?.totals?.gradesAvg ?? 0
   const extHours  = progress?.external?.hours ?? 0
 
-  return (
-    <div className="p-5 sm:p-8 max-w-[1100px]">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">{t('progress.title')}</h1>
-        <p className="text-sm text-slate-500 mt-0.5">{t('progress.subtitle')}</p>
-      </div>
-
+  const body = (
+    <>
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <Stat Icon={Flame}        cls="bg-orange-50 text-orange-600"   value={`${streak} ${t('progress.daysShort', 'дн')}`}  label={t('progress.statStreak')} tip={t('progress.statStreakTip')} />
@@ -104,7 +102,16 @@ export default function ProgressPage() {
           <VocabBar vocab={progress?.vocab} />
         </Card>
       </div>
-    </div>
+    </>
+  )
+
+  if (embedded) return body
+
+  return (
+    <PageContainer>
+      <PageHeader title={t('progress.title')} subtitle={t('progress.subtitle')} />
+      {body}
+    </PageContainer>
   )
 }
 

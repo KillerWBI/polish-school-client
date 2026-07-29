@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { keepPreviousData } from '@tanstack/react-query'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
 import { getHomework, createHomework, deleteHomework, submitHomework, getSubmissions, gradeSubmission, submitHomeworkQuizAttempt, getHomeworkQuizAttempts } from '../../api/homework.api'
@@ -18,6 +18,7 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { PageSpinner } from '../../components/ui/Spinner'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconEmpty, IconHomework } from '../../components/ui/icons'
 import Tooltip from '../../components/ui/Tooltip'
 
 export default function HomeworkPage() {
@@ -56,7 +57,7 @@ export default function HomeworkPage() {
 
       {loading ? <SkeletonList /> : !homework?.length ? (
         <EmptyState
-          emoji="✏️"
+          icon={IconHomework}
           title={t('homework.emptyTitle')}
           text={isTeacher ? t('homework.emptyTeacher') : t('homework.emptyStudent')}
           action={isTeacher
@@ -572,7 +573,7 @@ function SubmissionsModal({ hw, onClose }) {
         {hw?.quiz && <QuizAttempts hw={hw} />}
 
         {loading ? <PageSpinner /> : !subs?.length ? (
-          <EmptyState emoji="📭" title={t('homework.noSubs')} />
+          <EmptyState icon={IconEmpty} title={t('homework.noSubs')} />
         ) : (
           <div className="space-y-3">
             {subs.map(s => {

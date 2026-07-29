@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { Users, GraduationCap, LayoutGrid, DollarSign, Search, Shield, ChevronLeft, ChevronRight, RefreshCw, LifeBuoy } from 'lucide-react'
 import { getAdminStats, getAdminUsers, deactivateUser, activateUser, setUserRole, setUserPlan, getSupportTickets, replySupportTicket } from '../../api/admin.api'
 import useApiQuery from '../../hooks/useApiQuery'

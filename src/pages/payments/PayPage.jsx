@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { ArrowLeft, Upload, CheckCircle, Landmark, Smartphone, CreditCard, Globe, Copy } from 'lucide-react'
 import { getDebt, getTeacherPaymentInfo, studentPay } from '../../api/payments.api'
 import useApiQuery from '../../hooks/useApiQuery'

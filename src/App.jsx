@@ -28,7 +28,6 @@ const AttendancePage             = lazy(() => import('./pages/attendance/Attenda
 const PaymentsPage               = lazy(() => import('./pages/payments/PaymentsPage'))
 const PayPage                    = lazy(() => import('./pages/payments/PayPage'))
 const SettingsPage               = lazy(() => import('./pages/settings/SettingsPage'))
-const IndividualCoursesPage      = lazy(() => import('./pages/individual-courses/IndividualCoursesPage'))
 const IndividualCourseDetailPage = lazy(() => import('./pages/individual-courses/IndividualCourseDetailPage'))
 const IndividualLessonsPage      = lazy(() => import('./pages/individual-lessons/IndividualLessonsPage'))
 const HelpPage                   = lazy(() => import('./pages/help/HelpPage'))
@@ -39,13 +38,12 @@ const TestsPage                  = lazy(() => import('./pages/quiz/TestsPage'))
 const QuizViewPage               = lazy(() => import('./pages/quiz/QuizViewPage'))
 const AdminPage                  = lazy(() => import('./pages/admin/AdminPage'))
 const VocabPage                  = lazy(() => import('./pages/vocab/VocabPage'))
-const MyLessonsPage              = lazy(() => import('./pages/my-lessons/MyLessonsPage'))
-const NotesPage                  = lazy(() => import('./pages/notes/NotesPage'))
-const ProgressPage               = lazy(() => import('./pages/progress/ProgressPage'))
 const MaterialsPage              = lazy(() => import('./pages/materials/MaterialsPage'))
 const TopicsPage                 = lazy(() => import('./pages/topics/TopicsPage'))
 const TopicDetailPage            = lazy(() => import('./pages/topics/TopicDetailPage'))
 const DailySessionPage           = lazy(() => import('./pages/study/DailySessionPage'))
+const LessonsPage                = lazy(() => import('./pages/lessons/LessonsPage'))
+const DiaryPage                  = lazy(() => import('./pages/diary/DiaryPage'))
 
 export default function App() {
   return (
@@ -76,7 +74,10 @@ export default function App() {
           <Route path="/homework"            element={<HomeworkPage />} />
           <Route path="/attendance"          element={<AttendancePage />} />
           <Route path="/payments"            element={<PaymentsPage />} />
-          <Route path="/individual-courses"      element={<IndividualCoursesPage />} />
+          {/* «Занятия» — групповые и индивидуальные в одном месте (только учитель) */}
+          <Route path="/lessons"
+            element={<RoleRoute role="teacher"><LessonsPage /></RoleRoute>} />
+          <Route path="/individual-courses"      element={<Navigate to="/lessons?tab=individual" replace />} />
           <Route path="/individual-courses/:id"  element={<IndividualCourseDetailPage />} />
           <Route path="/individual-lessons"      element={<IndividualLessonsPage />} />
           <Route path="/settings"            element={<SettingsPage />} />
@@ -105,17 +106,12 @@ export default function App() {
           <Route path="/study"
             element={<RoleRoute role="student"><DailySessionPage /></RoleRoute>} />
 
-          {/* Только ученик — журнал внешних занятий */}
-          <Route path="/my-lessons"
-            element={<RoleRoute role="student"><MyLessonsPage /></RoleRoute>} />
-
-          {/* Только ученик — личные заметки */}
-          <Route path="/my-notes"
-            element={<RoleRoute role="student"><NotesPage /></RoleRoute>} />
-
-          {/* Только ученик — прогресс-центр */}
-          <Route path="/my-progress"
-            element={<RoleRoute role="student"><ProgressPage /></RoleRoute>} />
+          {/* «Мой дневник» — заметки, внешние занятия и прогресс в одном месте */}
+          <Route path="/diary"
+            element={<RoleRoute role="student"><DiaryPage /></RoleRoute>} />
+          <Route path="/my-notes"    element={<Navigate to="/diary" replace />} />
+          <Route path="/my-lessons"  element={<Navigate to="/diary?tab=lessons" replace />} />
+          <Route path="/my-progress" element={<Navigate to="/diary?tab=progress" replace />} />
 
           {/* AI-тесты — обе роли (учитель: библиотека; ученик: личные тесты + результаты) */}
           <Route path="/tests"       element={<TestsPage />} />

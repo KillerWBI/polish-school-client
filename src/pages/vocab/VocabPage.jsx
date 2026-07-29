@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { BookMarked, Plus, Check, X, Trash2, Sparkles, ListPlus, PenLine, Lightbulb } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getVocab, getDueVocab, addVocab, bulkAddVocab, generateVocab, reviewVocab, deleteVocab } from '../../api/vocab.api'
@@ -10,6 +10,7 @@ import LanguageSelect from '../../components/ui/LanguageSelect'
 import { langName } from '../../constants/isoLanguages'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconSuccess, IconVocab } from '../../components/ui/icons'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import PageContainer from '../../components/ui/PageContainer'
 import Tooltip from '../../components/ui/Tooltip'
@@ -88,7 +89,7 @@ function ReviewTab({ onEmptyAdd }) {
   if (loading) return <SkeletonList count={1} />
   if (!due?.length) {
     return (
-      <EmptyState emoji="🎉" title={t('vocab.emptyReviewTitle')}
+      <EmptyState icon={IconSuccess} title={t('vocab.emptyReviewTitle')}
         text={t('vocab.emptyReviewText')}
         action={<Button size="sm" onClick={onEmptyAdd}>{t('vocab.addWord')}</Button>} />
     )
@@ -161,7 +162,7 @@ function AllTab() {
   if (loading) return <SkeletonList />
   // Пусто только если и фильтра нет, и слов нет
   if (!items.length && !langFilter) {
-    return <EmptyState emoji="📖" title={t('vocab.emptyTitle')} text={t('vocab.emptyText')} />
+    return <EmptyState icon={IconVocab} title={t('vocab.emptyTitle')} text={t('vocab.emptyText')} />
   }
 
   return (
@@ -396,10 +397,12 @@ function AiForm({ lang, native, onAdded }) {
   const [count, setCount] = useState(20)
   const [level, setLevel] = useState('beginner')
   const [busy, setBusy]   = useState(false)
+  const [formError, setFormError] = useState('')
 
   const submit = async () => {
-    if (!lang || !native) { toast.error(t('vocab.pickLang')); return }
-    if (!topic.trim())    { toast.error(t('vocab.enterTopic')); return }
+    setFormError('')
+    if (!lang || !native) { setFormError(t('vocab.pickLang')); return }
+    if (!topic.trim())    { setFormError(t('vocab.enterTopic')); return }
     const n = Math.min(100, Math.max(1, Number(count) || 20))
     setBusy(true)
     try {
@@ -434,6 +437,7 @@ function AiForm({ lang, native, onAdded }) {
             </select>
           </div>
         </div>
+        {formError && <p className="text-sm text-red-600">{formError}</p>}
         <Button onClick={submit} loading={busy} className="w-full">
           <Sparkles className="w-4 h-4 mr-1" /> {t('vocab.generate')}
         </Button>
