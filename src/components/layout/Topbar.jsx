@@ -2,17 +2,14 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import useAuth from '../../hooks/useAuth'
-import { getGroups } from '../../api/groups.api'
-import { getMyStudents } from '../../api/students.api'
 import { getNotifications, markNotificationRead, markAllNotificationsRead } from '../../api/notifications.api'
 import { safeUrl } from '../../utils/safeUrl'
 import { SUPPORTED, LANG_NAMES } from '../../i18n/countryToLang'
 import Tooltip from '../ui/Tooltip'
 import {
-  IconSearch, IconClose, IconNotifications, IconGroups, IconHomework,
-  IconSuccess, IconDeadline, IconInvite, IconMoney, IconError, IconExpand,
-  IconSettings, IconHelp, IconSupport, IconLanguage, IconInstall,
-  IconLogout, IconCheck,
+  IconNotifications, IconHomework, IconSuccess, IconDeadline, IconInvite,
+  IconMoney, IconError, IconExpand, IconSettings, IconHelp, IconSupport,
+  IconLanguage, IconInstall, IconLogout, IconCheck,
 } from '../ui/icons'
 
 // Иконка + цвет по типу уведомления
@@ -29,12 +26,12 @@ const NOTIF_META = {
   _default:           { Icon: IconNotifications, cls: 'bg-slate-100 text-slate-500' },
 }
 
+// Левая часть шапки намеренно пустая: развёрнутый сайдбар накрывает её краем,
+// поэтому ничего интерактивного слева не держим.
 export default function Topbar() {
-  const { isTeacher } = useAuth()
   const navigate = useNavigate()
   return (
-    <header className="hidden lg:flex items-center gap-4 h-16 px-6 bg-white border-b border-slate-200">
-      <SearchBox isTeacher={isTeacher} navigate={navigate} />
+    <header className="hidden lg:flex items-center h-16 px-6 bg-white border-b border-slate-200">
       <div className="ml-auto flex items-center gap-2">
         <NotifBell navigate={navigate} />
         <ProfileMenu navigate={navigate} />
@@ -151,76 +148,6 @@ export function ProfileMenu({ navigate, onNavigate }) {
               <IconLogout size={16} /> {t('sidebar.logout')}
             </button>
           </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-/* ── Рабочий поиск: группы + ученики ── */
-export function SearchBox({ isTeacher, navigate }) {
-  const { t } = useTranslation('app')
-  const { t: tc } = useTranslation('common')
-  const [q, setQ] = useState('')
-  const [open, setOpen] = useState(false)
-  const [groups, setGroups] = useState(null)
-  const [students, setStudents] = useState([])
-  const ref = useRef(null)
-
-  useEffect(() => {
-    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
-    document.addEventListener('mousedown', h)
-    return () => document.removeEventListener('mousedown', h)
-  }, [])
-
-  // ленивая загрузка справочника при первом фокусе
-  const load = () => {
-    if (groups !== null) return
-    getGroups().then(setGroups).catch(() => setGroups([]))
-    if (isTeacher) getMyStudents().then(setStudents).catch(() => setStudents([]))
-  }
-
-  const query = q.trim().toLowerCase()
-  const gMatch = (groups || []).filter(g => g.name?.toLowerCase().includes(query)).slice(0, 5)
-  const sMatch = (students || []).filter(s => s.name?.toLowerCase().includes(query) || s.username?.toLowerCase().includes(query)).slice(0, 5)
-  const empty = query && groups !== null && gMatch.length === 0 && sMatch.length === 0
-
-  const go = (to) => { navigate(to); setOpen(false); setQ('') }
-
-  return (
-    <div ref={ref} className="relative w-full max-w-md">
-      <IconSearch size={16} strokeWidth={2} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-      <input
-        value={q}
-        onFocus={() => { setOpen(true); load() }}
-        onChange={(e) => { setQ(e.target.value); setOpen(true) }}
-        placeholder={t('topbar.searchPlaceholder')}
-        className="w-full h-10 pl-10 pr-9 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15 transition"
-      />
-      {q && <button onClick={() => setQ('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"><IconClose size={16} /></button>}
-
-      {open && query.length > 0 && (
-        <div className="absolute left-0 right-0 mt-2 rounded-xl border border-slate-200 bg-white shadow-lg z-50 overflow-hidden py-1 max-h-[380px] overflow-y-auto">
-          {groups === null && <div className="px-4 py-3 text-sm text-slate-400">{tc('loading')}</div>}
-          {empty && <div className="px-4 py-3 text-sm text-slate-400">{t('topbar.notFound', { q })}</div>}
-
-          {gMatch.length > 0 && <div className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">{t('nav.groups')}</div>}
-          {gMatch.map(g => (
-            <button key={g.id} onClick={() => go(`/groups/${g.id}`)}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 cursor-pointer text-left">
-              <span className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><IconGroups size={14} /></span>
-              <span className="truncate">{g.name}</span>
-            </button>
-          ))}
-
-          {sMatch.length > 0 && <div className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">{t('nav.students')}</div>}
-          {sMatch.map(s => (
-            <button key={s.id} onClick={() => go('/students')}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 cursor-pointer text-left">
-              <span className="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-semibold">{s.name?.[0]?.toUpperCase() ?? '?'}</span>
-              <span className="truncate flex-1">{s.name}{s.username && <span className="text-slate-400"> · @{s.username}</span>}</span>
-            </button>
-          ))}
         </div>
       )}
     </div>

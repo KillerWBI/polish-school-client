@@ -1,13 +1,20 @@
 import { useState, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from '../../utils/toast'
+import { toast, errMsg } from '../../utils/toast'
 import { Settings2, User, CreditCard, Shield } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import { fetchMe, changePassword } from '../../api/auth.api'
 import { updateMyProfile } from '../../api/profile.api'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
+import Modal from '../../components/ui/Modal'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
+import EmptyState from '../../components/ui/EmptyState'
+import {
+  IconAdd, IconEdit, IconDelete, IconNext, IconPayments, IconLocked,
+  IconBank, IconBlik, IconPaypal, IconRevolut, IconWebsite,
+} from '../../components/ui/icons'
 
 import LanguagesEditor from '../profile/components/LanguagesEditor'
 import SocialsEditor   from '../profile/components/SocialsEditor'
@@ -159,110 +166,214 @@ function PersonalTab({ user, isTeacher, updateUser }) {
   )
 }
 
-function ReadField({ label, value, accent = 'text-slate-900' }) {
+// Поле, которое нельзя изменить. Специально приглушено и с замочком —
+// чтобы сразу отличалось от полей, которые редактируются. Размеры совпадают с Input.
+function ReadField({ label, value, accent = 'text-slate-500' }) {
   return (
     <div>
-      <div className="text-xs font-medium text-slate-500 mb-1">{label}</div>
-      <div className={`h-9 px-3 flex items-center rounded-lg bg-slate-50 border border-slate-200 text-sm ${accent}`}>{value}</div>
+      <label className="block text-xs font-medium text-slate-600 mb-1.5">{label}</label>
+      <div className={`h-11 px-3.5 flex items-center gap-2 rounded-lg bg-slate-50 border border-slate-200 text-sm cursor-default ${accent}`}>
+        <IconLocked size={13} className="text-slate-400" />
+        <span className="truncate">{value}</span>
+      </div>
     </div>
   )
 }
 
 /* ═══════════════════════════════════════════════════════════
    Вкладка «Способы оплаты» (только учитель)
+   Единый приём: список добавленного + «+» → модалка с выбором и заполнением.
    ═══════════════════════════════════════════════════════════ */
+
+// Описание способов: какие поля хранит каждый и как показать его в списке.
+// Ключи полей совпадают с тем, что лежит в user.paymentDetails — формат хранения не меняется.
+const PAY_METHODS = [
+  { id: 'bank',    icon: IconBank,    titleKey: 'settings.bankTransfer', noteKey: 'settings.bankNote',
+    fields: [
+      { name: 'iban',     labelKey: 'settings.ibanLabel',     ph: 'PL61 1090 1014 0000 0712 1981 2874', required: true },
+      { name: 'bic',      labelKey: 'settings.bicLabel',      ph: 'WBKPPLPP' },
+      { name: 'bankName', labelKey: 'settings.bankNameLabel', ph: 'PKO Bank Polski' },
+    ] },
+  { id: 'blik',    icon: IconBlik,    titleKey: 'settings.blikTitle',    noteKey: 'settings.blikNote',
+    fields: [{ name: 'blik', labelKey: 'settings.blikPhone', ph: '+48 123 456 789', required: true }] },
+  { id: 'paypal',  icon: IconPaypal,  titleKey: 'settings.paypalTitle',  noteKey: 'settings.paypalNote',
+    fields: [{ name: 'paypal', labelKey: 'settings.paypalLabel', ph: 'teacher@gmail.com', required: true }] },
+  { id: 'revolut', icon: IconRevolut, titleKey: 'settings.revolutTitle', noteKey: 'settings.revolutNote',
+    fields: [{ name: 'revolut', labelKey: 'settings.revolutLabel', ph: '@teacher_name', required: true }] },
+  { id: 'custom',  icon: IconWebsite, titleKey: 'settings.otherTitle',
+    fields: [
+      { name: 'customLabel', labelKey: 'settings.otherName',  ph: 'Wise, Venmo…',     required: true },
+      { name: 'customValue', labelKey: 'settings.otherValue', ph: 'wise.com/pay/...', required: true },
+    ] },
+]
+
+const isFilled = (method, data) => method.fields.some(f => (data[f.name] || '').trim())
+
 function PaymentMethodsTab({ user, updateUser }) {
   const { t } = useTranslation('teacher')
-  const pd = user.paymentDetails || {}
-  const initial = useMemo(() => ({
-    iban:        pd.iban        || '',
-    bic:         pd.bic         || '',
-    bankName:    pd.bankName    || '',
-    paypal:      pd.paypal      || '',
-    revolut:     pd.revolut     || '',
-    blik:        pd.blik        || '',
-    customLabel: pd.customLabel || '',
-    customValue: pd.customValue || '',
-  }), []) // eslint-disable-line react-hooks/exhaustive-deps
+  const { t: tc } = useTranslation('common')
+  const [details, setDetails] = useState(() => user.paymentDetails || {})
+  const [editing, setEditing] = useState(null)   // способ, который добавляем/меняем
+  const [picking, setPicking] = useState(false)  // открыт выбор способа
+  const [removing, setRemoving] = useState(null) // способ, ждущий подтверждения удаления
+  const [busy, setBusy] = useState(false)
 
-  const [form, setForm]   = useState(initial)
-  const [saving, setSaving] = useState(false)
-  const dirty = JSON.stringify(form) !== JSON.stringify(initial)
-  const set   = (patch) => setForm(f => ({ ...f, ...patch }))
+  const added   = PAY_METHODS.filter(m => isFilled(m, details))
+  const notYet  = PAY_METHODS.filter(m => !isFilled(m, details))
 
-  const hasAny = Object.values(form).some(v => v.trim())
-
-  const handleSave = async () => {
-    setSaving(true)
+  // Сохраняем сразу: модалка закрылась — реквизиты уже у ученика.
+  const persist = async (next, okMsg) => {
+    setBusy(true)
     try {
-      // Сохраняем только непустые поля
-      const clean = Object.fromEntries(Object.entries(form).filter(([, v]) => v.trim()))
+      const clean = Object.fromEntries(Object.entries(next).filter(([, v]) => (v || '').trim()))
       await updateMyProfile({ paymentDetails: Object.keys(clean).length ? clean : null })
-      const fresh = await fetchMe()
-      updateUser(fresh)
-      toast.success(t('settings.reqsSaved'))
+      updateUser(await fetchMe())
+      setDetails(clean)
+      toast.success(okMsg)
+      return true
     } catch (e) {
-      toast.error(e.response?.data?.error || t('settings.saveError'))
+      toast.error(errMsg(e, t('settings.saveError')))
+      return false
     } finally {
-      setSaving(false)
+      setBusy(false)
     }
   }
 
+  const handleRemove = async () => {
+    const next = { ...details }
+    removing.fields.forEach(f => delete next[f.name])
+    if (await persist(next, t('settings.payMethodRemoved'))) setRemoving(null)
+  }
+
   return (
-    <div className="space-y-5">
-      {/* Подсказка */}
+    <div className="space-y-4">
       <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
         {t('settings.payHint')}
       </div>
 
-      {!hasAny && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          {t('settings.noReqs')}
-        </div>
+      {added.length === 0 ? (
+        <EmptyState
+          icon={IconPayments}
+          title={t('settings.noReqsTitle')}
+          text={t('settings.noReqs')}
+          action={<Button size="sm" onClick={() => setPicking(true)}><IconAdd size={15} /> {t('settings.addPayMethod')}</Button>}
+        />
+      ) : (
+        <>
+          <div className="space-y-2">
+            {added.map(m => (
+              <div key={m.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                <span className="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
+                  <m.icon size={17} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium text-slate-900">{t(m.titleKey)}</div>
+                  <div className="text-xs text-slate-500 truncate">
+                    {m.fields.map(f => details[f.name]).filter(Boolean).join(' · ')}
+                  </div>
+                </div>
+                <button onClick={() => setEditing(m)} aria-label={tc('edit')}
+                  className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-50 transition-colors cursor-pointer">
+                  <IconEdit size={16} />
+                </button>
+                <button onClick={() => setRemoving(m)} aria-label={tc('delete')}
+                  className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer">
+                  <IconDelete size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {notYet.length > 0 && (
+            <Button variant="secondary" onClick={() => setPicking(true)}>
+              <IconAdd size={15} /> {t('settings.addPayMethod')}
+            </Button>
+          )}
+        </>
       )}
 
-      {/* IBAN / Bank Transfer */}
-      <Section title={t('settings.bankTransfer')}>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <Input label={t('settings.ibanLabel')} placeholder="PL61 1090 1014 0000 0712 1981 2874" value={form.iban} onChange={e => set({ iban: e.target.value })} />
-          <Input label={t('settings.bicLabel')} placeholder="WBKPPLPP" value={form.bic} onChange={e => set({ bic: e.target.value })} />
+      {/* Шаг 1 — какой способ добавляем */}
+      <Modal open={picking} onClose={() => setPicking(false)}
+        title={t('settings.choosePayMethod')} subtitle={t('settings.choosePayMethodHint')}>
+        <div className="space-y-2">
+          {notYet.map(m => (
+            <button key={m.id} onClick={() => { setPicking(false); setEditing(m) }}
+              className="w-full flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-left hover:border-blue-300 hover:bg-blue-50/40 transition-colors cursor-pointer">
+              <span className="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
+                <m.icon size={17} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium text-slate-900">{t(m.titleKey)}</span>
+                {m.noteKey && <span className="block text-xs text-slate-500">{t(m.noteKey)}</span>}
+              </span>
+              <IconNext size={16} className="text-slate-300" />
+            </button>
+          ))}
         </div>
-        <Input label={t('settings.bankNameLabel')} placeholder="PKO Bank Polski" value={form.bankName} onChange={e => set({ bankName: e.target.value })} className="mt-3" />
-        <p className="text-[11px] text-slate-400 mt-1.5">{t('settings.bankNote')}</p>
-      </Section>
+      </Modal>
 
-      {/* BLIK */}
-      <Section title={t('settings.blikTitle')}>
-        <Input label={t('settings.blikPhone')} placeholder="+48 123 456 789" value={form.blik} onChange={e => set({ blik: e.target.value })} />
-        <p className="text-[11px] text-slate-400 mt-1.5">{t('settings.blikNote')}</p>
-      </Section>
+      {/* Шаг 2 — заполнение полей выбранного способа */}
+      {editing && (
+        <PayMethodModal
+          method={editing}
+          details={details}
+          busy={busy}
+          onClose={() => setEditing(null)}
+          onSave={async (patch) => {
+            if (await persist({ ...details, ...patch }, t('settings.payMethodSaved'))) setEditing(null)
+          }}
+        />
+      )}
 
-      {/* PayPal */}
-      <Section title={t('settings.paypalTitle')}>
-        <Input label={t('settings.paypalLabel')} placeholder="teacher@gmail.com" value={form.paypal} onChange={e => set({ paypal: e.target.value })} />
-        <p className="text-[11px] text-slate-400 mt-1.5">{t('settings.paypalNote')}</p>
-      </Section>
-
-      {/* Revolut */}
-      <Section title={t('settings.revolutTitle')}>
-        <Input label={t('settings.revolutLabel')} placeholder="@teacher_name" value={form.revolut} onChange={e => set({ revolut: e.target.value })} />
-        <p className="text-[11px] text-slate-400 mt-1.5">{t('settings.revolutNote')}</p>
-      </Section>
-
-      {/* Своё поле */}
-      <Section title={t('settings.otherTitle')}>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <Input label={t('settings.otherName')} placeholder="Wise, Venmo…" value={form.customLabel} onChange={e => set({ customLabel: e.target.value })} />
-          <Input label={t('settings.otherValue')} placeholder="wise.com/pay/..." value={form.customValue} onChange={e => set({ customValue: e.target.value })} />
-        </div>
-      </Section>
-
-      <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={!dirty} loading={saving}>
-          {dirty ? t('settings.saveReqs') : t('settings.noChanges')}
-        </Button>
-      </div>
+      <ConfirmDialog
+        open={!!removing}
+        onClose={() => setRemoving(null)}
+        onConfirm={handleRemove}
+        title={t('settings.removePayMethodTitle')}
+        message={removing ? t('settings.removePayMethodMsg', { method: t(removing.titleKey) }) : ''}
+        confirmLabel={tc('delete')}
+        busy={busy}
+      />
     </div>
+  )
+}
+
+// Форма одного способа оплаты. Обязательные поля проверяются на месте, без тостов.
+function PayMethodModal({ method, details, busy, onClose, onSave }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
+  const [form, setForm] = useState(() =>
+    Object.fromEntries(method.fields.map(f => [f.name, details[f.name] || ''])))
+  const [errors, setErrors] = useState({})
+
+  const submit = (e) => {
+    e.preventDefault()
+    const next = {}
+    method.fields.forEach(f => { if (f.required && !form[f.name].trim()) next[f.name] = t('settings.fieldRequired') })
+    setErrors(next)
+    if (Object.keys(next).length) return
+    onSave(Object.fromEntries(method.fields.map(f => [f.name, form[f.name].trim()])))
+  }
+
+  return (
+    <Modal open onClose={onClose} title={t(method.titleKey)} subtitle={method.noteKey ? t(method.noteKey) : undefined}>
+      <form onSubmit={submit} className="space-y-3">
+        {method.fields.map(f => (
+          <Input
+            key={f.name}
+            label={t(f.labelKey)}
+            placeholder={f.ph}
+            value={form[f.name]}
+            error={errors[f.name]}
+            onChange={e => setForm(s => ({ ...s, [f.name]: e.target.value }))}
+          />
+        ))}
+        <div className="flex gap-2 pt-1">
+          <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>{tc('cancel')}</Button>
+          <Button type="submit" loading={busy} className="flex-1">{tc('save')}</Button>
+        </div>
+      </form>
+    </Modal>
   )
 }
 
