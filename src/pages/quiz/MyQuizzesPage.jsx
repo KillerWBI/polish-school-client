@@ -9,6 +9,10 @@ import { getQuizzes, deleteQuiz } from '../../api/quizzes.api'
 import Button from '../../components/ui/Button'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
+import Tabs from '../../components/ui/Tabs'
+import EmptyState from '../../components/ui/EmptyState'
+import { IconTests } from '../../components/ui/icons'
 import Tooltip from '../../components/ui/Tooltip'
 
 export default function MyQuizzesPage({ embedded, onCreate }) {
@@ -40,36 +44,32 @@ export default function MyQuizzesPage({ embedded, onCreate }) {
   return (
     <Wrap>
       {!embedded && (
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <h1 className="text-2xl font-semibold text-slate-900">{t('quiz.myTitle')}</h1>
-            <p className="text-sm text-slate-500 mt-0.5">
-              {isTeacher ? t('quiz.mySubtitleTeacher') : t('quiz.mySubtitleStudent')}
-            </p>
-          </div>
-          <Tooltip text={t('quiz.tipCreate')} side="left">
-            <Button size="sm" onClick={() => onCreate ? onCreate() : navigate('/quiz')}><Sparkles className="w-4 h-4" /> {t('dashboard.create')}</Button>
-          </Tooltip>
-        </div>
+        <PageHeader
+          title={t('quiz.myTitle')}
+          subtitle={isTeacher ? t('quiz.mySubtitleTeacher') : t('quiz.mySubtitleStudent')}
+          actions={
+            <Tooltip text={t('quiz.tipCreate')} side="left">
+              <Button size="sm" onClick={() => onCreate ? onCreate() : navigate('/quiz')}><Sparkles className="w-4 h-4" /> {t('dashboard.create')}</Button>
+            </Tooltip>
+          }
+        />
       )}
 
       {isTeacher && (
-        <div className="inline-flex p-0.5 mb-5 rounded-xl bg-slate-100 border border-slate-200">
-          <TabBtn active={tab === 'passed'} onClick={() => setTab('passed')}>
-            {t('quiz.tabPassed')}{passed.length ? ` · ${passed.length}` : ''}
-          </TabBtn>
-          <TabBtn active={tab === 'saved'} onClick={() => setTab('saved')}>
-            {t('quiz.tabSaved')}{saved.length ? ` · ${saved.length}` : ''}
-          </TabBtn>
-        </div>
+        <Tabs className="mb-5" value={tab} onChange={setTab} items={[
+          { key: 'passed', label: t('quiz.tabPassed'), count: passed.length },
+          { key: 'saved',  label: t('quiz.tabSaved'),  count: saved.length },
+        ]} />
       )}
 
       {loading ? <SkeletonList /> : !shown.length ? (
-        <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-10 text-center">
-          <div className="text-4xl mb-3">📝</div>
-          <div className="text-slate-900 font-medium mb-1">{t('quiz.emptyTitle')}</div>
-          <p className="text-sm text-slate-500 max-w-md mx-auto mb-5">{emptyText}</p>
-          <Button size="sm" onClick={() => navigate('/quiz')}><Sparkles className="w-4 h-4" /> {t('quiz.createTest')}</Button>
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-white">
+          <EmptyState
+            icon={IconTests}
+            title={t('quiz.emptyTitle')}
+            text={emptyText}
+            action={<Button size="sm" onClick={() => navigate('/quiz')}><Sparkles className="w-4 h-4" /> {t('quiz.createTest')}</Button>}
+          />
         </div>
       ) : (
         <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3 items-start">
@@ -109,16 +109,5 @@ export default function MyQuizzesPage({ embedded, onCreate }) {
         </div>
       )}
     </Wrap>
-  )
-}
-
-function TabBtn({ active, onClick, children }) {
-  return (
-    <button onClick={onClick}
-      className={`h-8 px-4 rounded-lg text-sm font-medium transition-colors ${
-        active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-      }`}>
-      {children}
-    </button>
   )
 }

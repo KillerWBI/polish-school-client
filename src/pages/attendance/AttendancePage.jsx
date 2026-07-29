@@ -18,8 +18,11 @@ import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconAttendance, IconCalendar, IconGroups, IconIndividual, IconSuccess } from '../../components/ui/icons'
+import { IconAttendance, IconCalendar, IconGroups, IconIndividual, IconSuccess, IconLocked } from '../../components/ui/icons'
 import Tooltip from '../../components/ui/Tooltip'
+import Tabs from '../../components/ui/Tabs'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 /* ─── Статусы ──────────────────────────────────────────────── */
 const STATUS_BADGE = {
@@ -57,14 +60,11 @@ export default function AttendancePage() {
   const disputedCount  = disputedItems.length
 
   return (
-    <div className="p-5 sm:p-8">
-      {/* Заголовок */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">{t('attendance.title')}</h1>
-        <p className="text-sm text-slate-400 mt-0.5">
-          {isTeacher ? t('attendance.subtitleTeacher') : t('attendance.subtitleStudent')}
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title={t('attendance.title')}
+        subtitle={isTeacher ? t('attendance.subtitleTeacher') : t('attendance.subtitleStudent')}
+      />
 
       {/* Режим-вкладки верхнего уровня */}
       <ModeBar
@@ -97,7 +97,7 @@ export default function AttendancePage() {
           reload={reloadPending}
         />
       )}
-    </div>
+    </PageContainer>
   )
 }
 
@@ -125,30 +125,7 @@ function ModeBar({ mode, onChange, pendingCount, disputedCount, isTeacher }) {
     },
   ]
 
-  return (
-    <div className="flex gap-1 p-1 bg-slate-50 rounded-xl w-fit mb-6">
-      {tabs.map(tab => (
-        <Tooltip key={tab.key} text={tab.tip} side="bottom">
-          <button
-            onClick={() => onChange(tab.key)}
-            className={`relative px-4 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-              mode === tab.key
-                ? 'bg-white text-blue-700 shadow-sm'
-                : 'text-slate-500 hover:text-slate-900'
-            }`}>
-            {tab.label}
-            {tab.count > 0 && (
-              <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-xs font-semibold ${
-                mode === tab.key ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'
-              }`}>
-                {tab.count}
-              </span>
-            )}
-          </button>
-        </Tooltip>
-      ))}
-    </div>
-  )
+  return <Tabs className="mb-6" items={tabs} value={mode} onChange={onChange} />
 }
 
 /* ─── Вкладка: Ожидают подтверждения ───────────────────────── */
@@ -387,20 +364,15 @@ function DisputedView({ items, loading, isTeacher, reload }) {
 function LessonTypeSwitcher({ tab, onChange }) {
   const { t } = useTranslation('teacher')
   return (
-    <div className="flex gap-1 p-1 bg-slate-50 rounded-xl w-fit mb-5">
-      {[['group', t('attendance.typeGroup')], ['individual', t('attendance.typeIndividual')]].map(([val, label]) => (
-        <button
-          key={val}
-          onClick={() => onChange(val)}
-          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-            tab === val
-              ? 'bg-white text-blue-700 shadow-sm'
-              : 'text-slate-500 hover:text-slate-900'
-          }`}>
-          {label}
-        </button>
-      ))}
-    </div>
+    <Tabs
+      className="mb-5"
+      value={tab}
+      onChange={onChange}
+      items={[
+        { key: 'group',      label: t('attendance.typeGroup') },
+        { key: 'individual', label: t('attendance.typeIndividual') },
+      ]}
+    />
   )
 }
 
@@ -871,20 +843,7 @@ function PeriodFilter({ value, onChange }) {
     { key: 'past',     label: t('attendance.periodPast') },
     { key: 'upcoming', label: t('attendance.periodUpcoming') },
   ]
-  return (
-    <div className="flex gap-1 p-1 bg-slate-50 rounded-xl w-fit">
-      {opts.map(o => (
-        <button key={o.key} onClick={() => onChange(o.key)}
-          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-            value === o.key
-              ? 'bg-white text-blue-700 shadow-sm'
-              : 'text-slate-500 hover:text-slate-900'
-          }`}>
-          {o.label}
-        </button>
-      ))}
-    </div>
-  )
+  return <Tabs items={opts} value={value} onChange={onChange} />
 }
 
 /* ─── Студент — история ─────────────────────────────────────── */
@@ -925,13 +884,17 @@ function StudentView({ onDisputed }) {
       return db.localeCompare(da)
     })
 
-  // История — только подтверждённые записи
-  const confirmed = all.filter(r => r.status === 'confirmed')
-  const groupRecs = sortByDate(confirmed.filter(r => r.lessonId))
-  const indivRecs = sortByDate(confirmed.filter(r => r.individualLessonId))
+  // В журнале — подтверждённые и оспоренные. Оспоренная раньше пропадала из списка:
+  // ученик нажимал «оспорить» и запись исчезала, будто её удалили. Теперь остаётся
+  // на месте со статусом «Ожидает решения» и без возможности оспорить повторно.
+  const shown     = all.filter(r => r.status === 'confirmed' || r.status === 'disputed')
+  const groupRecs = sortByDate(shown.filter(r => r.lessonId))
+  const indivRecs = sortByDate(shown.filter(r => r.individualLessonId))
   const allRecords = tab === 'group' ? groupRecs : indivRecs
   const records    = applyPeriod(allRecords, r => r.Lesson?.date || r.IndividualLesson?.date || '', period)
 
+  // Статистика — только по решённым записям: спорная ещё не факт, в проценте ей не место
+  const confirmed = all.filter(r => r.status === 'confirmed')
   const total    = confirmed.length
   const attended = confirmed.filter(r => r.present).length
   const percent  = total > 0 ? Math.round((attended / total) * 100) : 0
@@ -991,9 +954,11 @@ function StudentView({ onDisputed }) {
                         {t('attendance.hwBadge', { n: lessonHw.length })}
                       </span>
                     )}
-                    {r.present
-                      ? <span className="text-xs bg-green-500/15 text-emerald-600 px-2.5 py-1 rounded-full">{t('attendance.wasThere')}</span>
-                      : <span className="text-xs bg-red-500/15 text-red-600 px-2.5 py-1 rounded-full">{t('attendance.wasNotThere')}</span>
+                    {r.status === 'disputed'
+                      ? <span className="text-xs bg-amber-500/15 text-amber-700 px-2.5 py-1 rounded-full">{t('attendance.awaitingResolution')}</span>
+                      : r.present
+                        ? <span className="text-xs bg-green-500/15 text-emerald-600 px-2.5 py-1 rounded-full">{t('attendance.wasThere')}</span>
+                        : <span className="text-xs bg-red-500/15 text-red-600 px-2.5 py-1 rounded-full">{t('attendance.wasNotThere')}</span>
                     }
                     <svg className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
                       fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1008,12 +973,19 @@ function StudentView({ onDisputed }) {
                       <span className="text-xs text-slate-400">
                         {t('attendance.yourAnswer')} {r.present ? t('attendance.was') : t('attendance.wasNot')}
                       </span>
-                      <button
-                        disabled={busy[r.id]}
-                        onClick={() => handleDispute(r.id, r.present)}
-                        className="text-xs px-3 py-1.5 rounded-lg bg-red-600/15 text-red-600 hover:bg-red-600/25 transition-colors cursor-pointer disabled:opacity-50">
-                        {t('attendance.dispute')}
-                      </button>
+                      {/* Спор уже открыт — повторно оспорить нельзя, ждём решения преподавателя */}
+                      {r.status === 'disputed' ? (
+                        <span className="inline-flex items-center gap-1.5 text-xs text-amber-700">
+                          <IconLocked size={13} /> {t('attendance.disputedHint')}
+                        </span>
+                      ) : (
+                        <button
+                          disabled={busy[r.id]}
+                          onClick={() => handleDispute(r.id, r.present)}
+                          className="text-xs px-3 py-1.5 rounded-lg bg-red-600/15 text-red-600 hover:bg-red-600/25 transition-colors cursor-pointer disabled:opacity-50">
+                          {t('attendance.dispute')}
+                        </button>
+                      )}
                     </div>
                     {lessonHw.length === 0 ? (
                       <p className="text-sm text-slate-500 pt-3">{t('attendance.noHw')}</p>

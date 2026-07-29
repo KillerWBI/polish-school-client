@@ -15,6 +15,7 @@ import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import { IconLayers, IconSuccess } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
+import Tabs from '../../components/ui/Tabs'
 import IdeasModal from './IdeasModal'
 import CardReview from './CardReview'
 
@@ -569,10 +570,10 @@ function StepPractice({ topicId, step, onBack }) {
       <h1 className="text-xl font-semibold text-slate-900 mb-3">{step.title}</h1>
 
       {/* Переключатель режима практики */}
-      <div className="inline-flex p-0.5 mb-4 rounded-xl bg-slate-100 border border-slate-200">
-        <PracticeTab active={mode === 'test'} onClick={() => setMode('test')}><Sparkles className="w-4 h-4" /> {t('detail.tabTest')}</PracticeTab>
-        <PracticeTab active={mode === 'open'} onClick={() => setMode('open')}><PenLine className="w-4 h-4" /> {t('detail.tabOpen')}</PracticeTab>
-      </div>
+      <Tabs className="mb-4" value={mode} onChange={setMode} items={[
+        { key: 'test', label: t('detail.tabTest'), icon: Sparkles },
+        { key: 'open', label: t('detail.tabOpen'), icon: PenLine },
+      ]} />
 
       {quiz && <p className="text-xs text-slate-400 mb-4">{t('detail.difficulty', { level: diffLabel(t, quiz.difficulty) })} · {mode === 'open' ? t('detail.openHint') : t('detail.testHint')}</p>}
 
@@ -616,17 +617,6 @@ function StepPractice({ topicId, step, onBack }) {
         </div>
       )}
     </PageContainer>
-  )
-}
-
-function PracticeTab({ active, onClick, children }) {
-  return (
-    <button onClick={onClick}
-      className={`inline-flex items-center gap-1.5 h-8 px-3.5 rounded-lg text-sm font-medium transition-colors ${
-        active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-      }`}>
-      {children}
-    </button>
   )
 }
 

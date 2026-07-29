@@ -8,7 +8,7 @@ import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import { PageSpinner } from '../../components/ui/Spinner'
 
-import Tabs              from './components/Tabs'
+import Tabs              from '../../components/ui/Tabs'
 import AvatarUpload      from './components/AvatarUpload'
 import CoverUpload       from './components/CoverUpload'
 import LanguagesEditor   from './components/LanguagesEditor'
@@ -36,11 +36,11 @@ export default function ProfilePage() {
       <div className="max-w-4xl mx-auto px-5 sm:px-8 mt-6">
         <Tabs
           items={[
-            { id: 'profile',   label: t('profile.tabProfile')    },
-            { id: 'analytics', label: t('profile.tabAnalytics')  },
-            { id: 'security',  label: t('profile.tabSecurity')},
+            { key: 'profile',   label: t('profile.tabProfile')   },
+            { key: 'analytics', label: t('profile.tabAnalytics') },
+            { key: 'security',  label: t('profile.tabSecurity')  },
           ]}
-          active={tab}
+          value={tab}
           onChange={setTab}
         />
 

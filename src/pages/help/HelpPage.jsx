@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import useAuth from '../../hooks/useAuth'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 /* ─── Примитивы визуализации ─────────────────────────────────
    Mark — подсветка элемента (кольцо + подпись «о чём вопрос»).
@@ -284,22 +286,20 @@ export default function HelpPage() {
   }
 
   return (
-    <div className="p-5 sm:p-8">
-      <div className="mb-6 max-w-4xl mx-auto flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t('title')}</h1>
-          <p className="text-sm text-slate-500 mt-0.5">{t('subtitle')}</p>
-        </div>
-        {isTeacher && (
+    <PageContainer width="form">
+      <PageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        actions={isTeacher && (
           <button onClick={startTour}
             className="shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-sm font-medium hover:bg-blue-100 transition-colors cursor-pointer">
-            <span className="text-[10px]">▶</span> {t('startTour')}
+            {t('startTour')}
           </button>
         )}
-      </div>
+      />
 
       {/* быстрые ссылки по разделам */}
-      <div className="flex flex-wrap gap-2 mb-8 max-w-4xl mx-auto">
+      <div className="flex flex-wrap gap-2 mb-8">
         {sections.map(s => (
           <button key={s.id} onClick={() => navigate(`/help#${s.id}`)}
             className="text-xs px-3 h-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer">
@@ -308,7 +308,7 @@ export default function HelpPage() {
         ))}
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-12">
+      <div className="space-y-12">
         {sections.map(s => (
           <section key={s.id} id={s.id} className="scroll-mt-24">
             <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
@@ -329,9 +329,9 @@ export default function HelpPage() {
         ))}
       </div>
 
-      <div className="max-w-4xl mx-auto mt-12 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-500">
+      <div className="mt-12 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-500">
         {t('footer')}
       </div>
-    </div>
+    </PageContainer>
   )
 }

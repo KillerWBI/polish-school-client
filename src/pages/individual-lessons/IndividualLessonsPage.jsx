@@ -19,6 +19,8 @@ import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import { IconCalendar } from '../../components/ui/icons'
 import Tooltip from '../../components/ui/Tooltip'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 export default function IndividualLessonsPage() {
   const { t, i18n } = useTranslation('teacher')
@@ -59,18 +61,16 @@ export default function IndividualLessonsPage() {
   }, [lessons])
 
   return (
-    <div className="p-5 sm:p-8">
-      <div className="flex items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t('indLessons.title')}</h1>
-          <p className="text-sm text-slate-500 mt-0.5">{t('indLessons.subtitle')}</p>
-        </div>
-        {isTeacher && (
+    <PageContainer>
+      <PageHeader
+        title={t('indLessons.title')}
+        subtitle={t('indLessons.subtitle')}
+        actions={isTeacher && (
           <Tooltip text={t('indLessons.tipCreate')} side="left">
             <Button onClick={openCreate}>{t('indLessons.createBtn')}</Button>
           </Tooltip>
         )}
-      </div>
+      />
 
       {loading ? <SkeletonList /> : !lessons?.length ? (
         <EmptyState
@@ -80,7 +80,7 @@ export default function IndividualLessonsPage() {
           action={isTeacher ? <Button onClick={openCreate}>{t('indLessons.createShort')}</Button> : null}
         />
       ) : (
-        <div className="max-w-[1240px] space-y-6">
+        <div className="space-y-6">
           {groups.map(([month, items]) => (
             <div key={month}>
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 capitalize">
@@ -115,7 +115,7 @@ export default function IndividualLessonsPage() {
         message={t('indLessons.confirmMsg')}
         busy={delBusy}
       />
-    </div>
+    </PageContainer>
   )
 }
 

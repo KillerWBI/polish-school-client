@@ -1,10 +1,12 @@
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
-import { ArrowLeft, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getQuiz, deleteQuiz } from '../../api/quizzes.api'
 import { SkeletonList } from '../../components/ui/Skeleton'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 import QuizRunner from './QuizRunner'
 
 export default function QuizViewPage() {
@@ -14,14 +16,13 @@ export default function QuizViewPage() {
   const navigate = useNavigate()
   const { data: quiz, loading } = useApiQuery(['quiz', id], () => getQuiz(id))
 
-  if (loading) return <div className="p-5 sm:p-8 max-w-3xl mx-auto"><SkeletonList count={4} /></div>
+  if (loading) return <PageContainer width="narrow"><SkeletonList count={4} /></PageContainer>
 
   if (!quiz) {
     return (
-      <div className="p-5 sm:p-8 max-w-3xl mx-auto">
-        <Link to="/quizzes" className="text-sm text-slate-500 hover:text-slate-700">← {t('quiz.backToMy')}</Link>
-        <div className="mt-6 text-center text-slate-400">{t('quiz.notFound')}</div>
-      </div>
+      <PageContainer width="narrow">
+        <PageHeader back={{ to: '/quizzes', label: t('quiz.backToMy') }} title={t('quiz.notFound')} />
+      </PageContainer>
     )
   }
 
@@ -34,18 +35,18 @@ export default function QuizViewPage() {
   const taken = quiz.score != null || (quiz.answers && Object.keys(quiz.answers).length > 0)
 
   return (
-    <div className="p-5 sm:p-8 max-w-3xl mx-auto">
-      <Link to="/quizzes" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors">
-        <ArrowLeft className="w-4 h-4" /> {t('quiz.backToMy')}
-      </Link>
-      <div className="flex items-center justify-between gap-3 mt-3 mb-5">
-        <h1 className="text-2xl font-semibold text-slate-900">{quiz.topic}</h1>
-        <button onClick={del}
-          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 text-sm text-slate-500 hover:text-red-600 hover:border-red-200 transition-colors shrink-0">
-          <Trash2 className="w-4 h-4" /> {tc('delete')}
-        </button>
-      </div>
+    <PageContainer width="narrow">
+      <PageHeader
+        back={{ to: '/quizzes', label: t('quiz.backToMy') }}
+        title={quiz.topic}
+        actions={
+          <button onClick={del}
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 text-sm text-slate-500 hover:text-red-600 hover:border-red-200 transition-colors shrink-0">
+            <Trash2 className="w-4 h-4" /> {tc('delete')}
+          </button>
+        }
+      />
       <QuizRunner quiz={quiz} savedAnswers={taken ? quiz.answers : undefined} />
-    </div>
+    </PageContainer>
   )
 }

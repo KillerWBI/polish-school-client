@@ -2,12 +2,15 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
-import { Users, GraduationCap, LayoutGrid, DollarSign, Search, Shield, ChevronLeft, ChevronRight, RefreshCw, LifeBuoy } from 'lucide-react'
+import { Users, GraduationCap, LayoutGrid, DollarSign, Search, ChevronLeft, ChevronRight, RefreshCw, LifeBuoy } from 'lucide-react'
 import { getAdminStats, getAdminUsers, deactivateUser, activateUser, setUserRole, setUserPlan, getSupportTickets, replySupportTicket } from '../../api/admin.api'
 import useApiQuery from '../../hooks/useApiQuery'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import Modal from '../../components/ui/Modal'
 import Button from '../../components/ui/Button'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
+import Tabs from '../../components/ui/Tabs'
 
 // Ключи лейблов ролей/статусов; цвета — в коде. Резолвятся t() при рендере.
 const ROLE_KEY    = { teacher: 'admin.roleTeacher', student: 'admin.roleStudent', admin: 'admin.roleAdmin' }
@@ -20,32 +23,19 @@ export default function AdminPage() {
   const [tab, setTab] = useState('overview')
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      {/* Заголовок */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-9 h-9 rounded-xl bg-purple-600 flex items-center justify-center shrink-0">
-          <Shield className="w-5 h-5 text-white" />
-        </div>
-        <div>
-          <h1 className="text-xl font-semibold text-slate-900">{t('admin.title')}</h1>
-          <p className="text-sm text-slate-500">{t('admin.subtitle')}</p>
-        </div>
-      </div>
+    <PageContainer>
+      <PageHeader title={t('admin.title')} subtitle={t('admin.subtitle')} />
 
-      {/* Табы */}
-      <div className="flex gap-1 mb-6 bg-slate-100 rounded-xl p-1 w-fit">
-        {[['overview', t('admin.tabOverview')], ['users', t('admin.tabUsers')], ['support', t('admin.tabSupport')]].map(([key, label]) => (
-          <button key={key} type="button" onClick={() => setTab(key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-            {label}
-          </button>
-        ))}
-      </div>
+      <Tabs className="mb-6" value={tab} onChange={setTab} items={[
+        { key: 'overview', label: t('admin.tabOverview') },
+        { key: 'users',    label: t('admin.tabUsers') },
+        { key: 'support',  label: t('admin.tabSupport') },
+      ]} />
 
       {tab === 'overview' && <OverviewTab />}
       {tab === 'users'    && <UsersTab />}
       {tab === 'support'  && <SupportTab />}
-    </div>
+    </PageContainer>
   )
 }
 
@@ -289,28 +279,41 @@ function UsersTab() {
       />
 
       {/* Модалка смены роли */}
-      {roleModal && (
-        <RoleModal
-          user={roleModal.user}
-          currentRole={roleModal.newRole}
-          onSelect={(r) => setRoleModal(m => ({ ...m, newRole: r }))}
-          onConfirm={doSetRole}
-          onClose={() => setRoleModal(null)}
-          busy={busy}
-        />
-      )}
+      <ChoiceModal
+        open={!!roleModal}
+        title={t('admin.roleModalTitle')}
+        userName={roleModal?.user?.name}
+        options={[
+          ['teacher', t('admin.roleTeacher'), t('admin.roleTeacherDesc')],
+          ['student', t('admin.roleStudent'), t('admin.roleStudentDesc')],
+          ['admin',   t('admin.roleAdmin'),   t('admin.roleAdminDesc')],
+        ]}
+        value={roleModal?.newRole}
+        unchanged={roleModal?.newRole === roleModal?.user?.role}
+        onSelect={(r) => setRoleModal(m => ({ ...m, newRole: r }))}
+        onConfirm={doSetRole}
+        onClose={() => setRoleModal(null)}
+        busy={busy}
+      />
 
       {/* Модалка смены тарифа */}
-      {planModal && (
-        <PlanModal
-          user={planModal.user}
-          currentPlan={planModal.newPlan}
-          onSelect={(p) => setPlanModal(m => ({ ...m, newPlan: p }))}
-          onConfirm={doSetPlan}
-          onClose={() => setPlanModal(null)}
-          busy={busy}
-        />
-      )}
+      <ChoiceModal
+        open={!!planModal}
+        title={t('admin.planModalTitle')}
+        userName={planModal?.user?.name}
+        options={[
+          ['free',   'Free',   t('admin.freeDesc')],
+          ['basic',  'Basic',  t('admin.basicDesc')],
+          ['pro',    'Pro',    t('admin.proDesc')],
+          ['school', 'School', t('admin.schoolDesc')],
+        ]}
+        value={planModal?.newPlan}
+        unchanged={planModal?.newPlan === planModal?.user?.plan}
+        onSelect={(p) => setPlanModal(m => ({ ...m, newPlan: p }))}
+        onConfirm={doSetPlan}
+        onClose={() => setPlanModal(null)}
+        busy={busy}
+      />
     </div>
   )
 }
@@ -456,41 +459,37 @@ function MenuBtn({ children, onClick, active, danger }) {
 
 // ─── Модалка смены роли ──────────────────────────────────────────────────────
 
-function RoleModal({ user, currentRole, onSelect, onConfirm, onClose, busy }) {
+// Выбор одного варианта из списка (роль или тариф) — одна модалка на оба случая.
+// options: [[value, label, description], …]
+function ChoiceModal({ open, title, userName, options, value, unchanged, onSelect, onConfirm, onClose, busy }) {
   const { t } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6">
-        <h3 className="text-base font-semibold text-slate-900 mb-1">{t('admin.roleModalTitle')}</h3>
-        <p className="text-sm text-slate-500 mb-4">{t('admin.userLabel')} <b className="text-slate-800">{user.name}</b></p>
-
-        <div className="space-y-2 mb-6">
-          {[['teacher', t('admin.roleTeacher'), t('admin.roleTeacherDesc')],
-            ['student', t('admin.roleStudent'), t('admin.roleStudentDesc')],
-            ['admin',   t('admin.roleAdmin'), t('admin.roleAdminDesc')]
-          ].map(([r, label, desc]) => (
-            <button key={r} type="button" onClick={() => onSelect(r)}
-              className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${currentRole === r ? 'border-purple-400 bg-purple-50' : 'border-slate-200 hover:border-slate-300'}`}>
-              <div className="font-medium text-sm text-slate-900">{label}</div>
-              <div className="text-xs text-slate-500 mt-0.5">{desc}</div>
-            </button>
-          ))}
-        </div>
-
-        <div className="flex gap-2">
-          <button type="button" onClick={onClose}
-            className="flex-1 h-10 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
-            {tc('cancel')}
-          </button>
-          <button type="button" onClick={onConfirm} disabled={busy || currentRole === user.role}
-            className="flex-1 h-10 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
-            {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={title}
+      maxWidth="max-w-sm"
+      footer={
+        <>
+          <Button variant="secondary" className="flex-1" onClick={onClose}>{tc('cancel')}</Button>
+          <Button className="flex-1" onClick={onConfirm} loading={busy} disabled={unchanged}>
             {t('admin.apply')}
+          </Button>
+        </>
+      }>
+      <p className="text-sm text-slate-500 mb-4">{t('admin.userLabel')} <b className="text-slate-800">{userName}</b></p>
+
+      <div className="space-y-2">
+        {options.map(([val, label, desc]) => (
+          <button key={val} type="button" onClick={() => onSelect(val)}
+            className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${value === val ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}>
+            <div className="font-medium text-sm text-slate-900">{label}</div>
+            <div className="text-xs text-slate-500 mt-0.5">{desc}</div>
           </button>
-        </div>
+        ))}
       </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -653,41 +652,3 @@ function TicketModal({ ticket, onClose, onSaved }) {
 
 // ─── Модалка смены тарифа ────────────────────────────────────────────────────
 
-function PlanModal({ user, currentPlan, onSelect, onConfirm, onClose, busy }) {
-  const { t } = useTranslation('teacher')
-  const { t: tc } = useTranslation('common')
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6">
-        <h3 className="text-base font-semibold text-slate-900 mb-1">{t('admin.planModalTitle')}</h3>
-        <p className="text-sm text-slate-500 mb-4">{t('admin.userLabel')} <b className="text-slate-800">{user.name}</b></p>
-
-        <div className="space-y-2 mb-6">
-          {[['free', 'Free', t('admin.freeDesc')],
-            ['basic', 'Basic', t('admin.basicDesc')],
-            ['pro',  'Pro',  t('admin.proDesc')],
-            ['school', 'School', t('admin.schoolDesc')]
-          ].map(([p, label, desc]) => (
-            <button key={p} type="button" onClick={() => onSelect(p)}
-              className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${currentPlan === p ? 'border-amber-400 bg-amber-50' : 'border-slate-200 hover:border-slate-300'}`}>
-              <div className="font-medium text-sm text-slate-900">{label}</div>
-              <div className="text-xs text-slate-500 mt-0.5">{desc}</div>
-            </button>
-          ))}
-        </div>
-
-        <div className="flex gap-2">
-          <button type="button" onClick={onClose}
-            className="flex-1 h-10 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
-            {tc('cancel')}
-          </button>
-          <button type="button" onClick={onConfirm} disabled={busy || currentPlan === user.plan}
-            className="flex-1 h-10 rounded-lg bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
-            {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-            {t('admin.apply')}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}

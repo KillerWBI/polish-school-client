@@ -1,4 +1,16 @@
 {
+  "planLimit": {
+    "message": "Your plan allows no more than {{max}} {{resource}}. To add more, move to a higher plan.",
+    "action": "Plans",
+    "resource": {
+      "groups": "groups",
+      "students": "students",
+      "courses": "individual courses",
+      "tracks": "study tracks",
+      "vocab": "words in the dictionary",
+      "notes": "notes"
+    }
+  },
   "nav": {
     "sectionMain": "Main",
     "sectionStudy": "Study",
@@ -182,6 +194,10 @@
     "typeOpenShort": "Open",
     "genTitle": "AI test generator",
     "genSubtitle": "Give a topic and settings — AI builds the test. For any subject.",
+    "explainWhat": "AI writes a ready test on your topic: questions, answer options and the correct answer for each.",
+    "explainInput": "A topic is enough. Everything else — how many questions, in which language, how hard and of what type — can stay as it is.",
+    "explainWhereTeacher": "The finished test is saved to your test library. From there you can attach it to homework on the right lesson.",
+    "explainWhereStudent": "You can take the test right away, and the result is saved to your history.",
     "specifyTopic": "Specify a topic",
     "genFail": "Couldn't generate the test",
     "testSaved": "Test saved",

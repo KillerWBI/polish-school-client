@@ -9,8 +9,9 @@ import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import { IconSuccess } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 import Tooltip from '../../components/ui/Tooltip'
-import { CalendarCheck, Layers, BookMarked, AlertTriangle, ChevronRight } from 'lucide-react'
+import { Layers, BookMarked, AlertTriangle, ChevronRight } from 'lucide-react'
 
 const weakColor = (m) => m >= 40 ? 'text-blue-600' : 'text-amber-600'
 
@@ -29,15 +30,7 @@ export default function DailySessionPage() {
 
   return (
     <PageContainer width="form">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
-          <CalendarCheck className="w-5 h-5 text-white" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t('study.title')}</h1>
-          <p className="text-sm text-slate-500">{t('study.subtitle')}</p>
-        </div>
-      </div>
+      <PageHeader title={t('study.title')} subtitle={t('study.subtitle')} />
 
       {!items.length ? (
         <EmptyState icon={IconSuccess} title={t('study.emptyTitle')}

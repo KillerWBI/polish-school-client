@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast, errMsg } from '../../utils/toast'
-import { Settings2, User, CreditCard, Shield } from 'lucide-react'
+import { User, CreditCard, Shield } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import { fetchMe, changePassword } from '../../api/auth.api'
 import { updateMyProfile } from '../../api/profile.api'
@@ -16,6 +16,9 @@ import {
   IconBank, IconBlik, IconPaypal, IconRevolut, IconWebsite,
 } from '../../components/ui/icons'
 
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
+import Tabs from '../../components/ui/Tabs'
 import LanguagesEditor from '../profile/components/LanguagesEditor'
 import SocialsEditor   from '../profile/components/SocialsEditor'
 
@@ -32,45 +35,23 @@ export default function SettingsPage() {
   if (!user) return null
 
   const tabs = [
-    { id: 'profile',  label: t('settings.tabProfile'), Icon: User },
-    ...(isTeacher ? [{ id: 'payment', label: t('settings.tabPayment'), Icon: CreditCard }] : []),
-    { id: 'security', label: t('settings.tabSecurity'), Icon: Shield },
+    { key: 'profile',  label: t('settings.tabProfile'), icon: User },
+    ...(isTeacher ? [{ key: 'payment', label: t('settings.tabPayment'), icon: CreditCard }] : []),
+    { key: 'security', label: t('settings.tabSecurity'), icon: Shield },
   ]
 
   return (
-    <div className="p-5 sm:p-8 max-w-4xl mx-auto">
-      {/* Шапка */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-          <Settings2 className="w-5 h-5 text-slate-600" />
-        </div>
-        <div>
-          <h1 className="text-xl font-semibold text-slate-900">{t('settings.title')}</h1>
-          <p className="text-sm text-slate-500">{t('settings.subtitle')}</p>
-        </div>
-      </div>
+    <PageContainer width="form">
+      <PageHeader title={t('settings.title')} subtitle={t('settings.subtitle')} />
 
-      {/* Вкладки */}
-      <div className="flex gap-1 mb-6 border-b border-slate-200">
-        {tabs.map(({ id, label, Icon }) => (
-          <button key={id} onClick={() => setTab(id)}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px cursor-pointer ${
-              tab === id
-                ? 'border-blue-600 text-blue-700'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
-            }`}>
-            <Icon className="w-4 h-4" />
-            {label}
-          </button>
-        ))}
-      </div>
+      <Tabs className="mb-6" items={tabs} value={tab} onChange={setTab} />
 
       <div>
         {tab === 'profile'  && <PersonalTab  user={user} isTeacher={isTeacher} updateUser={updateUser} />}
         {tab === 'payment'  && isTeacher && <PaymentMethodsTab user={user} updateUser={updateUser} />}
         {tab === 'security' && <SecurityTab />}
       </div>
-    </div>
+    </PageContainer>
   )
 }
 

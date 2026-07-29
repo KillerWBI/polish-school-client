@@ -14,6 +14,9 @@ import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import Tooltip from '../../components/ui/Tooltip'
+import Tabs from '../../components/ui/Tabs'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 import { safeUrl } from '../../utils/safeUrl'
 import useAuth from '../../hooks/useAuth'
 import useApiQuery from '../../hooks/useApiQuery'
@@ -122,25 +125,6 @@ const STATUS = {
   rejected: { labelKey: 'payments.stRejected', cls: 'bg-red-100 text-red-700' },
 }
 
-// Переключатель статусов сверху (с опциональным счётчиком)
-function StatusToggle({ value, onChange, tabs }) {
-  return (
-    <div className="inline-flex p-0.5 mb-4 rounded-xl bg-slate-100 border border-slate-200 flex-wrap">
-      {tabs.map((t) => (
-        <button key={t.key} onClick={() => onChange(t.key)}
-          className={`h-8 px-3.5 rounded-lg text-sm font-medium transition-colors ${
-            value === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-          }`}>
-          {t.label}
-          {t.count > 0 && (
-            <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${value === t.key ? 'bg-amber-100 text-amber-700' : 'bg-slate-200 text-slate-500'}`}>{t.count}</span>
-          )}
-        </button>
-      ))}
-    </div>
-  )
-}
-
 // Лайтбокс скриншота оплаты
 function ScreenshotModal({ url, onClose }) {
   const { t } = useTranslation('teacher')
@@ -170,15 +154,13 @@ export default function PaymentsPage() {
   const { t } = useTranslation('teacher')
   const { isTeacher } = useAuth()
   return (
-    <div className="p-5 sm:p-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">{t('payments.title')}</h1>
-        <p className="text-sm text-slate-500 mt-0.5">
-          {isTeacher ? t('payments.subtitleTeacher') : t('payments.subtitleStudent')}
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title={t('payments.title')}
+        subtitle={isTeacher ? t('payments.subtitleTeacher') : t('payments.subtitleStudent')}
+      />
       {isTeacher ? <TeacherPayments /> : <StudentPayments />}
-    </div>
+    </PageContainer>
   )
 }
 
@@ -187,24 +169,18 @@ function TeacherPayments() {
   const { t } = useTranslation('teacher')
   const [tab, setTab] = useState('debts')
   return (
-    <div className="max-w-5xl">
-      <div className="inline-flex p-0.5 mb-5 rounded-xl bg-slate-100 border border-slate-200">
-        <TabBtn active={tab === 'debts'}   onClick={() => setTab('debts')}>{t('payments.tabDebtsTeacher')}</TabBtn>
-        <TabBtn active={tab === 'history'} onClick={() => setTab('history')}>{t('payments.tabHistory')}</TabBtn>
-      </div>
+    <>
+      <Tabs
+        className="mb-5"
+        value={tab}
+        onChange={setTab}
+        items={[
+          { key: 'debts',   label: t('payments.tabDebtsTeacher') },
+          { key: 'history', label: t('payments.tabHistory') },
+        ]}
+      />
       {tab === 'debts' ? <TeacherDebts /> : <PaymentHistory />}
-    </div>
-  )
-}
-
-function TabBtn({ active, onClick, children }) {
-  return (
-    <button onClick={onClick}
-      className={`h-8 px-4 rounded-lg text-sm font-medium transition-colors ${
-        active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-      }`}>
-      {children}
-    </button>
+    </>
   )
 }
 
@@ -245,13 +221,18 @@ function StudentPayments() {
   const { t } = useTranslation('teacher')
   const [tab, setTab] = useState('debts')
   return (
-    <div className="max-w-5xl">
-      <div className="inline-flex p-0.5 mb-5 rounded-xl bg-slate-100 border border-slate-200">
-        <TabBtn active={tab === 'debts'}   onClick={() => setTab('debts')}>{t('payments.tabMyDebt')}</TabBtn>
-        <TabBtn active={tab === 'history'} onClick={() => setTab('history')}>{t('payments.tabHistory')}</TabBtn>
-      </div>
+    <>
+      <Tabs
+        className="mb-5"
+        value={tab}
+        onChange={setTab}
+        items={[
+          { key: 'debts',   label: t('payments.tabMyDebt') },
+          { key: 'history', label: t('payments.tabHistory') },
+        ]}
+      />
       {tab === 'debts' ? <StudentDebts /> : <StudentPaymentHistory />}
-    </div>
+    </>
   )
 }
 
@@ -267,7 +248,7 @@ function StudentPaymentHistory() {
 
   return (
     <div>
-      <StatusToggle value={status} onChange={setStatus} tabs={[
+      <Tabs className="mb-4" value={status} onChange={setStatus} items={[
         { key: 'pending',  label: t('payments.toggleInProcess'), count: pendingCount },
         { key: 'approved', label: t('payments.toggleApproved') },
         { key: 'rejected', label: t('payments.toggleRejected') },
@@ -522,7 +503,7 @@ function PaymentHistory() {
 
   return (
     <div>
-      <StatusToggle value={status} onChange={setStatus} tabs={[
+      <Tabs className="mb-4" value={status} onChange={setStatus} items={[
         { key: 'pending',  label: t('payments.toggleReviewTeacher'), count: pendingCount },
         { key: 'approved', label: t('payments.toggleReceipts') },
         { key: 'rejected', label: t('payments.toggleRejectedTeacher') },

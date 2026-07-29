@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
@@ -8,6 +8,8 @@ import { saveQuiz } from '../../api/quizzes.api'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import { PageSpinner } from '../../components/ui/Spinner'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 import useAuth from '../../hooks/useAuth'
 import QuizRunner from './QuizRunner'
 
@@ -30,6 +32,9 @@ export default function QuizGeneratorPage({ embedded }) {
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [quiz, setQuiz] = useState(null)
+
+  // Вкладкой внутри «Тестов» страница не рисует свой контейнер — его даёт TestsPage
+  const Wrap = embedded ? Fragment : PageContainer
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
 
@@ -77,15 +82,15 @@ export default function QuizGeneratorPage({ embedded }) {
   }
 
   return (
-    <div className={embedded ? 'max-w-3xl' : 'p-5 sm:p-8 max-w-3xl mx-auto'}>
-      {!embedded && (
-        <div className="mb-6">
-          <h1 className="flex items-center gap-2 text-2xl font-semibold text-slate-900">
-            <Sparkles className="w-6 h-6 text-blue-600" /> {t('quiz.genTitle')}
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">{t('quiz.genSubtitle')}</p>
-        </div>
-      )}
+    <Wrap>
+      {!embedded && <PageHeader title={t('quiz.genTitle')} subtitle={t('quiz.genSubtitle')} />}
+
+      {/* Что произойдёт: раньше вся подсказка была одной строкой подзаголовка */}
+      <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 space-y-1.5">
+        <p>{t('quiz.explainWhat')}</p>
+        <p>{t('quiz.explainInput')}</p>
+        <p>{isTeacher ? t('quiz.explainWhereTeacher') : t('quiz.explainWhereStudent')}</p>
+      </div>
 
       {/* Форма */}
       <form onSubmit={submit} className="rounded-2xl border border-slate-200 bg-white p-5 mb-6">
@@ -129,7 +134,7 @@ export default function QuizGeneratorPage({ embedded }) {
           <QuizRunner quiz={quiz} onCheck={saveAttempt} />
         </div>
       )}
-    </div>
+    </Wrap>
   )
 }
 
