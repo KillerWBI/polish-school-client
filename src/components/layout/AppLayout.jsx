@@ -4,15 +4,14 @@ import { useTranslation } from 'react-i18next'
 import { PageSpinner } from '../ui/Spinner'
 import useAuth from '../../hooks/useAuth'
 import Sidebar from './Sidebar'
-import Topbar, { SearchBox, NotifBell, ProfileMenu } from './Topbar'
+import Topbar, { NotifBell, ProfileMenu } from './Topbar'
 import Tour from '../tour/Tour'
 import EmailVerificationBanner from '../auth/EmailVerificationBanner'
-import { IconSearch, IconClose, IconMenu } from '../ui/icons'
+import { IconMenu } from '../ui/icons'
 
-// Светлый SaaS-каркас: сайдбар во всю высоту слева + топ-бар с поиском.
+// Светлый SaaS-каркас: сайдбар во всю высоту слева + шапка с уведомлениями и профилем.
 export default function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [mobileSearch, setMobileSearch] = useState(false)
   const { isTeacher } = useAuth()
   const { t } = useTranslation('app')
   const navigate = useNavigate()
@@ -43,24 +42,13 @@ export default function AppLayout() {
           </button>
           <Link to="/dashboard" className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-[2px] bg-blue-600" />
-            <span className="font-mono text-sm font-semibold text-[#0F172A]">Diklaro</span>
+            <span className="font-mono text-sm font-semibold text-[#0F172A]">Diklario</span>
           </Link>
           <div className="ml-auto flex items-center gap-1">
-            <button onClick={() => setMobileSearch(v => !v)} aria-label={t('topbar.search')}
-              className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer">
-              {mobileSearch ? <IconClose size={18} /> : <IconSearch size={18} />}
-            </button>
             <NotifBell navigate={navigate} />
             <ProfileMenu navigate={navigate} onNavigate={() => setMobileOpen(false)} />
           </div>
         </header>
-
-        {/* Раскрывающийся поиск (моб.) */}
-        {mobileSearch && (
-          <div className="lg:hidden px-3 py-2 bg-white border-b border-[#EAECEF]">
-            <SearchBox isTeacher={isTeacher} navigate={navigate} />
-          </div>
-        )}
 
         <Topbar />
         <EmailVerificationBanner />

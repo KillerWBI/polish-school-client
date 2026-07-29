@@ -7,7 +7,7 @@
   "updated": "19 lipca 2026 r.",
   "privacy": {
     "title": "Polityka prywatności",
-    "intro": "Niniejsza Polityka opisuje, w jaki sposób Artem Proskurovskyi (osoba fizyczna, Poznań, Polska) („Operator”, „my”) zbiera, wykorzystuje i chroni dane osobowe użytkowników serwisu Diklaro dostępnego pod adresem diklario.com („Serwis”). Korzystając z Serwisu, akceptujesz niniejszą Politykę.",
+    "intro": "Niniejsza Polityka opisuje, w jaki sposób Artem Proskurovskyi (osoba fizyczna, Poznań, Polska) („Operator”, „my”) zbiera, wykorzystuje i chroni dane osobowe użytkowników serwisu Diklario dostępnego pod adresem diklario.com („Serwis”). Korzystając z Serwisu, akceptujesz niniejszą Politykę.",
     "s1t": "Jakie dane zbieramy",
     "s1": [
       "Dane konta: imię, e-mail, nazwa użytkownika, hasło (w postaci zaszyfrowanej), rola (nauczyciel/uczeń), język interfejsu, awatar.",
@@ -53,9 +53,9 @@
   },
   "terms": {
     "title": "Regulamin",
-    "intro": "Niniejszy Regulamin reguluje korzystanie z serwisu Diklaro (diklario.com, „Serwis”) świadczonego przez Artema Proskurovskyiego (osoba fizyczna, Poznań, Polska) („Operator”, „my”). Rejestrując się lub korzystając z Serwisu, akceptujesz niniejszy Regulamin. Jeśli się nie zgadzasz — nie korzystaj z Serwisu.",
+    "intro": "Niniejszy Regulamin reguluje korzystanie z serwisu Diklario (diklario.com, „Serwis”) świadczonego przez Artema Proskurovskyiego (osoba fizyczna, Poznań, Polska) („Operator”, „my”). Rejestrując się lub korzystając z Serwisu, akceptujesz niniejszy Regulamin. Jeśli się nie zgadzasz — nie korzystaj z Serwisu.",
     "s1t": "Opis Serwisu",
-    "s1": "Diklaro to platforma online dla nauczycieli i uczniów w dowolnym przedmiocie: prowadzenie grup, lekcji, zadań domowych, obecności i finansów, a także samodzielna nauka z adaptacyjnymi narzędziami AI (testy, słownik, ścieżki nauki). Funkcjonalność może się zmieniać i rozwijać.",
+    "s1": "Diklario to platforma online dla nauczycieli i uczniów w dowolnym przedmiocie: prowadzenie grup, lekcji, zadań domowych, obecności i finansów, a także samodzielna nauka z adaptacyjnymi narzędziami AI (testy, słownik, ścieżki nauki). Funkcjonalność może się zmieniać i rozwijać.",
     "s2t": "Rejestracja i konto",
     "s2": "Zobowiązujesz się podawać prawdziwe dane, aktualizować je i nie udostępniać dostępu osobom trzecim. Ponosisz odpowiedzialność za działania wykonane na Twoim koncie oraz za bezpieczeństwo hasła. Powiadom nas o nieautoryzowanym dostępie.",
     "s3t": "Plany, subskrypcja i płatność",
@@ -91,7 +91,7 @@
   },
   "refund": {
     "title": "Polityka zwrotów",
-    "intro": "Ta strona opisuje, jak anulować subskrypcję i odzyskać pieniądze za płatne plany Diklaro. Płatności obsługuje Paddle.com Market Ltd jako sprzedawca (merchant of record), dlatego zwroty realizowane są za jego pośrednictwem.",
+    "intro": "Ta strona opisuje, jak anulować subskrypcję i odzyskać pieniądze za płatne plany Diklario. Płatności obsługuje Paddle.com Market Ltd jako sprzedawca (merchant of record), dlatego zwroty realizowane są za jego pośrednictwem.",
     "s1t": "Najpierw za darmo",
     "s1": "Plan darmowy działa bezterminowo i nie wymaga podawania karty. Zalecamy najpierw upewnić się, że serwis Ci odpowiada, a dopiero potem wykupić plan płatny.",
     "s2t": "Zwrot w ciągu 14 dni",

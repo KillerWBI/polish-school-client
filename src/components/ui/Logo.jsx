@@ -5,7 +5,7 @@ let uid = 0
 export default function Logo({ size = 28, className = '' }) {
   const gid = `dk-${++uid}`
   return (
-    <svg width={size} height={size} viewBox="0 0 60 60" className={className} role="img" aria-label="Diklaro">
+    <svg width={size} height={size} viewBox="0 0 60 60" className={className} role="img" aria-label="Diklario">
       <defs>
         <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#3b82f6" />

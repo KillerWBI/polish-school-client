@@ -91,7 +91,7 @@ export default function Sidebar({ onClose, collapsible = true }) {
       <Link to="/dashboard" onClick={onClose}
         className={`flex items-center gap-2.5 h-16 shrink-0 border-b border-[#F0F2F5] ${open ? 'px-5' : 'justify-center'}`}>
         <Logo size={26} />
-        {label(<span className="font-mono text-sm font-semibold text-[#0F172A] tracking-tight">Diklaro</span>)}
+        {label(<span className="font-mono text-sm font-semibold text-[#0F172A] tracking-tight">Diklario</span>)}
       </Link>
 
       {/* Аватар — вход в профиль. Имя и роль показаны в шапке, здесь не дублируются. */}

@@ -7,7 +7,7 @@
   "updated": "July 19, 2026",
   "privacy": {
     "title": "Privacy Policy",
-    "intro": "This Policy describes how Artem Proskurovskyi (an individual, Poznań, Poland) (the \"Operator\", \"we\") collects, uses and protects the personal data of users of the Diklaro service available at diklario.com (the \"Service\"). By using the Service, you agree to this Policy.",
+    "intro": "This Policy describes how Artem Proskurovskyi (an individual, Poznań, Poland) (the \"Operator\", \"we\") collects, uses and protects the personal data of users of the Diklario service available at diklario.com (the \"Service\"). By using the Service, you agree to this Policy.",
     "s1t": "What data we collect",
     "s1": [
       "Account data: name, e-mail, username, password (encrypted), role (teacher/student), interface language, avatar.",
@@ -53,9 +53,9 @@
   },
   "terms": {
     "title": "Terms of Use",
-    "intro": "These Terms govern the use of the Diklaro service (diklario.com, the \"Service\") provided by Artem Proskurovskyi (an individual, Poznań, Poland) (the \"Operator\", \"we\"). By registering or using the Service, you accept these Terms. If you do not agree, do not use the Service.",
+    "intro": "These Terms govern the use of the Diklario service (diklario.com, the \"Service\") provided by Artem Proskurovskyi (an individual, Poznań, Poland) (the \"Operator\", \"we\"). By registering or using the Service, you accept these Terms. If you do not agree, do not use the Service.",
     "s1t": "Description of the Service",
-    "s1": "Diklaro is an online platform for teachers and students in any subject: managing groups, lessons, homework, attendance and finances, as well as self-study with adaptive AI tools (quizzes, vocabulary, learning tracks). Functionality may change and expand.",
+    "s1": "Diklario is an online platform for teachers and students in any subject: managing groups, lessons, homework, attendance and finances, as well as self-study with adaptive AI tools (quizzes, vocabulary, learning tracks). Functionality may change and expand.",
     "s2t": "Registration and account",
     "s2": "You agree to provide accurate data, keep it up to date and not share access with third parties. You are responsible for actions taken under your account and for keeping your password safe. Notify us of any unauthorized access.",
     "s3t": "Plans, subscription and payment",
@@ -91,7 +91,7 @@
   },
   "refund": {
     "title": "Refund Policy",
-    "intro": "This page explains how to cancel a subscription and get a refund for Diklaro paid plans. Payments are processed by Paddle.com Market Ltd, acting as merchant of record, so refunds are issued through them.",
+    "intro": "This page explains how to cancel a subscription and get a refund for Diklario paid plans. Payments are processed by Paddle.com Market Ltd, acting as merchant of record, so refunds are issued through them.",
     "s1t": "Free first",
     "s1": "The free plan lasts indefinitely and requires no card. We recommend making sure the service suits you before subscribing to a paid plan.",
     "s2t": "14-day refund",

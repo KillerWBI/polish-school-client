@@ -1,4 +1,4 @@
-// Service worker Diklaro — оффлайн-оболочка PWA.
+// Service worker Diklario — оффлайн-оболочка PWA.
 // Стратегии:
 //   навигация (страницы SPA) — network-first: всегда тянем свежий HTML (деплой не залипает),
 //     оффлайн → отдаём кэшированный index.html;

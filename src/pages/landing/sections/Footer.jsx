@@ -13,7 +13,7 @@ export default function Footer({ onPrimary }) {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Logo size={22} />
-              <span className="font-mono text-sm font-semibold">Diklaro</span>
+              <span className="font-mono text-sm font-semibold">Diklario</span>
             </div>
             <p className="text-sm text-[#6E6E76] max-w-xs">{t('footer.tagline')}</p>
           </div>
@@ -29,7 +29,7 @@ export default function Footer({ onPrimary }) {
         </div>
 
         <div className="mt-12 pt-6 border-t border-[#26262B] flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[12px] text-[#5A5A60]">
-          <span>© {new Date().getFullYear()} Diklaro</span>
+          <span>© {new Date().getFullYear()} Diklario</span>
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
             <Link to="/privacy" className="hover:text-white transition-colors">{t('footer.privacy', 'конфиденциальность')}</Link>
             <Link to="/terms"   className="hover:text-white transition-colors">{t('footer.terms', 'условия')}</Link>

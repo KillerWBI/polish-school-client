@@ -16,13 +16,26 @@ export const getMyStudents = async (signal) => {
   return data.data
 }
 
-// POST /students/:id/merge — перенести заглушку (sourceId) на реального ученика (targetStudentId)
+// POST /students — завести ученика без аккаунта вне группы (страница «Ученики»)
+export const createStudent = async ({ name, contact }) => {
+  const { data } = await client.post('/students', { name, ...(contact ? { contact } : {}) })
+  return data.data
+}
+
+// GET /students/:id/overview — карточка ученика: группы, курсы, посещаемость,
+// задания и долг. Только то, что связано с текущим учителем.
+export const getStudentOverview = async (id, signal) => {
+  const { data } = await client.get(`/students/${id}/overview`, { signal })
+  return data.data
+}
+
+// POST /students/:id/merge — перенести ученика без аккаунта (sourceId) на аккаунт реального (targetStudentId)
 export const mergeStudent = async (sourceId, targetStudentId) => {
   const { data } = await client.post(`/students/${sourceId}/merge`, { targetStudentId })
   return data.data
 }
 
-// DELETE /students/:id — полностью удалить заглушку из ростера (вместе с историей)
+// DELETE /students/:id — полностью удалить ученика без аккаунта из списка (вместе с историей)
 export const deletePlaceholder = async (id) => {
   const { data } = await client.delete(`/students/${id}`)
   return data.data

@@ -25,3 +25,9 @@ export const respondInvitation = async (id, status) => {
   const { data } = await client.patch(`/invitations/${id}`, { status })
   return data.data
 }
+
+// DELETE /invitations/:id — учитель отменяет своё ещё не принятое приглашение.
+export const cancelInvitation = async (id) => {
+  const { data } = await client.delete(`/invitations/${id}`)
+  return data.data
+}

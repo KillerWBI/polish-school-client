@@ -1,6 +1,6 @@
 {
-  "name": "Diklaro — кокпит преподавателя",
-  "short_name": "Diklaro",
+  "name": "Diklario — кокпит преподавателя",
+  "short_name": "Diklario",
   "description": "Группы, уроки, ДЗ, посещаемость и финансы — в одном месте.",
   "start_url": "/dashboard",
   "scope": "/",
