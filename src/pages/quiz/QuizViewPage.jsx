@@ -1,6 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { ArrowLeft, Trash2 } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getQuiz, deleteQuiz } from '../../api/quizzes.api'

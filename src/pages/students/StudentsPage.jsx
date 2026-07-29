@@ -1,11 +1,12 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { Target, Sparkles, Share2 } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getMyStudents, getTrackInsights, generateTargetedQuiz } from '../../api/students.api'
 import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconStudents } from '../../components/ui/icons'
 import Pagination from '../../components/ui/Pagination'
 import Modal from '../../components/ui/Modal'
 import Button from '../../components/ui/Button'
@@ -48,7 +49,7 @@ export default function StudentsPage() {
       {loading ? (
         <SkeletonCards />
       ) : !students?.length ? (
-        <EmptyState emoji="🎓" title={t('students.emptyTitle')}
+        <EmptyState icon={IconStudents} title={t('students.emptyTitle')}
           text={t('students.emptyText')} />
       ) : (
         <div>

@@ -1,13 +1,18 @@
-import { useState, useEffect } from 'react'
-import { NavLink, Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { NavLink, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import useAuth from '../../hooks/useAuth'
 import { safeUrl } from '../../utils/safeUrl'
-import LanguageSwitcher from '../ui/LanguageSwitcher'
 import Tooltip from '../ui/Tooltip'
 import Logo from '../ui/Logo'
+import {
+  IconDashboard, IconCalendar, IconLessons, IconGroups, IconStudents, IconHomework,
+  IconAttendance, IconMaterials, IconTests, IconPayments, IconTopics, IconVocab,
+  IconDiary, IconDailySession, IconAdmin, IconPlan,
+} from '../ui/icons'
 
-// Светлый сайдбар (Cemdash-стиль). label/section — ключи app.json, резолвятся t() при рендере.
+// Навигация приложения. Свёрнута до иконок; разворачивается по наведению поверх контента,
+// чтобы страница под ней не дёргалась. В мобильной шторке всегда развёрнута (collapsible=false).
 const PLAN_LABEL = { free: 'Free', basic: 'Basic', pro: 'Pro', school: 'School' }
 
 const TEACHER_SECTIONS = [
@@ -16,18 +21,15 @@ const TEACHER_SECTIONS = [
     { path: '/calendar',  label: 'nav.calendar',  icon: IconCalendar },
   ]},
   { label: 'nav.sectionStudy', items: [
-    { path: '/groups',             label: 'nav.groups',            icon: IconGroups },
-    { path: '/individual-courses', label: 'nav.individualCourses', icon: IconIndividual },
-    { path: '/students',           label: 'nav.students',          icon: IconStudents },
-    { path: '/homework',           label: 'nav.homework',          icon: IconHomework },
-    { path: '/attendance',         label: 'nav.attendance',        icon: IconCheck },
-    { path: '/materials',          label: 'nav.materials',         icon: IconFolder },
-  ]},
-  { label: 'nav.sectionTools', items: [
-    { path: '/tests', label: 'nav.tests', icon: IconList },
+    { path: '/lessons',    label: 'nav.lessons',    icon: IconLessons },
+    { path: '/students',   label: 'nav.students',   icon: IconStudents },
+    { path: '/homework',   label: 'nav.homework',   icon: IconHomework },
+    { path: '/attendance', label: 'nav.attendance', icon: IconAttendance },
+    { path: '/materials',  label: 'nav.materials',  icon: IconMaterials },
+    { path: '/tests',      label: 'nav.tests',      icon: IconTests },
   ]},
   { label: 'nav.sectionFinance', items: [
-    { path: '/payments', label: 'nav.payments', icon: IconPayment },
+    { path: '/payments', label: 'nav.payments', icon: IconPayments },
   ]},
 ]
 
@@ -35,163 +37,115 @@ const STUDENT_SECTIONS = [
   { label: 'nav.sectionMain', items: [
     { path: '/dashboard', label: 'nav.dashboard',    icon: IconDashboard },
     { path: '/calendar',  label: 'nav.calendar',     icon: IconCalendar },
-    { path: '/study',     label: 'nav.dailySession', icon: IconDaily },
+    { path: '/study',     label: 'nav.dailySession', icon: IconDailySession },
   ]},
   { label: 'nav.sectionWithTeacher', items: [
     { path: '/groups',     label: 'nav.myGroups',   icon: IconGroups },
     { path: '/homework',   label: 'nav.homework',   icon: IconHomework },
-    { path: '/attendance', label: 'nav.attendance', icon: IconCheck },
-    { path: '/materials',  label: 'nav.materials',  icon: IconFolder },
-    { path: '/payments',   label: 'nav.payments',   icon: IconPayment },
+    { path: '/attendance', label: 'nav.attendance', icon: IconAttendance },
+    { path: '/materials',  label: 'nav.materials',  icon: IconMaterials },
+    { path: '/payments',   label: 'nav.payments',   icon: IconPayments },
   ]},
   { label: 'nav.sectionSelf', items: [
-    { path: '/topics',      label: 'nav.topics',    icon: IconTarget },
-    { path: '/tests',       label: 'nav.tests',     icon: IconList },
-    { path: '/vocab',       label: 'nav.vocab',     icon: IconVocab },
-    { path: '/my-notes',    label: 'nav.notes',     icon: IconNote },
-    { path: '/my-lessons',  label: 'nav.myLessons', icon: IconNotebook },
-    { path: '/my-progress', label: 'nav.progress',  icon: IconProgress },
+    { path: '/topics', label: 'nav.topics', icon: IconTopics },
+    { path: '/tests',  label: 'nav.tests',  icon: IconTests },
+    { path: '/vocab',  label: 'nav.vocab',  icon: IconVocab },
+    { path: '/diary',  label: 'nav.diary',  icon: IconDiary },
   ]},
 ]
 
 const ADMIN_EXTRA_SECTION = {
   label: 'nav.sectionAdmin',
-  items: [{ path: '/admin', label: 'nav.adminPanel', icon: IconShield }],
+  items: [{ path: '/admin', label: 'nav.adminPanel', icon: IconAdmin }],
 }
 
-export default function Sidebar({ onClose }) {
+export default function Sidebar({ onClose, collapsible = true }) {
   const { t } = useTranslation('app')
-  const { user, logout, isTeacher } = useAuth()
-  const navigate = useNavigate()
+  const { user, isTeacher } = useAuth()
+  const [hovered, setHovered] = useState(false)
+  const open = !collapsible || hovered
+
   const isAdmin = user?.role === 'admin'
   const baseSections = isTeacher ? TEACHER_SECTIONS : STUDENT_SECTIONS
   const sections = isAdmin ? [...baseSections, ADMIN_EXTRA_SECTION] : baseSections
 
-  const [installPrompt, setInstallPrompt] = useState(null)
-  useEffect(() => {
-    const h = e => { e.preventDefault(); setInstallPrompt(e) }
-    window.addEventListener('beforeinstallprompt', h)
-    return () => window.removeEventListener('beforeinstallprompt', h)
-  }, [])
-  const handleInstall = () => { installPrompt?.prompt(); setInstallPrompt(null) }
-
-  const handleLogout = () => { logout(); navigate('/') }
-
   const linkClass = ({ isActive }) =>
-    `w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-colors ${
-      isActive
-        ? 'bg-blue-50 text-blue-700 font-medium'
-        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-    }`
+    `w-full flex items-center gap-2.5 h-9 rounded-lg text-[13px] transition-colors ${
+      open ? 'px-2.5' : 'px-0 justify-center'
+    } ${isActive ? 'bg-blue-50 text-blue-700 font-medium' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`
+
+  // В свёрнутом виде подпись не рендерим вовсе, иначе она съедает отступ и сбивает центровку иконок
+  const label = (text) => open ? <span className="truncate">{text}</span> : null
 
   return (
-    <aside className="flex flex-col w-[240px] shrink-0 bg-white border border-[#EAECEF] rounded-2xl h-[calc(100vh-0.75rem)] sticky top-0 overflow-hidden shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+    <aside
+      onMouseEnter={collapsible ? () => setHovered(true) : undefined}
+      onMouseLeave={collapsible ? () => setHovered(false) : undefined}
+      className={`flex flex-col h-screen bg-white border-r border-[#EAECEF] overflow-hidden ${
+        collapsible
+          ? `fixed left-0 top-0 z-40 transition-[width] duration-200 ease-out ${open ? 'w-60 shadow-[8px_0_28px_rgba(15,23,42,0.06)]' : 'w-16'}`
+          : 'w-60'
+      }`}
+    >
       {/* Лого */}
       <Link to="/dashboard" onClick={onClose}
-        className="flex items-center gap-2.5 px-5 h-16 border-b border-[#F0F2F5]">
+        className={`flex items-center gap-2.5 h-16 shrink-0 border-b border-[#F0F2F5] ${open ? 'px-5' : 'justify-center'}`}>
         <Logo size={26} />
-        <span className="font-mono text-sm font-semibold text-[#0F172A] tracking-tight">Diklaro</span>
+        {label(<span className="font-mono text-sm font-semibold text-[#0F172A] tracking-tight">Diklaro</span>)}
       </Link>
 
-      {/* Профиль */}
-      <div className="px-3 pt-3 pb-2">
-        <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl bg-[#F7F8FA] border border-[#EAECEF]">
-          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
-            {user?.avatar ? <img src={safeUrl(user.avatar)} alt="" className="w-full h-full object-cover" /> : (user?.name?.[0]?.toUpperCase() ?? '?')}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-xs font-medium text-[#0F172A] truncate leading-tight">{user?.name?.split(' ')[0] ?? '—'}</div>
-            <div className="text-[10px] text-[#94A3B8] truncate mt-0.5">{user?.role ? t(`role.${user.role}`) : t('sidebar.user')}</div>
-          </div>
-          <Link to="/plans" onClick={onClose}
-            className={`text-[9px] font-medium rounded px-1.5 py-0.5 shrink-0 border transition-colors ${
-              user?.plan && user.plan !== 'free'
-                ? 'text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100'
-                : 'text-[#64748B] border-[#E2E5EA] hover:border-blue-300 hover:text-blue-600'
-            }`}>
-            {PLAN_LABEL[user?.plan] ?? 'Free'}
+      {/* Аватар — вход в профиль. Имя и роль показаны в шапке, здесь не дублируются. */}
+      <div className={`py-3 shrink-0 ${open ? 'px-3' : 'flex justify-center'}`}>
+        <Tooltip text={t('sidebar.openProfile')} side="right">
+          <Link to="/profile" onClick={onClose}
+            className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold overflow-hidden ring-2 ring-transparent hover:ring-blue-200 transition-all">
+            {user?.avatar
+              ? <img src={safeUrl(user.avatar)} alt="" className="w-full h-full object-cover" />
+              : (user?.name?.[0]?.toUpperCase() ?? '?')}
           </Link>
-        </div>
+        </Tooltip>
       </div>
 
       {/* Навигация */}
-      <nav data-tour="nav" className="flex-1 px-3 py-2 overflow-y-auto space-y-5">
+      <nav data-tour="nav" className="flex-1 px-3 pb-2 overflow-y-auto overflow-x-hidden space-y-4">
         {sections.map(section => (
           <div key={section.label}>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A0AAB8] px-2.5 mb-1.5">{t(section.label)}</p>
+            {open
+              ? <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A0AAB8] px-2.5 mb-1.5 truncate">{t(section.label)}</p>
+              : <div className="h-px bg-[#EAECEF] mx-2 mb-2" />}
             <div className="space-y-0.5">
-              {section.items.map(({ path, label, icon: Icon }) => (
-                <NavLink key={path} to={path} onClick={onClose} className={linkClass}>
-                  <Icon />
-                  <span className="truncate flex-1">{t(label)}</span>
-                </NavLink>
+              {section.items.map(({ path, label: key, icon: Icon }) => (
+                <Tooltip key={path} className="w-full" side="right" text={open ? '' : t(key)}>
+                  <NavLink to={path} onClick={onClose} className={linkClass}>
+                    <Icon size={17} />
+                    {label(t(key))}
+                  </NavLink>
+                </Tooltip>
               ))}
             </div>
           </div>
         ))}
       </nav>
 
-      {/* Помощь + профиль + выход */}
-      <div className="px-3 py-3 border-t border-[#EAECEF] space-y-0.5">
-        {installPrompt && (
-          <button onClick={handleInstall}
-            className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer">
-            <IconInstall /> {t('sidebar.install')}
-          </button>
-        )}
-        <Tooltip className="w-full" side="right" text="Инструкции: что делает каждая страница и как ей пользоваться, шаг за шагом">
-          <NavLink to="/help" onClick={onClose} className={linkClass}>
-            <IconHelp /> {t('sidebar.help')}
-          </NavLink>
+      {/* Тариф — заметная точка входа к оплате */}
+      <div className={`shrink-0 border-t border-[#EAECEF] ${open ? 'p-3' : 'p-2 flex justify-center'}`}>
+        <Tooltip side="right" text={open ? '' : t('sidebar.planTooltip', { plan: PLAN_LABEL[user?.plan] ?? 'Free' })}>
+          <Link to="/plans" onClick={onClose}
+            className={`flex items-center rounded-xl border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors ${
+              open ? 'w-full gap-2.5 px-3 py-2.5' : 'w-10 h-10 justify-center'
+            }`}>
+            <IconPlan size={17} />
+            {open && (
+              <span className="min-w-0 flex-1 text-left">
+                <span className="block text-[11px] text-blue-500 leading-tight truncate">
+                  {t('sidebar.planCurrent', { plan: PLAN_LABEL[user?.plan] ?? 'Free' })}
+                </span>
+                <span className="block text-[13px] font-semibold leading-tight truncate">{t('sidebar.planUpgrade')}</span>
+              </span>
+            )}
+          </Link>
         </Tooltip>
-        <Tooltip className="w-full" side="right" text="Задать вопрос, сообщить о проблеме или предложить идею — ответим на вашу почту">
-          <NavLink to="/support" onClick={onClose} className={linkClass}>
-            <IconSupport /> {t('sidebar.support')}
-          </NavLink>
-        </Tooltip>
-        <div className="px-1 py-1"><LanguageSwitcher className="w-full" /></div>
-        <NavLink to="/settings" onClick={onClose} className={({ isActive }) =>
-          `flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-colors ${
-            isActive
-              ? 'bg-blue-50 text-blue-700 font-medium'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-          }`}>
-          <IconProfile />
-          <span className="flex-1">{t('sidebar.settings')}</span>
-          {isTeacher && !user?.paymentDetails && (
-            <span className="w-4 h-4 rounded-full bg-amber-400 text-white text-[9px] font-bold flex items-center justify-center shrink-0">!</span>
-          )}
-        </NavLink>
-        <button onClick={handleLogout}
-          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] text-[#94A3B8] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-colors cursor-pointer">
-          <IconLogout /> {t('sidebar.logout')}
-        </button>
       </div>
     </aside>
   )
 }
-
-/* ── Иконки (stroke=currentColor, наследуют цвет пункта) ── */
-function IconDashboard() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg> }
-function IconCalendar() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" strokeLinecap="round"/></svg> }
-function IconGroups() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg> }
-function IconStudents() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 0 1 .665 6.479A11.952 11.952 0 0 0 12 20.055a11.952 11.952 0 0 0-6.824-2.998 12.078 12.078 0 0 1 .665-6.479L12 14z"/></svg> }
-function IconHomework() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" strokeLinejoin="round"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" strokeLinecap="round"/></svg> }
-function IconCheck() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" strokeLinecap="round" strokeLinejoin="round"/></svg> }
-function IconPayment() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22" strokeLinecap="round"/></svg> }
-function IconIndividual() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> }
-function IconProfile() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"/><path d="M20 21a8 8 0 1 0-16 0" strokeLinecap="round"/></svg> }
-function IconHelp() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7M12 17h.01" strokeLinecap="round" strokeLinejoin="round"/></svg> }
-function IconLogout() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round"/></svg> }
-function IconSparkles() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 3l1.9 4.8L18.7 9.7 13.9 11.6 12 16.4 10.1 11.6 5.3 9.7 10.1 7.8 12 3zM19 15l.8 2 2 .8-2 .8L19 21l-.8-2-2-.8 2-.8L19 15z" strokeLinejoin="round"/></svg> }
-function IconList() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" strokeLinecap="round"/></svg> }
-function IconInstall() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 16l-4-4h3V4h2v8h3l-4 4z" strokeLinejoin="round"/><path d="M4 18h16" strokeLinecap="round"/></svg> }
-function IconShield()  { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinejoin="round"/></svg> }
-function IconVocab()   { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" strokeLinecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" strokeLinejoin="round"/></svg> }
-function IconNotebook(){ return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M4 4a2 2 0 0 1 2-2h11a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2V4z" strokeLinejoin="round"/><path d="M8 2v20M12 7h3M12 11h3" strokeLinecap="round"/></svg> }
-function IconNote()    { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z" strokeLinejoin="round"/><path d="M15 3v6h6" strokeLinejoin="round"/></svg> }
-function IconProgress(){ return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M3 3v18h18" strokeLinecap="round"/><path d="M7 14l3-4 3 3 4-6" strokeLinecap="round" strokeLinejoin="round"/></svg> }
-function IconDaily()   { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M9 15l2 2 4-4" strokeLinecap="round" strokeLinejoin="round"/></svg> }
-function IconTarget()  { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg> }
-function IconFolder()  { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" strokeLinejoin="round"/></svg> }
-function IconSupport() { return <svg className="w-[15px] h-[15px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3" strokeLinecap="round"/></svg> }

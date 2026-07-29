@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
-import { StickyNote, Plus, Trash2, Pencil } from 'lucide-react'
+import { toast } from '../../utils/toast'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getNotes, createNote, updateNote, deleteNote } from '../../api/notes.api'
 import Button from '../../components/ui/Button'
@@ -10,10 +9,13 @@ import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconNotes, IconAdd, IconEdit, IconDelete } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 import Tooltip from '../../components/ui/Tooltip'
 
-export default function NotesPage() {
+// embedded — страница показана вкладкой внутри «Моего дневника», свою шапку не рисует.
+export default function NotesPage({ embedded = false }) {
   const { t, i18n } = useTranslation('student')
   const { data: notes, loading, reload } = useApiQuery(['notes'], getNotes)
   const [editor, setEditor]     = useState(null)  // null | { note } | { note: null } (создание)
@@ -27,27 +29,18 @@ export default function NotesPage() {
     finally { setBusy(false) }
   }
 
-  return (
-    <PageContainer>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
-            <StickyNote className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-slate-900">{t('notes.title')}</h1>
-            <p className="text-sm text-slate-500">{t('notes.subtitle')}</p>
-          </div>
-        </div>
-        <Tooltip text={t('notes.tipCreate')} side="left">
-          <Button size="sm" onClick={() => setEditor({ note: null })}><Plus className="w-4 h-4 mr-1" /> {t('notes.addBtn')}</Button>
-        </Tooltip>
-      </div>
+  const addBtn = (
+    <Tooltip text={t('notes.tipCreate')} side="left">
+      <Button size="sm" onClick={() => setEditor({ note: null })}><IconAdd size={15} /> {t('notes.addBtn')}</Button>
+    </Tooltip>
+  )
 
+  const body = (
+    <>
       {loading ? (
         <SkeletonList />
       ) : !notes?.length ? (
-        <EmptyState emoji="📝" title={t('notes.emptyTitle')} text={t('notes.emptyText')}
+        <EmptyState icon={IconNotes} title={t('notes.emptyTitle')} text={t('notes.emptyText')}
           action={<Button size="sm" onClick={() => setEditor({ note: null })}>{t('notes.createBtn')}</Button>} />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -60,11 +53,13 @@ export default function NotesPage() {
                   {new Date(n.updatedAt).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' })}
                 </span>
                 <div className="flex gap-1">
-                  <button onClick={() => setEditor({ note: n })} className="text-slate-400 hover:text-blue-600 transition-colors p-1">
-                    <Pencil className="w-4 h-4" />
+                  <button onClick={() => setEditor({ note: n })} aria-label={t('common:edit')}
+                    className="text-slate-400 hover:text-blue-600 transition-colors p-1">
+                    <IconEdit size={15} />
                   </button>
-                  <button onClick={() => setConfirmDel(n)} className="text-slate-400 hover:text-red-500 transition-colors p-1">
-                    <Trash2 className="w-4 h-4" />
+                  <button onClick={() => setConfirmDel(n)} aria-label={t('common:delete')}
+                    className="text-slate-400 hover:text-red-500 transition-colors p-1">
+                    <IconDelete size={15} />
                   </button>
                 </div>
               </div>
@@ -86,6 +81,15 @@ export default function NotesPage() {
         confirmLabel={t('common:delete')}
         busy={busy}
       />
+    </>
+  )
+
+  if (embedded) return <div className="space-y-4"><div className="flex justify-end">{addBtn}</div>{body}</div>
+
+  return (
+    <PageContainer>
+      <PageHeader title={t('notes.title')} subtitle={t('notes.subtitle')} actions={addBtn} />
+      {body}
     </PageContainer>
   )
 }

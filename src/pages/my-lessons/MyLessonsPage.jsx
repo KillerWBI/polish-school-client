@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
-import { NotebookPen, Plus, Check, Trash2, Wallet, Clock, CalendarDays, GraduationCap } from 'lucide-react'
+import { toast } from '../../utils/toast'
+import { Check, Trash2, Wallet, Clock, CalendarDays, GraduationCap } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getMyLessons, getMyLessonsStats, createMyLesson, payMyLesson, deleteMyLesson } from '../../api/myLessons.api'
 import Button from '../../components/ui/Button'
@@ -10,12 +10,16 @@ import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconNotes, IconProgress, IconSuccess, IconAdd } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
+import Tabs from '../../components/ui/Tabs'
 import Tooltip from '../../components/ui/Tooltip'
 
 const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
 
-export default function MyLessonsPage() {
+// embedded — страница показана вкладкой внутри «Моего дневника», свою шапку не рисует.
+export default function MyLessonsPage({ embedded = false }) {
   const { t } = useTranslation('student')
   const [tab, setTab] = useState('schedule')
   const [createOpen, setCreateOpen] = useState(false)
@@ -25,23 +29,14 @@ export default function MyLessonsPage() {
 
   const refresh = () => { reload(); reloadStats() }
 
-  return (
-    <PageContainer>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
-            <NotebookPen className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-slate-900">{t('myLessons.title')}</h1>
-            <p className="text-sm text-slate-500">{t('myLessons.subtitle')}</p>
-          </div>
-        </div>
-        <Tooltip text={t('myLessons.tipCreate')} side="left">
-          <Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4 mr-1" /> {t('myLessons.addBtn')}</Button>
-        </Tooltip>
-      </div>
+  const addBtn = (
+    <Tooltip text={t('myLessons.tipCreate')} side="left">
+      <Button size="sm" onClick={() => setCreateOpen(true)}><IconAdd size={15} /> {t('myLessons.addBtn')}</Button>
+    </Tooltip>
+  )
 
+  const body = (
+    <>
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <Kpi Icon={CalendarDays} label={t('myLessons.kpiLessons')} value={stats?.lessons ?? 0} color="bg-blue-50 text-blue-600" />
@@ -50,13 +45,17 @@ export default function MyLessonsPage() {
         <Kpi Icon={Check}        label={t('myLessons.kpiPaid')}    value={fmt(stats?.paid)}    color="bg-emerald-50 text-emerald-600" />
       </div>
 
-      {/* Табы */}
-      <div className="inline-flex p-0.5 mb-5 rounded-xl bg-slate-100 border border-slate-200">
-        <TabBtn active={tab === 'schedule'} onClick={() => setTab('schedule')}>{t('myLessons.tabSchedule')}</TabBtn>
-        <TabBtn active={tab === 'teachers'} onClick={() => setTab('teachers')}>{t('myLessons.tabTeachers')}</TabBtn>
-        <TabBtn active={tab === 'subjects'} onClick={() => setTab('subjects')}>{t('myLessons.tabSubjects')}</TabBtn>
-        <TabBtn active={tab === 'debt'}     onClick={() => setTab('debt')}>{t('myLessons.tabDebt')}</TabBtn>
-      </div>
+      <Tabs
+        className="mb-5"
+        value={tab}
+        onChange={setTab}
+        items={[
+          { key: 'schedule', label: t('myLessons.tabSchedule') },
+          { key: 'teachers', label: t('myLessons.tabTeachers') },
+          { key: 'subjects', label: t('myLessons.tabSubjects') },
+          { key: 'debt',     label: t('myLessons.tabDebt') },
+        ]}
+      />
 
       {tab === 'schedule' && <ScheduleTab lessons={lessons} loading={loading} onRefresh={refresh} onAdd={() => setCreateOpen(true)} />}
       {tab === 'debt'     && <ScheduleTab lessons={(lessons || []).filter(l => !l.isPaid && Number(l.pricePerLesson) > 0)} loading={loading} onRefresh={refresh} debtMode />}
@@ -66,6 +65,15 @@ export default function MyLessonsPage() {
       {createOpen && (
         <CreateModal onClose={() => setCreateOpen(false)} onCreated={() => { setCreateOpen(false); refresh() }} />
       )}
+    </>
+  )
+
+  if (embedded) return <div className="space-y-4"><div className="flex justify-end">{addBtn}</div>{body}</div>
+
+  return (
+    <PageContainer>
+      <PageHeader title={t('myLessons.title')} subtitle={t('myLessons.subtitle')} actions={addBtn} />
+      {body}
     </PageContainer>
   )
 }
@@ -77,15 +85,6 @@ function Kpi({ Icon, label, value, color }) {
       <div className="text-xl font-bold text-slate-900">{value}</div>
       <div className="text-xs text-slate-500 mt-0.5">{label}</div>
     </div>
-  )
-}
-
-function TabBtn({ active, onClick, children }) {
-  return (
-    <button onClick={onClick}
-      className={`h-8 px-4 rounded-lg text-sm font-medium transition-colors ${active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-      {children}
-    </button>
   )
 }
 
@@ -113,8 +112,8 @@ function ScheduleTab({ lessons, loading, onRefresh, onAdd, debtMode }) {
   if (loading) return <SkeletonList />
   if (!lessons?.length) {
     return debtMode
-      ? <EmptyState emoji="✅" title={t('myLessons.noDebtsTitle')} text={t('myLessons.noDebtsText')} />
-      : <EmptyState emoji="📝" title={t('myLessons.emptyTitle')} text={t('myLessons.emptyText')}
+      ? <EmptyState icon={IconSuccess} title={t('myLessons.noDebtsTitle')} text={t('myLessons.noDebtsText')} />
+      : <EmptyState icon={IconNotes} title={t('myLessons.emptyTitle')} text={t('myLessons.emptyText')}
           action={onAdd && <Button size="sm" onClick={onAdd}>{t('myLessons.addLesson')}</Button>} />
   }
 
@@ -171,7 +170,7 @@ function ScheduleTab({ lessons, loading, onRefresh, onAdd, debtMode }) {
 function BreakdownTab({ map, kind }) {
   const { t } = useTranslation('student')
   const entries = Object.entries(map || {})
-  if (!entries.length) return <EmptyState emoji="📊" title={t('myLessons.noDataTitle')} text={t('myLessons.noDataText')} />
+  if (!entries.length) return <EmptyState icon={IconProgress} title={t('myLessons.noDataTitle')} text={t('myLessons.noDataText')} />
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">

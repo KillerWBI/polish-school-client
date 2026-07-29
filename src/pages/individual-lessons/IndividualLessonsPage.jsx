@@ -17,6 +17,7 @@ import Input from '../../components/ui/Input'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconCalendar } from '../../components/ui/icons'
 import Tooltip from '../../components/ui/Tooltip'
 
 export default function IndividualLessonsPage() {
@@ -73,7 +74,7 @@ export default function IndividualLessonsPage() {
 
       {loading ? <SkeletonList /> : !lessons?.length ? (
         <EmptyState
-          emoji="📅"
+          icon={IconCalendar}
           title={t('indLessons.emptyTitle')}
           text={isTeacher ? t('indLessons.emptyTeacher') : t('indLessons.emptyStudent')}
           action={isTeacher ? <Button onClick={openCreate}>{t('indLessons.createShort')}</Button> : null}

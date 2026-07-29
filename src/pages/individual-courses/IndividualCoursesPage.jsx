@@ -11,12 +11,16 @@ import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconIndividual, IconAdd } from '../../components/ui/icons'
 import Tooltip from '../../components/ui/Tooltip'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 // value = номер дня (0=Вс..6=Сб); порядок отображения Пн→Вс
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0]
 
-export default function IndividualCoursesPage() {
+// embedded — страница показана вкладкой внутри «Занятий», свою шапку не рисует.
+export default function IndividualCoursesPage({ embedded = false }) {
   const navigate = useNavigate()
   const { t } = useTranslation('teacher')
   const { isTeacher } = useAuth()
@@ -29,27 +33,19 @@ export default function IndividualCoursesPage() {
 
   const [modal, setModal] = useState(false)
 
-  return (
-    <div className="p-5 sm:p-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
-            {isTeacher ? t('indCourses.titleTeacher') : t('indCourses.titleStudent')}
-          </h1>
-          <p className="text-sm text-slate-400 mt-0.5">
-            {isTeacher ? t('indCourses.subtitleTeacher') : t('indCourses.subtitleStudent')}
-          </p>
-        </div>
-        {isTeacher && (
-          <Tooltip text={t('indCourses.tipCreate')} side="left">
-            <Button size="sm" onClick={() => setModal(true)}>{t('indCourses.createBtn')}</Button>
-          </Tooltip>
-        )}
-      </div>
+  const createBtn = isTeacher && (
+    <Tooltip text={t('indCourses.tipCreate')} side="left">
+      <Button size="sm" onClick={() => setModal(true)}>
+        <IconAdd size={15} /> {t('indCourses.createBtn')}
+      </Button>
+    </Tooltip>
+  )
 
+  const body = (
+    <>
       {loading ? <SkeletonCards /> : !courses?.length ? (
         <EmptyState
-          emoji="👤"
+          icon={IconIndividual}
           title={isTeacher ? t('indCourses.emptyTeacherTitle') : t('indCourses.emptyStudentTitle')}
           text={isTeacher ? t('indCourses.emptyTeacherText') : t('indCourses.emptyStudentText')}
           action={isTeacher
@@ -77,7 +73,20 @@ export default function IndividualCoursesPage() {
           students={students || []}
         />
       )}
-    </div>
+    </>
+  )
+
+  if (embedded) return <div className="space-y-4"><div className="flex justify-end">{createBtn}</div>{body}</div>
+
+  return (
+    <PageContainer>
+      <PageHeader
+        title={isTeacher ? t('indCourses.titleTeacher') : t('indCourses.titleStudent')}
+        subtitle={isTeacher ? t('indCourses.subtitleTeacher') : t('indCourses.subtitleStudent')}
+        actions={createBtn}
+      />
+      {body}
+    </PageContainer>
   )
 }
 
@@ -155,9 +164,7 @@ function CreateCourseModal({ open, onClose, onCreated, students }) {
       onClose()
       reset()
     } catch (e) {
-      const msg = errMsg(e, t('indCourses.createError'))
-      setError(msg)
-      toast.error(msg)
+      setError(errMsg(e, t('indCourses.createError')))
     } finally {
       setSaving(false)
     }

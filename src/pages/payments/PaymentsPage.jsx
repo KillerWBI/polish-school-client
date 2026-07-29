@@ -1,13 +1,14 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import {
   getDebt, getDebtsForTeacher, recordPayment, getPaymentHistory, getMyPaymentHistory,
   getPendingPayments, approvePayment, rejectPayment, cancelMyPayment,
 } from '../../api/payments.api'
 import Button from '../../components/ui/Button'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconPayments, IconStudents, IconSuccess } from '../../components/ui/icons'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -315,7 +316,7 @@ function StudentHistoryList({ status, onShot, onChanged }) {
       {loading ? (
         <SkeletonList />
       ) : !records.length ? (
-        <EmptyState emoji="🧾" title={t('payments.noPaymentsTitle')}
+        <EmptyState icon={IconPayments} title={t('payments.noPaymentsTitle')}
           text={status === 'pending' ? t('payments.pendingEmpty') : status === 'rejected' ? t('payments.rejectedEmptyStudent') : t('payments.approvedEmptyStudent')} />
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
@@ -370,7 +371,7 @@ function StudentDebts() {
   const navigate = useNavigate()
 
   if (loading) return <SkeletonList />
-  if (!data?.length) return <EmptyState emoji="💳" title={t('payments.noDebtsTitle')} text={t('payments.noDebtsText')} />
+  if (!data?.length) return <EmptyState icon={IconPayments} title={t('payments.noDebtsTitle')} text={t('payments.noDebtsText')} />
 
   return (
     <div>
@@ -437,7 +438,7 @@ function TeacherDebts() {
   }
 
   if (loading) return <SkeletonList />
-  if (!data?.length) return <EmptyState emoji="🎓" title={t('payments.noStudentsTitle')} text={t('payments.noStudentsText')} />
+  if (!data?.length) return <EmptyState icon={IconStudents} title={t('payments.noStudentsTitle')} text={t('payments.noStudentsText')} />
 
   // Сначала должники (по убыванию долга), затем остальные
   const sorted = [...data].sort((a, b) => Math.max(0, b.balance) - Math.max(0, a.balance))
@@ -558,7 +559,7 @@ function PendingReview({ items, loading, reload, onShot }) {
   }
 
   if (loading) return <SkeletonList />
-  if (!items?.length) return <EmptyState emoji="✅" title={t('payments.noPendingTitle')} text={t('payments.noPendingText')} />
+  if (!items?.length) return <EmptyState icon={IconSuccess} title={t('payments.noPendingTitle')} text={t('payments.noPendingText')} />
 
   return (
     <>
@@ -637,7 +638,7 @@ function HistoryList({ status, onShot }) {
       {loading ? (
         <SkeletonList />
       ) : !records.length ? (
-        <EmptyState emoji="🧾" title={t('payments.noRecordsTitle')}
+        <EmptyState icon={IconPayments} title={t('payments.noRecordsTitle')}
           text={isApproved ? t('payments.approvedEmptyTeacher') : t('payments.rejectedEmptyTeacher')} />
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">

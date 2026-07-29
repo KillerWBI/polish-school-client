@@ -1,7 +1,7 @@
 import { useState, Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { Sparkles, Trash2, ChevronRight } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'

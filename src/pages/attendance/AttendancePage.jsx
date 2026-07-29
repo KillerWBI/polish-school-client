@@ -18,6 +18,7 @@ import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconAttendance, IconCalendar, IconGroups, IconIndividual, IconSuccess } from '../../components/ui/icons'
 import Tooltip from '../../components/ui/Tooltip'
 
 /* ─── Статусы ──────────────────────────────────────────────── */
@@ -172,7 +173,7 @@ function PendingView({ items, loading, isTeacher, reload }) {
   if (loading) return <SkeletonList />
   if (!items.length) return (
     <EmptyState
-      emoji="✅"
+      icon={IconSuccess}
       title={t('attendance.allConfirmedTitle')}
       text={isTeacher ? t('attendance.allConfirmedTeacher') : t('attendance.allConfirmedStudent')}
     />
@@ -278,7 +279,7 @@ function DisputedView({ items, loading, isTeacher, reload }) {
   if (loading) return <SkeletonList />
   if (!items.length) return (
     <EmptyState
-      emoji="🤝"
+      icon={IconAttendance}
       title={t('attendance.noDisputesTitle')}
       text={t('attendance.noDisputesText')}
     />
@@ -448,7 +449,7 @@ function GroupJournal({ onSaved }) {
 
   if (loading) return <SkeletonList />
   if (!groups?.length)
-    return <EmptyState emoji="👥" title={t('attendance.noGroupsTitle')} text={t('attendance.noGroupsText')} />
+    return <EmptyState icon={IconGroups} title={t('attendance.noGroupsTitle')} text={t('attendance.noGroupsText')} />
 
   return (
     <div className="space-y-4">
@@ -548,9 +549,9 @@ function JournalTable({ groupId, month, onSaved }) {
 
   if (gLoad || lLoad) return <SkeletonList />
   if (!students.length)
-    return <EmptyState emoji="👤" title={t('attendance.noStudentsTitle')} text={t('attendance.noStudentsText')} />
+    return <EmptyState icon={IconIndividual} title={t('attendance.noStudentsTitle')} text={t('attendance.noStudentsText')} />
   if (!sorted.length)
-    return <EmptyState emoji="📅" title={t('attendance.noLessonsTitle')} text={t('attendance.noLessonsText')} />
+    return <EmptyState icon={IconCalendar} title={t('attendance.noLessonsTitle')} text={t('attendance.noLessonsText')} />
 
   // Процент посещаемости ученика по подтверждённым записям месяца
   const studentPct = (sid) => {
@@ -748,7 +749,7 @@ function IndividualJournal({ onSaved }) {
         <MonthNav month={month} onChange={setMonth} />
       </div>
       {loading ? <SkeletonList /> : !filtered.length ? (
-        <EmptyState emoji="👤" title={t('attendance.noIndLessonsTitle')} text={t('attendance.noIndLessonsText')} />
+        <EmptyState icon={IconIndividual} title={t('attendance.noIndLessonsTitle')} text={t('attendance.noIndLessonsText')} />
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
           {filtered.map(l => {
@@ -950,7 +951,7 @@ function StudentView({ onDisputed }) {
 
       {attLoading ? <SkeletonList /> : !records.length ? (
         <EmptyState
-          emoji="📋"
+          icon={IconAttendance}
           title={t('attendance.noRecordsTitle')}
           text={t('attendance.noRecordsText')}
         />

@@ -7,7 +7,7 @@ import { getGroup, updateGroup, deleteGroup, addStudent, addPlaceholder, removeS
 import { getLessons, createLesson, updateLesson, deleteLesson } from '../../api/lessons.api'
 import { getMyStudents, mergeStudent, deletePlaceholder } from '../../api/students.api'
 import { searchStudent, inviteToGroup } from '../../api/invitations.api'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { formatDate } from '../../utils/formatDate'
 import { safeUrl } from '../../utils/safeUrl'
 import Button from '../../components/ui/Button'
@@ -16,6 +16,7 @@ import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconCalendar, IconIndividual } from '../../components/ui/icons'
 
 // value = номер дня (0=Вс..6=Сб); порядок отображения Пн→Вс
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0]
@@ -124,7 +125,7 @@ function StudentsTab({ group, reload, isTeacher }) {
       </div>
 
       {!group.students?.length ? (
-        <EmptyState emoji="👤" title={t('groupDetail.emptyStudentsTitle')}
+        <EmptyState icon={IconIndividual} title={t('groupDetail.emptyStudentsTitle')}
           text={isTeacher ? t('groupDetail.emptyStudentsTeacher') : t('groupDetail.emptyStudentsStudent')}
           action={isTeacher ? <Button size="sm" onClick={() => setAddModal(true)}>{t('groupDetail.addStudentAction')}</Button> : null} />
       ) : (
@@ -484,7 +485,7 @@ function LessonsTab({ group, isTeacher }) {
       </div>
 
       {loading ? <SkeletonList count={3} /> : !lessons?.length ? (
-        <EmptyState emoji="📅" title={t('groupDetail.emptyLessonsTitle')}
+        <EmptyState icon={IconCalendar} title={t('groupDetail.emptyLessonsTitle')}
           text={isTeacher ? t('groupDetail.emptyLessonsTeacher') : t('groupDetail.emptyLessonsStudent')}
           action={isTeacher ? (
             <div className="flex gap-2 justify-center">

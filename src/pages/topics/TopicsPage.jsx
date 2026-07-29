@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { Target, Plus, Trash2, ChevronRight, Lightbulb, Map } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getTopics, createTopic, deleteTopic } from '../../api/topics.api'
@@ -11,6 +11,7 @@ import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconTopics } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
 import Tooltip from '../../components/ui/Tooltip'
 import IdeasModal from './IdeasModal'
@@ -50,7 +51,7 @@ export default function TopicsPage() {
       {loading ? (
         <SkeletonList />
       ) : !topics?.length ? (
-        <EmptyState emoji="🎯" title={t('topics.emptyTitle')}
+        <EmptyState icon={IconTopics} title={t('topics.emptyTitle')}
           text={t('topics.emptyText')}
           action={<Button size="sm" onClick={() => setCreateOpen(true)}>{t('topics.createTrack')}</Button>} />
       ) : (

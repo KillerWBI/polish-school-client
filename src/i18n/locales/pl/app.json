@@ -26,7 +26,9 @@
     "adminPanel": "Panel administratora",
     "tests": "Testy",
     "sectionWithTeacher": "Z nauczycielem",
-    "sectionSelf": "Samodzielnie"
+    "sectionSelf": "Samodzielnie",
+    "lessons": "Zajęcia",
+    "diary": "Mój dziennik"
   },
   "sidebar": {
     "install": "Zainstaluj aplikację",
@@ -34,7 +36,11 @@
     "support": "Wsparcie",
     "settings": "Ustawienia",
     "logout": "Wyloguj",
-    "user": "Użytkownik"
+    "user": "Użytkownik",
+    "openProfile": "Otwórz mój profil",
+    "planTooltip": "Plan {{plan}}. Porównaj plany i zwiększ limity",
+    "planUpgrade": "Zwiększ możliwości",
+    "planCurrent": "Twój plan — {{plan}}"
   },
   "role": {
     "teacher": "Nauczyciel",
@@ -49,7 +55,9 @@
     "notifications": "Powiadomienia",
     "noNotifications": "Brak nowych powiadomień",
     "markAllRead": "Oznacz wszystkie jako przeczytane",
-    "viewAll": "Wszystkie powiadomienia"
+    "viewAll": "Wszystkie powiadomienia",
+    "openMenu": "Otwórz menu",
+    "notificationsTooltip": "Powiadomienia: nowe zadania, oceny, płatności i zaproszenia"
   },
   "verifyBanner": {
     "title": "Potwierdź email.",
@@ -399,5 +407,16 @@
     "reasonPh": "Na przykład: oszczędzi czas na sprawdzaniu, pomoże uczniom nie zapominać o zadaniach…",
     "reasonHint": "Kilka słów o powodzie pomaga nam zrozumieć, komu i czym pomysł się przyda.",
     "submit": "Wyślij zgłoszenie"
+  },
+  "lessons": {
+    "subtitle": "Zajęcia grupowe i indywidualne w jednym miejscu",
+    "tipGroups": "Grupy uczniów: plan, skład, lekcje i zadania domowe",
+    "tipIndividual": "Zajęcia indywidualne: własny plan i cena dla każdego ucznia"
+  },
+  "diary": {
+    "subtitle": "Twoje notatki, zajęcia poza platformą i statystyki nauki",
+    "tipNotes": "Osobiste notatki i zapiski",
+    "tipLessons": "Zajęcia poza platformą: godziny, płatności i dług",
+    "tipProgress": "Jak idzie nauka: obecność, oceny, słownictwo"
   }
 }

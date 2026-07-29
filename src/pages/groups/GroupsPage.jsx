@@ -5,21 +5,25 @@ import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
 import { getGroups, createGroup, generateLessons } from '../../api/groups.api'
 import { getInvitations, respondInvitation } from '../../api/invitations.api'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconGroups, IconAdd, IconNext, IconDelete, IconCalendar, IconMoney } from '../../components/ui/icons'
 import Pagination from '../../components/ui/Pagination'
 import Tooltip from '../../components/ui/Tooltip'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 const PAGE_SIZE = 12
 
 // value = номер дня (0=Вс..6=Сб); порядок отображения Пн→Вс
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0]
 
-export default function GroupsPage() {
+// embedded — страница показана вкладкой внутри «Занятий», свою шапку не рисует.
+export default function GroupsPage({ embedded = false }) {
   const navigate = useNavigate()
   const { t } = useTranslation('teacher')
   const { isTeacher } = useAuth()
@@ -33,30 +37,22 @@ export default function GroupsPage() {
     [groups, page]
   )
 
-  return (
-    <div className="p-5 sm:p-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
-            {isTeacher ? t('groups.titleTeacher') : t('groups.titleStudent')}
-          </h1>
-          <p className="text-sm text-slate-400 mt-0.5">
-            {isTeacher ? t('groups.subtitleTeacher') : t('groups.subtitleStudent')}
-          </p>
-        </div>
-        {isTeacher && (
-          <Tooltip text={t('groups.tipCreate')} side="left">
-            <Button size="sm" onClick={() => setModal(true)}>{t('groups.createBtn')}</Button>
-          </Tooltip>
-        )}
-      </div>
+  const createBtn = isTeacher && (
+    <Tooltip text={t('groups.tipCreate')} side="left">
+      <Button size="sm" onClick={() => setModal(true)}>
+        <IconAdd size={15} /> {t('groups.createBtn')}
+      </Button>
+    </Tooltip>
+  )
 
+  const body = (
+    <>
       {!isTeacher && <StudentInvitations onAccepted={reload} />}
 
       {loading ? <SkeletonCards /> : (
         !groups?.length ? (
           <EmptyState
-            emoji="👥"
+            icon={IconGroups}
             title={isTeacher ? t('groups.emptyTeacherTitle') : t('groups.emptyStudentTitle')}
             text={isTeacher ? t('groups.emptyTeacherText') : t('groups.emptyStudentText')}
             action={isTeacher
@@ -78,7 +74,20 @@ export default function GroupsPage() {
       {isTeacher && (
         <CreateGroupModal open={modal} onClose={() => setModal(false)} onCreated={reload} />
       )}
-    </div>
+    </>
+  )
+
+  if (embedded) return <div className="space-y-4"><div className="flex justify-end">{createBtn}</div>{body}</div>
+
+  return (
+    <PageContainer>
+      <PageHeader
+        title={isTeacher ? t('groups.titleTeacher') : t('groups.titleStudent')}
+        subtitle={isTeacher ? t('groups.subtitleTeacher') : t('groups.subtitleStudent')}
+        actions={createBtn}
+      />
+      {body}
+    </PageContainer>
   )
 }
 
@@ -151,13 +160,15 @@ function GroupCard({ group, onClick }) {
         <h3 className="font-semibold text-slate-900 group-hover:text-blue-700 transition-colors">
           {group.name}
         </h3>
-        <svg className="w-4 h-4 text-slate-500 group-hover:text-blue-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-          <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <IconNext size={16} className="text-slate-400 group-hover:text-blue-700 mt-0.5" />
       </div>
-      {schedule && <p className="text-xs text-slate-400 mb-2">📅 {schedule}</p>}
-      <p className="text-xs text-slate-400">
-        💰 {group.pricePerLesson} {t('groups.perLesson')}
+      {schedule && (
+        <p className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
+          <IconCalendar size={13} className="text-slate-400" /> {schedule}
+        </p>
+      )}
+      <p className="flex items-center gap-1.5 text-xs text-slate-500">
+        <IconMoney size={13} className="text-slate-400" /> {group.pricePerLesson} {t('groups.perLesson')}
       </p>
     </button>
     </Tooltip>
@@ -215,9 +226,8 @@ function CreateGroupModal({ open, onClose, onCreated }) {
   }
 
   return (
-    <Modal open={open} onClose={onClose} maxWidth="max-w-md">
-      <div className="p-6 sm:p-7">
-        <h2 className="text-xl font-semibold text-slate-900 mb-5">{t('groups.modalTitle')}</h2>
+    <Modal open={open} onClose={onClose} maxWidth="max-w-md" title={t('groups.modalTitle')}>
+      <div>
         <form onSubmit={handleSubmit} className="space-y-3">
           <Input label={t('groups.fName')} value={form.name}
             onChange={e => set('name', e.target.value)} />
@@ -230,11 +240,11 @@ function CreateGroupModal({ open, onClose, onCreated }) {
 
           {/* Расписание */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-slate-400 uppercase tracking-wider">{t('groups.scheduleLabel')}</span>
+            <div className="flex items-center justify-between mb-2 gap-2">
+              <span className="text-xs font-medium text-slate-600">{t('groups.scheduleLabel')}</span>
               <button type="button" onClick={addSlot}
-                className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
-                {t('groups.addSlot')}
+                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 cursor-pointer shrink-0">
+                <IconAdd size={13} /> {t('groups.addSlot')}
               </button>
             </div>
             <div className="space-y-2">
@@ -253,9 +263,9 @@ function CreateGroupModal({ open, onClose, onCreated }) {
                     onChange={e => updateSlot(i, 'time', e.target.value)}
                     className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
                   />
-                  <button type="button" onClick={() => removeSlot(i)}
-                    className="text-slate-500 hover:text-red-600 cursor-pointer p-1">
-                    ✕
+                  <button type="button" onClick={() => removeSlot(i)} aria-label={tc('delete')}
+                    className="text-slate-400 hover:text-red-600 cursor-pointer p-1.5">
+                    <IconDelete size={15} />
                   </button>
                 </div>
               ))}

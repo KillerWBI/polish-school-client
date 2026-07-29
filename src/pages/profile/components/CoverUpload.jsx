@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { toast } from '../../../utils/toast'
 import { uploadToCloudinary } from '../../../utils/uploadToCloudinary'
 
 // Обложка-баннер 3:1. Если url пуст — градиентный плейсхолдер.

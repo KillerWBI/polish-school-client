@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { Sparkles } from 'lucide-react'
 import { generateQuiz } from '../../api/ai.api'
 import { saveQuiz } from '../../api/quizzes.api'

@@ -7,6 +7,7 @@ import CardReview from '../topics/CardReview'
 import Button from '../../components/ui/Button'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { IconSuccess } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
 import Tooltip from '../../components/ui/Tooltip'
 import { CalendarCheck, Layers, BookMarked, AlertTriangle, ChevronRight } from 'lucide-react'
@@ -39,7 +40,7 @@ export default function DailySessionPage() {
       </div>
 
       {!items.length ? (
-        <EmptyState emoji="🎉" title={t('study.emptyTitle')}
+        <EmptyState icon={IconSuccess} title={t('study.emptyTitle')}
           text={t('study.emptyText')} />
       ) : !started ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center max-w-xl mx-auto">

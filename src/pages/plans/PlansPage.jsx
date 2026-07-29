@@ -1,4 +1,4 @@
-import { toast } from 'sonner'
+import { toast } from '../../utils/toast'
 import { useTranslation } from 'react-i18next'
 import { Check, Sparkles } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
