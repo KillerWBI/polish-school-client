@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FolderOpen, Link2, FileText, Type, Search } from 'lucide-react'
+import { Link2, FileText, Type, Search } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getMaterials } from '../../api/materials.api'
 import { safeUrl } from '../../utils/safeUrl'
@@ -8,6 +8,7 @@ import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import { IconMaterials, IconSearch } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 // Иконка по типу материала: link | file | text
 const TYPE_ICON = { link: Link2, file: FileText, text: Type }
@@ -30,15 +31,7 @@ export default function MaterialsPage() {
 
   return (
     <PageContainer>
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
-          <FolderOpen className="w-5 h-5 text-white" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t('materials.title')}</h1>
-          <p className="text-sm text-slate-500">{t('materials.subtitle')}</p>
-        </div>
-      </div>
+      <PageHeader title={t('materials.title')} subtitle={t('materials.subtitle')} />
 
       {loading ? (
         <SkeletonList />

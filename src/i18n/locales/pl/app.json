@@ -1,4 +1,16 @@
 {
+  "planLimit": {
+    "message": "Twój plan pozwala na nie więcej niż {{max}} {{resource}}. Aby dodać więcej, przejdź na wyższy plan.",
+    "action": "Plany",
+    "resource": {
+      "groups": "grup",
+      "students": "uczniów",
+      "courses": "kursów indywidualnych",
+      "tracks": "ścieżek nauki",
+      "vocab": "słów w słowniku",
+      "notes": "notatek"
+    }
+  },
   "nav": {
     "sectionMain": "Główne",
     "sectionStudy": "Nauka",
@@ -183,6 +195,10 @@
     "typeOpenShort": "Otwarte",
     "genTitle": "Generator testów AI",
     "genSubtitle": "Podaj temat i ustawienia — test złoży AI. Do dowolnego przedmiotu.",
+    "explainWhat": "AI ułoży gotowy test na Twój temat: pytania, warianty odpowiedzi i poprawną odpowiedź do każdego.",
+    "explainInput": "Wystarczy podać temat. Resztę — ile pytań, w jakim języku, jak trudne i jakiego rodzaju — można zostawić bez zmian.",
+    "explainWhereTeacher": "Gotowy test zapisuje się w Twojej bibliotece testów. Stamtąd można dołączyć go do zadania domowego na wybranych zajęciach.",
+    "explainWhereStudent": "Test można rozwiązać od razu, a wynik zapisze się w Twojej historii.",
     "specifyTopic": "Podaj temat",
     "genFail": "Nie udało się wygenerować testu",
     "testSaved": "Test zapisany",

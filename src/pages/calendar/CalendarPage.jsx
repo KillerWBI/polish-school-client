@@ -10,6 +10,8 @@ import { getLessons } from '../../api/lessons.api'
 import { getIndividualLessons } from '../../api/individualLessons.api'
 import { formatDate } from '../../utils/formatDate'
 import Modal from '../../components/ui/Modal'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 // Статические пропсы FullCalendar — на уровне модуля, чтобы их ссылки не менялись
 // на каждый рендер. Иначе обёртка @fullcalendar/react видит «пропсы изменились» →
@@ -72,17 +74,14 @@ export default function CalendarPage() {
   const handleEventClick = ({ event }) => setSelected(event.extendedProps)
 
   return (
-    <div className="p-5 sm:p-8">
-      {/* Заголовок */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t('calendar.title')}</h1>
-          <p className="text-sm text-slate-400 mt-0.5">{t('calendar.subtitle')}</p>
-        </div>
-        {loading && (
+    <PageContainer>
+      <PageHeader
+        title={t('calendar.title')}
+        subtitle={t('calendar.subtitle')}
+        actions={loading && (
           <div className="w-5 h-5 rounded-full border-2 border-slate-200 border-t-blue-600 animate-spin" />
         )}
-      </div>
+      />
 
       {/* Легенда */}
       <div className="flex items-center gap-5 mb-5 text-xs text-slate-400">
@@ -119,7 +118,7 @@ export default function CalendarPage() {
       <Modal open={!!selected} onClose={() => setSelected(null)} maxWidth="max-w-sm">
         {selected && <LessonDetail props={selected} onClose={() => setSelected(null)} />}
       </Modal>
-    </div>
+    </PageContainer>
   )
 }
 

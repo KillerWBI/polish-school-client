@@ -12,6 +12,8 @@
   "confirm": "Confirm",
   "reset": "Reset",
   "loading": "Loading…",
+  "noConnection": "No connection to the server",
+  "serverError": "Server error",
   "search": "Search",
   "all": "All",
   "yes": "Yes",

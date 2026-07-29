@@ -5,6 +5,7 @@ import useAuth from '../../hooks/useAuth'
 import { openCheckout, paddleConfigured } from '../../utils/paddle'
 import { fetchMe } from '../../api/auth.api'
 import { useCurrency, formatMoney } from '../../utils/money'
+import PageContainer from '../../components/ui/PageContainer'
 
 // Внутренние ключи: free/basic/pro/school → Бесплатный/Базовый/Стандартный/Максимальный
 const RANK = { free: 0, basic: 1, pro: 2, school: 3 }
@@ -55,30 +56,40 @@ export default function PlansPage() {
       await openCheckout({
         priceId, email: user?.email, userId: user?.id,
         onSuccess: () => {
-          toast.success('Оплата принята — тариф обновится в течение минуты')
+          toast.success(t('plans.paymentAccepted'))
           setTimeout(refetchMe, 4000)
         },
       })
     } catch (e) {
-      toast.error(e.message || 'Не удалось открыть оплату')
+      toast.error(e.message || t('plans.checkoutFailed'))
     }
   }
 
   return (
-    <div className="p-5 sm:p-7 max-w-6xl mx-auto">
-      <div className="mb-6 text-center">
+    <PageContainer>
+      <div className="mb-5 text-center">
         <h1 className="text-2xl font-semibold text-slate-900">{t('plans.title')}</h1>
         <p className="text-sm text-slate-500 mt-1">{t('plans.subtitle')}</p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+      {/* Что одинаково на всех тарифах — говорим один раз, а не в каждой карточке.
+          Так карточки остаются про то, чем тарифы отличаются: про лимиты. */}
+      <div className="max-w-3xl mx-auto mb-5 rounded-xl bg-slate-50 border border-slate-200 p-3.5 text-center">
+        <div className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-900">
+          <Check className="w-4 h-4 text-emerald-500 shrink-0" /> {t('plans.allFeatures')}
+        </div>
+        <p className="text-xs text-slate-500 mt-1">{role === 'student' ? t('plans.allFeaturesHintStudent') : t('plans.allFeaturesHint')}</p>
+      </div>
+
+      {/* Карточки поставлены плотнее — цены рядом легче сравнить */}
+      <div className="max-w-5xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-2.5 items-stretch">
         {PLANS.map((p) => (
           <PlanCard key={p.key} plan={p} current={current} role={role} onUpgrade={handleUpgrade} money={money} />
         ))}
       </div>
 
       <p className="text-center text-xs text-slate-400 mt-6">{t('plans.footNote')}</p>
-    </div>
+    </PageContainer>
   )
 }
 
@@ -124,33 +135,28 @@ function PlanCard({ plan, current, role, onUpgrade, money }) {
       )}
 
       <div className="mb-3">
-        <div className="text-base font-semibold text-slate-900">{t(plan.nameKey)}</div>
-        <div className="mt-1.5 flex items-baseline gap-1">
-          <span className="text-2xl font-semibold text-slate-900">{priceText}</span>
-          <span className="text-sm text-slate-400">{t(`plans.${plan.periodKey}`)}</span>
+        <div className="text-sm font-semibold text-slate-900">{t(plan.nameKey)}</div>
+        <div className="mt-1 flex items-baseline gap-1">
+          <span className="text-xl font-semibold text-slate-900">{priceText}</span>
+          <span className="text-xs text-slate-400">{t(`plans.${plan.periodKey}`)}</span>
         </div>
-        {localised && <div className="text-[11px] text-slate-400 mt-0.5">≈ из ${plan.price} · точная сумма на оплате</div>}
+        {localised && <div className="text-[11px] text-slate-400 mt-0.5">{t('plans.approxFrom', { price: plan.price })}</div>}
         <p className="text-xs text-slate-500 mt-1.5">{t(plan.taglineKey)}</p>
       </div>
 
-      {/* Все функции — на всех тарифах */}
-      <div className="mb-4 rounded-xl bg-slate-50 border border-slate-100 p-3">
-        <div className="flex items-center gap-1.5 text-sm font-medium text-slate-900">
-          <Check className="w-4 h-4 text-emerald-500 shrink-0" /> {t('plans.allFeatures')}
-        </div>
-        <p className="text-xs text-slate-400 mt-1">{role === 'student' ? t('plans.allFeaturesHintStudent') : t('plans.allFeaturesHint')}</p>
-      </div>
-
-      {/* Лимиты — в этом и разница между тарифами */}
+      {/* Лимиты — в этом и разница между тарифами, поэтому числа крупнее цены */}
       <div className="text-xs font-medium text-slate-500 mb-2">{t('plans.limitsTitle')}</div>
-      <ul className="space-y-2 mb-5 flex-1">
+      <ul className="space-y-1.5 mb-5 flex-1">
         {rows.map((r, i) => (
-          <li key={i} className="flex items-center gap-2 text-sm">
-            <Check className={`w-4 h-4 shrink-0 ${isMax ? 'text-blue-500' : isPaid ? 'text-blue-400' : 'text-slate-400'}`} />
-            <span className="text-slate-700">{t('plans.upTo')} {r.n.toLocaleString(i18n.language)} {r.label}</span>
+          <li key={i} className="text-sm leading-snug text-slate-500">
+            {t('plans.upTo')}{' '}
+            <span className={`font-semibold tabular-nums ${isMax ? 'text-blue-600' : isPaid ? 'text-slate-900' : 'text-slate-600'}`}>
+              {r.n.toLocaleString(i18n.language)}
+            </span>{' '}
+            {r.label}
           </li>
         ))}
-        {isMax && <li className="text-xs text-slate-400 pl-6">{t('plans.unlimitedNote')}</li>}
+        {isMax && <li className="text-xs text-slate-400">{t('plans.unlimitedNote')}</li>}
       </ul>
 
       {isCurrent ? (

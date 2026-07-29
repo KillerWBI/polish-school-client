@@ -18,8 +18,10 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { PageSpinner } from '../../components/ui/Spinner'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconEmpty, IconHomework } from '../../components/ui/icons'
+import { IconEmpty, IconHomework, IconTests } from '../../components/ui/icons'
 import Tooltip from '../../components/ui/Tooltip'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 export default function HomeworkPage() {
   const { t } = useTranslation('teacher')
@@ -40,20 +42,16 @@ export default function HomeworkPage() {
   const [selected,    setSelected]    = useState(null)
 
   return (
-    <div className="p-5 sm:p-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t('homework.title')}</h1>
-          <p className="text-sm text-slate-400 mt-0.5">
-            {isTeacher ? t('homework.subtitleTeacher') : t('homework.subtitleStudent')}
-          </p>
-        </div>
-        {isTeacher && (
+    <PageContainer>
+      <PageHeader
+        title={t('homework.title')}
+        subtitle={isTeacher ? t('homework.subtitleTeacher') : t('homework.subtitleStudent')}
+        actions={isTeacher && (
           <Tooltip text={t('homework.tipCreate')} side="left">
             <Button size="sm" onClick={() => setCreateModal(true)}>{t('homework.createBtn')}</Button>
           </Tooltip>
         )}
-      </div>
+      />
 
       {loading ? <SkeletonList /> : !homework?.length ? (
         <EmptyState
@@ -87,8 +85,27 @@ export default function HomeworkPage() {
           <SubmissionsModal   hw={selected}      onClose={() => setSelected(null)} />
         </>
       )}
-    </div>
+    </PageContainer>
   )
+}
+
+/* ── Откуда задание: преподаватель · группа · урок ───────────
+   Раньше в списке был только текст задания — непонятно, к чему он относится.
+   showTeacher — имя преподавателя нужно ученику; учителю оно своё, не показываем. */
+function HwContext({ hw, showTeacher }) {
+  const { t } = useTranslation('teacher')
+  const lesson = hw.Lesson || hw.IndividualLesson
+  const group  = hw.Lesson?.Group
+  const teacher = group?.teacher?.name || hw.IndividualLesson?.teacher?.name
+
+  const parts = [
+    showTeacher && teacher,
+    group?.name || (hw.IndividualLesson ? t('homework.ctxIndividual') : null),
+    lesson?.date && `${t('homework.ctxLesson')} ${formatDate(lesson.date)}`,
+  ].filter(Boolean)
+
+  if (!parts.length) return null
+  return <p className="text-xs text-slate-400 mt-1 truncate">{parts.join(' · ')}</p>
 }
 
 /* ── Карточка ДЗ для учителя ────────────────────────────────── */
@@ -111,10 +128,17 @@ function TeacherHWCard({ hw, onView, onDelete }) {
     >
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-slate-900 truncate">{hw.description}</p>
+        <HwContext hw={hw} showTeacher={false} />
         {hw.deadline && (
-          <p className="text-xs text-slate-400 mt-1">📅 {t('homework.due')} {formatDate(hw.deadline?.slice(0, 10))}</p>
+          <p className="text-xs text-slate-400 mt-1">
+            {t('homework.dueLabel')}: {formatDate(hw.deadline?.slice(0, 10))}
+          </p>
         )}
-        {hw.quiz && <p className="text-xs text-blue-600 mt-1">🧪 {t('homework.quizAttached')}</p>}
+        {hw.quiz && (
+          <p className="inline-flex items-center gap-1.5 text-xs text-blue-600 mt-1">
+            <IconTests size={13} /> {t('homework.quizAttached')}
+          </p>
+        )}
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <Tooltip text={t('homework.tipCard')} side="left">
@@ -218,9 +242,11 @@ function StudentHWCard({ hw, onSubmitted }) {
           <StatusBadge submission={submission} isOverdue={isOverdue} />
         </div>
 
+        <HwContext hw={hw} showTeacher />
+
         {hw.deadline && (
           <p className={`text-xs mt-1 ${isOverdue && !submission ? 'text-red-600' : 'text-slate-400'}`}>
-            📅 {t('homework.due')} {formatDate(hw.deadline.slice(0, 10))}
+            {t('homework.dueLabel')}: {formatDate(hw.deadline.slice(0, 10))}
             {isOverdue && !submission && ` — ${t('homework.overdueWord')}`}
           </p>
         )}
@@ -233,7 +259,7 @@ function StudentHWCard({ hw, onSubmitted }) {
             ) : (
               <button onClick={() => setQuizOpen(true)}
                 className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
-                📝 {t('homework.takeQuiz')}
+                <IconTests size={15} /> {t('homework.takeQuiz')}
               </button>
             )}
           </div>
@@ -251,11 +277,9 @@ function StudentHWCard({ hw, onSubmitted }) {
                 {t('homework.openAttached')}
               </a>
             )}
+            {/* Оценку не повторяем — она уже в бейдже статуса вверху карточки */}
             {submission.comment && (
-              <p className="text-xs text-slate-600">💬 {submission.comment}</p>
-            )}
-            {submission.status === 'graded' && (
-              <p className="text-xs font-semibold text-blue-600">🏆 {t('homework.grade', { grade: submission.grade })}</p>
+              <p className="text-xs text-slate-600">{submission.comment}</p>
             )}
           </div>
         )}

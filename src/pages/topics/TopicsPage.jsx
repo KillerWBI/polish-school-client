@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
-import { Target, Plus, Trash2, ChevronRight, Lightbulb, Map } from 'lucide-react'
+import { Plus, Trash2, ChevronRight, Lightbulb, Map } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getTopics, createTopic, deleteTopic } from '../../api/topics.api'
 import Button from '../../components/ui/Button'
@@ -13,6 +13,7 @@ import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import { IconTopics } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 import Tooltip from '../../components/ui/Tooltip'
 import IdeasModal from './IdeasModal'
 
@@ -28,20 +29,16 @@ export default function TopicsPage() {
 
   return (
     <PageContainer>
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
-            <Target className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-slate-900">{t('topics.title')}</h1>
-            <p className="text-sm text-slate-500">{t('topics.subtitle')}</p>
-          </div>
-        </div>
-        <Tooltip text={t('topics.tipCreate')} side="left">
-          <Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4 mr-1" /> {t('topics.addTopic')}</Button>
-        </Tooltip>
-      </div>
+      <PageHeader
+        className="mb-2"
+        title={t('topics.title')}
+        subtitle={t('topics.subtitle')}
+        actions={
+          <Tooltip text={t('topics.tipCreate')} side="left">
+            <Button size="sm" onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4 mr-1" /> {t('topics.addTopic')}</Button>
+          </Tooltip>
+        }
+      />
 
       <button onClick={() => setIdeasOpen(true)}
         className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 mb-6 transition-colors">

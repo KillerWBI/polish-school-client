@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
@@ -17,6 +17,8 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import { IconCalendar, IconSearch } from '../../components/ui/icons'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 // value = номер дня (0=Вс..6=Сб); порядок отображения Пн→Вс
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0]
@@ -42,12 +44,12 @@ export default function IndividualCourseDetailPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [delBusy,     setDelBusy]     = useState(false)
 
-  if (loading) return <div className="p-5 sm:p-7 max-w-[1240px] mx-auto"><SkeletonList count={4} /></div>
+  if (loading) return <PageContainer><SkeletonList count={4} /></PageContainer>
   if (!course) {
     return (
-      <div className="p-5 sm:p-8">
+      <PageContainer>
         <EmptyState icon={IconSearch} title={t('indCourseDetail.notFoundTitle')} text={t('indCourseDetail.notFoundText')} />
-      </div>
+      </PageContainer>
     )
   }
 
@@ -68,21 +70,12 @@ export default function IndividualCourseDetailPage() {
     .map(s => `${weekdays[s.day] ?? ''} ${s.time}`).join(', ')
 
   return (
-    <div className="p-5 sm:p-7 max-w-[1240px] mx-auto">
-      {/* Заголовок */}
-      <div className="mb-6 flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <Link to="/individual-courses" className="text-xs text-slate-400 hover:text-slate-900 transition-colors">
-            {t('indCourseDetail.backAll')}
-          </Link>
-          <h1 className="text-2xl font-semibold text-slate-900 mt-1">
-            {course.name || (student?.name ? `${t('indCourses.cardPrefix')}${student.name}` : t('indCourses.noName'))}
-          </h1>
-          <p className="text-sm text-slate-400 mt-0.5">
-            {student?.name ? t('indCourseDetail.studentLabel', { name: student.name }) : t('indCourseDetail.indCourse')}
-          </p>
-        </div>
-        {isTeacher && (
+    <PageContainer>
+      <PageHeader
+        back={{ to: '/individual-courses', label: t('indCourseDetail.backAll') }}
+        title={course.name || (student?.name ? `${t('indCourses.cardPrefix')}${student.name}` : t('indCourses.noName'))}
+        subtitle={student?.name ? t('indCourseDetail.studentLabel', { name: student.name }) : t('indCourseDetail.indCourse')}
+        actions={isTeacher && (
           <div className="flex flex-wrap gap-2">
             <Button size="sm" onClick={() => setAddOpen(true)}>{t('indCourseDetail.addLesson')}</Button>
             <Button size="sm" variant="secondary" onClick={() => setGenOpen(true)}>
@@ -96,7 +89,7 @@ export default function IndividualCourseDetailPage() {
             </Button>
           </div>
         )}
-      </div>
+      />
 
       {/* Информация о курсе */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
@@ -173,7 +166,7 @@ export default function IndividualCourseDetailPage() {
           />
         </>
       )}
-    </div>
+    </PageContainer>
   )
 }
 

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { getToken, setToken, removeToken } from '../utils/token'
 import { toast } from '../utils/toast'
+import i18n from '../i18n'
 
 const baseURL = import.meta.env.VITE_API_URL
 
@@ -60,9 +61,27 @@ client.interceptors.response.use(
       removeToken()
       window.dispatchEvent(new CustomEvent('auth:logout'))
     } else if (!err.response) {
-      toast.error('Нет связи с сервером')
+      toast.error(i18n.t('common:noConnection'))
     } else if (status >= 500) {
-      toast.error(err.response?.data?.error || 'Ошибка сервера')
+      toast.error(err.response?.data?.error || i18n.t('common:serverError'))
+    } else if (err.response?.data?.code === 'PLAN_LIMIT') {
+      // Упор в лимит тарифа — не «просто ошибка». Объясняем на языке пользователя
+      // и даём кнопку к тарифам. Здесь, а не в каждом из десятка мест, где лимит может сработать.
+      const { resource, max } = err.response.data
+      toast.error(
+        i18n.t('app:planLimit.message', {
+          max,
+          resource: i18n.t(`app:planLimit.resource.${resource}`, resource),
+        }),
+        {
+          duration: 8000,
+          action: {
+            label: i18n.t('app:planLimit.action'),
+            onClick: () => { window.location.href = '/plans' },
+          },
+        },
+      )
+      err.planLimitShown = true // errMsg вернёт пустоту → вызывающий не покажет второй тост
     }
     return Promise.reject(err)
   }

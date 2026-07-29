@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
-import { BookMarked, Plus, Check, X, Trash2, Sparkles, ListPlus, PenLine, Lightbulb } from 'lucide-react'
+import { Plus, Check, X, Trash2, Sparkles, ListPlus, PenLine, Lightbulb } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getVocab, getDueVocab, addVocab, bulkAddVocab, generateVocab, reviewVocab, deleteVocab } from '../../api/vocab.api'
 import Button from '../../components/ui/Button'
@@ -13,7 +13,8 @@ import EmptyState from '../../components/ui/EmptyState'
 import { IconSuccess, IconVocab } from '../../components/ui/icons'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import PageContainer from '../../components/ui/PageContainer'
-import Tooltip from '../../components/ui/Tooltip'
+import PageHeader from '../../components/ui/PageHeader'
+import Tabs from '../../components/ui/Tabs'
 
 const STATUS = {
   new:      { cls: 'bg-slate-100 text-slate-600' },
@@ -29,37 +30,18 @@ export default function VocabPage() {
 
   return (
     <PageContainer>
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
-          <BookMarked className="w-5 h-5 text-white" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t('vocab.title')}</h1>
-          <p className="text-sm text-slate-500">{t('vocab.subtitle')}</p>
-        </div>
-      </div>
+      <PageHeader title={t('vocab.title')} subtitle={t('vocab.subtitle')} />
 
-      <div className="inline-flex p-0.5 mb-6 rounded-xl bg-slate-100 border border-slate-200">
-        <Tooltip text={t('vocab.tipTabReview')} side="bottom"><TabBtn active={tab === 'review'} onClick={() => setTab('review')}>{t('vocab.tabReview')}</TabBtn></Tooltip>
-        <TabBtn active={tab === 'all'}    onClick={() => setTab('all')}>{t('vocab.tabAll')}</TabBtn>
-        <TabBtn active={tab === 'add'}    onClick={() => setTab('add')}>{t('vocab.tabAdd')}</TabBtn>
-      </div>
+      <Tabs className="mb-6" value={tab} onChange={setTab} items={[
+        { key: 'review', label: t('vocab.tabReview'), tip: t('vocab.tipTabReview') },
+        { key: 'all',    label: t('vocab.tabAll') },
+        { key: 'add',    label: t('vocab.tabAdd') },
+      ]} />
 
       {tab === 'review' && <ReviewTab onEmptyAdd={() => setTab('add')} />}
       {tab === 'all'    && <AllTab />}
       {tab === 'add'    && <AddTab onAdded={() => setTab('all')} />}
     </PageContainer>
-  )
-}
-
-function TabBtn({ active, onClick, children }) {
-  return (
-    <button onClick={onClick}
-      className={`h-8 px-4 rounded-lg text-sm font-medium transition-colors ${
-        active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-      }`}>
-      {children}
-    </button>
   )
 }
 
@@ -268,27 +250,16 @@ function AddTab({ onAdded }) {
       </div>
 
       {/* Переключатель режима добавления */}
-      <div className="inline-flex p-0.5 mb-5 rounded-xl bg-slate-100 border border-slate-200">
-        <Tooltip text={t('vocab.tipModeOne')} side="bottom"><ModeBtn active={mode === 'one'}  onClick={() => setMode('one')}><PenLine className="w-4 h-4" /> {t('vocab.modeOne')}</ModeBtn></Tooltip>
-        <Tooltip text={t('vocab.tipModeBulk')} side="bottom"><ModeBtn active={mode === 'bulk'} onClick={() => setMode('bulk')}><ListPlus className="w-4 h-4" /> {t('vocab.modeBulk')}</ModeBtn></Tooltip>
-        <Tooltip text={t('vocab.tipModeAi')} side="bottom"><ModeBtn active={mode === 'ai'}   onClick={() => setMode('ai')}><Sparkles className="w-4 h-4" /> {t('vocab.modeAi')}</ModeBtn></Tooltip>
-      </div>
+      <Tabs className="mb-5" value={mode} onChange={setMode} items={[
+        { key: 'one',  label: t('vocab.modeOne'),  icon: PenLine,  tip: t('vocab.tipModeOne') },
+        { key: 'bulk', label: t('vocab.modeBulk'), icon: ListPlus, tip: t('vocab.tipModeBulk') },
+        { key: 'ai',   label: t('vocab.modeAi'),   icon: Sparkles, tip: t('vocab.tipModeAi') },
+      ]} />
 
       {mode === 'one'  && <OneForm  lang={lang} native={native} onAdded={onAdded} />}
       {mode === 'bulk' && <BulkForm lang={lang} native={native} onAdded={onAdded} />}
       {mode === 'ai'   && <AiForm   lang={lang} native={native} onAdded={onAdded} />}
     </div>
-  )
-}
-
-function ModeBtn({ active, onClick, children }) {
-  return (
-    <button onClick={onClick}
-      className={`inline-flex items-center gap-1.5 h-8 px-3.5 rounded-lg text-sm font-medium transition-colors ${
-        active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-      }`}>
-      {children}
-    </button>
   )
 }
 

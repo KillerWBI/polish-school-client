@@ -12,6 +12,8 @@
   "confirm": "Potwierdź",
   "reset": "Wyczyść",
   "loading": "Ładowanie…",
+  "noConnection": "Brak połączenia z serwerem",
+  "serverError": "Błąd serwera",
   "search": "Szukaj",
   "all": "Wszystkie",
   "yes": "Tak",

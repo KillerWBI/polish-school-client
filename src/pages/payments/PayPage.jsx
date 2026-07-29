@@ -8,6 +8,10 @@ import useApiQuery from '../../hooks/useApiQuery'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import { SkeletonList } from '../../components/ui/Skeleton'
+import EmptyState from '../../components/ui/EmptyState'
+import { IconSearch } from '../../components/ui/icons'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
 
@@ -39,7 +43,7 @@ export default function PayPage() {
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone]             = useState(false)
 
-  if (debtLoading || infoLoading) return <div className="p-5 sm:p-8 max-w-2xl mx-auto"><SkeletonList count={3} /></div>
+  if (debtLoading || infoLoading) return <PageContainer width="form"><SkeletonList count={3} /></PageContainer>
 
   const row = (debtData || []).find((r) => r.teacher?.id === teacherId)
   const pd  = teacherInfo?.paymentDetails || {}
@@ -47,15 +51,17 @@ export default function PayPage() {
 
   if (!row) {
     return (
-      <div className="p-5 sm:p-8 max-w-2xl mx-auto">
+      <PageContainer width="form">
         <BackLink />
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-10 text-center">
-          <div className="text-4xl mb-3">🤷</div>
-          <div className="text-slate-900 font-medium mb-1">{t('payPage.notFoundTitle')}</div>
-          <div className="text-sm text-slate-500">{t('payPage.notFoundText')}</div>
-          <Button className="mt-5" onClick={() => navigate('/payments')}>{t('payPage.toFinances')}</Button>
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
+          <EmptyState
+            icon={IconSearch}
+            title={t('payPage.notFoundTitle')}
+            text={t('payPage.notFoundText')}
+            action={<Button onClick={() => navigate('/payments')}>{t('payPage.toFinances')}</Button>}
+          />
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
@@ -108,7 +114,7 @@ export default function PayPage() {
 
   if (done) {
     return (
-      <div className="p-5 sm:p-8 max-w-2xl mx-auto">
+      <PageContainer width="form">
         <BackLink />
         <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-10 text-center">
           <CheckCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
@@ -116,15 +122,17 @@ export default function PayPage() {
           <div className="text-sm text-slate-600">{t('payPage.doneText', { amount: fmt(payAmount), name: teacherName })}</div>
           <Button className="mt-5" onClick={() => navigate('/payments')}>{t('payPage.toFinances')}</Button>
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
   return (
-    <div className="p-5 sm:p-8 max-w-4xl mx-auto">
-      <BackLink />
-      <h1 className="text-2xl font-semibold text-slate-900 mt-4 mb-1">{t('payPage.pageTitle')}</h1>
-      <p className="text-sm text-slate-500 mb-6">{t('payPage.teacherLabel')} <span className="font-medium text-slate-700">{teacherName}</span></p>
+    <PageContainer width="form">
+      <PageHeader
+        back={{ to: '/payments', label: t('payPage.backLink') }}
+        title={t('payPage.pageTitle')}
+        subtitle={`${t('payPage.teacherLabel')} ${teacherName}`}
+      />
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-5 items-start">
         {/* Левая колонка: реквизиты */}
@@ -233,7 +241,7 @@ export default function PayPage() {
           </p>
         </div>
       </div>
-    </div>
+    </PageContainer>
   )
 }
 

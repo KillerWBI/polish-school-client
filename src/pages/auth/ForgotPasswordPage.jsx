@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { forgotPassword } from '../../api/auth.api'
+import AuthLayout from './AuthLayout'
 
 // Запрос ссылки на сброс пароля. Ответ всегда «успех» — не палим, есть ли email.
 export default function ForgotPasswordPage() {
@@ -26,13 +27,8 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F1F3F6] p-6">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white shadow-sm p-7">
-        <Link to="/" className="flex items-center gap-2 w-fit mb-6">
-          <span className="w-2 h-2 rounded-[2px] bg-blue-600" />
-          <span className="font-mono text-sm font-semibold text-slate-900">Diklario</span>
-        </Link>
-
+    <AuthLayout panelTitle={t('auth.forgotTitle')}>
+      <>
         {sent ? (
           <>
             <h1 className="text-xl font-semibold text-slate-900">{t('auth.forgotSentTitle')}</h1>
@@ -73,7 +69,7 @@ export default function ForgotPasswordPage() {
             </Link>
           </>
         )}
-      </div>
-    </div>
+      </>
+    </AuthLayout>
   )
 }

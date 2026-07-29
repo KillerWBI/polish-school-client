@@ -15,6 +15,8 @@ import { getHomework } from '../../api/homework.api'
 import { formatDate } from '../../utils/formatDate'
 import { SkeletonDashboard } from '../../components/ui/Skeleton'
 import Tooltip from '../../components/ui/Tooltip'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 export default function DashboardPage() {
   const { isTeacher } = useAuth()
@@ -200,23 +202,23 @@ function Page({ firstName, navigate, createOptions, children }) {
   const { t, i18n } = useTranslation('app')
   const dateLabel = new Date().toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' })
   return (
-    <div className="p-5 sm:p-7 max-w-[1240px] mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-[26px] font-semibold text-slate-900 tracking-tight leading-none">{t('dashboard.title')}</h1>
-          <p className="text-sm text-slate-400 mt-1.5 capitalize">{t('dashboard.greetingName', { name: firstName ?? '—' })} · {dateLabel}</p>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <Tooltip text={t('dashboard.tipMonthChip')} side="bottom">
-            <span className="hidden sm:flex items-center gap-2 h-10 px-3.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-600">
-              <CalendarDays className="w-4 h-4 text-slate-400" /> {t('dashboard.thisMonth')}
-            </span>
-          </Tooltip>
-          {createOptions && <CreateDropdown navigate={navigate} items={createOptions} />}
-        </div>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title={t('dashboard.title')}
+        subtitle={`${t('dashboard.greetingName', { name: firstName ?? '—' })} · ${dateLabel}`}
+        actions={
+          <>
+            <Tooltip text={t('dashboard.tipMonthChip')} side="bottom">
+              <span className="hidden sm:flex items-center gap-2 h-10 px-3.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-600">
+                <CalendarDays className="w-4 h-4 text-slate-400" /> {t('dashboard.thisMonth')}
+              </span>
+            </Tooltip>
+            {createOptions && <CreateDropdown navigate={navigate} items={createOptions} />}
+          </>
+        }
+      />
       {children}
-    </div>
+    </PageContainer>
   )
 }
 

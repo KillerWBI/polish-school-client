@@ -16,7 +16,10 @@ import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconCalendar, IconIndividual } from '../../components/ui/icons'
+import { IconCalendar, IconIndividual, IconGroups, IconPayments, IconLink } from '../../components/ui/icons'
+import Tabs from '../../components/ui/Tabs'
+import PageContainer from '../../components/ui/PageContainer'
+import PageHeader from '../../components/ui/PageHeader'
 
 // value = номер дня (0=Вс..6=Сб); порядок отображения Пн→Вс
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0]
@@ -26,62 +29,49 @@ export default function GroupDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { isTeacher } = useAuth()
-  const [tab, setTab] = useState(0)
+  const [tab, setTab] = useState('students')
   const weekdays = t('groups.weekdays', { returnObjects: true })
 
-  const TABS = isTeacher
-    ? [t('groupDetail.tabStudents'), t('groupDetail.tabLessons'), t('groupDetail.tabSettings')]
-    : [t('groupDetail.tabStudents'), t('groupDetail.tabLessons')]
+  const TABS = [
+    { key: 'students', label: t('groupDetail.tabStudents') },
+    { key: 'lessons',  label: t('groupDetail.tabLessons') },
+    ...(isTeacher ? [{ key: 'settings', label: t('groupDetail.tabSettings') }] : []),
+  ]
 
   const { data: group, loading, reload } = useApiQuery(['group', id], () => getGroup(id))
 
-  if (loading) return <div className="p-5 sm:p-7 max-w-[1240px] mx-auto"><SkeletonList count={4} /></div>
-  if (!group)  return <div className="p-8 text-slate-400">{t('groupDetail.notFound')}</div>
+  if (loading) return <PageContainer><SkeletonList count={4} /></PageContainer>
+  if (!group)  return <PageContainer><div className="text-slate-400">{t('groupDetail.notFound')}</div></PageContainer>
 
   const schedule = (group.schedule || [])
     .map(s => `${weekdays[s.day] ?? ''} ${s.time}`)
     .join(' · ')
 
   return (
-    <div className="p-5 sm:p-7 max-w-[1240px] mx-auto">
-      <button onClick={() => navigate('/groups')}
-        className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-900 mb-4 cursor-pointer transition-colors">
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-          <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-        {t('groupDetail.backGroups')}
-      </button>
+    <PageContainer>
+      <PageHeader
+        back={{ to: '/groups', label: t('groupDetail.backGroups') }}
+        title={group.name}
+      />
 
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">{group.name}</h1>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-slate-400">
-          {schedule && <span>📅 {schedule}</span>}
-          <span>💰 {group.pricePerLesson} {t('groupDetail.perLesson')}</span>
-          <span>👥 {t('groupDetail.studentsCount', { n: group.students?.length ?? 0 })}</span>
-          {group.chatLink && safeUrl(group.chatLink) && (
-            <a href={safeUrl(group.chatLink)} target="_blank" rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-700 transition-colors">
-              💬 {t('groupDetail.chatGroup')}
-            </a>
-          )}
-        </div>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 -mt-4 mb-6 text-sm text-slate-400">
+        {schedule && <span className="inline-flex items-center gap-1.5"><IconCalendar size={14} /> {schedule}</span>}
+        <span className="inline-flex items-center gap-1.5"><IconPayments size={14} /> {group.pricePerLesson} {t('groupDetail.perLesson')}</span>
+        <span className="inline-flex items-center gap-1.5"><IconGroups size={14} /> {t('groupDetail.studentsCount', { n: group.students?.length ?? 0 })}</span>
+        {group.chatLink && safeUrl(group.chatLink) && (
+          <a href={safeUrl(group.chatLink)} target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors">
+            <IconLink size={14} /> {t('groupDetail.chatGroup')}
+          </a>
+        )}
       </div>
 
-      <div className="flex gap-1 p-1 bg-slate-50 rounded-xl w-fit mb-6">
-        {TABS.map((t, i) => (
-          <button key={t} onClick={() => setTab(i)}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-              tab === i ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
-            }`}>
-            {t}
-          </button>
-        ))}
-      </div>
+      <Tabs className="mb-6" items={TABS} value={tab} onChange={setTab} />
 
-      {tab === 0 && <StudentsTab group={group} reload={reload} isTeacher={isTeacher} />}
-      {tab === 1 && <LessonsTab  group={group} isTeacher={isTeacher} />}
-      {tab === 2 && isTeacher && <SettingsTab group={group} reload={reload} onDeleted={() => navigate('/groups')} />}
-    </div>
+      {tab === 'students' && <StudentsTab group={group} reload={reload} isTeacher={isTeacher} />}
+      {tab === 'lessons'  && <LessonsTab  group={group} isTeacher={isTeacher} />}
+      {tab === 'settings' && isTeacher && <SettingsTab group={group} reload={reload} onDeleted={() => navigate('/groups')} />}
+    </PageContainer>
   )
 }
 
