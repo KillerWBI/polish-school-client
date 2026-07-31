@@ -410,7 +410,10 @@
     "approvedEmptyTeacher": "Confirmed payments will appear here.",
     "rejectedEmptyTeacher": "No rejected payments.",
     "overpaid": "Overpaid",
-    "balanceWord": "Balance"
+    "balanceWord": "Balance",
+    "ownTeachersTitle": "My teachers",
+    "ownTeachersHint": "The ones you added yourself. Payment goes outside the platform — here you just keep track.",
+    "ownTeachersOpen": "Open my lessons"
   },
   "payPage": {
     "uploadError": "Screenshot upload failed",

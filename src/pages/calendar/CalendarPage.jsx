@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -8,6 +9,8 @@ import plLocale from '@fullcalendar/core/locales/pl'
 import ukLocale from '@fullcalendar/core/locales/uk'
 import { getLessons } from '../../api/lessons.api'
 import { getIndividualLessons } from '../../api/individualLessons.api'
+import { getMyLessons } from '../../api/myLessons.api'
+import useAuth from '../../hooks/useAuth'
 import { formatDate } from '../../utils/formatDate'
 import Modal from '../../components/ui/Modal'
 import PageContainer from '../../components/ui/PageContainer'
@@ -22,6 +25,7 @@ const CAL_HEADER  = { left: 'prev,next today', center: 'title', right: 'dayGridM
 
 export default function CalendarPage() {
   const { t, i18n } = useTranslation('app')
+  const { isStudent } = useAuth()
   const calRef  = useRef(null)
   const lastRange = useRef('')                     // последний загруженный диапазон from|to
   const [events, setEvents]       = useState([])
@@ -40,9 +44,12 @@ export default function CalendarPage() {
 
     setLoading(true)
     try {
-      const [group, indiv] = await Promise.all([
+      // Ученик ведёт ещё и свои занятия (преподаватели вне платформы, самостоятельная
+      // работа) — они такие же события календаря, как уроки с платформы.
+      const [group, indiv, own] = await Promise.all([
         getLessons({ from, to }),
         getIndividualLessons({ from, to }),
+        isStudent ? getMyLessons({ from, to }).catch(() => []) : Promise.resolve([]),
       ])
 
       const groupEvents = (group || []).map(l => ({
@@ -63,13 +70,24 @@ export default function CalendarPage() {
         extendedProps: { type: 'individual', lesson: l },
       }))
 
-      setEvents([...groupEvents, ...indivEvents])
+      // Время у своих занятий не обязательно — без него ставим событие на весь день
+      const ownEvents = (own || []).map(l => ({
+        id:    `o-${l.id}`,
+        title: l.topic || l.subject,
+        start: l.time ? `${l.date}T${l.time}:00` : l.date,
+        allDay: !l.time,
+        backgroundColor: '#0D9488',
+        borderColor: '#0D9488',
+        extendedProps: { type: 'own', lesson: l },
+      }))
+
+      setEvents([...groupEvents, ...indivEvents, ...ownEvents])
     } catch (e) {
       console.error(e)
     } finally {
       setLoading(false)
     }
-  }, [t])
+  }, [t, isStudent])
 
   const handleEventClick = ({ event }) => setSelected(event.extendedProps)
 
@@ -93,6 +111,12 @@ export default function CalendarPage() {
           <span className="w-2.5 h-2.5 rounded-sm bg-pink-700 inline-block" />
           {t('calendar.legendIndiv')}
         </span>
+        {isStudent && (
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-sm bg-teal-600 inline-block" />
+            {t('calendar.legendOwn')}
+          </span>
+        )}
       </div>
 
       {/* Календарь */}
@@ -134,9 +158,13 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
           <span className={`inline-flex text-xs px-2 py-0.5 rounded-full mb-2 ${
             type === 'group'
               ? 'bg-blue-100 text-blue-600'
-              : 'bg-pink-100 text-pink-700'
+              : type === 'own'
+                ? 'bg-teal-100 text-teal-700'
+                : 'bg-pink-100 text-pink-700'
           }`}>
-            {type === 'group' ? lesson.Group?.name : t('calendar.indFallback')}
+            {type === 'group' ? lesson.Group?.name
+              : type === 'own' ? lesson.subject
+              : t('calendar.indFallback')}
           </span>
           <h3 className="text-lg font-semibold text-slate-900">
             {lesson.topic || t('calendar.noTopic')}
@@ -155,10 +183,32 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
         {type === 'individual' && lesson.student &&
           <Row label={t('calendar.rowStudent')} value={lesson.student.name} />
         }
+        {/* Своё занятие: кто ведёт, сколько длится и оплачено ли — всё, что ученик о нём знает */}
+        {type === 'own' && (
+          <>
+            {(lesson.studentTeacher?.name || lesson.teacherLabel) &&
+              <Row label={t('calendar.rowTeacher')} value={lesson.studentTeacher?.name || lesson.teacherLabel} />
+            }
+            {lesson.durationMin && <Row label={t('calendar.rowDuration')} value={`${lesson.durationMin} ${t('calendar.minShort')}`} />}
+            {Number(lesson.pricePerLesson) > 0 && (
+              <Row label={t('calendar.rowPrice')}
+                value={`${Math.round(Number(lesson.pricePerLesson))} zł · ${lesson.isPaid ? t('calendar.paid') : t('calendar.notPaid')}`} />
+            )}
+            {lesson.notes && <Row label={t('calendar.rowNotes')} value={lesson.notes} />}
+          </>
+        )}
         {lesson.description &&
           <Row label={t('calendar.rowDesc')} value={lesson.description} />
         }
       </div>
+
+      {/* Своё занятие правится в дневнике — там же оплата, удаление и повтор */}
+      {type === 'own' && (
+        <Link to="/diary?tab=lessons"
+          className="flex items-center justify-center gap-2 w-full h-10 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-100 transition-colors">
+          {t('calendar.openInDiary')}
+        </Link>
+      )}
 
       {linkUrl && (
         <a

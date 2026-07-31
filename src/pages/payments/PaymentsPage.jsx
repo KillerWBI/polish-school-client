@@ -20,6 +20,7 @@ import PageHeader from '../../components/ui/PageHeader'
 import { safeUrl } from '../../utils/safeUrl'
 import useAuth from '../../hooks/useAuth'
 import useApiQuery from '../../hooks/useApiQuery'
+import { getStudentTeachers } from '../../api/studentTeachers.api'
 
 const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
 
@@ -349,32 +350,64 @@ function StudentHistoryRow({ rec, onShot, onCancel, busy }) {
 function StudentDebts() {
   const { t } = useTranslation('teacher')
   const { data, loading } = useApiQuery(['debt'], getDebt)
+  // Преподаватели, которых ученик завёл сам: оплата у них идёт мимо платформы,
+  // но долг он ведёт здесь же — иначе картина «сколько я должен» неполная
+  const { data: ownTeachers } = useApiQuery(['student-teachers'], getStudentTeachers)
   const navigate = useNavigate()
 
+  const ownWithDebt = (ownTeachers || []).filter((x) => Number(x.debt) > 0)
+
   if (loading) return <SkeletonList />
-  if (!data?.length) return <EmptyState icon={IconPayments} title={t('payments.noDebtsTitle')} text={t('payments.noDebtsText')} />
+  if (!data?.length && !ownWithDebt.length) {
+    return <EmptyState icon={IconPayments} title={t('payments.noDebtsTitle')} text={t('payments.noDebtsText')} />
+  }
 
   return (
     <div>
-      <Summary rows={data} />
-      <div className="grid gap-3 lg:grid-cols-2">
-        {data.map((row) => (
-          <DebtCard
-            key={row.teacher?.id}
-            name={row.teacher?.name ?? '—'}
-            sub={row.teacher?.email}
-            charged={row.charged}
-            paid={row.paid}
-            balance={row.balance}
-            action={
-              <Button size="sm" disabled={!row.teacher?.id || Math.max(0, row.balance) <= 0}
-                onClick={() => navigate(`/pay/${row.teacher.id}`)}>
-                {t('payments.pay')}
-              </Button>
-            }
-          />
-        ))}
-      </div>
+      {data?.length > 0 && (
+        <>
+          <Summary rows={data} />
+          <div className="grid gap-3 lg:grid-cols-2">
+            {data.map((row) => (
+              <DebtCard
+                key={row.teacher?.id}
+                name={row.teacher?.name ?? '—'}
+                sub={row.teacher?.email}
+                charged={row.charged}
+                paid={row.paid}
+                balance={row.balance}
+                action={
+                  <Button size="sm" disabled={!row.teacher?.id || Math.max(0, row.balance) <= 0}
+                    onClick={() => navigate(`/pay/${row.teacher.id}`)}>
+                    {t('payments.pay')}
+                  </Button>
+                }
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {ownWithDebt.length > 0 && (
+        <div className={data?.length ? 'mt-6' : ''}>
+          <h2 className="text-sm font-semibold text-slate-900">{t('payments.ownTeachersTitle')}</h2>
+          <p className="text-xs text-slate-500 mt-0.5 mb-3">{t('payments.ownTeachersHint')}</p>
+          <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
+            {ownWithDebt.map((x) => (
+              <div key={x.id} className="flex items-center gap-3 px-4 py-3.5">
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium text-slate-900 truncate">{x.name}</div>
+                  <div className="text-xs text-slate-400">{x.subject}</div>
+                </div>
+                <span className="text-sm font-semibold text-amber-600 shrink-0">{fmt(x.debt)}</span>
+              </div>
+            ))}
+          </div>
+          <Button className="mt-3" size="sm" variant="secondary" onClick={() => navigate('/diary?tab=lessons')}>
+            {t('payments.ownTeachersOpen')}
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

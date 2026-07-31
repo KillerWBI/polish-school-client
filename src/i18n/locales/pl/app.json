@@ -177,7 +177,16 @@
     "rowStudent": "Uczeń",
     "rowDesc": "Opis",
     "goToLesson": "Przejdź na lekcję",
-    "chatGroup": "Czat grupy"
+    "chatGroup": "Czat grupy",
+    "legendOwn": "Moje zajęcia",
+    "rowTeacher": "Nauczyciel",
+    "rowDuration": "Czas trwania",
+    "rowPrice": "Cena",
+    "rowNotes": "Notatki",
+    "minShort": "minut",
+    "paid": "opłacone",
+    "notPaid": "nieopłacone",
+    "openInDiary": "Otwórz w dzienniku"
   },
   "quiz": {
     "tipCreate": "Utwórz test z pomocą AI na dowolny temat. Gotowy test możesz rozwiązać sam lub dołączyć do zadania domowego.",

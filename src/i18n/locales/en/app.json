@@ -177,7 +177,16 @@
     "rowStudent": "Student",
     "rowDesc": "Description",
     "goToLesson": "Go to lesson",
-    "chatGroup": "Group chat"
+    "chatGroup": "Group chat",
+    "legendOwn": "My lessons",
+    "rowTeacher": "Teacher",
+    "rowDuration": "Duration",
+    "rowPrice": "Price",
+    "rowNotes": "Notes",
+    "minShort": "minutes",
+    "paid": "paid",
+    "notPaid": "not paid",
+    "openInDiary": "Open in the diary"
   },
   "quiz": {
     "defaultLanguage": "English",

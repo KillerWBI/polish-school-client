@@ -410,7 +410,10 @@
     "approvedEmptyTeacher": "Подтверждённые оплаты появятся здесь.",
     "rejectedEmptyTeacher": "Отклонённых оплат нет.",
     "overpaid": "Переплата",
-    "balanceWord": "Остаток"
+    "balanceWord": "Остаток",
+    "ownTeachersTitle": "Мои преподаватели",
+    "ownTeachersHint": "Те, кого вы завели сами. Оплата им идёт мимо платформы — здесь вы просто ведёте учёт.",
+    "ownTeachersOpen": "Открыть мои занятия"
   },
   "payPage": {
     "uploadError": "Ошибка загрузки скриншота",

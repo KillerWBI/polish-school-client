@@ -301,7 +301,14 @@
     "alreadyPaid": "Już zapłacone",
     "validSubjectDate": "Podaj przedmiot i datę",
     "addedToast": "Zajęcia dodane",
-    "addSubmit": "Dodaj"
+    "addSubmit": "Dodaj",
+    "errSubject": "Podaj przedmiot",
+    "errDate": "Wybierz datę",
+    "newHint": "Zajęcia pojawią się w kalendarzu i w licznikach na stronie głównej.",
+    "teacherNone": "Bez nauczyciela (lub wpisz imię)",
+    "repeatWeekly": "Powtarzaj co tydzień",
+    "repeatHint": "Utworzymy te zajęcia i dwa kolejne — po jednym na tydzień. Każde można usunąć osobno.",
+    "addedRepeatToast": "Utworzono 3 zajęcia"
   },
   "progress": {
     "title": "Mój postęp",
@@ -332,5 +339,27 @@
     "vocabLearning": "Uczę się",
     "vocabKnown": "Znam",
     "blank": "Brak danych"
+  },
+  "myTeachers": {
+    "explain": "Tutaj dodajesz osoby, u których uczysz się poza platformą: korepetytora, nauczyciela ze szkoły, kurs. Nic do nich nie trafia — zapisy prowadzisz Ty. Zajęcia z nimi trafiają do kalendarza i statystyk na równi z pozostałymi.",
+    "emptyTitle": "Nie ma jeszcze nauczycieli",
+    "emptyText": "Dodaj kartę raz — potem przy tworzeniu zajęć wystarczy ją wybrać, zamiast wpisywać imię, przedmiot i cenę od nowa.",
+    "addBtn": "Dodaj nauczyciela",
+    "newTitle": "Nowy nauczyciel",
+    "editTitle": "Nauczyciel",
+    "formHint": "Przedmiot i cena podstawią się w nowych zajęciach — tam można je zmienić.",
+    "fName": "Imię",
+    "fNamePh": "Pan Wojtek, Szkoła nr 7, Sam",
+    "fSubject": "Przedmiot",
+    "fPrice": "Cena za zajęcia",
+    "fContact": "Kontakt",
+    "fContactPh": "telefon lub nick",
+    "errName": "Podaj imię",
+    "errSubject": "Podaj przedmiot",
+    "addedToast": "Nauczyciel dodany",
+    "savedToast": "Zapisano",
+    "deletedToast": "Nauczyciel usunięty",
+    "deleteTitle": "Usunąć nauczyciela?",
+    "deleteMsg": "Karta zniknie, a zajęcia z nim zostaną w dzienniku — imię w nich się zachowa."
   }
 }

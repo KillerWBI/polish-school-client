@@ -177,7 +177,16 @@
     "rowStudent": "Студент",
     "rowDesc": "Описание",
     "goToLesson": "Перейти на урок",
-    "chatGroup": "Чат группы"
+    "chatGroup": "Чат группы",
+    "legendOwn": "Мои занятия",
+    "rowTeacher": "Преподаватель",
+    "rowDuration": "Длительность",
+    "rowPrice": "Стоимость",
+    "rowNotes": "Заметки",
+    "minShort": "минут",
+    "paid": "оплачено",
+    "notPaid": "не оплачено",
+    "openInDiary": "Открыть в дневнике"
   },
   "quiz": {
     "defaultLanguage": "русский",

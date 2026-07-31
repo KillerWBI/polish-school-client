@@ -1,16 +1,19 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toast } from '../../utils/toast'
+import { toast, errMsg } from '../../utils/toast'
 import { Check, Trash2, Wallet, Clock, CalendarDays, GraduationCap } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getMyLessons, getMyLessonsStats, createMyLesson, payMyLesson, deleteMyLesson } from '../../api/myLessons.api'
+import {
+  getStudentTeachers, createStudentTeacher, updateStudentTeacher, deleteStudentTeacher,
+} from '../../api/studentTeachers.api'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconNotes, IconProgress, IconSuccess, IconAdd } from '../../components/ui/icons'
+import { IconNotes, IconProgress, IconSuccess, IconAdd, IconEdit } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
 import Tabs from '../../components/ui/Tabs'
@@ -26,8 +29,9 @@ export default function MyLessonsPage({ embedded = false }) {
 
   const { data: lessons, loading, reload } = useApiQuery(['my-lessons'], getMyLessons)
   const { data: stats, reload: reloadStats } = useApiQuery(['my-lessons-stats'], getMyLessonsStats)
+  const { data: teachers, reload: reloadTeachers } = useApiQuery(['student-teachers'], getStudentTeachers)
 
-  const refresh = () => { reload(); reloadStats() }
+  const refresh = () => { reload(); reloadStats(); reloadTeachers() }
 
   const addBtn = (
     <Tooltip text={t('myLessons.tipCreate')} side="left">
@@ -59,11 +63,17 @@ export default function MyLessonsPage({ embedded = false }) {
 
       {tab === 'schedule' && <ScheduleTab lessons={lessons} loading={loading} onRefresh={refresh} onAdd={() => setCreateOpen(true)} />}
       {tab === 'debt'     && <ScheduleTab lessons={(lessons || []).filter(l => !l.isPaid && Number(l.pricePerLesson) > 0)} loading={loading} onRefresh={refresh} debtMode />}
-      {tab === 'teachers' && <BreakdownTab map={stats?.byTeacher} kind="teacher" />}
+      {tab === 'teachers' && <TeachersTab teachers={teachers} onRefresh={refresh} />}
       {tab === 'subjects' && <BreakdownTab map={stats?.bySubject} kind="subject" />}
 
       {createOpen && (
-        <CreateModal onClose={() => setCreateOpen(false)} onCreated={() => { setCreateOpen(false); refresh() }} />
+        <CreateModal
+          teachers={teachers || []}
+          lessons={lessons || []}
+          onClose={() => setCreateOpen(false)}
+          onCreated={() => { setCreateOpen(false); refresh() }}
+          onTeacherAdded={reloadTeachers}
+        />
       )}
     </>
   )
@@ -166,8 +176,162 @@ function ScheduleTab({ lessons, loading, onRefresh, onAdd, debtMode }) {
   )
 }
 
-/* ── Разбивка по учителям / предметам ── */
-function BreakdownTab({ map, kind }) {
+/* ── Мои преподаватели: список карточек + «+» → модалка (как везде в приложении) ── */
+function TeachersTab({ teachers, onRefresh }) {
+  const { t } = useTranslation('student')
+  const [formOpen, setFormOpen] = useState(false)
+  const [editing, setEditing]   = useState(null)
+  const [confirmDel, setConfirmDel] = useState(null)
+  const [busy, setBusy] = useState(false)
+
+  const doDelete = async () => {
+    setBusy(true)
+    try {
+      await deleteStudentTeacher(confirmDel.id)
+      toast.success(t('myTeachers.deletedToast'))
+      setConfirmDel(null)
+      onRefresh()
+    } catch (e) { toast.error(errMsg(e)) }
+    finally { setBusy(false) }
+  }
+
+  const openEdit = (tch) => { setEditing(tch); setFormOpen(true) }
+  const openNew  = () => { setEditing(null); setFormOpen(true) }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-slate-500">{t('myTeachers.explain')}</p>
+
+      {!teachers?.length ? (
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-white">
+          <EmptyState
+            icon={GraduationCap}
+            title={t('myTeachers.emptyTitle')}
+            text={t('myTeachers.emptyText')}
+            action={<Button size="sm" onClick={openNew}><IconAdd size={15} /> {t('myTeachers.addBtn')}</Button>}
+          />
+        </div>
+      ) : (
+        <>
+          <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
+            {teachers.map(tch => (
+              <div key={tch.id} className="flex items-center gap-3 px-4 py-3.5">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shrink-0">
+                  <GraduationCap className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium text-slate-900 truncate">{tch.name}</div>
+                  <div className="text-xs text-slate-400">
+                    {tch.subject}
+                    {Number(tch.pricePerLesson) > 0 && ` · ${fmt(tch.pricePerLesson)}`}
+                    {` · ${t('myLessons.lessonsCount', { n: tch.lessons })}`}
+                    {tch.contact && ` · ${tch.contact}`}
+                  </div>
+                </div>
+                {tch.debt > 0 && (
+                  <span className="text-sm font-semibold text-amber-600 shrink-0">
+                    {t('myLessons.debtBadge', { amount: fmt(tch.debt) })}
+                  </span>
+                )}
+                <div className="flex items-center gap-1 shrink-0">
+                  <button onClick={() => openEdit(tch)} className="text-slate-300 hover:text-slate-600 transition-colors p-1">
+                    <IconEdit size={16} />
+                  </button>
+                  <button onClick={() => setConfirmDel(tch)} className="text-slate-300 hover:text-red-500 transition-colors p-1">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Button size="sm" variant="secondary" onClick={openNew}><IconAdd size={15} /> {t('myTeachers.addBtn')}</Button>
+        </>
+      )}
+
+      {formOpen && (
+        <TeacherFormModal
+          editing={editing}
+          onClose={() => setFormOpen(false)}
+          onSaved={() => { setFormOpen(false); onRefresh() }}
+        />
+      )}
+
+      <ConfirmDialog
+        open={!!confirmDel}
+        onClose={() => setConfirmDel(null)}
+        onConfirm={doDelete}
+        title={t('myTeachers.deleteTitle')}
+        message={t('myTeachers.deleteMsg')}
+        confirmLabel={t('common:delete')}
+        busy={busy}
+      />
+    </div>
+  )
+}
+
+/* ── Карточка преподавателя: создание и правка ── */
+function TeacherFormModal({ editing, onClose, onSaved }) {
+  const { t } = useTranslation('student')
+  const [f, setF] = useState({
+    name:           editing?.name || '',
+    subject:        editing?.subject || '',
+    pricePerLesson: editing?.pricePerLesson != null ? String(Math.round(Number(editing.pricePerLesson))) : '',
+    contact:        editing?.contact || '',
+  })
+  const [err, setErr]   = useState({})
+  const [busy, setBusy] = useState(false)
+  const set = (k) => (e) => { setF(s => ({ ...s, [k]: e.target.value })); setErr(s => ({ ...s, [k]: '' })) }
+
+  const submit = async () => {
+    // Ошибка заполнения — текстом под полем, без тоста (правило проекта)
+    const next = {}
+    if (!f.name.trim())    next.name = t('myTeachers.errName')
+    if (!f.subject.trim()) next.subject = t('myTeachers.errSubject')
+    if (Object.keys(next).length) { setErr(next); return }
+
+    setBusy(true)
+    try {
+      const payload = {
+        name: f.name.trim(),
+        subject: f.subject.trim(),
+        pricePerLesson: f.pricePerLesson ? Number(f.pricePerLesson) : 0,
+        contact: f.contact.trim() || null,
+      }
+      if (editing) await updateStudentTeacher(editing.id, payload)
+      else         await createStudentTeacher(payload)
+      toast.success(editing ? t('myTeachers.savedToast') : t('myTeachers.addedToast'))
+      onSaved()
+    } catch (e) { toast.error(errMsg(e)) }
+    finally { setBusy(false) }
+  }
+
+  return (
+    <Modal
+      open
+      onClose={onClose}
+      maxWidth="max-w-md"
+      title={editing ? t('myTeachers.editTitle') : t('myTeachers.newTitle')}
+      subtitle={t('myTeachers.formHint')}
+      footer={
+        <>
+          <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>{t('common:cancel')}</Button>
+          <Button className="flex-1" onClick={submit} loading={busy}>{t('common:save')}</Button>
+        </>
+      }>
+      <div className="space-y-3">
+        <Input label={t('myTeachers.fName')} value={f.name} onChange={set('name')} error={err.name} placeholder={t('myTeachers.fNamePh')} />
+        <Input label={t('myTeachers.fSubject')} value={f.subject} onChange={set('subject')} error={err.subject} placeholder={t('myLessons.fSubjectPh')} />
+        <div className="grid grid-cols-2 gap-3">
+          <Input label={t('myTeachers.fPrice')} type="number" value={f.pricePerLesson} onChange={set('pricePerLesson')} placeholder="0" />
+          <Input label={t('myTeachers.fContact')} value={f.contact} onChange={set('contact')} placeholder={t('myTeachers.fContactPh')} />
+        </div>
+      </div>
+    </Modal>
+  )
+}
+
+/* ── Разбивка по предметам (по преподавателям — своя вкладка с карточками) ── */
+function BreakdownTab({ map }) {
   const { t } = useTranslation('student')
   const entries = Object.entries(map || {})
   if (!entries.length) return <EmptyState icon={IconProgress} title={t('myLessons.noDataTitle')} text={t('myLessons.noDataText')} />
@@ -177,39 +341,69 @@ function BreakdownTab({ map, kind }) {
       {entries.map(([name, v]) => (
         <div key={name} className="flex items-center gap-3 px-4 py-3.5">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shrink-0">
-            {kind === 'teacher' ? <GraduationCap className="w-5 h-5" /> : <span className="text-sm font-semibold">{name[0]?.toUpperCase()}</span>}
+            <span className="text-sm font-semibold">{name[0]?.toUpperCase()}</span>
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium text-slate-900 truncate">{name}</div>
             <div className="text-xs text-slate-400">
-              {t('myLessons.lessonsCount', { n: v.lessons })}{kind === 'subject' && v.minutes ? ` · ${Math.round(v.minutes / 6) / 10} ${t('myLessons.hoursShort')}` : ''}
+              {t('myLessons.lessonsCount', { n: v.lessons })}{v.minutes ? ` · ${Math.round(v.minutes / 6) / 10} ${t('myLessons.hoursShort')}` : ''}
             </div>
           </div>
-          {kind === 'teacher' && (
-            <div className={`text-sm font-semibold shrink-0 ${v.debt > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
-              {v.debt > 0 ? t('myLessons.debtBadge', { amount: fmt(v.debt) }) : t('myLessons.paidBadge')}
-            </div>
-          )}
         </div>
       ))}
     </div>
   )
 }
 
-/* ── Модалка создания ── */
-function CreateModal({ onClose, onCreated }) {
+/* ── Модалка создания занятия ──
+   Преподаватель выбирается из заведённых карточек, а не вписывается заново каждый раз;
+   предмет и цена подставляются из карточки, но их можно поменять для конкретного занятия. */
+function CreateModal({ teachers, lessons, onClose, onCreated, onTeacherAdded }) {
   const { t } = useTranslation('student')
-  const [f, setF] = useState({ subject: '', teacherLabel: '', date: '', time: '', durationMin: '', topic: '', notes: '', pricePerLesson: '', type: 'external', isPaid: false })
+  const [f, setF] = useState({
+    studentTeacherId: '', subject: '', teacherLabel: '', date: '', time: '',
+    durationMin: '', topic: '', notes: '', pricePerLesson: '',
+    type: 'external', isPaid: false, repeatWeekly: false,
+  })
+  const [err, setErr]   = useState({})
   const [busy, setBusy] = useState(false)
-  const set = (k) => (e) => setF(s => ({ ...s, [k]: e.target.value }))
+  const [teacherFormOpen, setTeacherFormOpen] = useState(false)
+  const set = (k) => (e) => { setF(s => ({ ...s, [k]: e.target.value })); setErr(s => ({ ...s, [k]: '' })) }
+
+  // Предметы, которые уже встречались — чтобы не печатать одно и то же снова.
+  // Список подсказок, а не жёсткий выбор: новое название по-прежнему можно ввести.
+  const knownSubjects = [...new Set([
+    ...teachers.map(x => x.subject),
+    ...lessons.map(l => l.subject),
+  ].filter(Boolean))]
+
+  // Выбрали карточку — подставляем её предмет и цену (если поля ещё не трогали)
+  const pickTeacher = (e) => {
+    const id = e.target.value
+    const tch = teachers.find(x => x.id === id)
+    setF(s => ({
+      ...s,
+      studentTeacherId: id,
+      subject: tch && !s.subject ? tch.subject : s.subject,
+      pricePerLesson: tch && !s.pricePerLesson && Number(tch.pricePerLesson) > 0
+        ? String(Math.round(Number(tch.pricePerLesson)))
+        : s.pricePerLesson,
+    }))
+    setErr(s => ({ ...s, subject: '' }))
+  }
 
   const submit = async () => {
-    if (!f.subject.trim() || !f.date) { toast.error(t('myLessons.validSubjectDate')); return }
+    const next = {}
+    if (!f.subject.trim()) next.subject = t('myLessons.errSubject')
+    if (!f.date)           next.date = t('myLessons.errDate')
+    if (Object.keys(next).length) { setErr(next); return }
+
     setBusy(true)
     try {
       await createMyLesson({
+        studentTeacherId: f.type === 'external' && f.studentTeacherId ? f.studentTeacherId : null,
         subject: f.subject,
-        teacherLabel: f.teacherLabel || null,
+        teacherLabel: f.type === 'external' && !f.studentTeacherId ? (f.teacherLabel || null) : null,
         date: f.date,
         time: f.time || null,
         durationMin: f.durationMin ? Number(f.durationMin) : null,
@@ -218,19 +412,29 @@ function CreateModal({ onClose, onCreated }) {
         pricePerLesson: f.pricePerLesson ? Number(f.pricePerLesson) : 0,
         isPaid: f.isPaid,
         type: f.type,
+        repeatWeekly: f.repeatWeekly,
       })
-      toast.success(t('myLessons.addedToast'))
+      toast.success(f.repeatWeekly ? t('myLessons.addedRepeatToast') : t('myLessons.addedToast'))
       onCreated()
     } catch (e) {
-      toast.error(e.response?.data?.error || t('common:error'))
+      toast.error(errMsg(e))
     } finally { setBusy(false) }
   }
 
   return (
-    <Modal open onClose={onClose} maxWidth="max-w-md">
-      <div className="p-6">
-        <h3 className="text-base font-semibold text-slate-900 mb-4">{t('myLessons.newTitle')}</h3>
-
+    <>
+      <Modal
+        open
+        onClose={onClose}
+        maxWidth="max-w-md"
+        title={t('myLessons.newTitle')}
+        subtitle={t('myLessons.newHint')}
+        footer={
+          <>
+            <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>{t('common:cancel')}</Button>
+            <Button className="flex-1" onClick={submit} loading={busy}>{t('myLessons.addSubmit')}</Button>
+          </>
+        }>
         <div className="flex gap-2 mb-4">
           {[['external', t('myLessons.modeExternal')], ['self_study', t('myLessons.modeSelf')]].map(([k, label]) => (
             <button key={k} type="button" onClick={() => setF(s => ({ ...s, type: k }))}
@@ -241,12 +445,39 @@ function CreateModal({ onClose, onCreated }) {
         </div>
 
         <div className="space-y-3">
-          <Input label={t('myLessons.fSubject')} value={f.subject} onChange={set('subject')} placeholder={t('myLessons.fSubjectPh')} />
           {f.type === 'external' && (
-            <Input label={t('myLessons.fTeacher')} value={f.teacherLabel} onChange={set('teacherLabel')} placeholder={t('myLessons.fTeacherPh')} />
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('myLessons.fTeacher')}</label>
+              <select value={f.studentTeacherId} onChange={pickTeacher}
+                className="w-full h-11 px-3 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15">
+                <option value="">{t('myLessons.teacherNone')}</option>
+                {teachers.map(x => (
+                  <option key={x.id} value={x.id}>{x.name} · {x.subject}</option>
+                ))}
+              </select>
+              {!f.studentTeacherId && (
+                <>
+                  <Input className="mt-2" value={f.teacherLabel} onChange={set('teacherLabel')} placeholder={t('myLessons.fTeacherPh')} />
+                  <button type="button" onClick={() => setTeacherFormOpen(true)}
+                    className="mt-1.5 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+                    <IconAdd size={13} /> {t('myTeachers.addBtn')}
+                  </button>
+                </>
+              )}
+            </div>
           )}
+
+          {/* Предмет: подсказываем уже введённые, но ввести новый по-прежнему можно */}
+          <div>
+            <Input label={t('myLessons.fSubject')} value={f.subject} onChange={set('subject')}
+              error={err.subject} placeholder={t('myLessons.fSubjectPh')} list="my-lesson-subjects" />
+            <datalist id="my-lesson-subjects">
+              {knownSubjects.map(s => <option key={s} value={s} />)}
+            </datalist>
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
-            <Input label={t('myLessons.fDate')} type="date" value={f.date} onChange={set('date')} />
+            <Input label={t('myLessons.fDate')} type="date" value={f.date} onChange={set('date')} error={err.date} />
             <Input label={t('myLessons.fTime')} type="time" value={f.time} onChange={set('time')} />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -259,7 +490,18 @@ function CreateModal({ onClose, onCreated }) {
             <textarea value={f.notes} onChange={set('notes')} rows={2}
               className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 resize-none" />
           </div>
-          {Number(f.pricePerLesson) > 0 && (
+
+          {/* Регулярное занятие: создаём это и две следующие недели, дальше ученик добавит сам */}
+          <label className="flex items-start gap-2 text-sm text-slate-600">
+            <input type="checkbox" checked={f.repeatWeekly} onChange={e => setF(s => ({ ...s, repeatWeekly: e.target.checked }))}
+              className="w-4 h-4 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+            <span>
+              {t('myLessons.repeatWeekly')}
+              <span className="block text-xs text-slate-400">{t('myLessons.repeatHint')}</span>
+            </span>
+          </label>
+
+          {Number(f.pricePerLesson) > 0 && !f.repeatWeekly && (
             <label className="flex items-center gap-2 text-sm text-slate-600">
               <input type="checkbox" checked={f.isPaid} onChange={e => setF(s => ({ ...s, isPaid: e.target.checked }))}
                 className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
@@ -267,12 +509,16 @@ function CreateModal({ onClose, onCreated }) {
             </label>
           )}
         </div>
+      </Modal>
 
-        <div className="flex gap-3 mt-6">
-          <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>{t('common:cancel')}</Button>
-          <Button className="flex-1" onClick={submit} loading={busy}>{t('myLessons.addSubmit')}</Button>
-        </div>
-      </div>
-    </Modal>
+      {/* Завести карточку прямо из формы занятия, не теряя заполненное */}
+      {teacherFormOpen && (
+        <TeacherFormModal
+          editing={null}
+          onClose={() => setTeacherFormOpen(false)}
+          onSaved={() => { setTeacherFormOpen(false); onTeacherAdded?.() }}
+        />
+      )}
+    </>
   )
 }
