@@ -299,7 +299,14 @@
     "alreadyPaid": "Already paid",
     "validSubjectDate": "Enter subject and date",
     "addedToast": "Lesson added",
-    "addSubmit": "Add"
+    "addSubmit": "Add",
+    "errSubject": "Enter the subject",
+    "errDate": "Pick a date",
+    "newHint": "The lesson appears in the calendar and in the counters on the home page.",
+    "teacherNone": "No teacher (or type a name)",
+    "repeatWeekly": "Repeat weekly",
+    "repeatHint": "We create this lesson and the next two — one a week. Any of them can be deleted separately.",
+    "addedRepeatToast": "3 lessons created"
   },
   "progress": {
     "title": "My progress",
@@ -330,5 +337,27 @@
     "vocabLearning": "Learning",
     "vocabKnown": "Known",
     "blank": "No data yet"
+  },
+  "myTeachers": {
+    "explain": "Add the people you study with outside the platform: a tutor, a school teacher, a course. Nothing is sent to them — you keep the records. Lessons with them go to the calendar and the statistics like all the others.",
+    "emptyTitle": "No teachers yet",
+    "emptyText": "Add a card once — then creating a lesson is just picking it, instead of typing the name, subject and price again.",
+    "addBtn": "Add a teacher",
+    "newTitle": "New teacher",
+    "editTitle": "Teacher",
+    "formHint": "Subject and price are filled into a new lesson — you can change them there.",
+    "fName": "Name",
+    "fNamePh": "Mr Smith, School #7, Myself",
+    "fSubject": "Subject",
+    "fPrice": "Price per lesson",
+    "fContact": "Contact",
+    "fContactPh": "phone or username",
+    "errName": "Enter a name",
+    "errSubject": "Enter the subject",
+    "addedToast": "Teacher added",
+    "savedToast": "Saved",
+    "deletedToast": "Teacher deleted",
+    "deleteTitle": "Delete this teacher?",
+    "deleteMsg": "The card is removed, but the lessons stay in the journal — the name in them is kept."
   }
 }

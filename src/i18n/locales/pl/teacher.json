@@ -410,7 +410,10 @@
     "approvedEmptyTeacher": "Potwierdzone wpłaty pojawią się tutaj.",
     "rejectedEmptyTeacher": "Brak odrzuconych wpłat.",
     "overpaid": "Nadpłata",
-    "balanceWord": "Pozostało"
+    "balanceWord": "Pozostało",
+    "ownTeachersTitle": "Moi nauczyciele",
+    "ownTeachersHint": "Ci, których dodałeś samodzielnie. Płatność idzie poza platformą — tutaj tylko prowadzisz rejestr.",
+    "ownTeachersOpen": "Otwórz moje zajęcia"
   },
   "payPage": {
     "uploadError": "Błąd wysyłania zrzutu",
