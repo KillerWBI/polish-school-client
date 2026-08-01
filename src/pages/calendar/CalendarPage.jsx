@@ -12,6 +12,7 @@ import { getIndividualLessons } from '../../api/individualLessons.api'
 import { getMyLessons } from '../../api/myLessons.api'
 import useAuth from '../../hooks/useAuth'
 import { formatDate } from '../../utils/formatDate'
+import { safeUrl } from '../../utils/safeUrl'
 import Modal from '../../components/ui/Modal'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
@@ -148,8 +149,9 @@ export default function CalendarPage() {
 
 function LessonDetail({ props: { type, lesson }, onClose }) {
   const { t } = useTranslation('app')
-  const linkUrl = lesson.lessonLink || lesson.Group?.lessonLink
-  const chatUrl = lesson.Group?.chatLink
+  // Ссылки вводит учитель вручную — пропускаем только http/https, иначе кнопка не рисуется
+  const linkUrl = safeUrl(lesson.lessonLink || lesson.Group?.lessonLink)
+  const chatUrl = safeUrl(lesson.Group?.chatLink)
 
   return (
     <div className="p-6">

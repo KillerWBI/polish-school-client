@@ -88,6 +88,12 @@ body {
   overflow: hidden;
 }
 
+/* Полоса прокрутки скрыта, сама прокрутка работает (свайп/шифт+колесо).
+   Для узких лент вроде вкладок: на Windows системная полоса съедает высоту
+   и выглядит как лишнее поле под элементом. */
+.scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
 /* Сглаживание появления модалки */
 @keyframes modal-in {
   from {

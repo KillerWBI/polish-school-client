@@ -6,6 +6,7 @@ import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
 import { getHomework, createHomework, deleteHomework, submitHomework, getSubmissions, gradeSubmission, submitHomeworkQuizAttempt, getHomeworkQuizAttempts } from '../../api/homework.api'
 import { getLessons } from '../../api/lessons.api'
+import { getGroups } from '../../api/groups.api'
 import { getIndividualLessons } from '../../api/individualLessons.api'
 import { getQuizzes } from '../../api/quizzes.api'
 import QuizRunner from '../quiz/QuizRunner'
@@ -13,7 +14,6 @@ import { uploadToCloudinary } from '../../utils/uploadToCloudinary'
 import { formatDate } from '../../utils/formatDate'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
-import Input from '../../components/ui/Input'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { PageSpinner } from '../../components/ui/Spinner'
 import { SkeletonList } from '../../components/ui/Skeleton'
@@ -388,22 +388,32 @@ function StatusBadge({ submission, isOverdue }) {
 function CreateHWModal({ open, onClose, onCreated }) {
   const { t } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
-  const { data: lessons }    = useApiQuery(['lessons'], getLessons)
+  const { data: groups }     = useApiQuery(['groups'], getGroups)
   const { data: indLessons } = useApiQuery(['individual-lessons'], getIndividualLessons)
   const { data: quizzes }    = useApiQuery(['quizzes'], getQuizzes)
-  const [form, setForm] = useState({ description: '', deadline: '', lessonType: 'group', lessonId: '', individualLessonId: '', quizId: '' })
+  const [form, setForm] = useState({ description: '', deadline: '', lessonType: 'group', groupId: '', lessonId: '', individualLessonId: '', quizId: '' })
   const [saving, setSaving] = useState(false)
   const [error,  setError]  = useState('')
+
+  // Уроки грузим только выбранной группы: у активного учителя их сотни, одним списком не найти
+  const { data: lessons, loading: lessonsLoading } = useApiQuery(
+    ['lessons', form.groupId],
+    () => getLessons({ groupId: form.groupId, limit: 100 }),
+    { enabled: !!form.groupId },
+  )
 
   // Прикреплять можно только сохранённые в библиотеку тесты (не пройденные)
   const libraryQuizzes = (quizzes || []).filter(q => !q.taken)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+  // Смена группы обнуляет урок — иначе останется выбранным урок прежней группы
+  const setGroup = (v) => setForm(f => ({ ...f, groupId: v, lessonId: '' }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.description.trim()) return setError(t('homework.validDesc'))
     const isGroup = form.lessonType === 'group'
+    if (isGroup && !form.groupId)                return setError(t('homework.chooseGroup'))
     if (isGroup && !form.lessonId)               return setError(t('homework.chooseGroupLesson'))
     if (!isGroup && !form.individualLessonId)     return setError(t('homework.chooseLesson'))
     setSaving(true); setError('')
@@ -416,7 +426,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
         quizId:             form.quizId || null,
       })
       onCreated(); onClose()
-      setForm({ description: '', deadline: '', lessonType: 'group', lessonId: '', individualLessonId: '', quizId: '' })
+      setForm({ description: '', deadline: '', lessonType: 'group', groupId: '', lessonId: '', individualLessonId: '', quizId: '' })
     } catch (e) {
       setError(e.response?.data?.error || t('homework.createError'))
     } finally {
@@ -456,21 +466,46 @@ function CreateHWModal({ open, onClose, onCreated }) {
           </div>
 
           {form.lessonType === 'group' ? (
-            <div>
-              <label className="text-xs text-slate-400 block mb-1">{t('homework.lessonLabel')}</label>
-              <select
-                value={form.lessonId}
-                onChange={e => set('lessonId', e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
-              >
-                <option value="">{t('homework.chooseGroupLesson')}</option>
-                {(lessons || []).map(l => (
-                  <option key={l.id} value={l.id}>
-                    {formatDate(l.date)} {l.time} — {l.topic || l.Group?.name || t('homework.lessonFallback')}
+            <>
+              {/* Сначала группа, затем урок из неё — уроков у учителя сотни, списком не найти */}
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">{t('homework.groupLabel')}</label>
+                <select
+                  value={form.groupId}
+                  onChange={e => setGroup(e.target.value)}
+                  className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
+                >
+                  <option value="">{t('homework.chooseGroup')}</option>
+                  {(groups || []).map(g => (
+                    <option key={g.id} value={g.id}>{g.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">{t('homework.lessonLabel')}</label>
+                <select
+                  value={form.lessonId}
+                  onChange={e => set('lessonId', e.target.value)}
+                  disabled={!form.groupId}
+                  className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-400"
+                >
+                  <option value="">
+                    {!form.groupId ? t('homework.chooseGroupFirst')
+                      : lessonsLoading ? tc('loading')
+                      : t('homework.chooseGroupLesson')}
                   </option>
-                ))}
-              </select>
-            </div>
+                  {(lessons || []).map(l => (
+                    <option key={l.id} value={l.id}>
+                      {formatDate(l.date)} {l.time} — {l.topic || t('homework.lessonFallback')}
+                    </option>
+                  ))}
+                </select>
+                {form.groupId && !lessonsLoading && !lessons?.length && (
+                  <p className="text-[11px] text-slate-400 mt-1">{t('homework.noLessonsInGroup')}</p>
+                )}
+              </div>
+            </>
           ) : (
             <div>
               <label className="text-xs text-slate-400 block mb-1">{t('homework.indLessonLabel')}</label>

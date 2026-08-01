@@ -775,21 +775,26 @@ function GroupPills({ groups, value, onChange }) {
   )
 }
 
-function MonthNav({ month, onChange }) {
-  const { i18n } = useTranslation('teacher')
-  const Arrow = ({ dir }) => (
-    <button onClick={() => onChange(shiftMonth(month, dir))}
+// Стрелка вынесена из MonthNav: объявленная внутри рендера, она пересоздавалась
+// на каждый рендер родителя и обе кнопки перемонтировались вместо обновления
+function MonthArrow({ dir, onClick }) {
+  return (
+    <button onClick={onClick}
       className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 cursor-pointer transition-colors">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d={dir < 0 ? 'M15 18l-6-6 6-6' : 'M9 18l6-6-6-6'} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </button>
   )
+}
+
+function MonthNav({ month, onChange }) {
+  const { i18n } = useTranslation('teacher')
   return (
     <div className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1">
-      <Arrow dir={-1} />
+      <MonthArrow dir={-1} onClick={() => onChange(shiftMonth(month, -1))} />
       <span className="px-2 text-sm font-medium text-slate-700 capitalize min-w-[128px] text-center">{monthLabel(month, i18n.language)}</span>
-      <Arrow dir={1} />
+      <MonthArrow dir={1} onClick={() => onChange(shiftMonth(month, 1))} />
     </div>
   )
 }

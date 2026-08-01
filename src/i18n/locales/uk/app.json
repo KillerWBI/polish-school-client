@@ -108,6 +108,7 @@
     "verifySuccessMsg": "Email успішно підтверджено!",
     "verifyGenericErr": "Помилка підтвердження",
     "verifyLoading": "Підтверджуємо email...",
+    "verifyPanelTitle": "Підтвердження email",
     "verifySuccessSub": "Тепер у вас повний доступ до всіх функцій.",
     "verifyFailTitle": "Не вдалося підтвердити",
     "verifyResendHint": "У кабінеті можна надіслати новий лист."

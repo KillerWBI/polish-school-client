@@ -108,6 +108,7 @@
     "verifySuccessMsg": "Email potwierdzony pomyślnie!",
     "verifyGenericErr": "Błąd potwierdzenia",
     "verifyLoading": "Potwierdzamy email...",
+    "verifyPanelTitle": "Potwierdzenie e-maila",
     "verifySuccessSub": "Masz teraz pełny dostęp do wszystkich funkcji.",
     "verifyFailTitle": "Nie udało się potwierdzić",
     "verifyResendHint": "W panelu można wysłać nową wiadomość."

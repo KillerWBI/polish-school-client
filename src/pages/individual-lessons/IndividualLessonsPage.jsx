@@ -9,7 +9,7 @@ import {
   deleteIndividualLesson,
 } from '../../api/individualLessons.api'
 import { getMyStudents } from '../../api/students.api'
-import { formatDate } from '../../utils/formatDate'
+import { safeUrl } from '../../utils/safeUrl'
 import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
@@ -144,8 +144,8 @@ function LessonCard({ l, isTeacher, onEdit, onDelete }) {
           {l.individualCourseId && (
             <span className="text-[11px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">{t('indLessons.series')}</span>
           )}
-          {l.lessonLink && (
-            <a href={l.lessonLink} target="_blank" rel="noopener noreferrer"
+          {safeUrl(l.lessonLink) && (
+            <a href={safeUrl(l.lessonLink)} target="_blank" rel="noopener noreferrer"
               className="text-[11px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
               {t('indLessons.enterLesson')}
             </a>
