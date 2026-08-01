@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { verifyEmail } from '../../api/auth.api'
 import useAuth from '../../hooks/useAuth'
+import AuthLayout from './AuthLayout'
 
 export default function VerifyEmailPage() {
   const { t } = useTranslation('app')
@@ -37,12 +38,8 @@ export default function VerifyEmailPage() {
   }, [token])
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-5">
-      <div className="w-full max-w-md text-center">
-        <div className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600">
-          <span className="text-slate-900 text-2xl font-bold">L</span>
-        </div>
-
+    <AuthLayout panelTitle={t('auth.verifyPanelTitle')}>
+      <div className="text-center">
         {status === 'loading' && (
           <>
             <div className="inline-flex w-10 h-10 mb-4 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
@@ -110,6 +107,6 @@ export default function VerifyEmailPage() {
           </>
         )}
       </div>
-    </div>
+    </AuthLayout>
   )
 }

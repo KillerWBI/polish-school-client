@@ -5,7 +5,7 @@ import Tooltip from './Tooltip'
 //   <Tabs items={items} value={tab} onChange={setTab} />
 export default function Tabs({ items, value, onChange, className = '' }) {
   return (
-    <div className={`flex gap-1 p-1 bg-slate-50 rounded-xl w-fit max-w-full overflow-x-auto ${className}`}>
+    <div className={`flex gap-1 p-1 bg-slate-50 rounded-xl w-fit max-w-full overflow-x-auto scrollbar-none ${className}`}>
       {items.map(({ key, label, count, tip, icon: Icon }) => {
         const active = value === key
         return (

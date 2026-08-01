@@ -108,6 +108,7 @@
     "verifySuccessMsg": "Email verified successfully!",
     "verifyGenericErr": "Verification error",
     "verifyLoading": "Verifying email...",
+    "verifyPanelTitle": "Email confirmation",
     "verifySuccessSub": "You now have full access to all features.",
     "verifyFailTitle": "Verification failed",
     "verifyResendHint": "You can send a new email from your account."

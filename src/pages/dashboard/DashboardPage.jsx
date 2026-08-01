@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   CalendarDays, FileText, Wallet, CheckCircle2, Plus, Award, Clock,
-  ChevronRight, CalendarClock, Inbox, MoreHorizontal, AlertCircle,
+  ChevronRight, CalendarClock, Inbox, AlertCircle,
 } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'

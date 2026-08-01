@@ -9,6 +9,7 @@ import {
 } from '../../api/individualCourses.api'
 import { getIndividualLessons, createIndividualLesson } from '../../api/individualLessons.api'
 import { formatDate } from '../../utils/formatDate'
+import { safeUrl } from '../../utils/safeUrl'
 import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
@@ -97,8 +98,8 @@ export default function IndividualCourseDetailPage() {
         <InfoCard label={t('indCourseDetail.infoPrice')} value={`${course.pricePerLesson || 0}`} />
         <InfoCard
           label={t('indCourseDetail.infoLink')}
-          value={course.lessonLink
-            ? <a href={course.lessonLink} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline break-all">{course.lessonLink}</a>
+          value={safeUrl(course.lessonLink)
+            ? <a href={safeUrl(course.lessonLink)} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline break-all">{course.lessonLink}</a>
             : '—'}
         />
       </div>
