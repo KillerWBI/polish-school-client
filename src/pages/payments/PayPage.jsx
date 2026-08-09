@@ -9,7 +9,7 @@ import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconSearch } from '../../components/ui/icons'
+import { IconSearch, IconClose } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
 
@@ -220,7 +220,7 @@ export default function PayPage() {
               <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
                 <CheckCircle className="w-4 h-4 shrink-0" />
                 <span className="truncate">{screenshot.name}</span>
-                <button onClick={() => { setScreenshot(null); setScreenshotUrl('') }} className="ml-auto text-slate-400 hover:text-slate-600">✕</button>
+                <button onClick={() => { setScreenshot(null); setScreenshotUrl('') }} className="ml-auto text-slate-400 hover:text-slate-600"><IconClose size={14} /></button>
               </div>
             ) : (
               <label className="flex items-center gap-2 h-9 px-3 rounded-lg border border-dashed border-slate-300 text-xs text-slate-500 hover:bg-slate-50 cursor-pointer transition-colors">

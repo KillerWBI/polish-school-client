@@ -23,7 +23,7 @@
     "s3t": "Udostępnianie danych podmiotom trzecim (podmioty przetwarzające)",
     "s3lead": "Do działania Serwisu korzystamy z zewnętrznych dostawców, którzy przetwarzają dane w naszym imieniu:",
     "s3": [
-      "Hosting i baza danych — Neon (PostgreSQL), Railway (backend), Vercel (frontend).",
+      "Hosting i baza danych — Neon (PostgreSQL), Railway (backend), Cloudflare (frontend).",
       "Przechowywanie plików — Cloudinary (awatary, okładki, załączniki).",
       "Poczta e-mail — Resend (e-maile potwierdzające, powiadomienia, odpowiedzi pomocy).",
       "Płatności — Paddle (merchant of record; obsługa subskrypcji i podatków).",

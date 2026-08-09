@@ -1,0 +1,118 @@
+{
+  "backHome": "Inicio",
+  "effectiveDate": "En vigor desde: {{date}}",
+  "footerPrivacy": "Privacidad",
+  "footerTerms": "Condiciones de uso",
+  "footerSupport": "Soporte",
+  "updated": "19 de julio de 2026",
+  "privacy": {
+    "title": "Política de privacidad",
+    "intro": "Esta Política describe cómo Artem Proskurovskyi (persona física, Poznań, Polonia) (el «Operador», «nosotros») recoge, utiliza y protege los datos personales de los usuarios del servicio Diklario, disponible en diklario.com (el «Servicio»). Al utilizar el Servicio, usted acepta esta Política.",
+    "s1t": "Qué datos recogemos",
+    "s1": [
+      "Datos de la cuenta: nombre, correo electrónico, nombre de usuario, contraseña (cifrada), rol (docente/estudiante), idioma de la interfaz, avatar.",
+      "Datos de aprendizaje: grupos, clases, deberes, asistencia, notas, materiales, vocabulario personal, rutas de aprendizaje y resultados de práctica.",
+      "Datos de pago: los procesa el proveedor de pagos (Paddle); no almacenamos datos de tarjetas bancarias. Los docentes pueden indicar sus propios datos para recibir pagos de los estudiantes.",
+      "Datos técnicos: dirección IP, tipo de dispositivo y navegador, cookies, registros de errores."
+    ],
+    "s2t": "Fines y bases jurídicas del tratamiento",
+    "s2": [
+      "Tratamos los datos para: prestar y operar el Servicio, autenticar a los usuarios, enviar notificaciones y correos, ofrecer soporte, procesar los pagos de las suscripciones, garantizar la seguridad y mejorar el producto.",
+      "Bases jurídicas (RGPD, art. 6): ejecución de un contrato (prestación del Servicio), consentimiento (p. ej. envíos), interés legítimo (seguridad, analítica), obligación legal."
+    ],
+    "s3t": "Comunicación a terceros (encargados del tratamiento)",
+    "s3lead": "Para operar el Servicio utilizamos proveedores externos que tratan datos por cuenta nuestra:",
+    "s3": [
+      "Alojamiento y base de datos — Neon (PostgreSQL), Railway (backend), Cloudflare (frontend).",
+      "Almacenamiento de archivos — Cloudinary (avatares, portadas, adjuntos).",
+      "Correo electrónico — Resend (correos de confirmación, notificaciones, respuestas de soporte).",
+      "Pagos — Paddle (merchant of record; gestión de suscripciones e impuestos).",
+      "Monitorización de errores — Sentry.",
+      "Funciones de IA — un proveedor externo de modelos (p. ej. Groq): se envían los enunciados de tareas y temas para generar tests, palabras e itinerarios (sin datos personales innecesarios)."
+    ],
+    "s3end": "No vendemos datos personales.",
+    "s4t": "Transferencias internacionales de datos",
+    "s4": "Los servidores y encargados del tratamiento pueden encontrarse fuera de su país, incluso fuera del EEE. En tales casos, las transferencias se realizan con las garantías adecuadas (p. ej. cláusulas contractuales tipo).",
+    "s5t": "Cookies",
+    "s5": "Utilizamos cookies estrictamente necesarias para la autenticación (sesión, token de acceso) y el funcionamiento del Servicio. Sin ellas no es posible iniciar sesión. Las cookies de analítica y marketing — solo con su consentimiento (cuando proceda).",
+    "s6t": "Plazo de conservación",
+    "s6": "Conservamos los datos mientras su cuenta esté activa y durante el tiempo necesario para los fines del tratamiento o exigido por la ley. Tras eliminar su cuenta, los datos se borran o anonimizan en un plazo razonable, salvo aquellos que estamos obligados a conservar (p. ej. por contabilidad).",
+    "s7t": "Sus derechos",
+    "s7": [
+      "Conforme a la legislación aplicable (incluido el RGPD) usted tiene derecho a: acceder a sus datos, rectificarlos, suprimirlos, limitar u oponerse al tratamiento, solicitar la portabilidad, retirar el consentimiento y presentar una reclamación ante la autoridad de control de protección de datos.",
+      "Para ejercer sus derechos, póngase en contacto con nosotros (véase la sección «Contacto»)."
+    ],
+    "s8t": "Seguridad",
+    "s8": "Aplicamos medidas técnicas y organizativas: cifrado de la conexión (HTTPS), almacenamiento de contraseñas como hash, tokens de acceso en cookies seguras, limitación de peticiones, control de accesos. Aun así, ningún método de transmisión de datos es completamente seguro.",
+    "s9t": "Menores",
+    "s9": "Los estudiantes pueden utilizar el Servicio. Si no ha alcanzado la edad a la que puede consentir por sí mismo el tratamiento de datos en su país, el uso solo es posible con el consentimiento de un progenitor o tutor legal.",
+    "s10t": "Cambios en la Política",
+    "s10": "Podemos actualizar esta Política. Comunicamos los cambios sustanciales a través del Servicio o por correo electrónico. La fecha de la versión vigente figura en la parte superior de la página.",
+    "s11t": "Contacto",
+    "s11": "Para cuestiones de privacidad: topchannel1914@gmail.com o a través del formulario de soporte."
+  },
+  "terms": {
+    "title": "Condiciones de uso",
+    "intro": "Estas Condiciones regulan el uso del servicio Diklario (diklario.com, el «Servicio»), prestado por Artem Proskurovskyi (persona física, Poznań, Polonia) (el «Operador», «nosotros»). Al registrarse o utilizar el Servicio, usted acepta estas Condiciones. Si no está de acuerdo, no utilice el Servicio.",
+    "s1t": "Descripción del Servicio",
+    "s1": "Diklario es una plataforma en línea para docentes y estudiantes de cualquier materia: gestión de grupos, clases, deberes, asistencia y finanzas, así como estudio autónomo con herramientas de IA adaptativas (tests, vocabulario, rutas de aprendizaje). Las funcionalidades pueden cambiar y ampliarse.",
+    "s2t": "Registro y cuenta",
+    "s2": "Usted se compromete a facilitar datos veraces, mantenerlos actualizados y no compartir el acceso con terceros. Es responsable de las acciones realizadas desde su cuenta y de custodiar su contraseña. Comuníquenos cualquier acceso no autorizado.",
+    "s3t": "Planes, suscripción y pago",
+    "s3": [
+      "El Servicio está disponible en un plan gratuito y en planes de pago (p. ej. Estándar y Máximo) con límites de volumen. Las suscripciones de pago se gestionan a través del proveedor Paddle, que actúa como merchant of record y procesa los pagos y los impuestos.",
+      "La suscripción se renueva automáticamente por el periodo elegido hasta que usted la cancele. Los precios pueden cambiar; avisamos con antelación de los cambios significativos. Los impuestos aplicables (p. ej. IVA) los calcula el proveedor de pagos."
+    ],
+    "s4t": "Reembolsos",
+    "s4": [
+      "Una vez efectuado el pago, los importes no son reembolsables. Si cancela la suscripción, el acceso al plan de pago se mantiene hasta el final del periodo ya abonado, tras lo cual no se produce la renovación automática.",
+      "Esta regla no limita los derechos del consumidor previstos por la legislación imperativa ni las reglas aplicables del proveedor de pagos Paddle. Para cuestiones de pago, use el formulario de soporte."
+    ],
+    "s5t": "Contenido del usuario",
+    "s5": "Usted conserva los derechos sobre el contenido que sube (materiales, tareas, palabras, notas). Al facilitar contenido, otorga al Operador una licencia limitada para almacenarlo y tratarlo únicamente con el fin de operar el Servicio. Usted es responsable de la licitud de su contenido y de disponer de los derechos necesarios.",
+    "s6t": "Uso aceptable",
+    "s6": "Queda prohibido: infringir la ley y los derechos de terceros, publicar contenido malicioso, ofensivo o ilícito, intentar obtener acceso no autorizado, alterar el funcionamiento del Servicio, enviar spam y utilizar el Servicio para la recopilación automatizada de datos sin permiso.",
+    "s7t": "Funciones de IA",
+    "s7": "El Servicio utiliza modelos de inteligencia artificial para generar tests, palabras e itinerarios y para corregir respuestas. Los resultados se ofrecen «tal cual», pueden contener imprecisiones y no constituyen asesoramiento profesional. Verifique usted mismo la información importante.",
+    "s8t": "Propiedad intelectual",
+    "s8": "Los derechos sobre el propio Servicio, su código, diseño, marcas y materiales pertenecen al Operador y están protegidos por la ley. El uso del Servicio no le transfiere esos derechos, salvo el derecho a utilizar el Servicio conforme a este documento.",
+    "s9t": "Exclusión de garantías",
+    "s9": "El Servicio se presta «tal cual» y «según disponibilidad», sin garantía alguna de funcionamiento ininterrumpido o libre de errores. No garantizamos que el Servicio satisfaga todas sus expectativas.",
+    "s10t": "Limitación de responsabilidad",
+    "s10": "En la máxima medida permitida por la ley, el Operador no responde de daños indirectos, lucro cesante o pérdida de datos derivados del uso o de la imposibilidad de uso del Servicio.",
+    "s11t": "Suspensión y terminación",
+    "s11": "Podemos restringir o cancelar el acceso en caso de incumplimiento de estas Condiciones. Usted puede dejar de utilizar el Servicio y eliminar su cuenta en cualquier momento.",
+    "s12t": "Cambios en las Condiciones",
+    "s12": "Podemos actualizar estas Condiciones. El uso continuado del Servicio tras la entrada en vigor de los cambios implica su aceptación. La fecha de la versión vigente figura en la parte superior de la página.",
+    "s13t": "Ley aplicable y controversias",
+    "s13": "Estas Condiciones se rigen por la ley de la República de Polonia. Las controversias se resuelven ante el tribunal competente del domicilio del Operador (Poznań, Polonia), salvo que las normas imperativas de protección del consumidor dispongan otra cosa.",
+    "s14t": "Contacto",
+    "s14": "Consultas sobre las Condiciones: topchannel1914@gmail.com o a través del formulario de soporte."
+  },
+  "refund": {
+    "title": "Política de reembolsos",
+    "intro": "En esta página se explica cómo cancelar una suscripción y obtener el reembolso de los planes de pago de Diklario. Los pagos los procesa Paddle.com Market Ltd, que actúa como merchant of record, por lo que los reembolsos se emiten a través suyo.",
+    "s1t": "Primero, gratis",
+    "s1": "El plan gratuito es indefinido y no requiere tarjeta. Recomendamos comprobar que el servicio le encaja antes de contratar un plan de pago.",
+    "s2t": "Reembolso en 14 días",
+    "s2": "Si el servicio no le convence, escríbanos dentro de los 14 días siguientes al primer pago y se lo reembolsaremos íntegramente, sin preguntas. Para clientes de la UE y el Reino Unido este derecho está garantizado por ley.",
+    "s3t": "Cancelar la suscripción",
+    "s3": "Puede cancelar en cualquier momento. Las funciones de pago siguen disponibles hasta el final del periodo de facturación ya abonado, tras lo cual la cuenta pasa automáticamente al plan gratuito. Sus datos no se eliminan.",
+    "s4t": "Tiempo no utilizado",
+    "s4": "Pasados los primeros 14 días no realizamos reembolsos parciales por los días no utilizados del periodo de facturación en curso — simplemente sigue usando el servicio hasta que termine. Las excepciones se enumeran a continuación.",
+    "s5t": "Cuándo reembolsamos siempre",
+    "s5": [
+      "Cargos duplicados u otros errores técnicos de pago.",
+      "Un cargo realizado después de haber cancelado.",
+      "Indisponibilidad prolongada del servicio por causa nuestra.",
+      "Cualquier cargo hecho sin su consentimiento, incluido el uso fraudulento de la tarjeta."
+    ],
+    "s6t": "Cómo solicitar un reembolso",
+    "s6": "Escríbanos mediante el formulario de soporte de este sitio. Indique el correo con el que está registrada su cuenta y la fecha del pago. Respondemos en un plazo de 3 días hábiles.",
+    "s7t": "Plazo de tramitación",
+    "s7": "Una vez aprobado, Paddle reembolsa al medio de pago original. Tarda entre 3 y 10 días hábiles en llegar, según su banco.",
+    "s8t": "Cambios en esta política",
+    "s8": "Podemos actualizar esta política. Las suscripciones ya abonadas se rigen por la versión vigente en el momento del pago. La fecha de entrada en vigor figura en la parte superior de esta página."
+  },
+  "footerRefund": "Reembolsos"
+}

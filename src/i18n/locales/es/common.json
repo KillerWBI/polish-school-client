@@ -24,5 +24,6 @@
   "language": "Idioma",
   "login": "Iniciar sesión",
   "register": "Empezar",
-  "logout": "Cerrar sesión"
+  "logout": "Cerrar sesión",
+  "noConnection": "Sin conexión con el servidor"
 }

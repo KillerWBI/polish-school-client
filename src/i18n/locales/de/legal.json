@@ -1,0 +1,118 @@
+{
+  "backHome": "Startseite",
+  "effectiveDate": "Gültig ab: {{date}}",
+  "footerPrivacy": "Datenschutz",
+  "footerTerms": "Nutzungsbedingungen",
+  "footerSupport": "Support",
+  "updated": "19. Juli 2026",
+  "privacy": {
+    "title": "Datenschutzerklärung",
+    "intro": "Diese Erklärung beschreibt, wie Artem Proskurovskyi (Privatperson, Poznań, Polen) (der „Betreiber“, „wir“) personenbezogene Daten der Nutzerinnen und Nutzer des Dienstes Diklario unter diklario.com (der „Dienst“) erhebt, verwendet und schützt. Mit der Nutzung des Dienstes stimmen Sie dieser Erklärung zu.",
+    "s1t": "Welche Daten wir erheben",
+    "s1": [
+      "Kontodaten: Name, E-Mail, Nutzername, Passwort (verschlüsselt), Rolle (Lehrkraft/Lernende), Sprache der Oberfläche, Avatar.",
+      "Lerndaten: Gruppen, Unterricht, Hausaufgaben, Anwesenheit, Noten, Materialien, persönliches Wörterbuch, Lernpfade und Übungsergebnisse.",
+      "Zahlungsdaten: werden vom Zahlungsanbieter (Paddle) verarbeitet; Bankkartendaten speichern wir nicht. Lehrkräfte können eigene Zahlungsdaten hinterlegen, um Zahlungen von Lernenden zu erhalten.",
+      "Technische Daten: IP-Adresse, Geräte- und Browsertyp, Cookies, Fehlerprotokolle."
+    ],
+    "s2t": "Zwecke und Rechtsgrundlagen der Verarbeitung",
+    "s2": [
+      "Wir verarbeiten Daten, um: den Dienst bereitzustellen und zu betreiben, Nutzer zu authentifizieren, Benachrichtigungen und E-Mails zu versenden, Support zu leisten, Abo-Zahlungen abzuwickeln, die Sicherheit zu gewährleisten und das Produkt zu verbessern.",
+      "Rechtsgrundlagen (DSGVO, Art. 6): Vertragserfüllung (Bereitstellung des Dienstes), Einwilligung (z. B. Newsletter), berechtigtes Interesse (Sicherheit, Analyse), rechtliche Verpflichtung."
+    ],
+    "s3t": "Weitergabe an Dritte (Auftragsverarbeiter)",
+    "s3lead": "Für den Betrieb des Dienstes setzen wir Drittanbieter ein, die Daten in unserem Auftrag verarbeiten:",
+    "s3": [
+      "Hosting und Datenbank — Neon (PostgreSQL), Railway (Backend), Cloudflare (Frontend).",
+      "Dateispeicher — Cloudinary (Avatare, Titelbilder, Anhänge).",
+      "E-Mail — Resend (Bestätigungs-E-Mails, Benachrichtigungen, Support-Antworten).",
+      "Zahlungen — Paddle (Merchant of Record; Abwicklung von Abonnements und Steuern).",
+      "Fehlerüberwachung — Sentry.",
+      "KI-Funktionen — ein externer Modellanbieter (z. B. Groq): Formulierungen von Aufgaben und Themen werden zur Erzeugung von Tests, Wörtern und Fahrplänen übermittelt (ohne unnötige personenbezogene Daten)."
+    ],
+    "s3end": "Wir verkaufen keine personenbezogenen Daten.",
+    "s4t": "Internationale Datenübermittlung",
+    "s4": "Server und Auftragsverarbeiter können sich außerhalb Ihres Landes befinden, auch außerhalb des EWR. In solchen Fällen erfolgt die Übermittlung mit geeigneten Garantien (z. B. Standardvertragsklauseln).",
+    "s5t": "Cookies",
+    "s5": "Wir verwenden unbedingt erforderliche Cookies für die Authentifizierung (Sitzung, Zugriffstoken) und den Betrieb des Dienstes. Ohne sie ist eine Anmeldung nicht möglich. Analyse-/Marketing-Cookies — nur mit Ihrer Einwilligung (soweit einschlägig).",
+    "s6t": "Speicherdauer",
+    "s6": "Wir speichern Daten, solange Ihr Konto aktiv ist und solange es für die Verarbeitungszwecke erforderlich oder gesetzlich vorgeschrieben ist. Nach Löschung Ihres Kontos werden die Daten innerhalb einer angemessenen Frist gelöscht oder anonymisiert, ausgenommen Daten, die wir aufbewahren müssen (z. B. für die Buchhaltung).",
+    "s7t": "Ihre Rechte",
+    "s7": [
+      "Nach geltendem Recht (einschließlich DSGVO) haben Sie das Recht auf: Auskunft über Ihre Daten, Berichtigung, Löschung, Einschränkung oder Widerspruch gegen die Verarbeitung, Datenübertragbarkeit, Widerruf der Einwilligung sowie Beschwerde bei einer Datenschutzaufsichtsbehörde.",
+      "Zur Ausübung Ihrer Rechte wenden Sie sich an uns (siehe Abschnitt „Kontakt“)."
+    ],
+    "s8t": "Sicherheit",
+    "s8": "Wir setzen technische und organisatorische Maßnahmen ein: Verschlüsselung der Verbindung (HTTPS), Speicherung von Passwörtern als Hashes, Zugriffstoken in sicheren Cookies, Ratenbegrenzung, Zugriffskontrolle. Dennoch ist keine Methode der Datenübertragung vollkommen sicher.",
+    "s9t": "Minderjährige",
+    "s9": "Lernende dürfen den Dienst nutzen. Haben Sie das Alter, in dem Sie in Ihrem Land eigenständig in die Datenverarbeitung einwilligen können, noch nicht erreicht, ist die Nutzung nur mit Einwilligung eines Elternteils oder gesetzlichen Vertreters möglich.",
+    "s10t": "Änderungen dieser Erklärung",
+    "s10": "Wir können diese Erklärung aktualisieren. Über wesentliche Änderungen informieren wir über den Dienst oder per E-Mail. Das Datum der aktuellen Fassung steht oben auf der Seite.",
+    "s11t": "Kontakt",
+    "s11": "Bei Fragen zum Datenschutz: topchannel1914@gmail.com oder über das Support-Formular."
+  },
+  "terms": {
+    "title": "Nutzungsbedingungen",
+    "intro": "Diese Bedingungen regeln die Nutzung des Dienstes Diklario (diklario.com, der „Dienst“), bereitgestellt von Artem Proskurovskyi (Privatperson, Poznań, Polen) (der „Betreiber“, „wir“). Mit der Registrierung oder Nutzung des Dienstes akzeptieren Sie diese Bedingungen. Sind Sie nicht einverstanden, nutzen Sie den Dienst nicht.",
+    "s1t": "Beschreibung des Dienstes",
+    "s1": "Diklario ist eine Online-Plattform für Lehrkräfte und Lernende in jedem Fach: Verwaltung von Gruppen, Unterricht, Hausaufgaben, Anwesenheit und Finanzen sowie selbstständiges Lernen mit adaptiven KI-Werkzeugen (Tests, Wörterbuch, Lernpfade). Der Funktionsumfang kann sich ändern und erweitern.",
+    "s2t": "Registrierung und Konto",
+    "s2": "Sie verpflichten sich, zutreffende Daten anzugeben, sie aktuell zu halten und den Zugang nicht an Dritte weiterzugeben. Sie sind für Handlungen unter Ihrem Konto und für die sichere Aufbewahrung Ihres Passworts verantwortlich. Teilen Sie uns unbefugte Zugriffe mit.",
+    "s3t": "Tarife, Abonnement und Zahlung",
+    "s3": [
+      "Der Dienst ist in einem kostenlosen Tarif und in kostenpflichtigen Tarifen (z. B. Standard und Maximum) mit Mengenbegrenzungen verfügbar. Kostenpflichtige Abonnements laufen über den Anbieter Paddle, der als Merchant of Record auftritt und Zahlungen sowie Steuern abwickelt.",
+      "Das Abonnement verlängert sich automatisch um den gewählten Zeitraum, bis Sie es kündigen. Preise können sich ändern; über wesentliche Änderungen informieren wir vorab. Anfallende Steuern (z. B. USt.) berechnet der Zahlungsanbieter."
+    ],
+    "s4t": "Rückerstattungen",
+    "s4": [
+      "Nach erfolgter Zahlung sind die Beträge nicht erstattungsfähig. Bei Kündigung des Abonnements bleibt der Zugang zum kostenpflichtigen Tarif bis zum Ende des bereits bezahlten Zeitraums bestehen; danach erfolgt keine automatische Verlängerung.",
+      "Diese Regel schränkt weder gesetzlich zwingende Verbraucherrechte noch die geltenden Regeln des Zahlungsanbieters Paddle ein. Fragen zur Zahlung — über das Support-Formular."
+    ],
+    "s5t": "Nutzerinhalte",
+    "s5": "Sie behalten die Rechte an den Inhalten, die Sie hochladen (Materialien, Aufgaben, Wörter, Notizen). Mit der Bereitstellung von Inhalten räumen Sie dem Betreiber eine beschränkte Lizenz ein, diese ausschließlich zum Betrieb des Dienstes zu speichern und zu verarbeiten. Sie sind für die Rechtmäßigkeit Ihrer Inhalte und für die erforderlichen Rechte verantwortlich.",
+    "s6t": "Zulässige Nutzung",
+    "s6": "Untersagt ist: Recht und Rechte Dritter zu verletzen, schädliche, beleidigende oder rechtswidrige Inhalte einzustellen, unbefugten Zugriff zu versuchen, den Dienst zu stören, Spam zu versenden, den Dienst ohne Erlaubnis zur automatisierten Datensammlung zu nutzen.",
+    "s7t": "KI-Funktionen",
+    "s7": "Der Dienst nutzt Modelle künstlicher Intelligenz, um Tests, Wörter und Fahrpläne zu erzeugen sowie Antworten zu bewerten. Die Ergebnisse werden „wie besehen“ bereitgestellt, können Ungenauigkeiten enthalten und stellen keine fachliche Beratung dar. Prüfen Sie wichtige Informationen selbst.",
+    "s8t": "Geistiges Eigentum",
+    "s8": "Die Rechte am Dienst selbst, seinem Code, Design, den Marken und Materialien liegen beim Betreiber und sind gesetzlich geschützt. Die Nutzung des Dienstes überträgt Ihnen diese Rechte nicht, mit Ausnahme des Rechts, den Dienst gemäß diesem Dokument zu nutzen.",
+    "s9t": "Gewährleistungsausschluss",
+    "s9": "Der Dienst wird „wie besehen“ und „wie verfügbar“ bereitgestellt, ohne Gewähr für einen unterbrechungs- oder fehlerfreien Betrieb. Wir garantieren nicht, dass der Dienst all Ihren Erwartungen entspricht.",
+    "s10t": "Haftungsbeschränkung",
+    "s10": "Soweit gesetzlich zulässig, haftet der Betreiber nicht für mittelbare Schäden, entgangenen Gewinn oder Datenverlust, die aus der Nutzung oder der Unmöglichkeit der Nutzung des Dienstes entstehen.",
+    "s11t": "Sperrung und Beendigung",
+    "s11": "Wir können den Zugang bei Verstoß gegen diese Bedingungen einschränken oder beenden. Sie können die Nutzung jederzeit einstellen und Ihr Konto löschen.",
+    "s12t": "Änderungen der Bedingungen",
+    "s12": "Wir können diese Bedingungen aktualisieren. Die weitere Nutzung des Dienstes nach Inkrafttreten der Änderungen gilt als Zustimmung. Das Datum der aktuellen Fassung steht oben auf der Seite.",
+    "s13t": "Anwendbares Recht und Streitigkeiten",
+    "s13": "Diese Bedingungen unterliegen dem Recht der Republik Polen. Streitigkeiten werden vor dem zuständigen Gericht am Sitz des Betreibers (Poznań, Polen) entschieden, sofern zwingende Verbraucherschutzvorschriften nichts anderes vorsehen.",
+    "s14t": "Kontakt",
+    "s14": "Fragen zu den Bedingungen: topchannel1914@gmail.com oder über das Support-Formular."
+  },
+  "refund": {
+    "title": "Rückerstattungsrichtlinie",
+    "intro": "Hier steht, wie Sie ein Abonnement kündigen und Geld für kostenpflichtige Diklario-Tarife zurückbekommen. Die Zahlungen wickelt Paddle.com Market Ltd ab — als Merchant of Record, weshalb Rückerstattungen über diesen Anbieter erfolgen.",
+    "s1t": "Zuerst kostenlos",
+    "s1": "Der kostenlose Tarif gilt unbefristet und erfordert keine Karte. Wir empfehlen, sich zunächst zu vergewissern, dass der Dienst zu Ihnen passt, bevor Sie ein kostenpflichtiges Abo abschließen.",
+    "s2t": "Rückerstattung binnen 14 Tagen",
+    "s2": "Passt der Dienst nicht zu Ihnen, melden Sie sich innerhalb von 14 Tagen nach der ersten Zahlung — wir erstatten sie vollständig und ohne Rückfragen. Für Kundinnen und Kunden in der EU und im Vereinigten Königreich ist dieses Recht gesetzlich garantiert.",
+    "s3t": "Abonnement kündigen",
+    "s3": "Sie können jederzeit kündigen. Die kostenpflichtigen Funktionen bleiben bis zum Ende des bereits bezahlten Abrechnungszeitraums verfügbar, danach wechselt das Konto automatisch in den kostenlosen Tarif. Ihre Daten werden nicht gelöscht.",
+    "s4t": "Nicht genutzte Zeit",
+    "s4": "Nach den ersten 14 Tagen erstatten wir keine Teilbeträge für ungenutzte Tage des laufenden Abrechnungszeitraums — Sie nutzen den Dienst einfach bis zu dessen Ende weiter. Ausnahmen sind unten aufgeführt.",
+    "s5t": "Wann wir immer erstatten",
+    "s5": [
+      "Doppelte Abbuchungen oder andere technische Zahlungsfehler.",
+      "Eine Abbuchung nach bereits erfolgter Kündigung.",
+      "Längere Nichtverfügbarkeit des Dienstes, die wir zu vertreten haben.",
+      "Jede Abbuchung ohne Ihre Zustimmung, einschließlich betrügerischer Kartennutzung."
+    ],
+    "s6t": "So beantragen Sie eine Rückerstattung",
+    "s6": "Schreiben Sie uns über das Support-Formular auf dieser Website. Geben Sie die E-Mail-Adresse Ihres Kontos und das Zahlungsdatum an. Wir antworten innerhalb von 3 Werktagen.",
+    "s7t": "Bearbeitungsdauer",
+    "s7": "Nach der Genehmigung erstattet Paddle auf das ursprüngliche Zahlungsmittel. Je nach Bank dauert die Gutschrift 3 bis 10 Werktage.",
+    "s8t": "Änderungen dieser Richtlinie",
+    "s8": "Wir können diese Richtlinie aktualisieren. Für bereits bezahlte Abonnements gilt die zum Zeitpunkt der Zahlung gültige Fassung. Das Datum des Inkrafttretens steht oben auf dieser Seite."
+  },
+  "footerRefund": "Rückerstattung"
+}

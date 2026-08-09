@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { IconTrophy } from '../../../components/ui/icons'
 
 // «Что умеет» — не сетка, а чередующиеся развороты: текст + свой светлый макет.
 // Светлые макеты на тёмном фоне подчёркивают: сам продукт — светлый.
@@ -84,7 +85,7 @@ function HomeworkMock() {
       <div className="mt-1 text-[11px] text-[#8A94A6]">{tr('features.hwDue')}</div>
       <div className="mt-3 rounded-lg bg-[#F7F8FA] border border-[#EAECEF] p-3">
         <div className="text-xs text-[#64748B]">{tr('features.hwFile')}</div>
-        <div className="mt-2 text-sm font-semibold text-brand-600">🏆 92 / 100</div>
+        <div className="mt-2 text-sm font-semibold text-brand-600 flex items-center gap-1.5"><IconTrophy size={15} /> 92 / 100</div>
       </div>
     </Card>
   )

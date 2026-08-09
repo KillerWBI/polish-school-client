@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 import Button from './Button'
 
 // Диалог подтверждения — замена браузерного confirm()
-export default function ConfirmDialog({ open, onClose, onConfirm, title, message, confirmLabel = 'Удалить', busy = false }) {
+export default function ConfirmDialog({ open, onClose, onConfirm, title, message, confirmLabel, busy = false }) {
+  const { t } = useTranslation('common')
   return (
     <Modal open={open} onClose={onClose} maxWidth="max-w-sm">
       <div className="p-6">
@@ -10,10 +12,10 @@ export default function ConfirmDialog({ open, onClose, onConfirm, title, message
         {message && <p className="text-sm text-slate-500 mb-6">{message}</p>}
         <div className="flex gap-3 justify-end">
           <Button variant="secondary" size="sm" onClick={onClose} disabled={busy}>
-            Отмена
+            {t('cancel')}
           </Button>
           <Button variant="danger" size="sm" onClick={onConfirm} loading={busy}>
-            {confirmLabel}
+            {confirmLabel || t('delete')}
           </Button>
         </div>
       </div>

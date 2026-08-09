@@ -44,6 +44,7 @@ const TopicDetailPage            = lazy(() => import('./pages/topics/TopicDetail
 const DailySessionPage           = lazy(() => import('./pages/study/DailySessionPage'))
 const LessonsPage                = lazy(() => import('./pages/lessons/LessonsPage'))
 const DiaryPage                  = lazy(() => import('./pages/diary/DiaryPage'))
+const NotificationsPage          = lazy(() => import('./pages/notifications/NotificationsPage'))
 
 export default function App() {
   return (
@@ -85,6 +86,7 @@ export default function App() {
           <Route path="/help"                element={<HelpPage />} />
           <Route path="/plans"               element={<PlansPage />} />
           <Route path="/materials"           element={<MaterialsPage />} />
+          <Route path="/notifications"       element={<NotificationsPage />} />
 
           {/* Только учитель */}
           <Route path="/students"

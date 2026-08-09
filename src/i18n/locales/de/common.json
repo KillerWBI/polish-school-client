@@ -24,5 +24,6 @@
   "language": "Sprache",
   "login": "Anmelden",
   "register": "Loslegen",
-  "logout": "Abmelden"
+  "logout": "Abmelden",
+  "noConnection": "Keine Verbindung zum Server"
 }

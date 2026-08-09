@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getToken, setToken, removeToken } from '../utils/token'
+import { getToken, setToken, removeToken, getCsrfToken, setCsrfToken } from '../utils/token'
 import { toast } from '../utils/toast'
 import i18n from '../i18n'
 
@@ -15,7 +15,20 @@ const client = axios.create({
 client.interceptors.request.use((cfg) => {
   const token = getToken()
   if (token) cfg.headers.Authorization = `Bearer ${token}`
+  // CSRF: только на мутирующие методы — на них сервер и проверяет
+  const method = (cfg.method || 'get').toUpperCase()
+  if (method !== 'GET' && method !== 'HEAD') {
+    const csrf = getCsrfToken()
+    if (csrf) cfg.headers['X-CSRF-Token'] = csrf
+  }
   return cfg
+})
+
+// Сервер обновляет CSRF-токен вместе с сессией (login/register/refresh/me) — подхватываем.
+// В login/register он лежит внутри data (рядом с token), в /auth/me — на верхнем уровне.
+client.interceptors.response.use((res) => {
+  setCsrfToken(res.data?.data?.csrfToken || res.data?.csrfToken)
+  return res
 })
 
 // Один общий промис refresh — чтобы параллельные 401 не дёргали /refresh пачкой.
@@ -24,7 +37,11 @@ const doRefresh = () => {
   if (!refreshing) {
     refreshing = axios
       .post(`${baseURL}/auth/refresh`, {}, { withCredentials: true })
-      .then((r) => { setToken(r.data.data.token); return r.data.data.token })
+      .then((r) => {
+        setToken(r.data.data.token)
+        setCsrfToken(r.data.data.csrfToken) // идёт вместе с новой сессией
+        return r.data.data.token
+      })
       .finally(() => { refreshing = null })
   }
   return refreshing

@@ -7,7 +7,7 @@ import CardReview from '../topics/CardReview'
 import Button from '../../components/ui/Button'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconSuccess } from '../../components/ui/icons'
+import { IconSuccess, IconLayers } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
 import Tooltip from '../../components/ui/Tooltip'
@@ -37,7 +37,7 @@ export default function DailySessionPage() {
           text={t('study.emptyText')} />
       ) : !started ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center max-w-xl mx-auto">
-          <div className="text-4xl mb-3">🗂️</div>
+          <IconLayers size={36} className="mx-auto mb-3 text-blue-500" />
           <div className="text-lg font-semibold text-slate-900 mb-1">{t('study.toReview', { count: meta.total })}</div>
           <div className="flex items-center justify-center gap-4 text-sm text-slate-500 mb-5">
             <span className="inline-flex items-center gap-1.5"><Layers className="w-4 h-4" /> {t('study.tracksCount', { count: meta.cards })}</span>

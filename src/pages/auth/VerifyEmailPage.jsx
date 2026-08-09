@@ -11,15 +11,13 @@ export default function VerifyEmailPage() {
   const navigate    = useNavigate()
   const { user, updateUser } = useAuth()
   const token       = params.get('token')
-  const [status, setStatus] = useState('loading') // loading | success | error | already
-  const [message, setMessage] = useState('')
+  // Отсутствие токена видно сразу из адреса — это начальное состояние, а не результат
+  // эффекта. Раньше страница показывала спиннер один кадр и только потом ошибку.
+  const [status, setStatus] = useState(token ? 'loading' : 'error') // loading | success | error | already
+  const [message, setMessage] = useState(token ? '' : t('auth.verifyNoToken'))
 
   useEffect(() => {
-    if (!token) {
-      setStatus('error')
-      setMessage(t('auth.verifyNoToken'))
-      return
-    }
+    if (!token) return
     verifyEmail(token)
       .then((data) => {
         if (data.alreadyVerified) {

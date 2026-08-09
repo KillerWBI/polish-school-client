@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
 import { Check, X, Copy, RotateCcw } from 'lucide-react'
 import Button from '../../components/ui/Button'
+import { IconIdea } from '../../components/ui/icons'
 
 const isObjective = (type) => type !== 'open'
 // равенство множеств индексов (для «несколько ответов»)
@@ -163,7 +164,9 @@ function QuestionItem({ q, qi, type, sel, reveal, onPick, onOpen }) {
       )}
 
       {reveal && q.explanation && (
-        <div className="text-xs text-slate-500 mt-2.5 border-t border-slate-100 pt-2">💡 {q.explanation}</div>
+        <div className="text-xs text-slate-500 mt-2.5 border-t border-slate-100 pt-2 flex items-start gap-1.5">
+          <IconIdea size={14} className="mt-0.5 text-amber-500" /> <span>{q.explanation}</span>
+        </div>
       )}
     </div>
   )

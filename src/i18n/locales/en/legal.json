@@ -23,7 +23,7 @@
     "s3t": "Sharing data with third parties (sub-processors)",
     "s3lead": "To operate the Service we use third-party providers that process data on our behalf:",
     "s3": [
-      "Hosting and database — Neon (PostgreSQL), Railway (backend), Vercel (frontend).",
+      "Hosting and database — Neon (PostgreSQL), Railway (backend), Cloudflare (frontend).",
       "File storage — Cloudinary (avatars, covers, attachments).",
       "Email — Resend (confirmation emails, notifications, support replies).",
       "Payments — Paddle (merchant of record; handling subscriptions and taxes).",

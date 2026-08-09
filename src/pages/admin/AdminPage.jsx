@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
-import { Users, GraduationCap, LayoutGrid, DollarSign, Search, ChevronLeft, ChevronRight, RefreshCw, LifeBuoy } from 'lucide-react'
+import { Users, GraduationCap, LayoutGrid, DollarSign, Search, ChevronLeft, ChevronRight, RefreshCw, LifeBuoy, Check } from 'lucide-react'
 import { getAdminStats, getAdminUsers, deactivateUser, activateUser, setUserRole, setUserPlan, getSupportTickets, replySupportTicket } from '../../api/admin.api'
 import useApiQuery from '../../hooks/useApiQuery'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -91,9 +91,6 @@ function OverviewTab() {
 function UsersTab() {
   const { t } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
-  const [users, setUsers]     = useState([])
-  const [meta, setMeta]       = useState({ total: 0, page: 1, pages: 1 })
-  const [loading, setLoading] = useState(true)
   const [search, setSearch]   = useState('')
   const [roleFilter, setRoleFilter] = useState('')
   const [page, setPage]       = useState(1)
@@ -105,30 +102,19 @@ function UsersTab() {
   const [confirmAc, setConfirmAc]     = useState(null)  // user to activate
   const [busy, setBusy]               = useState(false)
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    try {
-      const params = { page, limit: 20 }
-      if (roleFilter) params.role = roleFilter
-      const res = await getAdminUsers(params)
-      // Фильтруем по поиску локально (search по name/email/username)
-      const q = search.toLowerCase()
-      const filtered = q
-        ? res.data.filter(u =>
-            u.name?.toLowerCase().includes(q) ||
-            u.email?.toLowerCase().includes(q) ||
-            u.username?.toLowerCase().includes(q))
-        : res.data
-      setUsers(filtered)
-      setMeta(res.meta)
-    } catch {
-      toast.error(t('admin.usersError'))
-    } finally {
-      setLoading(false)
-    }
-  }, [page, roleFilter, search, t])
+  // Список — через общий кэш запросов: страница и роль в ключе, поиск фильтрует уже
+  // полученную страницу (как и раньше), поэтому в ключ не входит и лишнего запроса не делает.
+  const { data: res, loading, reload: load } = useApiQuery(
+    ['admin-users', { page, roleFilter }],
+    (signal) => getAdminUsers({ page, limit: 20, ...(roleFilter ? { role: roleFilter } : {}) }, signal),
+  )
 
-  useEffect(() => { load() }, [load])
+  const q = search.toLowerCase()
+  const users = (res?.data || []).filter(u => !q
+    || u.name?.toLowerCase().includes(q)
+    || u.email?.toLowerCase().includes(q)
+    || u.username?.toLowerCase().includes(q))
+  const meta = res?.meta || { total: 0, page: 1, pages: 1 }
 
   // ── Действия ──
 
@@ -452,7 +438,7 @@ function MenuBtn({ children, onClick, active, danger }) {
       className={`w-full text-left px-2 py-1.5 rounded-lg text-sm transition-colors flex items-center justify-between
         ${active ? 'bg-blue-50 text-blue-700 font-medium' : danger ? 'text-red-600 hover:bg-red-50' : 'text-slate-700 hover:bg-slate-50'}`}>
       {children}
-      {active && <span className="text-blue-500">✓</span>}
+      {active && <Check className="w-4 h-4 text-blue-500" />}
     </button>
   )
 }
@@ -509,26 +495,15 @@ const TICKET_CATEGORY_KEY = {
 function SupportTab() {
   const { t, i18n } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
-  const [tickets, setTickets] = useState([])
-  const [counts, setCounts]   = useState({ open: 0, in_progress: 0, resolved: 0 })
-  const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('')
   const [active, setActive]   = useState(null) // тикет в модалке
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    try {
-      const res = await getSupportTickets(statusFilter ? { status: statusFilter } : {})
-      setTickets(res.data)
-      setCounts(res.meta?.counts ?? { open: 0, in_progress: 0, resolved: 0 })
-    } catch {
-      toast.error(t('admin.ticketsError'))
-    } finally {
-      setLoading(false)
-    }
-  }, [statusFilter, t])
-
-  useEffect(() => { load() }, [load])
+  const { data: res, loading, reload: load } = useApiQuery(
+    ['support-tickets', statusFilter],
+    (signal) => getSupportTickets(statusFilter ? { status: statusFilter } : {}, signal),
+  )
+  const tickets = res?.data || []
+  const counts  = res?.meta?.counts ?? { open: 0, in_progress: 0, resolved: 0 }
 
   const filters = [
     ['', t('admin.fAll')],

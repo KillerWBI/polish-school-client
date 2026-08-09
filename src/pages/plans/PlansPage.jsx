@@ -1,11 +1,16 @@
+import { useState } from 'react'
 import { toast } from '../../utils/toast'
 import { useTranslation } from 'react-i18next'
 import { Check, Sparkles } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import { openCheckout, paddleConfigured } from '../../utils/paddle'
 import { fetchMe } from '../../api/auth.api'
+import { getBillingStatus, cancelSubscription, resumeSubscription } from '../../api/billing.api'
+import useApiQuery from '../../hooks/useApiQuery'
 import { useCurrency, formatMoney } from '../../utils/money'
 import PageContainer from '../../components/ui/PageContainer'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
+import Button from '../../components/ui/Button'
 
 // Внутренние ключи: free/basic/pro/school → Бесплатный/Базовый/Стандартный/Максимальный
 const RANK = { free: 0, basic: 1, pro: 2, school: 3 }
@@ -81,6 +86,9 @@ export default function PlansPage() {
         <p className="text-xs text-slate-500 mt-1">{role === 'student' ? t('plans.allFeaturesHintStudent') : t('plans.allFeaturesHint')}</p>
       </div>
 
+      {/* Управление уже купленной подпиской. Пока её нет — блок не рисуется вовсе. */}
+      <SubscriptionPanel onChanged={refetchMe} />
+
       {/* Карточки поставлены плотнее — цены рядом легче сравнить */}
       <div className="max-w-5xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-2.5 items-stretch">
         {PLANS.map((p) => (
@@ -90,6 +98,82 @@ export default function PlansPage() {
 
       <p className="text-center text-xs text-slate-400 mt-6">{t('plans.footNote')}</p>
     </PageContainer>
+  )
+}
+
+// Блок «Ваша подписка»: дата следующего списания, отмена и отмена отмены.
+// Без него пользователь мог только оплатить, а прекратить платежи — нет.
+function SubscriptionPanel({ onChanged }) {
+  const { t, i18n } = useTranslation('teacher')
+  const { data, reload } = useApiQuery(['billing-status'], getBillingStatus)
+  const [confirming, setConfirming] = useState(false)
+  const [busy, setBusy] = useState(false)
+
+  if (!data?.hasSubscription) return null
+
+  const fmtDate = (iso) => new Date(iso).toLocaleDateString(i18n.language, {
+    day: 'numeric', month: 'long', year: 'numeric',
+  })
+
+  const run = async (fn, successKey) => {
+    setBusy(true)
+    try {
+      await fn()
+      toast.success(t(successKey))
+      await reload()
+      onChanged?.()
+    } catch (e) {
+      toast.error(e.response?.data?.error || t('plans.manageFailed'))
+    } finally {
+      setBusy(false)
+      setConfirming(false)
+    }
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto mb-5 rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-slate-900">{t('plans.subscriptionTitle')}</div>
+          <p className="text-xs text-slate-500 mt-1">
+            {data.scheduledCancelAt
+              ? t('plans.subscriptionEndsOn', { date: fmtDate(data.scheduledCancelAt) })
+              : data.nextBilledAt
+                ? t('plans.subscriptionRenewsOn', { date: fmtDate(data.nextBilledAt) })
+                : t('plans.subscriptionActive')}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {data.updatePaymentUrl && !data.scheduledCancelAt && (
+            <a href={data.updatePaymentUrl} target="_blank" rel="noopener noreferrer"
+              className="h-9 px-3 inline-flex items-center rounded-lg border border-slate-200 text-sm text-slate-700 hover:bg-slate-50">
+              {t('plans.updatePaymentMethod')}
+            </a>
+          )}
+          {data.manageable && (data.scheduledCancelAt ? (
+            <Button size="sm" loading={busy}
+              onClick={() => run(resumeSubscription, 'plans.resumeDone')}>
+              {t('plans.resume')}
+            </Button>
+          ) : (
+            <Button variant="secondary" size="sm" disabled={busy} onClick={() => setConfirming(true)}>
+              {t('plans.cancel')}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <ConfirmDialog
+        open={confirming}
+        onClose={() => setConfirming(false)}
+        onConfirm={() => run(cancelSubscription, 'plans.cancelDone')}
+        title={t('plans.cancelConfirmTitle')}
+        message={t('plans.cancelConfirmText')}
+        confirmLabel={t('plans.cancelConfirmCta')}
+        busy={busy}
+      />
+    </div>
   )
 }
 

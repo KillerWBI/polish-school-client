@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
@@ -99,6 +99,9 @@ export default function IndividualLessonsPage() {
 
       {isTeacher && (
         <LessonFormModal
+          // key: каждое открытие (и смена редактируемого урока) монтирует форму заново,
+          // поэтому поля заполняются из пропсов, а не досинхронизируются эффектом
+          key={formOpen ? (editing?.id || 'new') : 'closed'}
           open={formOpen}
           editing={editing}
           students={students || []}
@@ -180,30 +183,18 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
   const { t } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
   const isEdit = !!editing
-  const blank = { studentId: '', mode: 'existing', phName: '', phContact: '', date: '', time: '18:00', topic: '', pricePerLesson: '', lessonLink: '' }
-  const [form, setForm] = useState(blank)
+  // Форма инициализируется прямо из пропсов, а не эффектом при открытии: родитель даёт
+  // модалке key (открытие/смена урока = новый компонент), поэтому состояние всегда свежее.
+  const [form, setForm] = useState(() => ({
+    studentId: '', mode: 'existing', phName: '', phContact: '',
+    date: editing?.date || '', time: editing?.time || '18:00',
+    topic: editing?.topic || '', pricePerLesson: editing?.pricePerLesson ?? '',
+    lessonLink: editing?.lessonLink || '',
+  }))
   const [saving, setSaving] = useState(false)
   const [error, setError]   = useState('')
-  const [linkMode, setLinkMode] = useState('auto') // 'auto' | 'custom' — только для создания
+  const [linkMode, setLinkMode] = useState(editing ? 'custom' : 'auto') // 'auto' | 'custom' — только для создания
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
-
-  // Инициализация при открытии
-  useEffect(() => {
-    if (!open) return
-    if (editing) {
-      setLinkMode('custom')
-      setForm({
-        studentId: '', mode: 'existing', phName: '', phContact: '',
-        date: editing.date || '', time: editing.time || '18:00',
-        topic: editing.topic || '', pricePerLesson: editing.pricePerLesson ?? '',
-        lessonLink: editing.lessonLink || '',
-      })
-    } else {
-      setLinkMode('auto')
-      setForm(blank)
-    }
-    setError('')
-  }, [open, editing])
 
   const submit = async (e) => {
     e.preventDefault()

@@ -16,7 +16,10 @@ import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconCalendar, IconIndividual, IconGroups, IconPayments, IconLink } from '../../components/ui/icons'
+import {
+  IconCalendar, IconIndividual, IconGroups, IconPayments, IconLink,
+  IconChat, IconSuccess, IconClose, IconAttach, IconWrite,
+} from '../../components/ui/icons'
 import Tabs from '../../components/ui/Tabs'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
@@ -642,7 +645,7 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
         {chatUrl && safeUrl(chatUrl) && (
           <a href={safeUrl(chatUrl)} target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-sm hover:bg-slate-100 transition-colors mb-4">
-            <span>💬</span>
+            <IconChat size={15} />
             {t('groupDetail.chatGroup')}
           </a>
         )}
@@ -937,7 +940,7 @@ function GenerateLessonsModal({ open, onClose, group, onGenerated }) {
         )}
         {result !== null ? (
           <div className="text-center py-4">
-            <div className="text-4xl mb-3">✅</div>
+            <IconSuccess size={40} className="mx-auto mb-3 text-emerald-500" />
             <p className="text-slate-900 font-medium">{t('groupDetail.createdN', { n: result })}</p>
             <p className="text-xs text-slate-400 mt-1">{t('groupDetail.safeRepeat')}</p>
             <Button className="mt-4 w-full" onClick={handleClose}>{tc('close')}</Button>
@@ -1003,7 +1006,7 @@ function MaterialsEditor({ materials, onChange }) {
             <div className="flex items-center justify-between">
               <span className="text-xs text-slate-500">{m.type === 'link' ? t('groupDetail.matLink') : t('groupDetail.matText')}</span>
               <button type="button" onClick={() => remove(i)}
-                className="text-slate-600 hover:text-red-600 cursor-pointer text-xs">✕</button>
+                className="text-slate-600 hover:text-red-600 cursor-pointer"><IconClose size={14} /></button>
             </div>
             <input placeholder={t('groupDetail.titleOptional')} value={m.title || ''}
               onChange={e => update(i, 'title', e.target.value)}
@@ -1031,8 +1034,8 @@ function MaterialsList({ materials }) {
     <div className="space-y-2">
       {materials.map((m, i) => (
         <div key={i} className="flex items-start gap-2.5 px-3 py-2.5 rounded-xl bg-white border border-slate-200">
-          <span className="text-base shrink-0 mt-0.5">
-            {m.type === 'link' ? '🔗' : m.type === 'file' ? '📎' : '📝'}
+          <span className="shrink-0 mt-0.5 text-slate-400">
+            {m.type === 'link' ? <IconLink size={16} /> : m.type === 'file' ? <IconAttach size={16} /> : <IconWrite size={16} />}
           </span>
           <div className="flex-1 min-w-0">
             {m.title && <p className="text-xs font-medium text-slate-900 mb-0.5">{m.title}</p>}
@@ -1142,7 +1145,7 @@ function SettingsTab({ group, reload, onDeleted }) {
                 <input type="time" value={sl.time} onChange={e => updateSlot(i, 'time', e.target.value)}
                   className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
                 <button type="button" onClick={() => removeSlot(i)}
-                  className="text-slate-500 hover:text-red-600 cursor-pointer p-1">✕</button>
+                  className="text-slate-500 hover:text-red-600 cursor-pointer p-1"><IconClose size={14} /></button>
               </div>
             ))}
           </div>

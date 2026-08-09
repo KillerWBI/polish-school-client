@@ -17,7 +17,7 @@ import Input from '../../components/ui/Input'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconCalendar, IconSearch } from '../../components/ui/icons'
+import { IconCalendar, IconSearch, IconClose } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
 
@@ -318,7 +318,7 @@ function EditCourseModal({ open, onClose, course, onUpdated }) {
                     className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
                   />
                   <button type="button" onClick={() => removeSlot(i)}
-                    className="text-slate-500 hover:text-red-600 cursor-pointer p-1">✕</button>
+                    className="text-slate-500 hover:text-red-600 cursor-pointer p-1"><IconClose size={14} /></button>
                 </div>
               ))}
             </div>

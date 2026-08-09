@@ -9,6 +9,7 @@ import {
 import { getTeacherAnalytics } from '../../../api/analytics.api'
 import useApiQuery from '../../../hooks/useApiQuery'
 import { PageSpinner } from '../../../components/ui/Spinner'
+import { IconChart } from '../../../components/ui/icons'
 
 export default function TeacherCharts({ userId }) {
   const { t } = useTranslation('teacher')
@@ -69,7 +70,7 @@ export default function TeacherCharts({ userId }) {
           <div className="text-xs text-slate-500 uppercase tracking-widest mb-1">{t('profile.avgAttendance')}</div>
           <div className="text-3xl font-bold text-slate-900">{data?.avgAttendance ?? 0}%</div>
         </div>
-        <div className="text-5xl">📊</div>
+        <IconChart size={44} className="text-slate-300" />
       </div>
     </div>
   )

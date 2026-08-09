@@ -7,24 +7,10 @@ import { safeUrl } from '../../utils/safeUrl'
 import { SUPPORTED, LANG_NAMES } from '../../i18n/countryToLang'
 import Tooltip from '../ui/Tooltip'
 import {
-  IconNotifications, IconHomework, IconSuccess, IconDeadline, IconInvite,
-  IconMoney, IconError, IconExpand, IconSettings, IconHelp, IconSupport,
+  IconNotifications, IconExpand, IconSettings, IconHelp, IconSupport,
   IconLanguage, IconInstall, IconLogout, IconCheck,
 } from '../ui/icons'
-
-// Иконка + цвет по типу уведомления
-const NOTIF_META = {
-  homework_assigned:  { Icon: IconHomework, cls: 'bg-amber-50 text-amber-600' },
-  homework_graded:    { Icon: IconSuccess,  cls: 'bg-emerald-50 text-emerald-600' },
-  attendance_pending: { Icon: IconDeadline, cls: 'bg-blue-50 text-blue-600' },
-  invitation_received:{ Icon: IconInvite,   cls: 'bg-blue-50 text-blue-600' },
-  payment_recorded:   { Icon: IconMoney,    cls: 'bg-emerald-50 text-emerald-600' },
-  payment_submitted:  { Icon: IconMoney,    cls: 'bg-amber-50 text-amber-600' },
-  payment_approved:   { Icon: IconSuccess,  cls: 'bg-emerald-50 text-emerald-600' },
-  payment_rejected:   { Icon: IconError,    cls: 'bg-red-50 text-red-600' },
-  review_due:         { Icon: IconDeadline, cls: 'bg-blue-50 text-blue-600' },
-  _default:           { Icon: IconNotifications, cls: 'bg-slate-100 text-slate-500' },
-}
+import { notifMeta } from '../ui/notifMeta'
 
 // Левая часть шапки намеренно пустая: развёрнутый сайдбар накрывает её краем,
 // поэтому ничего интерактивного слева не держим.
@@ -226,7 +212,7 @@ export function NotifBell({ navigate }) {
           ) : (
             <div className="py-1 max-h-[380px] overflow-y-auto">
               {items.map((n) => {
-                const meta = NOTIF_META[n.type] ?? NOTIF_META._default
+                const meta = notifMeta(n.type)
                 return (
                   <button key={n.id} onClick={() => openItem(n)}
                     className={`w-full flex items-start gap-3 px-4 py-2.5 hover:bg-slate-50 cursor-pointer text-left ${!n.readAt ? 'bg-blue-50/40' : ''}`}>
@@ -241,6 +227,12 @@ export function NotifBell({ navigate }) {
               })}
             </div>
           )}
+
+          {/* Прочитанное уходит из колокольчика через час — но не пропадает совсем */}
+          <button onClick={() => { setOpen(false); navigate('/notifications') }}
+            className="w-full px-4 py-2.5 border-t border-slate-100 text-[11px] text-blue-600 hover:bg-slate-50 transition-colors cursor-pointer">
+            {t('topbar.allNotifications')}
+          </button>
         </div>
       )}
     </div>
