@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
@@ -18,7 +18,7 @@ import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconAttendance, IconCalendar, IconGroups, IconIndividual, IconSuccess, IconLocked } from '../../components/ui/icons'
+import { IconAttendance, IconCalendar, IconGroups, IconIndividual, IconSuccess, IconLocked, IconCheck, IconClose } from '../../components/ui/icons'
 import Tooltip from '../../components/ui/Tooltip'
 import Tabs from '../../components/ui/Tabs'
 import PageContainer from '../../components/ui/PageContainer'
@@ -38,7 +38,7 @@ function ConfirmBadge({ rec }) {
   if (!rec) return null
   if (rec.status === 'confirmed') {
     return rec.present
-      ? <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/15 text-emerald-600 shrink-0">✓ {t('attendance.wasConfirmed')}</span>
+      ? <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-green-500/15 text-emerald-600 shrink-0"><IconCheck size={12} /> {t('attendance.wasConfirmed')}</span>
       : <span className="text-xs px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-400 shrink-0">{t('attendance.wasNotConfirmed')}</span>
   }
   const b = STATUS_BADGE[rec.status]
@@ -182,8 +182,11 @@ function PendingView({ items, loading, isTeacher, reload }) {
                 {isTeacher && r.student && (
                   <div className="text-xs text-slate-500 mt-1">{t('attendance.studentLabel')} {r.student.name}</div>
                 )}
-                <div className="text-xs text-amber-600/80 mt-1">
-                  {t('attendance.teacherMarkedLabel')} {r.teacherMarked ? `✓ ${t('attendance.wasThere')}` : `✗ ${t('attendance.wasNotThere')}`}
+                <div className="text-xs text-amber-600/80 mt-1 inline-flex items-center gap-1">
+                  {t('attendance.teacherMarkedLabel')}
+                  {r.teacherMarked
+                    ? <><IconCheck size={12} /> {t('attendance.wasThere')}</>
+                    : <><IconClose size={12} /> {t('attendance.wasNotThere')}</>}
                 </div>
               </div>
 
@@ -393,13 +396,11 @@ function TeacherView({ onSaved }) {
 function GroupJournal({ onSaved }) {
   const { t } = useTranslation('teacher')
   const { data: groups, loading } = useApiQuery(['groups'], getGroups)
-  const [groupId, setGroupId] = useState(null)
-  const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7))
-
-  // Автовыбор первой группы
-  useEffect(() => {
-    if (!groupId && groups?.length) setGroupId(groups[0].id)
-  }, [groups, groupId])
+  // null = «пользователь ещё не выбирал» → показываем первую группу.
+  // Раньше выбор проставлялся эффектом, из-за чего первый рендер шёл без группы.
+  const [pickedGroupId, setPickedGroupId] = useState(null)
+  const groupId = pickedGroupId ?? groups?.[0]?.id ?? null
+  const setGroupId = setPickedGroupId
 
   // Открываем журнал на месяце ПОСЛЕДНЕЙ отметки посещаемости группы (там, где данные),
   // а не просто где есть уроки — иначе залипаем на пустом текущем месяце.
@@ -410,14 +411,14 @@ function GroupJournal({ onSaved }) {
       ? getAttendance({ groupId, limit: 100 }).then(rs => ({ gid: groupId, rs: rs || [] }))
       : Promise.resolve({ gid: null, rs: [] }),
   )
-  const pickedFor = useRef(null)
-  useEffect(() => {
-    if (!attMeta || attMeta.gid !== groupId) return // ждём данные именно этой группы
-    if (pickedFor.current === groupId) return         // месяц уже подобран — не мешаем ручной навигации
-    pickedFor.current = groupId
-    const m = bestMonth(attMeta.rs)
-    if (m) setMonth(m)                                // нет отметок → оставляем текущий месяц
-  }, [groupId, attMeta])
+
+  // Месяц не «проставляется эффектом», а выводится: ручной выбор (если он для ЭТОЙ группы)
+  // → месяц последней отметки → текущий. Смена группы обнуляет ручной выбор сама собой.
+  const [picked, setPicked] = useState(null) // { gid, month }
+  const month = (picked?.gid === groupId && picked.month)
+    || (attMeta?.gid === groupId && bestMonth(attMeta.rs))
+    || new Date().toISOString().slice(0, 7)
+  const setMonth = (m) => setPicked({ gid: groupId, month: m })
 
   if (loading) return <SkeletonList />
   if (!groups?.length)
@@ -448,27 +449,27 @@ function JournalTable({ groupId, month, onSaved }) {
     () => getLessons({ groupId, from, to, limit: 100 })
   )
 
-  // records: `${lessonId}:${studentId}` -> запись посещаемости
-  const [records, setRecords] = useState({})
-  const [recLoad, setRecLoad] = useState(false)
-  const [edits, setEdits]     = useState({}) // локальные несохранённые правки
-  const [saving, setSaving]   = useState(false)
+  const [edits, setEdits]   = useState({}) // локальные несохранённые правки
+  const [saving, setSaving] = useState(false)
+  // edits обнулять не нужно: при смене группы/месяца родитель меняет key и таблица монтируется заново
 
-  const reloadRecords = useCallback(async (list) => {
-    if (!list?.length) { setRecords({}); return }
-    setRecLoad(true)
-    try {
+  // records: `${lessonId}:${studentId}` -> запись посещаемости.
+  // Через общий кэш запросов, а не ручной загрузкой в эффекте: ключ — состав уроков месяца.
+  const lessonIds = (lessons || []).map(l => l.id).join(',')
+  const { data: recordsData, loading: recLoad, reload: reloadRecords } = useApiQuery(
+    ['attendance-records', lessonIds],
+    async () => {
+      if (!lessons?.length) return {}
       const pairs = await Promise.all(
-        list.map(l => getAttendance({ lessonId: l.id }).then(rs => [l.id, rs || []]).catch(() => [l.id, []]))
+        lessons.map(l => getAttendance({ lessonId: l.id }).then(rs => [l.id, rs || []]).catch(() => [l.id, []]))
       )
       const map = {}
       pairs.forEach(([lid, rs]) => rs.forEach(r => { map[`${lid}:${r.studentId}`] = r }))
-      setRecords(map)
-    } finally { setRecLoad(false) }
-  }, [])
-
-  useEffect(() => { reloadRecords(lessons) }, [lessons, reloadRecords])
-  useEffect(() => { setEdits({}) }, [groupId, month])
+      return map
+    },
+    { enabled: !lLoad },
+  )
+  const records = recordsData || {} // до первой загрузки — пустая карта, а не null
 
   const sorted = [...(lessons || [])].sort(
     (a, b) => (a.date || '').localeCompare(b.date || '') || (a.time || '').localeCompare(b.time || '')
@@ -512,7 +513,7 @@ function JournalTable({ groupId, month, onSaved }) {
       }
       toast.success(t('attendance.journalSaved'))
       setEdits({})
-      await reloadRecords(sorted)
+      await reloadRecords()
       onSaved?.()
     } catch (e) {
       toast.error(errMsg(e, t('attendance.saveError')))
@@ -648,21 +649,24 @@ function JournalCell({ marked, present, status, dirty, onClick }) {
   )
 }
 
+// Вынесен из JournalLegend: компонент, объявленный в теле другого компонента,
+// пересоздаётся на каждый рендер и роняет поддерево целиком.
+const LegendItem = ({ box, label }) => (
+  <span className="inline-flex items-center gap-1.5">
+    <span className={`w-4 h-4 rounded ${box}`} />
+    {label}
+  </span>
+)
+
 function JournalLegend({ loading }) {
   const { t } = useTranslation('teacher')
-  const Item = ({ box, label }) => (
-    <span className="inline-flex items-center gap-1.5">
-      <span className={`w-4 h-4 rounded ${box}`} />
-      {label}
-    </span>
-  )
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-500 px-1">
-      <Item box="bg-emerald-50 border border-emerald-200" label={t('attendance.legWasConfirmed')} />
-      <Item box="bg-red-50 border border-red-200" label={t('attendance.legNotConfirmed')} />
-      <Item box="bg-amber-50 border border-amber-200" label={t('attendance.legPending')} />
-      <Item box="bg-amber-50 ring-1 ring-red-400" label={t('attendance.legDispute')} />
-      <Item box="ring-2 ring-blue-500" label={t('attendance.legUnsaved')} />
+      <LegendItem box="bg-emerald-50 border border-emerald-200" label={t('attendance.legWasConfirmed')} />
+      <LegendItem box="bg-red-50 border border-red-200" label={t('attendance.legNotConfirmed')} />
+      <LegendItem box="bg-amber-50 border border-amber-200" label={t('attendance.legPending')} />
+      <LegendItem box="bg-amber-50 ring-1 ring-red-400" label={t('attendance.legDispute')} />
+      <LegendItem box="ring-2 ring-blue-500" label={t('attendance.legUnsaved')} />
       <span className="text-slate-400">{t('attendance.legClickDate')}</span>
       {loading && <span className="text-blue-600">{t('attendance.legUpdating')}</span>}
     </div>
@@ -680,26 +684,31 @@ function IndividualJournal({ onSaved }) {
     ['individual-lessons', { from, to }],
     () => getIndividualLessons({ from, to })
   )
-  const [records, setRecords] = useState({}) // lessonId -> запись
   const [busy, setBusy] = useState({})
 
-  const reload = useCallback(async (list) => {
-    if (!list?.length) { setRecords({}); return }
-    const pairs = await Promise.all(
-      list.map(l => getAttendance({ individualLessonId: l.id }).then(rs => [l.id, (rs || [])[0] || null]).catch(() => [l.id, null]))
-    )
-    const map = {}
-    pairs.forEach(([lid, r]) => { if (r) map[lid] = r })
-    setRecords(map)
-  }, [])
-  useEffect(() => { reload(lessons) }, [lessons, reload])
+  // lessonId -> запись посещаемости; ключ кэша — состав уроков месяца
+  const lessonIds = (lessons || []).map(l => l.id).join(',')
+  const { data: recordsData, reload } = useApiQuery(
+    ['ind-attendance-records', lessonIds],
+    async () => {
+      if (!lessons?.length) return {}
+      const pairs = await Promise.all(
+        lessons.map(l => getAttendance({ individualLessonId: l.id }).then(rs => [l.id, (rs || [])[0] || null]).catch(() => [l.id, null]))
+      )
+      const map = {}
+      pairs.forEach(([lid, r]) => { if (r) map[lid] = r })
+      return map
+    },
+    { enabled: !loading },
+  )
+  const records = recordsData || {}
 
   const mark = async (l, present) => {
     setBusy(b => ({ ...b, [l.id]: true }))
     try {
       await saveAttendance(null, [{ studentId: l.studentId, present }], l.id)
       toast.success(present ? t('attendance.markedPresent') : t('attendance.markedAbsent'))
-      await reload(lessons)
+      await reload()
       onSaved?.()
     } catch (e) {
       toast.error(errMsg(e, t('attendance.saveError')))

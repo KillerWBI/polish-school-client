@@ -66,7 +66,8 @@
     "markAllRead": "Mark all as read",
     "viewAll": "All notifications",
     "openMenu": "Open menu",
-    "notificationsTooltip": "Notifications: new assignments, grades, payments and invitations"
+    "notificationsTooltip": "Notifications: new assignments, grades, payments and invitations",
+    "allNotifications": "Full event history"
   },
   "verifyBanner": {
     "title": "Verify your email.",
@@ -223,7 +224,7 @@
     "generate": "Generate",
     "saveTest": "Save test",
     "resultHint": "«Check» shows the result and saves the attempt to My tests.",
-    "resultHintTeacher": " And «Save test» puts it in your library (to attach to homework).",
+    "resultHintTeacher": "And «Save test» puts it in your library (to attach to homework).",
     "notLoaded": "Test not loaded.",
     "noQuestions": "This test has no questions.",
     "copied": "Copied",
@@ -236,8 +237,8 @@
     "retry": "Retry",
     "copy": "Copy",
     "yourAnswer": "Your answer…",
-    "sample": "Sample: ",
-    "copyAnswer": "Answer: ",
+    "sample": "Sample:",
+    "copyAnswer": "Answer:",
     "myTitle": "My tests",
     "mySubtitleTeacher": "Taken by you and saved to your library (for homework).",
     "mySubtitleStudent": "Your attempts with results and answers.",
@@ -349,7 +350,7 @@
     "colDate": "Date",
     "badgeGroup": "Group",
     "badgeIndiv": "Individual",
-    "indivPrefix": "Individual — ",
+    "indivPrefix": "Individual —",
     "check": "Review",
     "submit": "Submit",
     "noDeadline": "no deadline",
@@ -406,7 +407,7 @@
     "fillAll": "Fill in all fields",
     "ideaReasonRequired": "Write why it's needed and what it improves",
     "reasonInMsg": "Why it's needed and what it improves:",
-    "ideaPrefix": "💡 Idea:",
+    "ideaPrefix": "Idea:",
     "sendFail": "Couldn't send your message",
     "backCabinet": "To dashboard",
     "backHome": "Home",
@@ -441,5 +442,11 @@
     "tipNotes": "Personal notes and records",
     "tipLessons": "Lessons outside the platform: hours, payments and debt",
     "tipProgress": "How your studies are going: attendance, grades, vocabulary"
+  },
+  "notificationsPage": {
+    "title": "Event history",
+    "subtitle": "Every notification, including ones read long ago",
+    "emptyTitle": "No events yet",
+    "emptyText": "Assignments, grades, payments and invitations will show up here — everything the platform has told you about."
   }
 }

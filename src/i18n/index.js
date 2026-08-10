@@ -4,53 +4,15 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 import { SUPPORTED, FALLBACK } from './countryToLang'
 import { geoDetector } from './detectLocale'
 
-// Ресурсы (namespaces). Пока — common; остальные namespace добавляются по фазам.
-import ruCommon from './locales/ru/common.json'
-import plCommon from './locales/pl/common.json'
-import ukCommon from './locales/uk/common.json'
-import enCommon from './locales/en/common.json'
-import esCommon from './locales/es/common.json'
-import frCommon from './locales/fr/common.json'
-import deCommon from './locales/de/common.json'
-// landing: ru + en (источник + fallback) + pl/uk (рыночные); es/fr/de пока фолбэк на en
-import ruLanding from './locales/ru/landing.json'
-import enLanding from './locales/en/landing.json'
-import plLanding from './locales/pl/landing.json'
-import ukLanding from './locales/uk/landing.json'
-// app: оболочка/auth/дашборд — ru/en/pl/uk; es/fr/de пока фолбэк на en
-import ruApp from './locales/ru/app.json'
-import enApp from './locales/en/app.json'
-import plApp from './locales/pl/app.json'
-import ukApp from './locales/uk/app.json'
-// teacher: страницы учителя — ru/en/pl/uk; es/fr/de пока фолбэк на en
-import ruTeacher from './locales/ru/teacher.json'
-import enTeacher from './locales/en/teacher.json'
-import plTeacher from './locales/pl/teacher.json'
-import ukTeacher from './locales/uk/teacher.json'
-// student: страницы ученика (треки/словарь/сессия/заметки/прогресс…) — ru/en/pl/uk; es/fr/de фолбэк на en
-import ruStudent from './locales/ru/student.json'
-import enStudent from './locales/en/student.json'
-import plStudent from './locales/pl/student.json'
-import ukStudent from './locales/uk/student.json'
-// legal: юр-страницы (конфиденциальность/условия) — ru/en/pl/uk; es/fr/de фолбэк на en
-import ruLegal from './locales/ru/legal.json'
-import enLegal from './locales/en/legal.json'
-import plLegal from './locales/pl/legal.json'
-import ukLegal from './locales/uk/legal.json'
-// help: справка — ru + en (pl/uk пока фолбэк на en; в JSX ещё и русский дефолт в t())
-import ruHelp from './locales/ru/help.json'
-import enHelp from './locales/en/help.json'
-import plHelp from './locales/pl/help.json'
-import ukHelp from './locales/uk/help.json'
+// Ресурсы (namespaces) собираются из locales/<язык>/<namespace>.json автоматически.
+// Раньше каждый файл ещё и вручную импортировался сюда — перевод легко было написать
+// и забыть подключить, тогда язык молча оставался на английском фолбэке.
+const modules = import.meta.glob('./locales/*/*.json', { eager: true, import: 'default' })
 
-const resources = {
-  ru: { common: ruCommon, landing: ruLanding, app: ruApp, teacher: ruTeacher, student: ruStudent, legal: ruLegal, help: ruHelp },
-  pl: { common: plCommon, landing: plLanding, app: plApp, teacher: plTeacher, student: plStudent, legal: plLegal, help: plHelp },
-  uk: { common: ukCommon, landing: ukLanding, app: ukApp, teacher: ukTeacher, student: ukStudent, legal: ukLegal, help: ukHelp },
-  en: { common: enCommon, landing: enLanding, app: enApp, teacher: enTeacher, student: enStudent, legal: enLegal, help: enHelp },
-  es: { common: esCommon },
-  fr: { common: frCommon },
-  de: { common: deCommon },
+const resources = {}
+for (const [path, dict] of Object.entries(modules)) {
+  const [, lang, ns] = path.match(/\.\/locales\/([^/]+)\/([^/]+)\.json$/)
+  ;(resources[lang] ||= {})[ns] = dict
 }
 
 // Регистрируем кастомный гео-детектор (читает кэш lf_geo_lang)
@@ -69,8 +31,11 @@ i18n
     load: 'languageOnly', // 'pl-PL' → 'pl'
     interpolation: { escapeValue: false },
     detection: {
-      // Порядок: явный выбор → гео (кэш) → язык браузера
-      order: ['localStorage', 'geo', 'navigator'],
+      // Порядок: ?lang= в адресе → явный выбор → гео (кэш) → язык браузера.
+      // querystring первым: на эти адреса ведут hreflang-ссылки для Google и ими же
+      // делятся ссылкой «открой на польском» — явный параметр должен побеждать.
+      order: ['querystring', 'localStorage', 'geo', 'navigator'],
+      lookupQuerystring: 'lang',
       lookupLocalStorage: 'lf_lang',
       caches: [], // выбор пишем сами (LanguageSwitcher) в lf_lang
     },

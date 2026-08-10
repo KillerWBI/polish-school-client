@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
 import { Check, X, RotateCcw } from 'lucide-react'
+import { IconCelebrate } from '../../components/ui/icons'
 import Button from '../../components/ui/Button'
 
 // Обзор флеш-карточек: flip по клику → «Знаю/Не знаю» → SR-обновление (onReview).
@@ -17,7 +18,7 @@ export default function CardReview({ cards, onReview, onDone, hint }) {
   if (finished) {
     return (
       <div className="max-w-xl mx-auto text-center py-10">
-        <div className="text-4xl mb-3">🎉</div>
+        <IconCelebrate size={36} className="mx-auto mb-3 text-emerald-500" />
         <div className="text-lg font-semibold text-slate-900 mb-1">{t('cards.reviewed', { count: done })}</div>
         <p className="text-sm text-slate-500 mb-5">{t('cards.cardsReturn')}</p>
         <Button onClick={onDone}>{t('common:done')}</Button>

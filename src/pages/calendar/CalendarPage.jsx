@@ -16,6 +16,7 @@ import { safeUrl } from '../../utils/safeUrl'
 import Modal from '../../components/ui/Modal'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
+import { IconChat } from '../../components/ui/icons'
 
 // Статические пропсы FullCalendar — на уровне модуля, чтобы их ссылки не менялись
 // на каждый рендер. Иначе обёртка @fullcalendar/react видит «пропсы изменились» →
@@ -233,7 +234,7 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 w-full h-10 mt-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-100 transition-colors"
         >
-          <span>💬</span>
+          <IconChat size={15} />
           {t('calendar.chatGroup')}
         </a>
       )}

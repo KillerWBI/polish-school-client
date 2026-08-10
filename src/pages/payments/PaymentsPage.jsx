@@ -8,7 +8,7 @@ import {
 } from '../../api/payments.api'
 import Button from '../../components/ui/Button'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconPayments, IconStudents, IconSuccess } from '../../components/ui/icons'
+import { IconPayments, IconStudents, IconSuccess, IconAttach } from '../../components/ui/icons'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -145,8 +145,8 @@ function ShotButton({ url, onShot }) {
   if (!url) return null
   return (
     <button onClick={() => onShot(url)}
-      className="shrink-0 text-xs px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-colors">
-      📎 {t('payments.shot')}
+      className="shrink-0 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-colors">
+      <IconAttach size={13} /> {t('payments.shot')}
     </button>
   )
 }

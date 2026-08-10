@@ -12,6 +12,7 @@ import {
   XCircle, AlertTriangle, AlertCircle, Clock, Lock, Award, Flame, Inbox,
   Landmark, Smartphone, Wallet, Phone, Mail, Send, MessageCircle, Briefcase,
   Video, Map, Layers, Repeat, PenLine, Grid3x3, Type, Scale, Cookie, Menu,
+  Paperclip, BarChart3, PartyPopper, Trophy, Frown, Laptop, Languages, Library,
 } from 'lucide-react'
 
 // Общие размер и толщина линии для всего приложения.
@@ -117,3 +118,12 @@ export const IconLegal      = icon(Scale,      'IconLegal')
 export const IconCookie     = icon(Cookie,     'IconCookie')
 export const IconFolderOpen = icon(FolderOpen, 'IconFolderOpen')
 export const IconBook       = icon(BookOpen,   'IconBook')
+export const IconChat       = icon(MessageCircle, 'IconChat')      // ссылка на внешний чат группы
+export const IconAttach     = icon(Paperclip,     'IconAttach')    // вложение: скриншот, файл ДЗ
+export const IconChart      = icon(BarChart3,     'IconChart')     // пустая аналитика
+export const IconCelebrate  = icon(PartyPopper,   'IconCelebrate') // всё пройдено / карточки кончились
+export const IconTrophy     = icon(Trophy,        'IconTrophy')
+export const IconSad        = icon(Frown,         'IconSad')       // экран ошибки
+export const IconSkills     = icon(Laptop,        'IconSkills')    // идеи тем: навыки
+export const IconSpeak      = icon(Languages,     'IconSpeak')     // идеи тем: языки
+export const IconLibrary    = icon(Library,       'IconLibrary')   // идеи тем: книги

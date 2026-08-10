@@ -1,4 +1,7 @@
 import { useTranslation } from 'react-i18next'
+import {
+  IconCalendar, IconWrite, IconAttendance, IconMoney, IconChat,
+} from '../../../components/ui/icons'
 
 // «Что видит ученик» — телефон-макет (другой формат визуала).
 export default function StudentView() {
@@ -17,14 +20,14 @@ export default function StudentView() {
           </p>
           <ul className="mt-6 space-y-3">
             {[
-              ['📅', t('studentView.f1t'), t('studentView.f1d')],
-              ['✏️', t('studentView.f2t'), t('studentView.f2d')],
-              ['✓', t('studentView.f3t'), t('studentView.f3d')],
-              ['💰', t('studentView.f4t'), t('studentView.f4d')],
-              ['💬', t('studentView.f5t'), t('studentView.f5d')],
-            ].map(([e, ti, d]) => (
+              [IconCalendar,   t('studentView.f1t'), t('studentView.f1d')],
+              [IconWrite,      t('studentView.f2t'), t('studentView.f2d')],
+              [IconAttendance, t('studentView.f3t'), t('studentView.f3d')],
+              [IconMoney,      t('studentView.f4t'), t('studentView.f4d')],
+              [IconChat,       t('studentView.f5t'), t('studentView.f5d')],
+            ].map(([Icon, ti, d]) => (
               <li key={ti} className="flex items-start gap-3">
-                <span className="w-8 h-8 rounded-lg border border-[#303036] bg-[#1D1D22] flex items-center justify-center text-sm shrink-0">{e}</span>
+                <span className="w-8 h-8 rounded-lg border border-[#303036] bg-[#1D1D22] flex items-center justify-center text-[#9A9AA1] shrink-0"><Icon size={15} /></span>
                 <div>
                   <div className="text-sm font-medium text-[#EDEDED]">{ti}</div>
                   <div className="text-[13px] text-[#8A8A8F]">{d}</div>
@@ -43,7 +46,7 @@ export default function StudentView() {
                 <div className="w-20 h-1.5 rounded-full bg-[#E5E7EB]" />
               </div>
               <div className="p-3 space-y-2.5">
-                <div className="text-[11px] text-[#8A94A6]">{t('studentView.hi')} 👋</div>
+                <div className="text-[11px] text-[#8A94A6]">{t('studentView.hi')}</div>
                 {/* KPI */}
                 <div className="grid grid-cols-2 gap-2">
                   {[[t('studentView.kUrok'), '2'], [t('studentView.kHw'), '1'], [t('studentView.kAtt'), '92%'], [t('studentView.kDebt'), '200 zł']].map(([k, v]) => (

@@ -66,7 +66,8 @@
     "markAllRead": "Oznacz wszystkie jako przeczytane",
     "viewAll": "Wszystkie powiadomienia",
     "openMenu": "Otwórz menu",
-    "notificationsTooltip": "Powiadomienia: nowe zadania, oceny, płatności i zaproszenia"
+    "notificationsTooltip": "Powiadomienia: nowe zadania, oceny, płatności i zaproszenia",
+    "allNotifications": "Pełna historia zdarzeń"
   },
   "verifyBanner": {
     "title": "Potwierdź email.",
@@ -224,7 +225,7 @@
     "generate": "Generuj",
     "saveTest": "Zapisz test",
     "resultHint": "«Sprawdź» pokaże wynik i zapisze podejście w Moich testach.",
-    "resultHintTeacher": " A «Zapisz test» odłoży go do biblioteki (do dołączenia do zadania).",
+    "resultHintTeacher": "A «Zapisz test» odłoży go do biblioteki (do dołączenia do zadania).",
     "notLoaded": "Test nie wczytany.",
     "noQuestions": "Ten test nie ma pytań.",
     "copied": "Skopiowano",
@@ -237,8 +238,8 @@
     "retry": "Powtórz",
     "copy": "Kopiuj",
     "yourAnswer": "Twoja odpowiedź…",
-    "sample": "Wzór: ",
-    "copyAnswer": "Odpowiedź: ",
+    "sample": "Wzór:",
+    "copyAnswer": "Odpowiedź:",
     "myTitle": "Moje testy",
     "mySubtitleTeacher": "Rozwiązane przez ciebie i zapisane do biblioteki (do zadań).",
     "mySubtitleStudent": "Twoje podejścia z wynikami i odpowiedziami.",
@@ -359,7 +360,7 @@
     "colDate": "Data",
     "badgeGroup": "Grupa",
     "badgeIndiv": "Indywidualna",
-    "indivPrefix": "Indywidualna — ",
+    "indivPrefix": "Indywidualna —",
     "check": "Sprawdź",
     "submit": "Oddaj",
     "noDeadline": "bez terminu",
@@ -406,7 +407,7 @@
     "fillAll": "Wypełnij wszystkie pola",
     "ideaReasonRequired": "Napisz, po co to jest i co ulepszy",
     "reasonInMsg": "Po co to jest i co ulepszy:",
-    "ideaPrefix": "💡 Pomysł:",
+    "ideaPrefix": "Pomysł:",
     "sendFail": "Nie udało się wysłać zgłoszenia",
     "backCabinet": "Do panelu",
     "backHome": "Strona główna",
@@ -441,5 +442,11 @@
     "tipNotes": "Osobiste notatki i zapiski",
     "tipLessons": "Zajęcia poza platformą: godziny, płatności i dług",
     "tipProgress": "Jak idzie nauka: obecność, oceny, słownictwo"
+  },
+  "notificationsPage": {
+    "title": "Historia zdarzeń",
+    "subtitle": "Wszystkie powiadomienia, także dawno przeczytane",
+    "emptyTitle": "Nie ma jeszcze zdarzeń",
+    "emptyText": "Pojawią się tu zadania, oceny, płatności i zaproszenia — wszystko, o czym informowała platforma."
   }
 }

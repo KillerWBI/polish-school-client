@@ -353,8 +353,11 @@ function UngradedRow({ sub }) {
 
 function PendingHwRow({ hw }) {
   const { t, i18n } = useTranslation('app')
+  // Время читаем один раз при монтировании: чтение часов прямо в рендере делает его
+  // нечистым (одинаковые пропсы → разный результат) и ломает мемоизацию React.
+  const [now] = useState(() => Date.now())
   const deadline = hw.deadline ? new Date(hw.deadline).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' }) : t('dashboard.noDeadline')
-  const urgent = hw.deadline && (new Date(hw.deadline) - Date.now()) < 864e5
+  const urgent = hw.deadline && (new Date(hw.deadline) - now) < 864e5
   return (
     <Link to="/homework" className="flex items-center gap-3 px-5 py-3 border-t border-slate-100 first:border-0 hover:bg-slate-50 transition-colors">
       <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${urgent ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'}`}><Clock className="w-3.5 h-3.5" /></div>

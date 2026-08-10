@@ -5,7 +5,9 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="Diklario — рабочее место преподавателя и кабинет ученика. Группы, уроки, задания, посещаемость и финансы в одном месте, по любому предмету. Плюс самостоятельное обучение с AI. Бесплатно на старте." />
-    <link rel="canonical" href="https://diklario.com/" />
+    <link rel="canonical" href="%SITE_URL%/" />
+    <!-- Языковые версии для Google: подставляются на сборке (vite.config.js) -->
+%HREFLANG%
     <title>Diklario — платформа для преподавателей и учеников</title>
 
     <!-- PWA: установка на телефон + оффлайн-оболочка -->
@@ -20,16 +22,16 @@
     <meta property="og:type"        content="website" />
     <meta property="og:site_name"   content="Diklario" />
     <meta property="og:locale"      content="ru_RU" />
-    <meta property="og:url"         content="https://diklario.com/" />
+    <meta property="og:url"         content="%SITE_URL%/" />
     <meta property="og:title"       content="Diklario — платформа для преподавателей и учеников" />
     <meta property="og:description" content="Рабочее место преподавателя и кабинет ученика: группы, уроки, задания, посещаемость и финансы в одном месте, по любому предмету. Плюс самообучение с AI. Бесплатно на старте." />
-    <meta property="og:image"       content="https://diklario.com/og.png" />
+    <meta property="og:image"       content="%SITE_URL%/og.png" />
     <meta property="og:image:width"  content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card"       content="summary_large_image" />
     <meta name="twitter:title"      content="Diklario — платформа для преподавателей и учеников" />
     <meta name="twitter:description" content="Рабочее место преподавателя и кабинет ученика: группы, уроки, задания, посещаемость и финансы в одном месте, по любому предмету." />
-    <meta name="twitter:image"      content="https://diklario.com/og.png" />
+    <meta name="twitter:image"      content="%SITE_URL%/og.png" />
 
     <!-- Шрифты редизайна: Space Grotesk (заголовки) + JetBrains Mono (моно) + Inter (текст) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -44,14 +46,14 @@
         {
           "@type": "Organization",
           "name": "Diklario",
-          "url": "https://diklario.com/",
-          "logo": "https://diklario.com/icon.svg",
+          "url": "%SITE_URL%/",
+          "logo": "%SITE_URL%/icon.svg",
           "description": "Платформа для преподавателей и учеников по любому предмету: группы, уроки, задания, посещаемость, финансы и самообучение с AI."
         },
         {
           "@type": "WebSite",
           "name": "Diklario",
-          "url": "https://diklario.com/",
+          "url": "%SITE_URL%/",
           "inLanguage": ["ru", "en", "pl", "uk"]
         }
       ]

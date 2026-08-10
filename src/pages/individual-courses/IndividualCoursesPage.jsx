@@ -11,7 +11,7 @@ import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
 import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconIndividual, IconAdd } from '../../components/ui/icons'
+import { IconIndividual, IconAdd, IconCalendar, IconMoney, IconClose } from '../../components/ui/icons'
 import Tooltip from '../../components/ui/Tooltip'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
@@ -109,9 +109,9 @@ function CourseCard({ course, student, onClick }) {
           <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
-      {student?.name && <p className="text-xs text-slate-400 mb-1">👤 {student.name}</p>}
-      {schedule && <p className="text-xs text-slate-400 mb-1">📅 {schedule}</p>}
-      <p className="text-xs text-slate-400">💰 {course.pricePerLesson || 0} {t('indCourses.perLesson')}</p>
+      {student?.name && <p className="text-xs text-slate-400 mb-1 flex items-center gap-1.5"><IconIndividual size={13} /> {student.name}</p>}
+      {schedule && <p className="text-xs text-slate-400 mb-1 flex items-center gap-1.5"><IconCalendar size={13} /> {schedule}</p>}
+      <p className="text-xs text-slate-400 flex items-center gap-1.5"><IconMoney size={13} /> {course.pricePerLesson || 0} {t('indCourses.perLesson')}</p>
     </button>
   )
 }
@@ -223,7 +223,7 @@ function CreateCourseModal({ open, onClose, onCreated, students }) {
                     className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
                   />
                   <button type="button" onClick={() => removeSlot(i)}
-                    className="text-slate-500 hover:text-red-600 cursor-pointer p-1">✕</button>
+                    className="text-slate-500 hover:text-red-600 cursor-pointer p-1"><IconClose size={14} /></button>
                 </div>
               ))}
             </div>

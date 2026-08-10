@@ -18,7 +18,7 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { PageSpinner } from '../../components/ui/Spinner'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconEmpty, IconHomework, IconTests } from '../../components/ui/icons'
+import { IconEmpty, IconHomework, IconTests, IconCheck, IconClose } from '../../components/ui/icons'
 import Tooltip from '../../components/ui/Tooltip'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
@@ -255,7 +255,7 @@ function StudentHWCard({ hw, onSubmitted }) {
         {hw.quiz && (
           <div className="mt-3">
             {quizDone ? (
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700">✓ {t('homework.quizDone')}</span>
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700"><IconCheck size={14} /> {t('homework.quizDone')}</span>
             ) : (
               <button onClick={() => setQuizOpen(true)}
                 className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
@@ -314,7 +314,7 @@ function StudentHWCard({ hw, onSubmitted }) {
               </span>
               {file && (
                 <button type="button" onClick={(e) => { e.preventDefault(); setFile(null) }}
-                  className="text-slate-500 hover:text-red-600 text-xs shrink-0">✕</button>
+                  className="text-slate-500 hover:text-red-600 shrink-0"><IconClose size={14} /></button>
               )}
               <input type="file" accept="application/pdf,image/*"
                 className="sr-only" onChange={handleFileChange} />
@@ -372,14 +372,14 @@ function StatusBadge({ submission, isOverdue }) {
   }
   if (submission.status === 'graded') {
     return (
-      <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-        ✓ {t('homework.gradedBadge', { grade: submission.grade })}
+      <span className="shrink-0 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+        <IconCheck size={12} /> {t('homework.gradedBadge', { grade: submission.grade })}
       </span>
     )
   }
   return (
-    <span className="shrink-0 text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-      ✓ {t('homework.reviewing')}
+    <span className="shrink-0 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+      <IconCheck size={12} /> {t('homework.reviewing')}
     </span>
   )
 }
@@ -567,7 +567,9 @@ function QuizAttempts({ hw }) {
 
   return (
     <div className="mb-6 rounded-2xl border border-blue-100 bg-blue-50/40 p-4">
-      <div className="text-sm font-semibold text-slate-900 mb-2">🧪 {t('homework.resultsTitle', { topic: hw.quiz.topic })}</div>
+      <div className="text-sm font-semibold text-slate-900 mb-2 flex items-center gap-1.5">
+        <IconTests size={15} className="text-blue-600" /> {t('homework.resultsTitle', { topic: hw.quiz.topic })}
+      </div>
       {loading ? (
         <div className="text-sm text-slate-400">{tc('loading')}</div>
       ) : !attempts?.length ? (

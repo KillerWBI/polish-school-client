@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { captureException } from '../utils/sentry.js'
+import { IconSad } from './ui/icons'
 
 // Глобальный перехватчик ошибок рендера — спасает от белого экрана.
 export default class ErrorBoundary extends Component {
@@ -49,7 +50,7 @@ export default class ErrorBoundary extends Component {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F1F3F6] p-6">
         <div className="max-w-md w-full rounded-2xl border border-slate-200 bg-white shadow-sm p-8 text-center">
-          <div className="text-5xl mb-4">😵</div>
+          <IconSad size={44} className="mx-auto mb-4 text-slate-300" />
           <h1 className="text-xl font-semibold text-slate-900 mb-2">Что-то пошло не так</h1>
           <p className="text-sm text-slate-500 mb-6">
             Произошла непредвиденная ошибка. Вернитесь на предыдущую страницу или на главную.

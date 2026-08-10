@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 // queryKey — массив, однозначно определяющий запрос (endpoint + все влияющие на результат параметры).
 // fn — async функция вида (signal) => data, как и раньше в useFetch.
 export default function useApiQuery(queryKey, fn, options = {}) {
-  const { data, isLoading, isFetching, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, error, refetch, dataUpdatedAt } = useQuery({
     queryKey,
     queryFn: ({ signal }) => fn(signal),
     ...options,
@@ -18,5 +18,8 @@ export default function useApiQuery(queryKey, fn, options = {}) {
     fetching: isFetching,
     error: error ? (error.response?.data?.error || 'Ошибка загрузки') : null,
     reload: refetch,
+    // метка времени последнего успешного ответа — по ней удобно сбрасывать
+    // локальное состояние, привязанное к конкретной порции данных
+    updatedAt: dataUpdatedAt,
   }
 }

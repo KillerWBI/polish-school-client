@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Cookie } from 'lucide-react'
 
@@ -7,12 +7,9 @@ const KEY = 'cookie-consent' // ключ в localStorage — согласие с
 // Баннер согласия на cookies. Сейчас используются только необходимые cookies (сессия/вход),
 // поэтому достаточно информирования + кнопки «Принять». Показывается, пока пользователь не принял.
 export default function CookieBanner() {
-  const [show, setShow] = useState(false)
-
-  // При монтировании проверяем: если согласия ещё нет — показываем баннер
-  useEffect(() => {
-    if (!localStorage.getItem(KEY)) setShow(true)
-  }, [])
+  // Согласие читаем сразу при инициализации состояния, а не в эффекте:
+  // иначе баннер успевал мигнуть скрытым и появиться вторым рендером.
+  const [show, setShow] = useState(() => !localStorage.getItem(KEY))
 
   if (!show) return null
 

@@ -24,5 +24,6 @@
   "language": "Langue",
   "login": "Se connecter",
   "register": "Commencer",
-  "logout": "Se déconnecter"
+  "logout": "Se déconnecter",
+  "noConnection": "Pas de connexion au serveur"
 }

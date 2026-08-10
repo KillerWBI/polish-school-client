@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
@@ -13,7 +13,7 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconLayers, IconSuccess } from '../../components/ui/icons'
+import { IconLayers, IconSuccess, IconChat } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
 import Tabs from '../../components/ui/Tabs'
 import IdeasModal from './IdeasModal'
@@ -143,8 +143,8 @@ export default function TopicDetailPage() {
       </div>
 
       {topic.goal && (
-        <p className="text-sm text-slate-600 bg-blue-50/60 border border-blue-100 rounded-xl px-3 py-2 mb-2">
-          🎯 {topic.goal}
+        <p className="text-sm text-slate-600 bg-blue-50/60 border border-blue-100 rounded-xl px-3 py-2 mb-2 flex items-start gap-1.5">
+          <Target className="w-4 h-4 mt-0.5 shrink-0 text-blue-500" /> <span>{topic.goal}</span>
         </p>
       )}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-5">
@@ -514,24 +514,20 @@ function TrackReview({ topicId, onBack }) {
 /* ── Практика шага ── */
 function StepPractice({ topicId, step, onBack }) {
   const { t } = useTranslation('student')
-  const [mode, setMode]       = useState('test') // 'test' (MCQ) | 'open' (открытый ответ)
-  const [quiz, setQuiz]       = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [runKey, setRunKey]   = useState(0)
-  const [saved, setSaved]     = useState(null) // { score, total, mastery, label? } после сохранения
+  const [mode, setMode] = useState('test') // 'test' (MCQ) | 'open' (открытый ответ)
 
-  const load = useCallback(async () => {
-    setLoading(true); setQuiz(null); setSaved(null)
-    try {
-      const q = await nextTopicQuiz(topicId, step.id, mode)
-      setQuiz(q); setRunKey((k) => k + 1)
-    } catch (e) {
-      toast.error(e.response?.data?.error || t('detail.genPracticeError'))
-    } finally { setLoading(false) }
-  }, [topicId, step.id, mode, t])
+  // Практику генерирует ИИ, поэтому держим её в кэше запросов: возврат к уже
+  // сгенерированному шагу не сжигает лишний AI-запрос, а «Ещё тест» делает refetch.
+  const { data: quiz, loading, error, reload: load, updatedAt } = useApiQuery(
+    ['topic-practice', topicId, step.id, mode],
+    () => nextTopicQuiz(topicId, step.id, mode),
+    { staleTime: Infinity, retry: false },
+  )
 
-  // Генерируем практику при входе и при смене режима
-  useEffect(() => { load() }, [load])
+  // Результат привязан к конкретной сгенерированной практике: пришла новая — отчёт снят
+  const [savedState, setSaved] = useState(null) // { at, score, total, mastery, label? }
+  const saved = savedState?.at === updatedAt ? savedState : null
+  const runKey = updatedAt
 
   // MCQ: «Проверить» в QuizRunner — сразу сохраняет попытку
   const onCheck = async (answers, score, total) => {
@@ -541,7 +537,7 @@ function StepPractice({ topicId, step, onBack }) {
         stepId: step.id, questions: quiz.questions, answers, score, total, difficulty: quiz.difficulty,
       })
       const st = (updated.roadmap || []).find((s) => s.id === step.id)
-      setSaved({ score, total, mastery: Math.round(st?.mastery || 0) })
+      setSaved({ at: updatedAt, score, total, mastery: Math.round(st?.mastery || 0) })
       toast.success(t('detail.savedToHistory'))
     } catch (e) {
       toast.error(e.response?.data?.error || t('detail.saveError'))
@@ -554,7 +550,7 @@ function StepPractice({ topicId, step, onBack }) {
       stepId: step.id, questions: quiz.questions, answers, difficulty: quiz.difficulty,
     })
     const st = (res.topic?.roadmap || []).find((s) => s.id === step.id)
-    setSaved({ score: res.score, total: res.total, mastery: Math.round(st?.mastery || 0), label: t('detail.avgScore', { avg: res.avg }) })
+    setSaved({ at: updatedAt, score: res.score, total: res.total, mastery: Math.round(st?.mastery || 0), label: t('detail.avgScore', { avg: res.avg }) })
     toast.success(t('detail.graded'))
     return res.results
   }
@@ -588,6 +584,11 @@ function StepPractice({ topicId, step, onBack }) {
         <div className="py-16 text-center text-sm text-slate-400">
           <Sparkles className="w-6 h-6 mx-auto mb-2 text-blue-400 animate-pulse" />
           {genLabel}
+        </div>
+      ) : error ? (
+        <div className="py-10 text-center">
+          <p className="text-sm text-red-600 mb-4">{error || t('detail.genPracticeError')}</p>
+          <Button onClick={load}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.moreTest')}</Button>
         </div>
       ) : quiz && mode === 'open' ? (
         <>
@@ -653,7 +654,11 @@ function OpenRunner({ quiz, onGrade }) {
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${scoreColor(r.score)}`}>{t('detail.scoreLabel', { score: r.score })}</span>
                 </div>
-                {r.feedback && <div className="text-xs text-slate-600 bg-slate-50 rounded-lg px-3 py-2">💬 {r.feedback}</div>}
+                {r.feedback && (
+                  <div className="text-xs text-slate-600 bg-slate-50 rounded-lg px-3 py-2 flex items-start gap-1.5">
+                    <IconChat size={13} className="mt-0.5 text-slate-400" /> <span>{r.feedback}</span>
+                  </div>
+                )}
                 {q.sampleAnswer && <div className="text-xs text-emerald-800 bg-emerald-50 rounded-lg px-3 py-2"><span className="text-emerald-600">{t('detail.sample')}</span>{q.sampleAnswer}</div>}
               </div>
             )}

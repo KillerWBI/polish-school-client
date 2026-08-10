@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import useAuth from '../../hooks/useAuth'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
+import { IconChat, IconAI, IconUpload, IconCheck, IconAdd } from '../../components/ui/icons'
 
 /* ─── Примитивы визуализации ─────────────────────────────────
    Mark — подсветка элемента (кольцо + подпись «о чём вопрос»).
@@ -28,237 +29,375 @@ function Shot({ children }) {
   )
 }
 const Btn = ({ children, tone = 'primary' }) => {
-  const t = tone === 'primary' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700 border border-slate-200'
-  return <span className={`inline-flex h-9 px-4 items-center rounded-xl text-sm font-medium ${t}`}>{children}</span>
+  const cls = tone === 'primary' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700 border border-slate-200'
+  return <span className={`inline-flex h-9 px-4 items-center gap-1.5 rounded-xl text-sm font-medium ${cls}`}>{children}</span>
 }
 const Cell = ({ ch, tone }) => {
   const map = { green: 'bg-emerald-50 text-emerald-600', red: 'bg-red-50 text-red-600', amber: 'bg-amber-50 text-amber-700', empty: 'bg-white text-slate-300' }
   return <span className={`w-9 h-9 inline-flex items-center justify-center rounded-md text-sm font-semibold border border-slate-100 ${map[tone]}`}>{ch}</span>
 }
+const Kpi = ({ label, value, tone = 'text-slate-900' }) => (
+  <div className="w-28 rounded-xl bg-white border border-slate-200 p-2.5">
+    <div className="text-[9px] text-slate-400">{label}</div>
+    <div className={`text-sm font-semibold ${tone}`}>{value}</div>
+  </div>
+)
+const Tab = ({ children, active }) => (
+  <span className={`px-3 py-1 rounded-lg text-xs ${active ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500'}`}>{children}</span>
+)
 
-/* ─── Контент справки для УЧИТЕЛЯ ──────────────────────────── */
-const TEACHER_SECTIONS = [
+/* ─── Структура справки ──────────────────────────────────────
+   Только id секции и картинки. Все тексты — вопросы, ответы, подписи внутри
+   макетов — приходят из i18n (help.json). Раньше русский дублировался прямо здесь
+   как фолбэк, и при польском интерфейсе макеты всё равно оставались русскими. */
+
+// v — подписи внутри макетов (help:viz.*)
+const teacherSections = (v) => [
   {
-    id: 'dashboard', title: 'Дашборд', items: [
-      { q: 'Что показывают карточки сверху?', a: 'Это KPI: долг учеников, уроки на сегодня, задания к проверке и средняя посещаемость — быстрый срез по кабинету.',
-        visual: <Shot><div className="grid grid-cols-2 gap-2">
-          <Mark label="долг учеников"><div className="w-28 rounded-xl bg-white border border-slate-200 p-2.5"><div className="text-[9px] text-slate-400">Долг</div><div className="text-sm font-semibold text-amber-600">2 340 zł</div></div></Mark>
-          {[['Уроки сегодня', '3'], ['Задания к проверке', '5'], ['Посещаемость', '92%']].map(([k, v]) => (
-            <div key={k} className="w-28 rounded-xl bg-white border border-slate-200 p-2.5"><div className="text-[9px] text-slate-400">{k}</div><div className="text-sm font-semibold text-slate-900">{v}</div></div>
-          ))}
-        </div></Shot> },
-      { q: 'Что за график и что такое «потенциал»?', a: 'Доход и долг по периодам: оплачено (зелёный), не оплачено (жёлтый) и потенциал — сколько ещё принесут будущие уроки без посещений.',
-        visual: <Shot><Mark label="доход · долг · потенциал"><div className="flex items-end gap-1.5 h-20 rounded-lg bg-white border border-slate-200 px-3 py-2">{[50, 70, 45, 85, 60].map((h, i) => <div key={i} className="w-3 rounded-t bg-blue-500/80" style={{ height: `${h}%` }} />)}</div></Mark></Shot> },
-      { q: 'Как быстро что-то создать?', a: 'Кнопка «Создать» на дашборде — быстрый доступ: новая группа, домашнее задание или запись об оплате, не переходя по разделам.',
-        visual: <Shot><Mark label="быстрое создание"><Btn>+ Создать</Btn></Mark></Shot> },
+    id: 'dashboard',
+    visuals: [
+      <Shot><div className="grid grid-cols-2 gap-2">
+        <Mark label={v('studentsDebt')}><Kpi label={v('debt')} value="2 340 zł" tone="text-amber-600" /></Mark>
+        <Kpi label={v('lessonsToday')} value="3" />
+        <Kpi label={v('hwToCheck')} value="5" />
+        <Kpi label={v('attendance')} value="92%" />
+      </div></Shot>,
+      <Shot><Mark label={v('incomeDebtPotential')}>
+        <div className="flex items-end gap-1.5 h-20 rounded-lg bg-white border border-slate-200 px-3 py-2">
+          {[50, 70, 45, 85, 60].map((h, i) => <div key={i} className="w-3 rounded-t bg-blue-500/80" style={{ height: `${h}%` }} />)}
+        </div>
+      </Mark></Shot>,
+      <Shot><Mark label={v('quickCreate')}><Btn><IconAdd size={14} /> {v('createBtn')}</Btn></Mark></Shot>,
     ],
   },
   {
-    id: 'groups', title: 'Группы', items: [
-      { q: 'Как создать группу?', a: 'Кнопка «+ Создать группу»: задаёшь название, цену за урок, расписание (дни/время) и, по желанию, ссылку на чат. Уроки на 3 месяца сгенерируются сами.',
-        visual: <Shot><Mark label="создать группу"><Btn>+ Создать группу</Btn></Mark></Shot> },
-      { q: 'Как добавить ученика без аккаунта?', a: 'Внутри группы → «Ученик без аккаунта»: вводишь имя и контакт. Ученику ничего не приходит, по нему сразу считаются посещаемость и долг. Позже перенесёшь на реальный аккаунт.',
-        visual: <Shot><div className="flex gap-2"><Mark label="без аккаунта"><Btn tone="ghost">+ Ученик без аккаунта</Btn></Mark><Btn tone="ghost">+ Пригласить</Btn><Btn>+ Добавить</Btn></div></Shot> },
-      { q: 'Как пригласить реального ученика?', a: 'Внутри группы → «+ Пригласить»: находишь ученика по нику (@username) и отправляешь приглашение в группу — он принимает у себя.',
-        visual: <Shot><div className="flex gap-2"><Btn tone="ghost">+ Ученик без аккаунта</Btn><Mark label="по нику @username"><Btn tone="ghost">+ Пригласить</Btn></Mark></div></Shot> },
-      { q: 'Как добавить или изменить урок группы?', a: 'Внутри группы → вкладка «Уроки» → «+ Урок»: дата, время, тема. Там же урок можно открыть, отредактировать или удалить. При создании группы с расписанием уроки на 3 месяца создаются сами.',
-        visual: <Shot><div className="flex gap-1 p-1 rounded-xl bg-slate-100"><span className="px-3 py-1 rounded-lg text-xs text-slate-500">Студенты</span><Mark label="уроки группы"><span className="px-3 py-1 rounded-lg text-xs bg-white text-blue-700 shadow-sm">Уроки</span></Mark><span className="px-3 py-1 rounded-lg text-xs text-slate-500">Настройки</span></div></Shot> },
-      { q: 'Где ссылка на чат группы?', a: 'В настройках группы можно указать ссылку на внешний чат (Telegram/WhatsApp) — она появится кнопкой «Чат группы» в шапке группы и в карточке урока.',
-        visual: <Shot><Mark label="внешний чат"><span className="inline-flex h-9 px-4 items-center rounded-xl bg-white border border-slate-200 text-sm text-blue-600">💬 Чат группы</span></Mark></Shot> },
-      { q: 'Ученик без аккаунта завёл аккаунт — как перенести историю?', a: 'У такого ученика в группе нажмите «Перенести» и выберите его реальный аккаунт — вся посещаемость, оплаты и домашние задания перепривяжутся, а карточка без аккаунта удалится. Ничего не теряется.',
-        visual: <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2"><span className="text-xs text-slate-900 flex-1">Иван (без аккаунта)</span><Mark label="перенос истории"><span className="text-xs text-blue-600 font-medium">Перенести</span></Mark></div></Shot> },
+    id: 'groups',
+    visuals: [
+      <Shot><Mark label={v('createGroup')}><Btn><IconAdd size={14} /> {v('createGroupBtn')}</Btn></Mark></Shot>,
+      <Shot><div className="flex gap-2">
+        <Mark label={v('noAccount')}><Btn tone="ghost"><IconAdd size={14} /> {v('studentNoAccountBtn')}</Btn></Mark>
+        <Btn tone="ghost"><IconAdd size={14} /> {v('inviteBtn')}</Btn>
+      </div></Shot>,
+      <Shot><div className="flex gap-2">
+        <Btn tone="ghost"><IconAdd size={14} /> {v('studentNoAccountBtn')}</Btn>
+        <Mark label={v('byUsername')}><Btn tone="ghost"><IconAdd size={14} /> {v('inviteBtn')}</Btn></Mark>
+      </div></Shot>,
+      <Shot><div className="flex gap-1 p-1 rounded-xl bg-slate-100">
+        <Tab>{v('tabStudents')}</Tab>
+        <Mark label={v('groupLessons')}><Tab active>{v('tabLessons')}</Tab></Mark>
+        <Tab>{v('tabSettings')}</Tab>
+      </div></Shot>,
+      <Shot><Mark label={v('externalChat')}>
+        <span className="inline-flex h-9 px-4 items-center gap-1.5 rounded-xl bg-white border border-slate-200 text-sm text-blue-600">
+          <IconChat size={14} /> {v('groupChat')}
+        </span>
+      </Mark></Shot>,
+      <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2">
+        <span className="text-xs text-slate-900 flex-1">{v('samplePersonNoAccount')}</span>
+        <Mark label={v('historyTransfer')}><span className="text-xs text-blue-600 font-medium">{v('transfer')}</span></Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'homework', title: 'Домашние задания', items: [
-      { q: 'Как задать домашку?', a: '«+ Создать задание»: пишешь описание, выбираешь урок (групповой или индивидуальный) и дедлайн. Ученики увидят её у себя со сроком.',
-        visual: <Shot><Mark label="создать задание"><Btn>+ Создать задание</Btn></Mark></Shot> },
-      { q: 'Как проверить сдачи и поставить оценку?', a: 'Открываешь задание → видишь сдачи учеников (файл/комментарий) и статусы. Вводишь оценку 0–100 — она появится у ученика.',
-        visual: <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 space-y-2">
-          <div className="flex items-center justify-between text-xs"><span className="text-slate-700 font-medium">Анна</span><span className="text-slate-400">на проверке</span></div>
-          <Mark label="оценка 0–100"><div className="flex items-center gap-2"><span className="w-16 h-8 rounded-lg border border-slate-200 bg-slate-50 inline-flex items-center px-2 text-xs text-slate-400">оценка</span><Btn>Поставить</Btn></div></Mark>
-        </div></Shot> },
+    id: 'homework',
+    visuals: [
+      <Shot><Mark label={v('createHw')}><Btn><IconAdd size={14} /> {v('createHwBtn')}</Btn></Mark></Shot>,
+      <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 space-y-2">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-slate-700 font-medium">{v('samplePerson')}</span>
+          <span className="text-slate-400">{v('inReview')}</span>
+        </div>
+        <Mark label={v('grade0100')}><div className="flex items-center gap-2">
+          <span className="w-16 h-8 rounded-lg border border-slate-200 bg-slate-50 inline-flex items-center px-2 text-xs text-slate-400">{v('gradeField')}</span>
+          <Btn>{v('setGrade')}</Btn>
+        </div></Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'attendance', title: 'Посещаемость (журнал)', items: [
-      { q: 'Как отметить посещаемость?', a: 'В журнале (сетка ученики × даты) нажимаете на ячейку: ✓ был / Н не был. Клик по дате в шапке отмечает весь урок присутствующими. Внизу — «Сохранить».',
-        visual: <Shot><div className="flex items-center gap-2"><span className="text-xs text-slate-500 w-14">Анна</span><Cell ch="✓" tone="green" /><Mark label="клик = был / не был"><Cell ch="Н" tone="red" /></Mark><Cell ch="·" tone="empty" /></div></Shot> },
-      { q: 'Что значат цвета?', a: 'Зелёный ✓ — был (подтверждено), красный Н — не был, жёлтый — ждёт подтверждения ученика или спор. Синяя рамка — не сохранено.',
-        visual: <Shot><div className="flex gap-2 items-center"><Cell ch="✓" tone="green" /><Cell ch="Н" tone="red" /><Mark label="ждёт / спор"><Cell ch="✓" tone="amber" /></Mark></div></Shot> },
-      { q: 'Откуда берутся «Спорные» и что с ними делать?', a: 'Если ученик оспорил отметку — запись попадает во вкладку «Спорные». Там вы «Принимаете версию ученика» или «Настаиваете на своём» — спор закрывается.',
-        visual: <Shot><div className="flex gap-1 p-1 rounded-xl bg-slate-100"><span className="px-3 py-1 rounded-lg text-xs text-slate-500">Журнал</span><span className="px-3 py-1 rounded-lg text-xs text-slate-500">Ожидают</span><Mark label="разрешить спор"><span className="px-3 py-1 rounded-lg text-xs bg-white text-blue-700 shadow-sm">Спорные</span></Mark></div></Shot> },
-      { q: 'Как отметить индивидуальные занятия?', a: 'Переключитесь на «Индивидуальные» — там список индивидуальных уроков, у каждого кнопки ✓ (был) / Н (не был). У учеников без аккаунта посещение подтверждается сразу.',
-        visual: <Shot><div className="w-60 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2"><span className="text-xs text-slate-700 flex-1">Пн 18:00 · Olena</span><Mark label="был / не был"><div className="flex gap-1"><span className="w-8 h-7 rounded-lg bg-emerald-50 text-emerald-600 text-xs inline-flex items-center justify-center">✓</span><span className="w-8 h-7 rounded-lg bg-red-50 text-red-600 text-xs inline-flex items-center justify-center">Н</span></div></Mark></div></Shot> },
+    id: 'attendance',
+    visuals: [
+      <Shot><div className="flex items-center gap-2">
+        <span className="text-xs text-slate-500 w-14">{v('samplePerson')}</span>
+        <Cell ch="✓" tone="green" />
+        <Mark label={v('clickWasOrNot')}><Cell ch={v('cellAbsent')} tone="red" /></Mark>
+        <Cell ch="·" tone="empty" />
+      </div></Shot>,
+      <Shot><div className="flex gap-2 items-center">
+        <Cell ch="✓" tone="green" /><Cell ch={v('cellAbsent')} tone="red" />
+        <Mark label={v('waitingOrDispute')}><Cell ch="✓" tone="amber" /></Mark>
+      </div></Shot>,
+      <Shot><div className="flex gap-1 p-1 rounded-xl bg-slate-100">
+        <Tab>{v('tabJournal')}</Tab><Tab>{v('tabPending')}</Tab>
+        <Mark label={v('resolveDispute')}><Tab active>{v('tabDisputed')}</Tab></Mark>
+      </div></Shot>,
+      <Shot><div className="w-60 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2">
+        <span className="text-xs text-slate-700 flex-1">{v('sampleIndLesson')}</span>
+        <Mark label={v('wasOrNot')}><div className="flex gap-1">
+          <span className="w-8 h-7 rounded-lg bg-emerald-50 text-emerald-600 text-xs inline-flex items-center justify-center">✓</span>
+          <span className="w-8 h-7 rounded-lg bg-red-50 text-red-600 text-xs inline-flex items-center justify-center">{v('cellAbsent')}</span>
+        </div></Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'payments', title: 'Финансы', items: [
-      { q: 'Как внести оплату ученика?', a: 'На странице «Финансы» у нужного ученика — «Внести», указываете сумму. Остаток пересчитается сразу.',
-        visual: <Shot><div className="w-60 rounded-2xl bg-white border border-slate-200 p-3 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600" />
-          <div className="flex-1"><div className="text-xs font-medium text-slate-900">Пётр</div><div className="text-[10px] text-amber-600">долг 528 zł</div></div>
-          <Mark label="внести оплату"><Btn>Внести</Btn></Mark>
-        </div></Shot> },
-      { q: 'Как считается долг?', a: 'Долг = начислено − оплачено. Начислено — сумма цен уроков, где ученик был отмечен присутствующим; оплачено — сумма внесённых оплат.',
-        visual: <Shot><div className="w-60 rounded-2xl bg-white border border-slate-200 p-3">
-          <Mark label="начислено − оплачено"><div className="w-full"><div className="h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full bg-emerald-500" style={{ width: '75%' }} /></div><div className="flex justify-between text-[10px] text-slate-400 mt-1"><span>оплачено 792</span><span>начислено 1320</span></div></div></Mark>
-        </div></Shot> },
+    id: 'payments',
+    visuals: [
+      <Shot><div className="w-60 rounded-2xl bg-white border border-slate-200 p-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600" />
+        <div className="flex-1">
+          <div className="text-xs font-medium text-slate-900">{v('samplePerson2')}</div>
+          <div className="text-[10px] text-amber-600">{v('debtAmount')}</div>
+        </div>
+        <Mark label={v('recordPayment')}><Btn>{v('recordBtn')}</Btn></Mark>
+      </div></Shot>,
+      <Shot><div className="w-60 rounded-2xl bg-white border border-slate-200 p-3">
+        <Mark label={v('chargedMinusPaid')}><div className="w-full">
+          <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full bg-emerald-500" style={{ width: '75%' }} /></div>
+          <div className="flex justify-between text-[10px] text-slate-400 mt-1"><span>{v('paidSample')}</span><span>{v('chargedSample')}</span></div>
+        </div></Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'students', title: 'Ученики', items: [
-      { q: 'Где список моих учеников?', a: 'Раздел «Ученики» — весь ваш список: с аккаунтом и без аккаунта. Есть поиск по имени/нику. Бейдж «без аккаунта» отмечает тех, кто не пользуется приложением.',
-        visual: <Shot><div className="w-60 rounded-2xl bg-white border border-slate-200 p-3 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600" />
-          <div className="flex-1"><div className="text-xs font-medium text-slate-900">Иван</div></div>
-          <Mark label="без аккаунта"><span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">без аккаунта</span></Mark>
-        </div></Shot> },
+    id: 'students',
+    visuals: [
+      <Shot><div className="w-60 rounded-2xl bg-white border border-slate-200 p-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600" />
+        <div className="flex-1"><div className="text-xs font-medium text-slate-900">{v('samplePerson3')}</div></div>
+        <Mark label={v('noAccount')}>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">{v('noAccountBadge')}</span>
+        </Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'calendar', title: 'Расписание', items: [
-      { q: 'Что показывает календарь?', a: 'Все уроки по датам: групповые (синие) и индивидуальные (розовые). Клик по уроку — детали и ссылка на занятие.',
-        visual: <Shot><div className="flex gap-2"><Mark label="групповой урок"><span className="text-[11px] px-2 py-1 rounded bg-blue-600 text-white">18:00 группа</span></Mark><span className="text-[11px] px-2 py-1 rounded bg-pink-700 text-white">16:00 индивидуальный</span></div></Shot> },
+    id: 'calendar',
+    visuals: [
+      <Shot><div className="flex gap-2">
+        <Mark label={v('groupLesson')}><span className="text-[11px] px-2 py-1 rounded bg-blue-600 text-white">{v('groupLessonSample')}</span></Mark>
+        <span className="text-[11px] px-2 py-1 rounded bg-pink-700 text-white">{v('indLessonSample')}</span>
+      </div></Shot>,
     ],
   },
   {
-    id: 'individual-courses', title: 'Индивидуальные курсы', items: [
-      { q: 'Как создать курс и уроки к нему?', a: 'Создаёте индивидуальный курс с учеником и расписанием. Внутри курса: «Сгенерировать серию» (по расписанию) или «+ Урок» (добавить один вручную).',
-        visual: <Shot><div className="flex gap-2"><Mark label="один урок"><Btn>+ Урок</Btn></Mark><Btn tone="ghost">Сгенерировать серию</Btn></div></Shot> },
+    id: 'individual-courses',
+    visuals: [
+      <Shot><div className="flex gap-2">
+        <Mark label={v('oneLesson')}><Btn><IconAdd size={14} /> {v('lessonBtn')}</Btn></Mark>
+        <Btn tone="ghost">{v('generateSeries')}</Btn>
+      </div></Shot>,
     ],
   },
   {
-    id: 'individual-lessons', title: 'Индивидуальные уроки', items: [
-      { q: 'Как создать разовый урок?', a: '«+ Создать урок»: выбираете ученика (из своих или без аккаунта), дату, время, цену. Урок появится в списке и календаре.',
-        visual: <Shot><Mark label="разовый урок"><Btn>+ Создать урок</Btn></Mark></Shot> },
+    id: 'individual-lessons',
+    visuals: [
+      <Shot><Mark label={v('oneOffLesson')}><Btn><IconAdd size={14} /> {v('createLessonBtn')}</Btn></Mark></Shot>,
     ],
   },
   {
-    id: 'profile', title: 'Профиль и безопасность', items: [
-      { q: 'Как сменить пароль или данные профиля?', a: 'В «Профиле» есть табы: «Профиль» (имя, ник, био, соцсети), «Аналитика» и «Безопасность» (смена пароля).',
-        visual: <Shot><div className="flex gap-1 border-b border-slate-200"><span className="px-3 py-1.5 text-xs text-slate-500">Профиль</span><span className="px-3 py-1.5 text-xs text-slate-500">Аналитика</span><Mark label="смена пароля"><span className="px-3 py-1.5 text-xs text-blue-700 border-b-2 border-blue-600">Безопасность</span></Mark></div></Shot> },
-      { q: 'Как поставить аватар и обложку?', a: 'В «Профиле» наведите на аватар или обложку и нажмите «Заменить» — загрузите картинку со своего устройства.',
-        visual: <Shot><Mark label="загрузить фото"><div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-lg">📷</div></Mark></Shot> },
-      { q: 'Зачем нужен ник (@username)?', a: 'По нику вас находят для приглашений: преподаватель ищет ученика по нику, чтобы позвать в группу. Свой ник задаёте в «Профиле».',
-        visual: <Shot><Mark label="для приглашений"><span className="inline-flex h-9 px-4 items-center rounded-xl bg-white border border-slate-200 text-sm font-mono text-slate-700">@anna_k</span></Mark></Shot> },
+    id: 'profile',
+    visuals: [
+      <Shot><div className="flex gap-1 border-b border-slate-200">
+        <span className="px-3 py-1.5 text-xs text-slate-500">{v('tabProfile')}</span>
+        <span className="px-3 py-1.5 text-xs text-slate-500">{v('tabAnalytics')}</span>
+        <Mark label={v('changePassword')}><span className="px-3 py-1.5 text-xs text-blue-700 border-b-2 border-blue-600">{v('tabSecurity')}</span></Mark>
+      </div></Shot>,
+      <Shot><Mark label={v('uploadPhoto')}>
+        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white">
+          <IconUpload size={20} />
+        </div>
+      </Mark></Shot>,
+      <Shot><Mark label={v('forInvites')}>
+        <span className="inline-flex h-9 px-4 items-center rounded-xl bg-white border border-slate-200 text-sm font-mono text-slate-700">@anna_k</span>
+      </Mark></Shot>,
     ],
   },
   {
-    id: 'quiz', title: 'AI-тесты', items: [
-      { q: 'Как создать тест?', a: 'В «Инструменты → AI-тесты» задайте тему, число вопросов, сложность и тип — AI соберёт тест с готовыми ответами. Работает для любого предмета.',
-        visual: <Shot><Mark label="тема → тест"><Btn>✨ Сгенерировать</Btn></Mark></Shot> },
-      { q: 'Как сохранить тест?', a: 'После генерации нажмите «Сохранить тест» — он попадёт в «Мои тесты» (вашу библиотеку). Оттуда можно пройти для предпросмотра, а позже прикрепить к домашнему заданию.',
-        visual: <Shot><Mark label="в библиотеку"><Btn>Сохранить тест</Btn></Mark></Shot> },
-      { q: 'Где мои тесты и как их пройти?', a: 'Раздел «Мои тесты» — все сохранённые. Открываете тест → выбираете ответы и «Проверить» (увидите результат) или «Показать ключ».',
-        visual: <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2"><span className="text-xs text-slate-900 flex-1">Дроби · 5 вопр.</span><Mark label="открыть и пройти"><span className="text-xs text-blue-600 font-medium">→</span></Mark></div></Shot> },
+    id: 'quiz',
+    visuals: [
+      <Shot><Mark label={v('topicToQuiz')}><Btn><IconAI size={14} /> {v('generateBtn')}</Btn></Mark></Shot>,
+      <Shot><Mark label={v('toLibrary')}><Btn>{v('saveQuizBtn')}</Btn></Mark></Shot>,
+      <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2">
+        <span className="text-xs text-slate-900 flex-1">{v('quizSample')}</span>
+        <Mark label={v('openAndTake')}><span className="text-xs text-blue-600 font-medium">→</span></Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'video-calls', title: 'Видеозвонки', items: [
-      { q: 'Как войти на урок?', a: 'В карточке урока (группа → Уроки, или Расписание) есть кнопка «Войти в урок» — она открывает видеовстречу Jitsi в новой вкладке. Ссылка создаётся автоматически при создании урока.',
-        visual: <Shot><Mark label="открывает встречу"><span className="inline-flex h-9 px-4 items-center rounded-xl bg-blue-600 text-white text-sm font-medium">Войти в урок →</span></Mark></Shot> },
-      { q: 'Как стать модератором встречи (управлять участниками)?', a: 'При входе в Jitsi нажмите «Я организатор» и войдите через Google или GitHub — тогда вы получите права модератора: отключение микрофона, запись, выдворение.',
-        visual: <Shot><div className="w-60 rounded-xl bg-white border border-slate-200 p-3 space-y-2"><div className="text-[10px] text-slate-500">При входе в Jitsi:</div><Mark label="→ войдите через Google/GitHub"><span className="inline-flex h-8 px-3 items-center rounded-lg border border-slate-200 text-xs text-slate-700">Я организатор</span></Mark></div></Shot> },
-      { q: 'Как изменить ссылку на урок?', a: 'Откройте урок → «Редактировать» → поле «Ссылка на урок». Можно вставить свою ссылку (Zoom, Meet) или сгенерировать новую кнопкой «↻ Новая Jitsi».',
-        visual: <Shot><div className="flex gap-2 items-center"><Mark label="своя или новая Jitsi"><span className="inline-flex h-8 px-3 items-center rounded-lg bg-slate-100 text-xs text-slate-700">↻ Новая Jitsi</span></Mark></div></Shot> },
+    id: 'video-calls',
+    visuals: [
+      <Shot><Mark label={v('opensMeeting')}>
+        <span className="inline-flex h-9 px-4 items-center rounded-xl bg-blue-600 text-white text-sm font-medium">{v('joinLesson')}</span>
+      </Mark></Shot>,
+      <Shot><div className="w-60 rounded-xl bg-white border border-slate-200 p-3 space-y-2">
+        <div className="text-[10px] text-slate-500">{v('onJitsiEntry')}</div>
+        <Mark label={v('signInGoogleGithub')}>
+          <span className="inline-flex h-8 px-3 items-center rounded-lg border border-slate-200 text-xs text-slate-700">{v('iAmHost')}</span>
+        </Mark>
+      </div></Shot>,
+      <Shot><div className="flex gap-2 items-center">
+        <Mark label={v('ownOrNewJitsi')}>
+          <span className="inline-flex h-8 px-3 items-center rounded-lg bg-slate-100 text-xs text-slate-700">{v('newJitsi')}</span>
+        </Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'plans', title: 'Тарифы', items: [
-      { q: 'Что такое тарифы и чем они отличаются?', a: 'Free — бесплатно, базовые возможности (ограниченное число групп и учеников). Pro — снятые лимиты и приоритетная поддержка. School — несколько учителей под одним брендом (в разработке).',
-        visual: <Shot><div className="flex gap-2"><Mark label="текущий"><span className="text-[10px] px-2 py-1 rounded-full border border-slate-200 text-slate-600 font-medium">Free</span></Mark><span className="text-[10px] px-2 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-600 font-medium">Pro</span><span className="text-[10px] px-2 py-1 rounded-full border border-purple-200 bg-purple-50 text-purple-600 font-medium">School</span></div></Shot> },
-      { q: 'Где посмотреть свой тариф и как улучшить?', a: 'Тариф — заметный блок внизу левого меню. Нажмите на него, чтобы открыть страницу «Тарифы» с описанием и кнопкой «Улучшить».',
-        visual: <Shot><div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full bg-blue-500" /><div className="text-xs text-slate-900">Мария П.</div><Mark label="нажмите → /plans"><span className="text-[9px] px-1.5 py-0.5 rounded border border-slate-200 text-slate-500">Free</span></Mark></div></Shot> },
+    id: 'plans',
+    visuals: [
+      <Shot><div className="flex gap-2">
+        <Mark label={v('current')}><span className="text-[10px] px-2 py-1 rounded-full border border-slate-200 text-slate-600 font-medium">{v('planFree')}</span></Mark>
+        <span className="text-[10px] px-2 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-600 font-medium">{v('planStandard')}</span>
+        <span className="text-[10px] px-2 py-1 rounded-full border border-purple-200 bg-purple-50 text-purple-600 font-medium">{v('planMax')}</span>
+      </div></Shot>,
+      <Shot><div className="flex items-center gap-2">
+        <div className="w-8 h-8 rounded-full bg-blue-500" />
+        <div className="text-xs text-slate-900">{v('sampleTeacher')}</div>
+        <Mark label={v('clickToPlans')}><span className="text-[9px] px-1.5 py-0.5 rounded border border-slate-200 text-slate-500">{v('planFree')}</span></Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'pwa', title: 'Установка как приложение', items: [
-      { q: 'Как установить Diklario на телефон (Android / iPhone)?', a: 'Android: откройте сайт в Chrome → три точки (⋮) → «Добавить на главный экран» → «Установить». iPhone: откройте в Safari → кнопка «Поделиться» (прямоугольник со стрелкой) → «На экран «Домой»».',
-        visual: <Shot><div className="flex gap-3 items-start"><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">Android</span><div className="text-[9px] text-slate-500 leading-relaxed">Chrome → ⋮ →<br/>Добавить на<br/>главный экран</div></div><div className="w-px bg-slate-200" /><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">iPhone</span><div className="text-[9px] text-slate-500 leading-relaxed">Safari → □↑ →<br/>На экран<br/>«Домой»</div></div></div></Shot> },
-      { q: 'Как установить на компьютер?', a: 'В Chrome/Edge в адресной строке появляется значок «Установить» (экран со стрелкой) — нажмите и подтвердите. Или через меню: «Установить Diklario». После установки откроется как отдельное окно без браузера.',
-        visual: <Shot><Mark label="в адресной строке браузера"><div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56"><span className="flex-1">app.diklario...</span><span className="text-blue-600">⊕</span></div></Mark></Shot> },
-      { q: 'Будет ли работать без интернета?', a: 'Частично: страницы, которые уже были открыты, загрузятся из кэша. Создавать уроки и вносить данные без сети нельзя — нужна синхронизация с сервером.',
-        visual: <Shot><div className="w-52 rounded-xl bg-white border border-slate-200 p-3 space-y-1"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500" /><span className="text-[10px] text-slate-600">Кэш страниц — доступно</span></div><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-red-400" /><span className="text-[10px] text-slate-600">Создание данных — нет</span></div></div></Shot> },
+    id: 'pwa',
+    visuals: [
+      <Shot><div className="flex gap-3 items-start">
+        <div className="text-center">
+          <span className="block text-xs font-medium text-slate-700 mb-1">Android</span>
+          <div className="text-[9px] text-slate-500 leading-relaxed">{v('androidSteps')}</div>
+        </div>
+        <div className="w-px bg-slate-200" />
+        <div className="text-center">
+          <span className="block text-xs font-medium text-slate-700 mb-1">iPhone</span>
+          <div className="text-[9px] text-slate-500 leading-relaxed">{v('iphoneSteps')}</div>
+        </div>
+      </div></Shot>,
+      <Shot><Mark label={v('inAddressBar')}>
+        <div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56">
+          <span className="flex-1">diklario.com</span><span className="text-blue-600">⊕</span>
+        </div>
+      </Mark></Shot>,
+      <Shot><div className="w-52 rounded-xl bg-white border border-slate-200 p-3 space-y-1">
+        <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500" /><span className="text-[10px] text-slate-600">{v('offlineCache')}</span></div>
+        <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-red-400" /><span className="text-[10px] text-slate-600">{v('offlineNoWrite')}</span></div>
+      </div></Shot>,
     ],
   },
 ]
 
-/* ─── Контент справки для УЧЕНИКА ──────────────────────────── */
-const STUDENT_SECTIONS = [
+const studentSections = (v) => [
   {
-    id: 'dashboard', title: 'Дашборд', items: [
-      { q: 'Что показывает главный экран?', a: 'Ваш срез: уроков на неделе, задания к сдаче, посещаемость и долг. Плюс ближайшие уроки и последние оценки.',
-        visual: <Shot><div className="grid grid-cols-2 gap-2">
-          <div className="w-28 rounded-xl bg-white border border-slate-200 p-2.5"><div className="text-[9px] text-slate-400">Уроков</div><div className="text-sm font-semibold text-slate-900">3</div></div>
-          <Mark label="что сдать"><div className="w-28 rounded-xl bg-white border border-slate-200 p-2.5"><div className="text-[9px] text-slate-400">Задания к сдаче</div><div className="text-sm font-semibold text-amber-600">2</div></div></Mark>
-        </div></Shot> },
+    id: 'dashboard',
+    visuals: [
+      <Shot><div className="grid grid-cols-2 gap-2">
+        <Kpi label={v('lessonsCount')} value="3" />
+        <Mark label={v('whatToSubmit')}><Kpi label={v('hwToSubmit')} value="2" tone="text-amber-600" /></Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'groups', title: 'Мои группы', items: [
-      { q: 'Как принять приглашение в группу?', a: 'На «Мои группы» сверху появляется блок «Приглашения» — нажмите «Принять», и группа добавится. Пригласить вас может преподаватель по нику.',
-        visual: <Shot><div className="w-64 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2"><span className="text-xs text-slate-900 flex-1">Группа · от Марии</span><span className="text-xs text-slate-400">Отклонить</span><Mark label="вступить"><Btn>Принять</Btn></Mark></div></Shot> },
+    id: 'groups',
+    visuals: [
+      <Shot><div className="w-64 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2">
+        <span className="text-xs text-slate-900 flex-1">{v('inviteSample')}</span>
+        <span className="text-xs text-slate-400">{v('decline')}</span>
+        <Mark label={v('joinGroup')}><Btn>{v('accept')}</Btn></Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'homework', title: 'Домашние задания', items: [
-      { q: 'Как сдать домашку?', a: 'Открываете задание → «Сдать»: прикрепляете файл (PDF/фото) или пишете комментарий и отправляете — до дедлайна.',
-        visual: <Shot><Mark label="прикрепить и отправить"><Btn>📤 Сдать задание</Btn></Mark></Shot> },
-      { q: 'Где увидеть оценку?', a: 'После проверки оценка (0–100) появляется прямо в карточке задания со статусом «Оценено».',
-        visual: <Shot><Mark label="оценка после проверки"><span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">✓ Оценено: 92/100</span></Mark></Shot> },
+    id: 'homework',
+    visuals: [
+      <Shot><Mark label={v('attachAndSend')}><Btn><IconUpload size={14} /> {v('submitHwBtn')}</Btn></Mark></Shot>,
+      <Shot><Mark label={v('gradeAfterReview')}>
+        <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+          <IconCheck size={12} /> {v('gradedSample')}
+        </span>
+      </Mark></Shot>,
     ],
   },
   {
-    id: 'attendance', title: 'Посещаемость', items: [
-      { q: 'Как подтвердить, был ли я на уроке?', a: 'Во вкладке «Подтвердить» по каждому уроку нажимаете «Был» или «Не был». Если преподаватель отметил неверно — оспорьте, спор увидит учитель.',
-        visual: <Shot><div className="flex gap-2"><Mark label="подтвердить"><span className="h-8 px-3 inline-flex items-center rounded-lg bg-emerald-50 text-emerald-600 text-xs font-medium">Был</span></Mark><span className="h-8 px-3 inline-flex items-center rounded-lg bg-red-50 text-red-600 text-xs">Не был</span></div></Shot> },
+    id: 'attendance',
+    visuals: [
+      <Shot><div className="flex gap-2">
+        <Mark label={v('confirm')}><span className="h-8 px-3 inline-flex items-center rounded-lg bg-emerald-50 text-emerald-600 text-xs font-medium">{v('wasThere')}</span></Mark>
+        <span className="h-8 px-3 inline-flex items-center rounded-lg bg-red-50 text-red-600 text-xs">{v('wasNotThere')}</span>
+      </div></Shot>,
     ],
   },
   {
-    id: 'payments', title: 'Финансы', items: [
-      { q: 'Где увидеть свой долг?', a: 'На «Финансах» — долг по каждому преподавателю: начислено, оплачено и остаток. Считается автоматически по вашим занятиям.',
-        visual: <Shot><div className="w-60 rounded-2xl bg-white border border-slate-200 p-3"><div className="text-xs font-medium text-slate-900 mb-1">Мария П.</div><Mark label="остаток к оплате"><div className="text-lg font-semibold text-amber-600">120 zł</div></Mark></div></Shot> },
+    id: 'payments',
+    visuals: [
+      <Shot><div className="w-60 rounded-2xl bg-white border border-slate-200 p-3">
+        <div className="text-xs font-medium text-slate-900 mb-1">{v('sampleTeacher')}</div>
+        <Mark label={v('balanceDue')}><div className="text-lg font-semibold text-amber-600">120 zł</div></Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'calendar', title: 'Расписание', items: [
-      { q: 'Где расписание и ссылка на урок?', a: 'В «Расписании» видны все ваши уроки. Клик по уроку — детали и кнопка «Перейти на урок» (ссылка на созвон).',
-        visual: <Shot><Mark label="ссылка на созвон"><span className="inline-flex h-9 px-4 items-center rounded-xl bg-blue-600 text-white text-sm">Перейти на урок →</span></Mark></Shot> },
+    id: 'calendar',
+    visuals: [
+      <Shot><Mark label={v('callLink')}>
+        <span className="inline-flex h-9 px-4 items-center rounded-xl bg-blue-600 text-white text-sm">{v('goToLesson')}</span>
+      </Mark></Shot>,
     ],
   },
   {
-    id: 'profile', title: 'Профиль', items: [
-      { q: 'Зачем мне ник (@username)?', a: 'По нику вас находит преподаватель, чтобы пригласить в группу. Задайте ник в «Профиле», чтобы вас могли позвать.',
-        visual: <Shot><Mark label="по нему вас найдут"><span className="inline-flex h-9 px-4 items-center rounded-xl bg-white border border-slate-200 text-sm font-mono text-slate-700">@anna_k</span></Mark></Shot> },
-      { q: 'Как сменить пароль?', a: 'В «Профиле» → таб «Безопасность» → смена пароля. Забыли пароль — на странице входа есть «Забыли пароль?».',
-        visual: <Shot><div className="flex gap-1 border-b border-slate-200"><span className="px-3 py-1.5 text-xs text-slate-500">Профиль</span><Mark label="смена пароля"><span className="px-3 py-1.5 text-xs text-blue-700 border-b-2 border-blue-600">Безопасность</span></Mark></div></Shot> },
+    id: 'profile',
+    visuals: [
+      <Shot><Mark label={v('howTheyFindYou')}>
+        <span className="inline-flex h-9 px-4 items-center rounded-xl bg-white border border-slate-200 text-sm font-mono text-slate-700">@anna_k</span>
+      </Mark></Shot>,
+      <Shot><div className="flex gap-1 border-b border-slate-200">
+        <span className="px-3 py-1.5 text-xs text-slate-500">{v('tabProfile')}</span>
+        <Mark label={v('changePassword')}><span className="px-3 py-1.5 text-xs text-blue-700 border-b-2 border-blue-600">{v('tabSecurity')}</span></Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'quiz', title: 'AI-тесты', items: [
-      { q: 'Как сделать тест для себя?', a: 'В «Инструменты → AI-тесты» задайте тему (любой предмет), число вопросов и тип — AI соберёт тест. Удобно для самопроверки перед контрольной.',
-        visual: <Shot><Mark label="тема → тест"><Btn>✨ Сгенерировать</Btn></Mark></Shot> },
-      { q: 'Как пройти и сохранить результат?', a: 'Выбираете ответы → «Проверить» (увидите, сколько верно) → «Сохранить результат». Прохождение с оценкой попадёт в вашу историю.',
-        visual: <Shot><Mark label="оценка + сохранение"><span className="inline-flex items-center h-8 px-3 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium">Результат: 4 / 5</span></Mark></Shot> },
-      { q: 'Где моя история тестов?', a: 'Раздел «Мои тесты» — все пройденные, с вашим результатом. Открываете — видите свои ответы и правильные.',
-        visual: <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2"><span className="text-xs text-slate-900 flex-1">Дроби · 5 вопр.</span><Mark label="ваш счёт"><span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">4/5</span></Mark></div></Shot> },
+    id: 'quiz',
+    visuals: [
+      <Shot><Mark label={v('topicToQuiz')}><Btn><IconAI size={14} /> {v('generateBtn')}</Btn></Mark></Shot>,
+      <Shot><Mark label={v('gradeAndSave')}>
+        <span className="inline-flex items-center h-8 px-3 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium">{v('resultSample')}</span>
+      </Mark></Shot>,
+      <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2">
+        <span className="text-xs text-slate-900 flex-1">{v('quizSample')}</span>
+        <Mark label={v('yourScore')}><span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">4/5</span></Mark>
+      </div></Shot>,
     ],
   },
   {
-    id: 'video-calls', title: 'Видеозвонки', items: [
-      { q: 'Как войти на урок?', a: 'В карточке урока (Расписание или Мои группы → урок) есть кнопка «Войти в урок» — нажмите, откроется видеовстреча в новой вкладке. Без регистрации.',
-        visual: <Shot><Mark label="открывает встречу"><span className="inline-flex h-9 px-4 items-center rounded-xl bg-blue-600 text-white text-sm font-medium">Войти в урок →</span></Mark></Shot> },
-      { q: 'Нужно ли создавать аккаунт для видеозвонка?', a: 'Нет. Как ученик вы заходите сразу — достаточно нажать «Войти в урок» и разрешить камеру/микрофон в браузере.',
-        visual: <Shot><div className="flex items-center gap-2 text-xs text-slate-600"><span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 inline-flex items-center justify-center">✓</span> Без регистрации</div></Shot> },
+    id: 'video-calls',
+    visuals: [
+      <Shot><Mark label={v('opensMeeting')}>
+        <span className="inline-flex h-9 px-4 items-center rounded-xl bg-blue-600 text-white text-sm font-medium">{v('joinLesson')}</span>
+      </Mark></Shot>,
+      <Shot><div className="flex items-center gap-2 text-xs text-slate-600">
+        <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 inline-flex items-center justify-center"><IconCheck size={12} /></span>
+        {v('noSignupNeeded')}
+      </div></Shot>,
     ],
   },
   {
-    id: 'pwa', title: 'Установка как приложение', items: [
-      { q: 'Как установить Diklario на телефон (Android / iPhone)?', a: 'Android: откройте сайт в Chrome → три точки (⋮) → «Добавить на главный экран» → «Установить». iPhone: откройте в Safari → кнопка «Поделиться» (прямоугольник со стрелкой) → «На экран «Домой»».',
-        visual: <Shot><div className="flex gap-3 items-start"><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">Android</span><div className="text-[9px] text-slate-500 leading-relaxed">Chrome → ⋮ →<br/>Добавить на<br/>главный экран</div></div><div className="w-px bg-slate-200" /><div className="text-center"><span className="block text-xs font-medium text-slate-700 mb-1">iPhone</span><div className="text-[9px] text-slate-500 leading-relaxed">Safari → □↑ →<br/>На экран<br/>«Домой»</div></div></div></Shot> },
-      { q: 'Как установить на компьютер?', a: 'В Chrome/Edge в адресной строке появляется значок «Установить» — нажмите и подтвердите. После установки Diklario откроется как отдельное окно.',
-        visual: <Shot><Mark label="в адресной строке браузера"><div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56"><span className="flex-1">app.diklario...</span><span className="text-blue-600">⊕</span></div></Mark></Shot> },
+    id: 'pwa',
+    visuals: [
+      <Shot><div className="flex gap-3 items-start">
+        <div className="text-center">
+          <span className="block text-xs font-medium text-slate-700 mb-1">Android</span>
+          <div className="text-[9px] text-slate-500 leading-relaxed">{v('androidSteps')}</div>
+        </div>
+        <div className="w-px bg-slate-200" />
+        <div className="text-center">
+          <span className="block text-xs font-medium text-slate-700 mb-1">iPhone</span>
+          <div className="text-[9px] text-slate-500 leading-relaxed">{v('iphoneSteps')}</div>
+        </div>
+      </div></Shot>,
+      <Shot><Mark label={v('inAddressBar')}>
+        <div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56">
+          <span className="flex-1">diklario.com</span><span className="text-blue-600">⊕</span>
+        </div>
+      </Mark></Shot>,
     ],
   },
 ]
@@ -268,9 +407,14 @@ export default function HelpPage() {
   const { hash } = useLocation()
   const navigate = useNavigate()
   const { isTeacher } = useAuth()
-  const sections = isTeacher ? TEACHER_SECTIONS : STUDENT_SECTIONS
-  // Роль-префикс ключей (t = teacher, s = student). Русский текст из массива — дефолт-фолбэк.
+  // Роль-префикс ключей (t = teacher, s = student)
   const role = isTeacher ? 't' : 's'
+
+  const v = useMemo(() => (key) => t(`viz.${key}`), [t])
+  const sections = useMemo(
+    () => (isTeacher ? teacherSections(v) : studentSections(v)),
+    [isTeacher, v], // t уже учтён через v
+  )
 
   // Скролл к нужной секции по якорю (из кнопки «?» на странице)
   useEffect(() => {
@@ -303,7 +447,7 @@ export default function HelpPage() {
         {sections.map(s => (
           <button key={s.id} onClick={() => navigate(`/help#${s.id}`)}
             className="text-xs px-3 h-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer">
-            {t(`${role}.${s.id}.title`, s.title)}
+            {t(`${role}.${s.id}.title`)}
           </button>
         ))}
       </div>
@@ -312,16 +456,16 @@ export default function HelpPage() {
         {sections.map(s => (
           <section key={s.id} id={s.id} className="scroll-mt-24">
             <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />{t(`${role}.${s.id}.title`, s.title)}
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />{t(`${role}.${s.id}.title`)}
             </h2>
             <div className="space-y-4">
-              {s.items.map((it, i) => (
+              {s.visuals.map((visual, i) => (
                 <div key={i} className="grid md:grid-cols-2 gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-900">{t(`${role}.${s.id}.q${i}`, it.q)}</h3>
-                    <p className="text-sm text-slate-500 mt-2 leading-relaxed">{t(`${role}.${s.id}.a${i}`, it.a)}</p>
+                    <h3 className="text-sm font-semibold text-slate-900">{t(`${role}.${s.id}.q${i}`)}</h3>
+                    <p className="text-sm text-slate-500 mt-2 leading-relaxed">{t(`${role}.${s.id}.a${i}`)}</p>
                   </div>
-                  <div>{it.visual}</div>
+                  <div>{visual}</div>
                 </div>
               ))}
             </div>

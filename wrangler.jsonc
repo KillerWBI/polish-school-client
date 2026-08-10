@@ -1,4 +1,11 @@
 {
+  // Конфиг сгенерирован интеграцией Cloudflare Workers (PR cloudflare/workers-autoconfig).
+  // Каталог сборки здесь намеренно НЕ указан: его подставляет @cloudflare/vite-plugin
+  // из vite.config.js. Если убрать плагин — сюда придётся вернуть "directory": "./dist",
+  // иначе `wrangler versions upload` упадёт с «Missing entry-point … or assets directory».
+  //
+  // name обязан совпадать с именем существующего сервиса, иначе создастся новый воркер,
+  // а домен продолжит смотреть на старый.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "polish-school-client",
   "compatibility_date": "2026-07-28",
@@ -6,6 +13,8 @@
     "enabled": true
   },
   "assets": {
+    // Приложение — SPA на react-router: прямой заход на /dashboard или /help
+    // должен отдавать index.html, а не 404.
     "not_found_handling": "single-page-application"
   },
   "compatibility_flags": [
