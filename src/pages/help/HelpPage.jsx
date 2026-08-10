@@ -413,7 +413,7 @@ export default function HelpPage() {
   const v = useMemo(() => (key) => t(`viz.${key}`), [t])
   const sections = useMemo(
     () => (isTeacher ? teacherSections(v) : studentSections(v)),
-    [isTeacher, t, v],
+    [isTeacher, v], // t уже учтён через v
   )
 
   // Скролл к нужной секции по якорю (из кнопки «?» на странице)

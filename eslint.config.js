@@ -18,4 +18,11 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  // Конфиги в корне исполняет Node, а не браузер: без этого `process.cwd()` в
+  // vite.config.js падает на no-undef. `npm run lint` — это `eslint .`, то есть
+  // весь репозиторий, а не только src.
+  {
+    files: ['*.config.js'],
+    languageOptions: { globals: globals.node },
+  },
 ])
