@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Локальное состояние wrangler (кэш, логи деплоя)
+.wrangler
+
 # Env (локальные настройки, не коммитим)
 .env
 .env.*
