@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { cloudflare } from '@cloudflare/vite-plugin'
 
 // Публичные страницы: адрес → приоритет и частота обновления в sitemap.
 // Кабинет сюда не попадает — он под авторизацией и закрыт в robots.txt.
@@ -76,7 +77,14 @@ export default defineConfig(({ mode }) => {
   const siteUrl = (env.VITE_SITE_URL || 'https://diklario.com').replace(/\/+$/, '')
 
   return {
-    plugins: [react(), tailwindcss(), siteUrlPlugin(siteUrl)],
+    // cloudflare() подставляет каталог сборки в wrangler.jsonc и поднимает воркер
+    // в `wrangler dev`. В тестах он не нужен и только тянет за собой воркер-рантайм.
+    plugins: [
+      react(),
+      tailwindcss(),
+      siteUrlPlugin(siteUrl),
+      ...(mode === 'test' ? [] : [cloudflare()]),
+    ],
     test: {
       environment: 'jsdom',
       globals: true,

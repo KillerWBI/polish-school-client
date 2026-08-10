@@ -1,21 +1,23 @@
 {
-  // Конфиг деплоя в Cloudflare Workers. До него в репозитории не было ничего, и
-  // `npx wrangler versions upload` падал с «Missing entry-point to Worker script or
-  // to assets directory»: сборка проходила, а выкладывать было нечего.
+  // Конфиг сгенерирован интеграцией Cloudflare Workers (PR cloudflare/workers-autoconfig).
+  // Каталог сборки здесь намеренно НЕ указан: его подставляет @cloudflare/vite-plugin
+  // из vite.config.js. Если убрать плагин — сюда придётся вернуть "directory": "./dist",
+  // иначе `wrangler versions upload` упадёт с «Missing entry-point … or assets directory».
   //
-  // name обязан совпадать с уже существующим сервисом, иначе создастся новый воркер,
-  // а домен продолжит смотреть на старый. Имя взято из адреса сборки в панели:
-  // dash.cloudflare.com/.../workers/services/view/polish-school-client/production/builds/...
+  // name обязан совпадать с именем существующего сервиса, иначе создастся новый воркер,
+  // а домен продолжит смотреть на старый.
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "polish-school-client",
-  "compatibility_date": "2026-08-10",
-
+  "compatibility_date": "2026-07-28",
+  "observability": {
+    "enabled": true
+  },
   "assets": {
-    // Сюда Vite кладёт результат (vite.config.js, по умолчанию dist)
-    "directory": "./dist",
-
-    // Приложение — SPA на react-router: прямой заход на /dashboard или /help должен
-    // отдавать index.html, а не 404. Прод уже так себя ведёт — фиксируем это в коде,
-    // чтобы поведение не зависело от настроек в панели.
+    // Приложение — SPA на react-router: прямой заход на /dashboard или /help
+    // должен отдавать index.html, а не 404.
     "not_found_handling": "single-page-application"
-  }
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
 }
