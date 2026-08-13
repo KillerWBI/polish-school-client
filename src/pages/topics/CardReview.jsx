@@ -56,7 +56,7 @@ export default function CardReview({ cards, onReview, onDone, hint }) {
         {flipped ? (
           <>
             <div className="w-full border-t border-slate-100 my-4" />
-            <div className="text-base text-blue-700 whitespace-pre-wrap">{card.back}</div>
+            <div className="text-base text-teal-700 whitespace-pre-wrap">{card.back}</div>
           </>
         ) : (
           <div className="text-xs text-slate-400 mt-4 flex items-center gap-1.5"><RotateCcw className="w-3.5 h-3.5" /> {t('cards.flipHint')}</div>

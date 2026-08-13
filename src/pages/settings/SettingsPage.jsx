@@ -134,7 +134,7 @@ function PersonalTab({ user, isTeacher, updateUser }) {
           <Input label={t('settings.fullName')} value={form.name} onChange={e => set({ name: e.target.value })} />
           <div>
             <Input label={t('settings.usernameLabel')} value={form.username} onChange={e => set({ username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') })} />
-            <p className="text-[11px] text-slate-400 mt-1">{t('settings.usernameNote')} <span className="font-mono text-blue-600">@{form.username || '—'}</span></p>
+            <p className="text-[11px] text-slate-400 mt-1">{t('settings.usernameNote')} <span className="font-mono text-teal-600">@{form.username || '—'}</span></p>
           </div>
         </div>
         <div className="mt-3">
@@ -146,7 +146,7 @@ function PersonalTab({ user, isTeacher, updateUser }) {
       <Section title={t('settings.about')}>
         <textarea value={form.bio} onChange={e => set({ bio: e.target.value.slice(0, 300) })} rows={3}
           placeholder={isTeacher ? t('settings.bioTeacherPh') : t('settings.bioStudentPh')}
-          className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none" />
+          className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 resize-none" />
         <div className="text-right text-[11px] text-slate-400 mt-1">{form.bio.length} / 300</div>
       </Section>
 
@@ -250,7 +250,7 @@ function PaymentMethodsTab({ user, updateUser }) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+      <div className="rounded-2xl border border-teal-100 bg-teal-50 px-4 py-3 text-sm text-teal-700">
         {t('settings.payHint')}
       </div>
 
@@ -276,7 +276,7 @@ function PaymentMethodsTab({ user, updateUser }) {
                   </div>
                 </div>
                 <button onClick={() => setEditing(m)} aria-label={tc('edit')}
-                  className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-50 transition-colors cursor-pointer">
+                  className="p-2 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-slate-50 transition-colors cursor-pointer">
                   <IconEdit size={16} />
                 </button>
                 <button onClick={() => setRemoving(m)} aria-label={tc('delete')}
@@ -301,7 +301,7 @@ function PaymentMethodsTab({ user, updateUser }) {
         <div className="space-y-2">
           {notYet.map(m => (
             <button key={m.id} onClick={() => { setPicking(false); setEditing(m) }}
-              className="w-full flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-left hover:border-blue-300 hover:bg-blue-50/40 transition-colors cursor-pointer">
+              className="w-full flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-left hover:border-teal-300 hover:bg-teal-50/40 transition-colors cursor-pointer">
               <span className="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
                 <m.icon size={17} />
               </span>
@@ -463,7 +463,7 @@ function CurrencyPicker({ value, hasHistory, onChange }) {
         <select
           value={value}
           onChange={(e) => apply(e.target.value)}
-          className="w-full h-11 px-3 rounded-lg bg-white border border-slate-200 text-sm outline-none focus:border-blue-500">
+          className="w-full h-11 px-3 rounded-lg bg-white border border-slate-200 text-sm outline-none focus:border-teal-500">
           {CURRENCIES.map(code => <option key={code} value={code}>{label(code)}</option>)}
         </select>
         <p className="text-[11px] text-slate-400 mt-1.5">{t('settings.currencyHint')}</p>
@@ -606,7 +606,7 @@ function CalendarSubscription() {
       <p className="text-sm text-slate-500 mb-3">{t('settings.calReady')}</p>
       <div className="flex flex-wrap items-center gap-2 mb-2">
         {/* webcal:// — операционная система сама предложит добавить в календарь */}
-        <a href={sub.webcalUrl} className="h-10 px-4 inline-flex items-center rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">
+        <a href={sub.webcalUrl} className="h-10 px-4 inline-flex items-center rounded-xl bg-teal-500 text-white text-sm font-medium hover:bg-teal-600">
           {t('settings.calAdd')}
         </a>
         <Button variant="secondary" size="sm" onClick={copy}>{t('settings.calCopy')}</Button>

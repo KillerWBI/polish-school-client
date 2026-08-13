@@ -18,8 +18,8 @@ import Tooltip from '../../components/ui/Tooltip'
 import IdeasModal from './IdeasModal'
 
 // Цвет прогресса обладания темой
-const masteryColor = (m) => m >= 70 ? 'bg-emerald-500' : m >= 40 ? 'bg-blue-500' : 'bg-amber-500'
-const masteryText  = (m) => m >= 70 ? 'text-emerald-600' : m >= 40 ? 'text-blue-600' : 'text-amber-600'
+const masteryColor = (m) => m >= 70 ? 'bg-emerald-500' : m >= 40 ? 'bg-teal-500' : 'bg-amber-500'
+const masteryText  = (m) => m >= 70 ? 'text-emerald-600' : m >= 40 ? 'text-teal-600' : 'text-amber-600'
 
 export default function TopicsPage() {
   const { t } = useTranslation('student')
@@ -41,7 +41,7 @@ export default function TopicsPage() {
       />
 
       <button onClick={() => setIdeasOpen(true)}
-        className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 mb-6 transition-colors">
+        className="inline-flex items-center gap-1.5 text-sm text-teal-600 hover:text-teal-700 mb-6 transition-colors">
         <Lightbulb className="w-4 h-4" /> {t('topics.whatToStudy')}
       </button>
 
@@ -83,7 +83,7 @@ function TopicCard({ topic, onDeleted }) {
       <button onClick={() => navigate(`/topics/${topic.id}`)} className="w-full text-left group">
         <div className="flex items-start gap-3">
           <div className="min-w-0 flex-1">
-            <div className="font-medium text-slate-900 truncate group-hover:text-blue-600 transition-colors">{topic.title}</div>
+            <div className="font-medium text-slate-900 truncate group-hover:text-teal-600 transition-colors">{topic.title}</div>
             <div className="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5">
               {topic.subject ? `${topic.subject} · ` : ''}
               <Map className="w-3 h-3" /> {steps} {t('topics.steps', { count: steps })} · {topic.attempts} {t('topics.practices', { count: topic.attempts })}

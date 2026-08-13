@@ -13,7 +13,7 @@ import PageHeader from '../../components/ui/PageHeader'
 import Tooltip from '../../components/ui/Tooltip'
 import { Layers, BookMarked, AlertTriangle, ChevronRight } from 'lucide-react'
 
-const weakColor = (m) => m >= 40 ? 'text-blue-600' : 'text-amber-600'
+const weakColor = (m) => m >= 40 ? 'text-teal-600' : 'text-amber-600'
 
 // Ежедневная 5-мин сессия: карточки со всех треков + словарь, которым пора на повторение.
 export default function DailySessionPage() {
@@ -37,7 +37,7 @@ export default function DailySessionPage() {
           text={t('study.emptyText')} />
       ) : !started ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center max-w-xl mx-auto">
-          <IconLayers size={36} className="mx-auto mb-3 text-blue-500" />
+          <IconLayers size={36} className="mx-auto mb-3 text-teal-600" />
           <div className="text-lg font-semibold text-slate-900 mb-1">{t('study.toReview', { count: meta.total })}</div>
           <div className="flex items-center justify-center gap-4 text-sm text-slate-500 mb-5">
             <span className="inline-flex items-center gap-1.5"><Layers className="w-4 h-4" /> {t('study.tracksCount', { count: meta.cards })}</span>

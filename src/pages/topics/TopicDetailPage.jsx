@@ -22,8 +22,8 @@ import CardReview from './CardReview'
 const DIFF_KEY = { easy: 'diffEasy', medium: 'diffMedium', hard: 'diffHard' }
 const GATE = 50 // шаг открывается, когда предыдущий освоен на ≥50%
 
-const masteryColor = (m) => m >= 70 ? 'bg-emerald-500' : m >= 40 ? 'bg-blue-500' : 'bg-amber-500'
-const masteryText  = (m) => m >= 70 ? 'text-emerald-600' : m >= 40 ? 'text-blue-600' : 'text-amber-600'
+const masteryColor = (m) => m >= 70 ? 'bg-emerald-500' : m >= 40 ? 'bg-teal-500' : 'bg-amber-500'
+const masteryText  = (m) => m >= 70 ? 'text-emerald-600' : m >= 40 ? 'text-teal-600' : 'text-amber-600'
 
 const fmtDate = (d, locale) => new Date(d).toLocaleDateString(locale, { day: 'numeric', month: 'short' }) +
   ', ' + new Date(d).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
@@ -128,7 +128,7 @@ export default function TopicDetailPage() {
 
       {/* Шапка трека */}
       <div className="flex items-start gap-3 mt-4 mb-1">
-        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center shrink-0">
           <Target className="w-5 h-5 text-white" />
         </div>
         <div className="min-w-0 flex-1">
@@ -143,13 +143,13 @@ export default function TopicDetailPage() {
       </div>
 
       {topic.goal && (
-        <p className="text-sm text-slate-600 bg-blue-50/60 border border-blue-100 rounded-xl px-3 py-2 mb-2 flex items-start gap-1.5">
-          <Target className="w-4 h-4 mt-0.5 shrink-0 text-blue-500" /> <span>{topic.goal}</span>
+        <p className="text-sm text-slate-600 bg-teal-50/60 border border-teal-100 rounded-xl px-3 py-2 mb-2 flex items-start gap-1.5">
+          <Target className="w-4 h-4 mt-0.5 shrink-0 text-teal-600" /> <span>{topic.goal}</span>
         </p>
       )}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-5">
         <button onClick={() => setIdeasOpen(true)}
-          className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 transition-colors">
+          className="inline-flex items-center gap-1.5 text-sm text-teal-600 hover:text-teal-700 transition-colors">
           <Lightbulb className="w-4 h-4" /> {t('topics.whatToStudy')}
         </button>
         <button onClick={toggleShare} disabled={sharing}
@@ -218,7 +218,7 @@ export default function TopicDetailPage() {
                 const step = roadmap.find((s) => s.id === a.stepId)
                 return (
                   <button key={a.id} onClick={() => setReviewId(a.id)}
-                    className="w-full text-left rounded-xl border border-slate-200 bg-white p-3 hover:border-blue-300 transition-colors flex items-center gap-3">
+                    className="w-full text-left rounded-xl border border-slate-200 bg-white p-3 hover:border-teal-300 transition-colors flex items-center gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="text-sm text-slate-900 truncate">{step?.title || topic.title}</div>
                       <div className="text-xs text-slate-400 mt-0.5">{fmtDate(a.createdAt, i18n.language)} · {diffLabel(t, a.difficulty)}</div>
@@ -226,7 +226,7 @@ export default function TopicDetailPage() {
                     {a.total != null && (
                       <div className="text-sm font-semibold text-slate-700 shrink-0 tabular-nums">{a.score}/{a.total}</div>
                     )}
-                    <span className="text-xs text-blue-600 shrink-0">{t('detail.reviewAttempt')}</span>
+                    <span className="text-xs text-teal-600 shrink-0">{t('detail.reviewAttempt')}</span>
                   </button>
                 )
               })}
@@ -255,7 +255,7 @@ function BackLink({ onClick }) {
 function KnowledgeMap({ roadmap }) {
   const { t } = useTranslation('student')
   if (!roadmap?.length) return null
-  const cell = (m) => m >= 70 ? 'bg-emerald-500' : m >= 40 ? 'bg-blue-500' : m > 0 ? 'bg-amber-400' : 'bg-slate-200'
+  const cell = (m) => m >= 70 ? 'bg-emerald-500' : m >= 40 ? 'bg-teal-500' : m > 0 ? 'bg-amber-400' : 'bg-slate-200'
   return (
     <div className="mb-6">
       <div className="flex items-center gap-1.5 mb-2">
@@ -289,7 +289,7 @@ function StepRow({ step, index, locked, onPractice, onCards, sources = [], onSug
     <div className={`rounded-xl border p-3.5 ${isLocked ? 'border-slate-200 bg-slate-50/60' : 'border-slate-200 bg-white'}`}>
       <div className="flex items-center gap-3">
         <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${
-          done ? 'bg-emerald-500 text-white' : isLocked ? 'bg-slate-200 text-slate-400' : 'bg-blue-100 text-blue-700'
+          done ? 'bg-emerald-500 text-white' : isLocked ? 'bg-slate-200 text-slate-400' : 'bg-teal-100 text-teal-700'
         }`}>
           {done ? <Check className="w-4 h-4" /> : isLocked ? <Lock className="w-3.5 h-3.5" /> : index + 1}
         </div>
@@ -349,12 +349,12 @@ function StepSourcesInline({ sources, onSuggest, onDeleteSource }) {
         <div className="space-y-1.5 mb-2">
           {sources.map((s) => (
             <div key={s.id} className="flex items-center gap-2 group">
-              <span className="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+              <span className="w-6 h-6 rounded-md bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
                 {s.type === 'book' ? <BookOpen className="w-3.5 h-3.5" /> : <Link2 className="w-3.5 h-3.5" />}
               </span>
               <div className="min-w-0 flex-1">
                 {s.url ? (
-                  <a href={safeUrl(s.url)} target="_blank" rel="noopener noreferrer" className="text-sm text-slate-800 hover:text-blue-600 truncate block">{s.title}</a>
+                  <a href={safeUrl(s.url)} target="_blank" rel="noopener noreferrer" className="text-sm text-slate-800 hover:text-teal-600 truncate block">{s.title}</a>
                 ) : (
                   <span className="text-sm text-slate-800 truncate block">{s.title}</span>
                 )}
@@ -374,7 +374,7 @@ function StepSourcesInline({ sources, onSuggest, onDeleteSource }) {
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <button onClick={() => run(false)} disabled={busy}
-          className="text-xs text-blue-600 hover:text-blue-700 disabled:text-slate-400 transition-colors">
+          className="text-xs text-teal-600 hover:text-teal-700 disabled:text-slate-400 transition-colors">
           {busy ? t('detail.picking') : has ? t('detail.suggestMore') : t('detail.suggest')}
         </button>
         {has && (
@@ -419,7 +419,7 @@ function StepCards({ topicId, step, onBack }) {
       </div>
 
       {loading ? (
-        <div className="py-16 text-center text-sm text-slate-400"><Layers className="w-6 h-6 mx-auto mb-2 text-blue-400 animate-pulse" /> {t('common:loading')}</div>
+        <div className="py-16 text-center text-sm text-slate-400"><Layers className="w-6 h-6 mx-auto mb-2 text-teal-500 animate-pulse" /> {t('common:loading')}</div>
       ) : !cards.length ? (
         <EmptyState icon={IconLayers} title={t('detail.cardsEmptyTitle')}
           text={t('detail.cardsEmptyText')}
@@ -473,7 +473,7 @@ function ImportCardsModal({ topicId, step, onClose, onDone }) {
         <p className="text-xs text-slate-500 mb-4">{t('detail.importSub')}</p>
         <textarea value={text} onChange={(e) => setText(e.target.value)} rows={9} autoFocus
           placeholder={t('detail.importPh')}
-          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 resize-none" />
+          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 resize-none" />
         <div className="flex gap-3 mt-4">
           <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>{t('common:cancel')}</Button>
           <Button className="flex-1" onClick={submit} loading={busy}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.makeCards')}</Button>
@@ -493,7 +493,7 @@ function TrackReview({ topicId, onBack }) {
       <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-4 transition-colors">
         <ArrowLeft className="w-4 h-4" /> {t('detail.backToTrack')}
       </button>
-      <h1 className="text-xl font-semibold text-slate-900 mb-1 flex items-center gap-2"><Repeat className="w-5 h-5 text-blue-600" /> {t('detail.repeat')}</h1>
+      <h1 className="text-xl font-semibold text-slate-900 mb-1 flex items-center gap-2"><Repeat className="w-5 h-5 text-teal-600" /> {t('detail.repeat')}</h1>
       <p className="text-xs text-slate-400 mb-5">{t('detail.trackReviewSub')}</p>
 
       {loading ? (
@@ -582,7 +582,7 @@ function StepPractice({ topicId, step, onBack }) {
 
       {loading ? (
         <div className="py-16 text-center text-sm text-slate-400">
-          <Sparkles className="w-6 h-6 mx-auto mb-2 text-blue-400 animate-pulse" />
+          <Sparkles className="w-6 h-6 mx-auto mb-2 text-teal-500 animate-pulse" />
           {genLabel}
         </div>
       ) : error ? (
@@ -636,7 +636,7 @@ function OpenRunner({ quiz, onGrade }) {
     finally { setBusy(false) }
   }
 
-  const scoreColor = (s) => s >= 70 ? 'bg-emerald-50 text-emerald-700' : s >= 40 ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'
+  const scoreColor = (s) => s >= 70 ? 'bg-emerald-50 text-emerald-700' : s >= 40 ? 'bg-teal-50 text-teal-700' : 'bg-amber-50 text-amber-700'
 
   return (
     <div className="space-y-3">
@@ -648,7 +648,7 @@ function OpenRunner({ quiz, onGrade }) {
             <textarea rows={3} value={answers[i] || ''} disabled={!!results}
               onChange={(e) => setAnswers((a) => ({ ...a, [i]: e.target.value }))}
               placeholder={t('detail.yourAnswer')}
-              className="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 disabled:bg-slate-50" />
+              className="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 disabled:bg-slate-50" />
             {r && (
               <div className="mt-3 space-y-2">
                 <div className="flex items-center gap-2">

@@ -102,7 +102,7 @@ export default function QuizGeneratorPage({ embedded }) {
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1.5">{t('quiz.fLanguage')}</label>
             <input value={form.language} onChange={set('language')}
-              className="w-full h-11 px-3.5 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15" />
+              className="w-full h-11 px-3.5 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none hover:border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15" />
           </div>
         </div>
 
@@ -143,7 +143,7 @@ function Select({ label, value, onChange, options }) {
     <div>
       <label className="block text-xs font-medium text-slate-600 mb-1.5">{label}</label>
       <select value={value} onChange={onChange}
-        className="w-full h-11 px-3 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15">
+        className="w-full h-11 px-3 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none hover:border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15">
         {options.map((o) => <option key={o.v} value={o.v}>{o.label}</option>)}
       </select>
     </div>

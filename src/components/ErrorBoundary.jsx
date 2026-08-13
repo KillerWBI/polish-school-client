@@ -63,7 +63,7 @@ export default class ErrorBoundary extends Component {
           <div className="flex flex-wrap gap-2 justify-center">
             <button
               onClick={this.handleBack}
-              className="h-11 px-5 rounded-xl text-white bg-blue-600 hover:bg-blue-700 cursor-pointer transition-colors font-medium">
+              className="h-11 px-5 rounded-xl text-white bg-teal-500 hover:bg-teal-600 cursor-pointer transition-colors font-medium">
               Назад
             </button>
             <button

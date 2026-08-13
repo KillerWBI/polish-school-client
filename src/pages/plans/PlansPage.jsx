@@ -210,10 +210,10 @@ function PlanCard({ plan, current, role, onUpgrade, money }) {
 
   return (
     <div className={`relative rounded-2xl border bg-white p-5 flex flex-col ${
-      plan.highlight ? 'border-blue-500 shadow-sm ring-1 ring-blue-500/10' : 'border-slate-200'
+      plan.highlight ? 'border-teal-500 shadow-sm ring-1 ring-teal-500/10' : 'border-slate-200'
     }`}>
       {plan.highlight && (
-        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 text-[11px] font-medium bg-blue-600 text-white px-2.5 py-0.5 rounded-full">
+        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 text-[11px] font-medium bg-teal-500 text-white px-2.5 py-0.5 rounded-full">
           <Sparkles className="w-3 h-3" /> {t('plans.popular')}
         </span>
       )}
@@ -234,7 +234,7 @@ function PlanCard({ plan, current, role, onUpgrade, money }) {
         {rows.map((r, i) => (
           <li key={i} className="text-sm leading-snug text-slate-500">
             {t('plans.upTo')}{' '}
-            <span className={`font-semibold tabular-nums ${isMax ? 'text-blue-600' : isPaid ? 'text-slate-900' : 'text-slate-600'}`}>
+            <span className={`font-semibold tabular-nums ${isMax ? 'text-teal-600' : isPaid ? 'text-slate-900' : 'text-slate-600'}`}>
               {r.n.toLocaleString(i18n.language)}
             </span>{' '}
             {r.label}
@@ -244,7 +244,7 @@ function PlanCard({ plan, current, role, onUpgrade, money }) {
       </ul>
 
       {isCurrent ? (
-        <button disabled className="h-10 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 text-sm font-medium cursor-default">
+        <button disabled className="h-10 rounded-xl bg-teal-50 text-teal-700 border border-teal-200 text-sm font-medium cursor-default">
           {t('plans.yourPlan')}
         </button>
       ) : isIncluded ? (
@@ -254,7 +254,7 @@ function PlanCard({ plan, current, role, onUpgrade, money }) {
       ) : isPaid ? (
         <button onClick={() => onUpgrade(plan.key)}
           className={`h-10 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
-            plan.highlight ? 'bg-blue-600 text-white hover:bg-blue-700' : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+            plan.highlight ? 'bg-teal-500 text-white hover:bg-teal-600' : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
           }`}>
           {t('plans.upgrade')}
         </button>

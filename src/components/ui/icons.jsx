@@ -13,6 +13,7 @@ import {
   Landmark, Smartphone, Wallet, Phone, Mail, Send, MessageCircle, Briefcase,
   Video, Map, Layers, Repeat, PenLine, Grid3x3, Type, Scale, Cookie, Menu,
   Paperclip, BarChart3, PartyPopper, Trophy, Frown, Laptop, Languages, Library,
+  ArrowRight,
 } from 'lucide-react'
 
 // Общие размер и толщина линии для всего приложения.
@@ -71,6 +72,7 @@ export const IconReset    = icon(RotateCcw,       'IconReset')
 export const IconRefresh  = icon(RefreshCw,       'IconRefresh')
 export const IconBack     = icon(ArrowLeft,       'IconBack')
 export const IconNext     = icon(ChevronRight,    'IconNext')
+export const IconArrow    = icon(ArrowRight,      'IconArrow')     // «Подробнее →» на лендинге
 export const IconPrev     = icon(ChevronLeft,     'IconPrev')
 export const IconExpand   = icon(ChevronDown,     'IconExpand')
 export const IconShare    = icon(Share2,          'IconShare')

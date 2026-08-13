@@ -63,7 +63,7 @@ export default function GroupDetailPage() {
         <span className="inline-flex items-center gap-1.5"><IconGroups size={14} /> {t('groupDetail.studentsCount', { n: group.students?.length ?? 0 })}</span>
         {group.chatLink && safeUrl(group.chatLink) && (
           <a href={safeUrl(group.chatLink)} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors">
+            className="inline-flex items-center gap-1.5 text-teal-600 hover:text-teal-700 transition-colors">
             <IconLink size={14} /> {t('groupDetail.chatGroup')}
           </a>
         )}
@@ -127,7 +127,7 @@ function StudentsTab({ group, reload, isTeacher }) {
             <div key={s.id}
               className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white border border-slate-200">
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-teal-500 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
                   {s.avatar ? <img src={s.avatar} alt={s.name} className="w-full h-full object-cover" /> : s.name[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -150,7 +150,7 @@ function StudentsTab({ group, reload, isTeacher }) {
                 <div className="flex items-center gap-1 shrink-0">
                   {s.isPlaceholder && (
                     <button onClick={() => setMergeSource(s)}
-                      className="text-xs text-blue-600 hover:text-blue-700 px-2 py-1 cursor-pointer">
+                      className="text-xs text-teal-600 hover:text-teal-700 px-2 py-1 cursor-pointer">
                       {t('groupDetail.transfer')}
                     </button>
                   )}
@@ -223,7 +223,7 @@ function AddStudentModal({ open, onClose, groupId, existing, onAdded }) {
             : filtered.map(s => (
                 <div key={s.id}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white hover:bg-slate-100 transition-colors">
-                  <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-semibold shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 text-xs font-semibold shrink-0">
                     {s.name[0].toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -352,7 +352,7 @@ function InviteModal({ open, onClose, groupId, onAdded }) {
               : results.map(u => (
                   <div key={u.id}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white border border-slate-200">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-semibold shrink-0 overflow-hidden">
+                    <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 text-sm font-semibold shrink-0 overflow-hidden">
                       {u.avatar ? <img src={u.avatar} alt={u.name} className="w-full h-full object-cover" /> : u.name[0].toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -425,9 +425,9 @@ function MergeModal({ open, onClose, source, students, onMerged }) {
               {reals.map(s => (
                 <button key={s.id} type="button" onClick={() => setTargetId(s.id)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-colors text-left ${
-                    targetId === s.id ? 'bg-blue-600/20 border-blue-200' : 'bg-white border-slate-200 hover:bg-slate-50'
+                    targetId === s.id ? 'bg-teal-500/20 border-teal-200' : 'bg-white border-slate-200 hover:bg-slate-50'
                   }`}>
-                  <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-semibold shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 text-xs font-semibold shrink-0">
                     {s.name[0].toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -529,7 +529,7 @@ function LessonSection({ title, lessons, onSelect, muted }) {
             className={`w-full text-left flex items-center gap-4 px-4 py-3 rounded-xl border transition-all cursor-pointer group ${
               muted
                 ? 'bg-white border-slate-200 opacity-60 hover:opacity-100 hover:bg-white'
-                : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-blue-200'
+                : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-teal-200'
             }`}>
             {/* Дата */}
             <div className="text-center w-10 shrink-0">
@@ -546,7 +546,7 @@ function LessonSection({ title, lessons, onSelect, muted }) {
                 {l.lessonLink && safeUrl(l.lessonLink) && (
                   <a href={safeUrl(l.lessonLink)} target="_blank" rel="noopener noreferrer"
                     onClick={e => e.stopPropagation()}
-                    className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
+                    className="text-xs px-2 py-0.5 rounded-full bg-teal-100 text-teal-600 hover:bg-teal-200 transition-colors">
                     {t('groupDetail.enterLesson')}
                   </a>
                 )}
@@ -558,11 +558,11 @@ function LessonSection({ title, lessons, onSelect, muted }) {
             {/* Бейджи */}
             <div className="flex items-center gap-2 shrink-0">
               {l.Homeworks?.length > 0 && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-600">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-teal-100 text-teal-600">
                   {t('groupDetail.hwBadge', { n: l.Homeworks.length })}
                 </span>
               )}
-              <svg className="w-4 h-4 text-slate-600 group-hover:text-blue-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg className="w-4 h-4 text-slate-600 group-hover:text-teal-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
@@ -627,7 +627,7 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
         {linkUrl && safeUrl(linkUrl) && (
           <div className="mb-4">
             <a href={safeUrl(linkUrl)} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600/20 border border-blue-200 text-blue-600 text-sm hover:bg-blue-700/30 transition-colors">
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-500/20 border border-teal-200 text-teal-600 text-sm hover:bg-teal-600/30 transition-colors">
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round"/>
               </svg>
@@ -661,7 +661,7 @@ function LessonModal({ lesson, isTeacher, onClose, onUpdated, onDeleted }) {
         {/* ДЗ */}
         {lesson.Homeworks?.length > 0 && (
           <div className="mb-4">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-600">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-teal-100 text-teal-600">
               {t('groupDetail.hwCount', { n: lesson.Homeworks.length })}
             </span>
           </div>
@@ -737,12 +737,12 @@ function EditLessonForm({ lesson, onSaved, onCancel }) {
           <div>
             <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.dateLabel')}</label>
             <input type="date" value={form.date} onChange={e => set('date', e.target.value)} required
-              className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+              className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
           </div>
           <div>
             <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.timeLabel')}</label>
             <input type="time" value={form.time} onChange={e => set('time', e.target.value)} required
-              className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+              className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
           </div>
         </div>
         <Input label={t('groupDetail.topicLabel')} value={form.topic}
@@ -751,20 +751,20 @@ function EditLessonForm({ lesson, onSaved, onCancel }) {
           <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.descLabel')}</label>
           <textarea value={form.description} onChange={e => set('description', e.target.value)}
             rows={2} placeholder={t('groupDetail.descPlaceholder')}
-            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none" />
+            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-teal-500 resize-none" />
         </div>
         <div>
           <div className="flex items-center justify-between mb-1">
             <label className="text-xs text-slate-400">{t('groupDetail.linkLabel')}</label>
             <button type="button"
               onClick={() => set('lessonLink', `https://meet.jit.si/lf-${crypto.randomUUID()}`)}
-              className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
+              className="text-xs text-teal-600 hover:text-teal-700 cursor-pointer">
               {t('groupDetail.newJitsi')}
             </button>
           </div>
           <input type="text" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
             placeholder={t('groupDetail.emptyNoLink')}
-            className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 placeholder:text-slate-400" />
+            className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500 placeholder:text-slate-400" />
         </div>
 
         {/* Материалы */}
@@ -835,12 +835,12 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
             <div>
               <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.dateReq')}</label>
               <input type="date" value={form.date} onChange={e => set('date', e.target.value)} required
-                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
             </div>
             <div>
               <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.timeReq')}</label>
               <input type="time" value={form.time} onChange={e => set('time', e.target.value)} required
-                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
             </div>
           </div>
           <Input label={t('groupDetail.topicLabel')} value={form.topic}
@@ -849,7 +849,7 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
             <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.descLabel')}</label>
             <textarea value={form.description} onChange={e => set('description', e.target.value)}
               rows={2} placeholder={t('groupDetail.descPlaceholder')}
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none" />
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-teal-500 resize-none" />
           </div>
           <div>
             <label className="text-xs text-slate-400 block mb-1.5">{t('groupDetail.linkLabel')}</label>
@@ -858,7 +858,7 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
                 <button key={m} type="button" onClick={() => setLinkMode(m)}
                   className={`flex-1 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
                     linkMode === m
-                      ? 'bg-blue-50 border-blue-200 text-blue-700'
+                      ? 'bg-teal-50 border-teal-200 text-teal-700'
                       : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
                   }`}>
                   {label}
@@ -870,7 +870,7 @@ function CreateLessonModal({ open, onClose, groupId, onCreated }) {
             ) : (
               <input type="url" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
                 placeholder={t('groupDetail.customPlaceholder')}
-                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 placeholder:text-slate-400" />
+                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500 placeholder:text-slate-400" />
             )}
           </div>
 
@@ -950,12 +950,12 @@ function GenerateLessonsModal({ open, onClose, group, onGenerated }) {
             <div>
               <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.startLabel')}</label>
               <input type="date" value={from} onChange={e => setFrom(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
             </div>
             <div>
               <label className="text-xs text-slate-400 block mb-1">{t('groupDetail.endLabel')}</label>
               <input type="date" value={to} onChange={e => setTo(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
             </div>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <div className="flex gap-2 pt-1">
@@ -988,11 +988,11 @@ function MaterialsEditor({ materials, onChange }) {
         <span className="text-xs text-slate-400 uppercase tracking-wider">{t('groupDetail.materialsLabel')}</span>
         <div className="flex gap-2">
           <button type="button" onClick={() => add('link')}
-            className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
+            className="text-xs text-teal-600 hover:text-teal-700 cursor-pointer">
             {t('groupDetail.addLink')}
           </button>
           <button type="button" onClick={() => add('text')}
-            className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
+            className="text-xs text-teal-600 hover:text-teal-700 cursor-pointer">
             {t('groupDetail.addTextMat')}
           </button>
         </div>
@@ -1010,15 +1010,15 @@ function MaterialsEditor({ materials, onChange }) {
             </div>
             <input placeholder={t('groupDetail.titleOptional')} value={m.title || ''}
               onChange={e => update(i, 'title', e.target.value)}
-              className="w-full h-8 px-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-xs outline-none focus:border-blue-500 placeholder:text-slate-400" />
+              className="w-full h-8 px-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-xs outline-none focus:border-teal-500 placeholder:text-slate-400" />
             {m.type === 'link' ? (
               <input placeholder="https://..." value={m.url || ''}
                 onChange={e => update(i, 'url', e.target.value)}
-                className="w-full h-8 px-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-xs outline-none focus:border-blue-500 placeholder:text-slate-400" />
+                className="w-full h-8 px-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-xs outline-none focus:border-teal-500 placeholder:text-slate-400" />
             ) : (
               <textarea placeholder={t('groupDetail.noteText')} value={m.content || ''}
                 onChange={e => update(i, 'content', e.target.value)} rows={2}
-                className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-xs outline-none focus:border-blue-500 placeholder:text-slate-400 resize-none" />
+                className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-xs outline-none focus:border-teal-500 placeholder:text-slate-400 resize-none" />
             )}
           </div>
         ))}
@@ -1041,13 +1041,13 @@ function MaterialsList({ materials }) {
             {m.title && <p className="text-xs font-medium text-slate-900 mb-0.5">{m.title}</p>}
             {m.type === 'link' && m.url && safeUrl(m.url) && (
               <a href={safeUrl(m.url)} target="_blank" rel="noopener noreferrer"
-                className="text-xs text-blue-600 hover:text-blue-700 underline break-all">
+                className="text-xs text-teal-600 hover:text-teal-700 underline break-all">
                 {m.url}
               </a>
             )}
             {m.type === 'file' && m.url && safeUrl(m.url) && (
               <a href={safeUrl(m.url)} target="_blank" rel="noopener noreferrer"
-                className="text-xs text-blue-600 hover:text-blue-700 underline">
+                className="text-xs text-teal-600 hover:text-teal-700 underline">
                 {t('groupDetail.openFile')}
               </a>
             )}
@@ -1128,7 +1128,7 @@ function SettingsTab({ group, reload, onDeleted }) {
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-slate-400 uppercase tracking-wider">{t('groupDetail.scheduleLabel')}</span>
             <button type="button" onClick={addSlot}
-              className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
+              className="text-xs text-teal-600 hover:text-teal-700 cursor-pointer">
               {t('groupDetail.addSlot')}
             </button>
           </div>
@@ -1139,11 +1139,11 @@ function SettingsTab({ group, reload, onDeleted }) {
             {schedule.map((sl, i) => (
               <div key={i} className="flex items-center gap-2">
                 <select value={sl.day} onChange={e => updateSlot(i, 'day', e.target.value)}
-                  className="flex-1 h-10 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500">
+                  className="flex-1 h-10 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500">
                   {DAY_VALUES.map(v => <option key={v} value={v}>{weekdays[v]}</option>)}
                 </select>
                 <input type="time" value={sl.time} onChange={e => updateSlot(i, 'time', e.target.value)}
-                  className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+                  className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
                 <button type="button" onClick={() => removeSlot(i)}
                   className="text-slate-500 hover:text-red-600 cursor-pointer p-1"><IconClose size={14} /></button>
               </div>

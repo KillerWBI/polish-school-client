@@ -58,9 +58,9 @@ function TeacherDashboard() {
       {!hideChecklist && <StartChecklist navigate={navigate} onDone={dismissChecklist} />}
 
       <div data-tour="kpi" className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
-        <Kpi Icon={CalendarDays} accent="blue"    tip={t('dashboard.tipLessonsToday')} label={t('dashboard.lessonsToday')}  value={kpi.lessonsToday ?? 0} pill={kpi.lessonsToday > 0 ? { t: t('dashboard.pillToday'), tone: 'info' } : { t: t('dashboard.pillEmpty'), tone: 'muted' }} onClick={() => navigate('/calendar')} />
-        <Kpi Icon={FileText}     accent="amber"   tip={t('dashboard.tipUngraded')}     label={t('dashboard.ungradedLabel')} value={kpi.ungradedSubmissions ?? 0} pill={kpi.ungradedSubmissions > 0 ? { t: t('dashboard.pillWaitYou'), tone: 'warn' } : { t: t('dashboard.pillDone'), tone: 'good' }} onClick={() => navigate('/homework')} />
-        <Kpi Icon={Wallet}       accent="slate"   tip={t('dashboard.tipDebt')}         label={t('dashboard.debtStudents')}   value={fmtMoney(kpi.totalDebt, user?.currency, i18n.language)} pill={kpi.totalDebt > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
+        <Kpi Icon={CalendarDays} accent="teal"    tip={t('dashboard.tipLessonsToday')} label={t('dashboard.lessonsToday')}  value={kpi.lessonsToday ?? 0} pill={kpi.lessonsToday > 0 ? { t: t('dashboard.pillToday'), tone: 'info' } : { t: t('dashboard.pillEmpty'), tone: 'muted' }} onClick={() => navigate('/calendar')} />
+        <Kpi Icon={FileText}     accent="lilac"   tip={t('dashboard.tipUngraded')}     label={t('dashboard.ungradedLabel')} value={kpi.ungradedSubmissions ?? 0} pill={kpi.ungradedSubmissions > 0 ? { t: t('dashboard.pillWaitYou'), tone: 'warn' } : { t: t('dashboard.pillDone'), tone: 'good' }} onClick={() => navigate('/homework')} />
+        <Kpi Icon={Wallet}       accent="peach"   tip={t('dashboard.tipDebt')}         label={t('dashboard.debtStudents')}   value={fmtMoney(kpi.totalDebt, user?.currency, i18n.language)} pill={kpi.totalDebt > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
         <Kpi Icon={CheckCircle2} accent="emerald" tip={t('dashboard.tipAttendance')}   label={t('dashboard.attendance')}    value={kpi.attendancePercent != null ? `${kpi.attendancePercent}%` : '—'} pill={{ t: t('dashboard.pillMonth'), tone: 'muted' }} onClick={() => navigate('/attendance')} />
       </div>
 
@@ -107,10 +107,10 @@ function StudentDashboard() {
   return (
     <Page firstName={user?.name?.split(' ')[0]} navigate={navigate}>
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
-        <Kpi Icon={CalendarDays} accent="blue"    tip={t('dashboard.tipLessonsWeek')}        label={t('dashboard.lessonsWeek')} value={kpi.lessonsThisWeek ?? 0} pill={{ t: t('dashboard.pill7days'), tone: 'info' }} onClick={() => navigate('/calendar')} />
-        <Kpi Icon={FileText}     accent="amber"   tip={t('dashboard.tipHwPending')}          label={t('dashboard.hwToSubmit')}       value={kpi.pendingHomework ?? 0} pill={kpi.pendingHomework > 0 ? { t: t('dashboard.pillNotSubmitted'), tone: 'warn' } : { t: t('dashboard.pillAllSubmitted'), tone: 'good' }} onClick={() => navigate('/homework')} />
+        <Kpi Icon={CalendarDays} accent="teal"    tip={t('dashboard.tipLessonsWeek')}        label={t('dashboard.lessonsWeek')} value={kpi.lessonsThisWeek ?? 0} pill={{ t: t('dashboard.pill7days'), tone: 'info' }} onClick={() => navigate('/calendar')} />
+        <Kpi Icon={FileText}     accent="lilac"   tip={t('dashboard.tipHwPending')}          label={t('dashboard.hwToSubmit')}       value={kpi.pendingHomework ?? 0} pill={kpi.pendingHomework > 0 ? { t: t('dashboard.pillNotSubmitted'), tone: 'warn' } : { t: t('dashboard.pillAllSubmitted'), tone: 'good' }} onClick={() => navigate('/homework')} />
         <Kpi Icon={CheckCircle2} accent="emerald" tip={t('dashboard.tipAttendanceStudent')} label={t('dashboard.attendance')}     value={kpi.attendancePercent != null ? `${kpi.attendancePercent}%` : '—'} pill={{ t: t('dashboard.pillMonth'), tone: 'muted' }} onClick={() => navigate('/attendance')} />
-        <Kpi Icon={Wallet}       accent="slate"   tip={t('dashboard.tipMyDebt')}             label={t('dashboard.myDebt')}         value={debtText} pill={debt.value > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
+        <Kpi Icon={Wallet}       accent="peach"   tip={t('dashboard.tipMyDebt')}             label={t('dashboard.myDebt')}         value={debtText} pill={debt.value > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
       </div>
 
       <AnalyticsChart userId={user?.id} />
@@ -153,15 +153,15 @@ function PaymentDetailsBanner({ navigate }) {
 function InvitedByHint({ info, navigate }) {
   const { t } = useTranslation('app')
   return (
-    <div className="mb-4 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 flex items-center gap-3">
-      <UserPlus className="w-5 h-5 text-blue-500 shrink-0" />
-      <p className="text-sm text-blue-900 flex-1">
+    <div className="mb-4 rounded-2xl border border-teal-200 bg-teal-50 px-4 py-3 flex items-center gap-3">
+      <UserPlus className="w-5 h-5 text-teal-600 shrink-0" />
+      <p className="text-sm text-teal-700 flex-1">
         {info.subject
           ? t('dashboard.invitedByWithSubject', { name: info.name, subject: info.subject })
           : t('dashboard.invitedBy', { name: info.name })}
       </p>
       <button onClick={() => navigate('/students')}
-        className="shrink-0 text-sm font-medium text-blue-700 hover:text-blue-900 underline underline-offset-2 transition-colors">
+        className="shrink-0 text-sm font-medium text-teal-700 hover:text-teal-700 underline underline-offset-2 transition-colors">
         {t('dashboard.invitedByCta')}
       </button>
     </div>
@@ -191,7 +191,7 @@ function StartChecklist({ navigate, onDone }) {
   const next = steps.find(s => !s.done)
 
   return (
-    <div data-tour="quickstart" className="mb-4 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50/70 to-white p-5">
+    <div data-tour="quickstart" className="mb-4 rounded-2xl border border-teal-100 bg-gradient-to-br from-teal-50/70 to-white p-5">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h2 className="text-base font-semibold text-slate-900">{t('dashboard.qsTitle')}</h2>
@@ -203,13 +203,13 @@ function StartChecklist({ navigate, onDone }) {
         </div>
       </div>
 
-      <div className="h-1.5 rounded-full bg-blue-100 overflow-hidden mb-4">
-        <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(doneCount / steps.length) * 100}%` }} />
+      <div className="h-1.5 rounded-full bg-teal-100 overflow-hidden mb-4">
+        <div className="h-full bg-teal-500 rounded-full transition-all" style={{ width: `${(doneCount / steps.length) * 100}%` }} />
       </div>
 
       <div className="space-y-2">
         {steps.map(s => (
-          <div key={s.key} className={`flex items-center gap-3 rounded-xl border px-3.5 py-3 transition-colors ${s === next ? 'border-blue-200 bg-white' : 'border-slate-100 bg-white/50'}`}>
+          <div key={s.key} className={`flex items-center gap-3 rounded-xl border px-3.5 py-3 transition-colors ${s === next ? 'border-teal-200 bg-white' : 'border-slate-100 bg-white/50'}`}>
             {s.done
               ? <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
               : <span className="w-5 h-5 rounded-full border-2 border-slate-300 shrink-0" />}
@@ -218,8 +218,8 @@ function StartChecklist({ navigate, onDone }) {
               {!s.done && <div className="text-xs text-slate-500 mt-0.5">{s.hint}</div>}
             </div>
             {!s.done && (s === next
-              ? <button onClick={() => navigate(s.to)} className="shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">{t('dashboard.do')} <ChevronRight className="w-4 h-4" /></button>
-              : <button onClick={() => navigate(s.to)} className="shrink-0 text-sm text-blue-600 hover:text-blue-700 transition-colors">{t('dashboard.open')}</button>)}
+              ? <button onClick={() => navigate(s.to)} className="shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-lg bg-teal-500 text-white text-sm font-medium hover:bg-teal-600 transition-colors">{t('dashboard.do')} <ChevronRight className="w-4 h-4" /></button>
+              : <button onClick={() => navigate(s.to)} className="shrink-0 text-sm text-teal-600 hover:text-teal-700 transition-colors">{t('dashboard.open')}</button>)}
           </div>
         ))}
       </div>
@@ -253,19 +253,20 @@ function Page({ firstName, navigate, createOptions, children }) {
 }
 
 /* ══════════════════ KPI ══════════════════ */
+// Плитки-иконки KPI: четыре разных тона, чтобы строка не читалась одним пятном.
 const ACCENT = {
-  blue:    'bg-blue-50 text-blue-600',
-  amber:   'bg-amber-50 text-amber-600',
+  teal:    'bg-[#E4F6F4] text-teal-600',
+  lilac:   'bg-[#EDE9FE] text-[#7C3AED]',
+  peach:   'bg-[#FFEEE4] text-[#EA6D24]',
   emerald: 'bg-emerald-50 text-emerald-600',
-  slate:   'bg-slate-100 text-slate-600',
 }
 const PILL = {
   good:  'bg-emerald-50 text-emerald-700',
   warn:  'bg-amber-50 text-amber-700',
-  info:  'bg-blue-50 text-blue-700',
+  info:  'bg-teal-50 text-teal-700',
   muted: 'bg-slate-100 text-slate-500',
 }
-function Kpi({ Icon, accent = 'blue', label, value, pill, onClick, tip }) {
+function Kpi({ Icon, accent = 'teal', label, value, pill, onClick, tip }) {
   return (
     <Tooltip text={tip} side="bottom" className="w-full">
       <button onClick={onClick}
@@ -289,7 +290,7 @@ function CardHead({ title, linkTo, linkLabel }) {
   return (
     <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
       <h2 className="text-[15px] font-semibold text-slate-900">{title}</h2>
-      {linkLabel && <Link to={linkTo} className="text-xs font-medium text-blue-600 hover:text-blue-700 flex items-center gap-0.5">{linkLabel}<ChevronRight className="w-3.5 h-3.5" /></Link>}
+      {linkLabel && <Link to={linkTo} className="text-xs font-medium text-teal-600 hover:text-teal-700 flex items-center gap-0.5">{linkLabel}<ChevronRight className="w-3.5 h-3.5" /></Link>}
     </div>
   )
 }
@@ -334,11 +335,11 @@ function LessonsTable({ lessons, student }) {
 function TypeBadge({ type }) {
   const { t } = useTranslation('app')
   const g = type === 'group'
-  return <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${g ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>{g ? t('dashboard.badgeGroup') : t('dashboard.badgeIndiv')}</span>
+  return <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${g ? 'bg-teal-50 text-teal-700' : 'bg-slate-100 text-slate-600'}`}>{g ? t('dashboard.badgeGroup') : t('dashboard.badgeIndiv')}</span>
 }
 
 const ACT = {
-  submission: { Icon: FileText,     cls: 'bg-blue-50 text-blue-600' },
+  submission: { Icon: FileText,     cls: 'bg-teal-50 text-teal-600' },
   grade:      { Icon: Award,        cls: 'bg-emerald-50 text-emerald-600' },
   payment:    { Icon: Wallet,       cls: 'bg-emerald-50 text-emerald-600' },
   attendance: { Icon: CheckCircle2, cls: 'bg-slate-100 text-slate-500' },
@@ -395,7 +396,7 @@ function PendingHwRow({ hw }) {
         <div className="text-xs font-medium text-slate-900 truncate">{hw.description}</div>
         <div className="text-[10px] text-slate-400">{t('dashboard.byDate', { date: deadline })}{urgent && <span className="text-red-500"> · {t('dashboard.urgent')}</span>}</div>
       </div>
-      <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium">{t('dashboard.submit')}</span>
+      <span className="text-[10px] px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 font-medium">{t('dashboard.submit')}</span>
     </Link>
   )
 }
@@ -413,7 +414,7 @@ function CreateDropdown({ navigate, items }) {
     <div ref={ref} data-tour="create" className="relative">
       <Tooltip text={t('dashboard.tipCreate')} side="left">
         <button onClick={() => setOpen(v => !v)}
-          className="flex items-center gap-1.5 h-10 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors cursor-pointer">
+          className="flex items-center gap-1.5 h-10 px-4 rounded-xl bg-teal-500 hover:bg-teal-600 text-white text-sm font-medium transition-colors cursor-pointer">
           <Plus className="w-4 h-4" /> {t('dashboard.create')}
         </button>
       </Tooltip>

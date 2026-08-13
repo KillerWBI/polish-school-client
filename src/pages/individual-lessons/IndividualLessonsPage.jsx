@@ -129,9 +129,9 @@ function LessonCard({ l, isTeacher, onEdit, onDelete }) {
   const { user } = useAuth() // цена урока — в валюте преподавателя
   const isPast = l.date && new Date(`${l.date}T${l.time || '00:00'}`) < new Date()
   return (
-    <div className="group flex items-start gap-3 p-4 rounded-2xl border border-slate-200 bg-white hover:border-blue-200 transition-colors">
+    <div className="group flex items-start gap-3 p-4 rounded-2xl border border-slate-200 bg-white hover:border-teal-200 transition-colors">
       <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center shrink-0 leading-none ${
-        isPast ? 'bg-slate-100 text-slate-500' : 'bg-blue-50 text-blue-700'}`}>
+        isPast ? 'bg-slate-100 text-slate-500' : 'bg-teal-50 text-teal-700'}`}>
         <span className="text-lg font-bold">{l.date?.slice(8)}</span>
         <span className="text-[10px] mt-0.5">{l.date?.slice(5, 7)}.{l.date?.slice(2, 4)}</span>
       </div>
@@ -147,11 +147,11 @@ function LessonCard({ l, isTeacher, onEdit, onDelete }) {
             <span className="text-[11px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">{formatMoney(Number(l.pricePerLesson) || 0, user?.currency, i18n.language)}</span>
           )}
           {l.individualCourseId && (
-            <span className="text-[11px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">{t('indLessons.series')}</span>
+            <span className="text-[11px] px-1.5 py-0.5 rounded bg-teal-50 text-teal-600">{t('indLessons.series')}</span>
           )}
           {safeUrl(l.lessonLink) && (
             <a href={safeUrl(l.lessonLink)} target="_blank" rel="noopener noreferrer"
-              className="text-[11px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
+              className="text-[11px] px-2 py-0.5 rounded-full bg-teal-100 text-teal-600 hover:bg-teal-200 transition-colors">
               {t('indLessons.enterLesson')}
             </a>
           )}
@@ -163,7 +163,7 @@ function LessonCard({ l, isTeacher, onEdit, onDelete }) {
       {isTeacher && (
         <div className="flex flex-col gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
           <button onClick={onEdit} title={tc('edit')}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-700 hover:bg-blue-50 cursor-pointer">
+            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-700 hover:bg-teal-50 cursor-pointer">
             <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -261,7 +261,7 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
                 {[['existing', t('indLessons.modeExisting')], ['placeholder', t('indLessons.modePlaceholder')]].map(([m, label]) => (
                   <button key={m} type="button" onClick={() => set('mode', m)}
                     className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-colors ${
-                      form.mode === m ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'}`}>
+                      form.mode === m ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900'}`}>
                     {label}
                   </button>
                 ))}
@@ -271,7 +271,7 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
                 <div>
                   <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">{t('indLessons.studentLabel')}</label>
                   <select value={form.studentId} onChange={e => set('studentId', e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500">
+                    className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500">
                     <option value="">{t('indLessons.choose')}</option>
                     {students.map(s => (
                       <option key={s.id} value={s.id}>{s.name}{s.username ? ` (@${s.username})` : ''}</option>
@@ -294,12 +294,12 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
             <div>
               <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">{t('indLessons.dateLabel')}</label>
               <input type="date" value={form.date} onChange={e => set('date', e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
             </div>
             <div>
               <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">{t('indLessons.timeLabel')}</label>
               <input type="time" value={form.time} onChange={e => set('time', e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
             </div>
           </div>
 
@@ -317,13 +317,13 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
                   <span className="text-xs text-slate-400">{t('indLessons.emptyNoLink')}</span>
                   <button type="button"
                     onClick={() => set('lessonLink', `https://meet.jit.si/lf-${crypto.randomUUID()}`)}
-                    className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
+                    className="text-xs text-teal-600 hover:text-teal-700 cursor-pointer">
                     {t('indLessons.newJitsi')}
                   </button>
                 </div>
                 <input type="text" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
                   placeholder="https://..."
-                  className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 placeholder:text-slate-400" />
+                  className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500 placeholder:text-slate-400" />
               </>
             ) : (
               <>
@@ -332,7 +332,7 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
                     <button key={m} type="button" onClick={() => setLinkMode(m)}
                       className={`flex-1 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
                         linkMode === m
-                          ? 'bg-blue-50 border-blue-200 text-blue-700'
+                          ? 'bg-teal-50 border-teal-200 text-teal-700'
                           : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
                       }`}>
                       {label}
@@ -344,7 +344,7 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
                 ) : (
                   <input type="url" value={form.lessonLink} onChange={e => set('lessonLink', e.target.value)}
                     placeholder={t('indLessons.customPlaceholder')}
-                    className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 placeholder:text-slate-400" />
+                    className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500 placeholder:text-slate-400" />
                 )}
               </>
             )}

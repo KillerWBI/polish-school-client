@@ -1,159 +1,97 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import useAuth from '../../hooks/useAuth'
-import RoleSwitch from './sections/RoleSwitch'
-import LanguageSwitcher from '../../components/ui/LanguageSwitcher'
+import Header from './sections/Header'
+import { SectionShell, IconTile, BrowserFrame, PrimaryButton, GhostButton } from './sections/_kit'
+import { IconHomework, IconMoney, IconAttendance, IconClose, IconArrow } from '../../components/ui/icons'
 
-// Отдельный лендинг для УЧЕНИКА (teacher-лендинг — на «/»). Тёмный тех-моно стиль бренда.
+// Отдельный лендинг для УЧЕНИКА (teacher-лендинг — на «/»). Светлый бирюзовый стиль,
+// те же примитивы, что у лендинга преподавателя. Шапка — общая: раньше здесь лежала
+// её почти дословная копия и правки расходились.
 export default function StudentLandingPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('landing')
   const { t: tc } = useTranslation('common')
-  const { isAuthenticated, user } = useAuth()
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   const toRegister = () => navigate('/register-student')
   const toLogin    = () => navigate('/login')
-  const scrollTo   = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
   return (
-    <div className="relative overflow-x-hidden bg-[#18181C] text-[#EDEDED] min-h-screen">
-      {/* ── Header ── */}
-      <header className={`fixed top-0 inset-x-0 z-40 transition-colors duration-300 ${
-        scrolled ? 'bg-[#18181C]/85 backdrop-blur-md border-b border-[#303036]' : 'border-b border-transparent'
-      }`}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex items-center gap-2 cursor-pointer group">
-            <span className="w-2 h-2 rounded-[2px] bg-brand-500 group-hover:bg-brand-400 transition-colors" />
-            <span className="font-mono text-sm font-semibold tracking-tight">Peravenor</span>
-            <span className="font-mono text-[11px] text-[#5A5A60]">{t('student.brandTag')}</span>
-          </button>
-
-          <nav className="hidden md:flex items-center gap-8 font-mono text-[13px] text-[#8A8A8F]">
-            <button onClick={() => scrollTo('features')} className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('student.navFeatures')}</button>
-            <button onClick={() => scrollTo('how')}      className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('student.navHow')}</button>
-            <button onClick={() => scrollTo('faq')}      className="hover:text-[#EDEDED] transition-colors cursor-pointer">{t('student.navFaq')}</button>
-          </nav>
-
-          <div className="flex items-center gap-2.5">
-            <LanguageSwitcher variant="dark" />
-            <RoleSwitch active="student" />
-            {isAuthenticated ? (
-              <button onClick={() => navigate('/dashboard')}
-                className="h-9 px-4 rounded-lg bg-white text-[#18181C] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer">
-                {user?.name ? t('header.toDashboardName', { name: user.name.split(' ')[0] }) : t('header.toDashboard')}
-              </button>
-            ) : (
-              <>
-                <button onClick={toLogin}
-                  className="hidden sm:inline-flex h-9 px-3 items-center rounded-lg text-[13px] text-[#B4B4BA] hover:text-white transition-colors cursor-pointer">
-                  {tc('login')}
-                </button>
-                <button onClick={toRegister}
-                  className="h-9 px-4 rounded-lg bg-white text-[#18181C] text-[13px] font-medium hover:bg-[#EDEDED] transition-colors cursor-pointer">
-                  {tc('register')}
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
+    <div className="relative overflow-x-hidden bg-white text-[#0E1726] min-h-screen">
+      <Header role="student" onLogin={toLogin} onRegister={toRegister} />
 
       <main>
         {/* ── Hero ── */}
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0 landing-grid opacity-40 [mask-image:linear-gradient(#000,transparent)]" />
-
-          <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-32 pb-20 sm:pt-40 sm:pb-24 grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
+        <section className="relative bg-white overflow-hidden">
+          <div
+            aria-hidden
+            className="absolute -top-40 right-[-10%] w-[720px] h-[720px] rounded-full bg-teal-50 blur-3xl opacity-70 pointer-events-none"
+          />
+          <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-32 pb-16 sm:pt-40 sm:pb-24 grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
             <div>
-              <p className="mono-label mb-5">{t('student.heroLabel')}</p>
-              <h1 className="font-display font-bold tracking-tight leading-[1.03] text-[clamp(2.4rem,6vw,4.4rem)]">
-                {t('student.heroTitle1')}<br /><span className="text-[#6E6E76]">{t('student.heroTitle2')}</span>
+              <span className="inline-flex items-center rounded-full bg-teal-50 text-teal-700 text-[13px] font-medium px-4 py-2">
+                {t('student.heroLabel')}
+              </span>
+
+              <h1 className="mt-6 font-display font-bold tracking-tight leading-[1.06] text-[clamp(2.3rem,5.2vw,4.15rem)] text-[#0E1726]">
+                {t('student.heroTitle1')}<br />
+                <span className="text-teal-500">{t('student.heroTitle2')}</span>
               </h1>
-              <p className="mt-6 max-w-lg text-[#9A9AA1] text-base sm:text-lg leading-relaxed">
+
+              <p className="mt-6 max-w-lg text-[#5A6B7C] text-base sm:text-lg leading-relaxed">
                 {t('student.heroSubtitle')}
               </p>
 
-              <div className="mt-8 max-w-md rounded-xl border border-[#303036] bg-[#1D1D22] font-mono text-[13px] overflow-hidden">
-                <div className="flex items-center gap-1.5 px-3 h-8 border-b border-[#303036]">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#3C3C43]" />
-                  <span className="ml-2 text-[#5A5A60] text-[11px]">{t('student.term')}</span>
-                </div>
-                <div className="p-4 space-y-1.5 text-[#8A8A8F]">
-                  <p><span className="text-brand-400">01</span> {t('student.term1')}</p>
-                  <p><span className="text-brand-400">02</span> {t('student.term2')}</p>
-                  <p><span className="text-brand-400">03</span> {t('student.term3')}</p>
-                  <p className="text-[#EDEDED]"><span className="text-brand-400">04</span> {t('student.term4')} <span className="caret" /></p>
-                </div>
-              </div>
-
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <button onClick={toRegister}
-                  className="h-11 px-6 rounded-lg bg-white text-[#18181C] text-sm font-semibold hover:bg-[#EDEDED] transition-colors cursor-pointer">
+                <PrimaryButton onClick={toRegister}>
                   {t('student.createAccount')}
-                </button>
-                <button onClick={toLogin}
-                  className="h-11 px-6 rounded-lg border border-[#3C3C43] text-[#EDEDED] text-sm hover:bg-white/[0.04] hover:border-[#48484F] transition-colors cursor-pointer">
-                  {t('student.haveAccount')}
-                </button>
-              </div>
-
-              <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[12px] text-[#5A5A60]">
-                <span className="text-[#8A8A8F]">{t('student.stat1')}</span>
-                <span>→</span>
-                <span className="text-brand-400">{t('student.stat2')}</span>
-                <span className="text-[#3C3C43]">·</span>
-                <span>{t('student.stat3')}</span>
-                <span className="text-[#3C3C43]">·</span>
-                <span>{t('student.stat4')}</span>
+                  <IconArrow size={18} strokeWidth={2.2} />
+                </PrimaryButton>
+                <GhostButton onClick={toLogin}>{t('student.haveAccount')}</GhostButton>
               </div>
             </div>
 
             {/* Телефон-макет кабинета ученика */}
-            <div className="relative mx-auto w-[280px]">
-              <div className="rounded-[2.4rem] border border-[#303036] bg-[#1D1D22] p-2.5 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.7)]">
-                <div className="rounded-[2rem] bg-[#F7F8FA] overflow-hidden">
-                  <div className="h-9 flex items-center justify-center">
+            <div className="relative isolate mx-auto w-[280px]">
+              <div aria-hidden className="absolute inset-0 -z-10 pointer-events-none">
+                <div className="blob blob-float absolute -top-10 -right-14 w-64 h-64 bg-teal-200/70" />
+                <div className="blob-b absolute bottom-0 -left-16 w-56 h-56 bg-[#EDE9FE]" />
+              </div>
+
+              <div className="rounded-[2.4rem] border border-[#E3E9ED] bg-white p-2.5 shadow-[0_30px_70px_-30px_rgba(16,24,40,0.35)]">
+                <div className="rounded-[2rem] bg-[#F7FAFB] overflow-hidden">
+                  <div className="h-9 flex items-center justify-center bg-white">
                     <span className="w-20 h-1.5 rounded-full bg-[#E2E5EA]" />
                   </div>
-                  <div className="px-4 pb-5 space-y-3">
+                  <div className="px-4 py-4 space-y-3">
                     <div>
-                      <div className="text-[11px] text-[#8A94A6]">{t('student.phoneHi')}</div>
-                      <div className="text-lg font-semibold text-[#0F172A] leading-tight">{t('student.phoneName')}</div>
+                      <div className="text-[11px] text-[#8FA0AE]">{t('student.phoneHi')}</div>
+                      <div className="text-lg font-semibold text-[#0E1726] leading-tight font-display">{t('student.phoneName')}</div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       {[[t('student.phoneHw'), '2', 'text-[#D97706]'], [t('student.phoneAtt'), '95%', 'text-[#16A34A]']].map(([k, v, c]) => (
                         <div key={k} className="rounded-xl bg-white border border-[#EAECEF] p-2.5">
-                          <div className="text-[9px] text-[#8A94A6] mb-0.5">{k}</div>
+                          <div className="text-[9px] text-[#8FA0AE] mb-0.5">{k}</div>
                           <div className={`text-base font-semibold leading-none ${c}`}>{v}</div>
                         </div>
                       ))}
                     </div>
                     <div className="rounded-xl bg-white border border-[#EAECEF] p-3">
-                      <div className="text-[10px] text-[#8A94A6] mb-2">{t('student.phoneHwBlock')}</div>
+                      <div className="text-[10px] text-[#8FA0AE] mb-2">{t('student.phoneHwBlock')}</div>
                       {[[t('student.phoneHw1'), t('student.phoneHw1d'), true], [t('student.phoneHw2'), t('student.phoneHw2d'), false]].map(([tt, d, warn]) => (
-                        <div key={tt} className="flex items-center justify-between py-1">
-                          <span className="text-[11px] text-[#334155] flex items-center gap-1.5">
-                            <span className={`w-1.5 h-1.5 rounded-full ${warn ? 'bg-[#D97706]' : 'bg-[#CBD5E1]'}`} />{tt}
+                        <div key={tt} className="flex items-center justify-between py-1 gap-2">
+                          <span className="text-[11px] text-[#3D4C5C] flex items-center gap-1.5 min-w-0">
+                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${warn ? 'bg-[#D97706]' : 'bg-[#CBD5E1]'}`} />
+                            <span className="truncate">{tt}</span>
                           </span>
-                          <span className="text-[10px] text-[#8A94A6]">{d}</span>
+                          <span className="text-[10px] text-[#8FA0AE] shrink-0">{d}</span>
                         </div>
                       ))}
                     </div>
-                    <div className="rounded-xl bg-brand-600 text-white p-3">
-                      <div className="text-[10px] opacity-80">{t('student.phoneNext')}</div>
+                    <div className="rounded-xl bg-teal-500 text-white p-3">
+                      <div className="text-[10px] opacity-85">{t('student.phoneNext')}</div>
                       <div className="text-sm font-semibold mt-0.5">{t('student.phoneLesson')}</div>
-                      <div className="mt-2 inline-flex text-[10px] bg-white/20 rounded px-2 py-1">{t('student.phoneGo')}</div>
+                      <div className="mt-2 inline-flex text-[10px] bg-white/25 rounded px-2 py-1">{t('student.phoneGo')}</div>
                     </div>
                   </div>
                 </div>
@@ -163,102 +101,99 @@ export default function StudentLandingPage() {
         </section>
 
         {/* ── Знакомо? (боль) ── */}
-        <section className="border-t border-[#26262B] bg-[#1D1D22]">
+        <section className="bg-[#F7FAFB]">
           <div className="max-w-5xl mx-auto px-5 sm:px-8 py-20 sm:py-24">
-            <p className="mono-label mb-4">{t('student.painLabel')}</p>
-            <h2 className="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-10">{t('student.painTitle')}</h2>
+            <p className="eyebrow mb-3">{t('student.painLabel')}</p>
+            <h2 className="font-display font-bold text-[#0E1726] text-3xl sm:text-4xl tracking-tight mb-10 max-w-2xl leading-[1.15]">
+              {t('student.painTitle')}
+            </h2>
             <div className="grid sm:grid-cols-2 gap-3">
-              {[t('student.pain1'), t('student.pain2'), t('student.pain3'), t('student.pain4')].map((tt) => (
-                <div key={tt} className="flex items-start gap-3 rounded-xl border border-[#303036] bg-[#18181C] p-4">
-                  <span className="text-[#5A5A60] font-mono text-sm shrink-0">✕</span>
-                  <span className="text-sm text-[#B4B4BA] leading-relaxed">{tt}</span>
+              {[t('student.pain1'), t('student.pain2'), t('student.pain3'), t('student.pain4')].map(tt => (
+                <div key={tt} className="flex items-start gap-3 soft-card p-4">
+                  <span className="mt-0.5 w-5 h-5 rounded-full bg-[#FEE2E2] text-[#DC2626] inline-flex items-center justify-center shrink-0">
+                    <IconClose size={12} strokeWidth={3} />
+                  </span>
+                  <span className="text-[15px] text-[#3D4C5C] leading-relaxed">{tt}</span>
                 </div>
               ))}
             </div>
-            <div className="mt-6 flex items-center gap-3 rounded-xl border border-[#303036] bg-[#18181C] p-4">
-              <span className="font-mono text-2xl text-brand-400">→</span>
-              <span className="text-[#EDEDED]">{t('student.painSolution')}</span>
+            <div className="mt-6 flex items-start gap-3.5 rounded-2xl bg-teal-50 border border-teal-100 p-5">
+              <span className="w-8 h-8 rounded-lg bg-teal-500 text-white inline-flex items-center justify-center shrink-0">
+                <IconArrow size={17} strokeWidth={2.4} />
+              </span>
+              <span className="text-[15px] text-[#17766F] font-medium leading-relaxed">{t('student.painSolution')}</span>
             </div>
           </div>
         </section>
 
-        {/* ── Возможности: deep-dive с макетами ── */}
-        <section id="features" className="border-t border-[#26262B]">
-          <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28 space-y-24">
-            <p className="mono-label">{t('student.featLabel')}</p>
+        {/* ── Возможности: развороты с макетами ── */}
+        <SectionShell id="features">
+          <p className="eyebrow">{t('student.featLabel')}</p>
 
-            {/* Домашки */}
+          <div className="mt-14 space-y-24">
             <FeatureRow
-              tag={t('student.f1tag')}
-              title={t('student.f1title')}
-              text={t('student.f1text')}
-              mockup={
-                <div className="space-y-2">
-                  {[[t('student.hwEssay'), t('student.hwEssayD'), t('student.hwSubmit'), null],
-                    [t('student.hwWords'), t('student.hwWordsD'), t('student.hwReview'), null],
-                    [t('student.hwGram'), t('student.hwGramD'), '92/100', 'grade']].map(([tt, d, s, kind]) => (
-                    <div key={tt} className="flex items-center justify-between rounded-lg bg-white border border-[#EAECEF] px-3 py-2.5">
-                      <div>
-                        <div className="text-[13px] font-medium text-[#0F172A]">{tt}</div>
-                        <div className="text-[11px] text-[#8A94A6]">{d}</div>
-                      </div>
-                      <span className={`text-[11px] px-2 py-1 rounded-md font-medium ${
-                        kind === 'grade' ? 'bg-blue-50 text-blue-700' : s === t('student.hwSubmit') ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'
-                      }`}>{s}</span>
+              icon={IconHomework} tone="mint"
+              tag={t('student.f1tag')} title={t('student.f1title')} text={t('student.f1text')}
+            >
+              <div className="p-4 space-y-2">
+                {[[t('student.hwEssay'), t('student.hwEssayD'), t('student.hwSubmit'), null],
+                  [t('student.hwWords'), t('student.hwWordsD'), t('student.hwReview'), null],
+                  [t('student.hwGram'), t('student.hwGramD'), '92/100', 'grade']].map(([tt, d, s, kind]) => (
+                  <div key={tt} className="flex items-center justify-between gap-3 rounded-lg bg-white border border-[#EAECEF] px-3 py-2.5">
+                    <div className="min-w-0">
+                      <div className="text-[13px] font-medium text-[#0E1726] truncate">{tt}</div>
+                      <div className="text-[11px] text-[#8FA0AE]">{d}</div>
                     </div>
-                  ))}
-                </div>
-              }
-            />
+                    <span className={`text-[11px] px-2 py-1 rounded-md font-medium shrink-0 ${
+                      kind === 'grade' ? 'bg-teal-50 text-teal-700'
+                        : s === t('student.hwSubmit') ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'
+                    }`}>{s}</span>
+                  </div>
+                ))}
+              </div>
+            </FeatureRow>
 
-            {/* Долг */}
             <FeatureRow
-              reverse
-              tag={t('student.f2tag')}
-              title={t('student.f2title')}
-              text={t('student.f2text')}
-              mockup={
+              reverse icon={IconMoney} tone="lilac"
+              tag={t('student.f2tag')} title={t('student.f2title')} text={t('student.f2text')}
+            >
+              <div className="p-4">
                 <div className="rounded-xl bg-white border border-[#EAECEF] p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[13px] font-medium text-[#0F172A]">{t('student.debtTeacher')}</span>
-                    <span className="text-[11px] text-[#8A94A6]">{t('student.debtBalance')}</span>
+                  <div className="flex items-center justify-between mb-3 gap-3">
+                    <span className="text-[13px] font-medium text-[#0E1726]">{t('student.debtTeacher')}</span>
+                    <span className="text-[11px] text-[#8FA0AE]">{t('student.debtBalance')}</span>
                   </div>
-                  <div className="flex items-end justify-between mb-3">
-                    <div className="text-3xl font-bold text-amber-600">120 zł</div>
-                  </div>
+                  <div className="text-3xl font-bold text-amber-600 font-display mb-3">120 zł</div>
                   <div className="h-2 rounded-full bg-[#EEF1F4] overflow-hidden mb-2">
-                    <div className="h-full rounded-full bg-emerald-500" style={{ width: '80%' }} />
+                    <div className="h-full rounded-full bg-teal-500" style={{ width: '80%' }} />
                   </div>
-                  <div className="flex justify-between text-[11px] text-[#8A94A6]">
+                  <div className="flex justify-between text-[11px] text-[#8FA0AE]">
                     <span>{t('student.debtPaid')}</span><span>{t('student.debtCharged')}</span>
                   </div>
                 </div>
-              }
-            />
+              </div>
+            </FeatureRow>
 
-            {/* Посещаемость */}
             <FeatureRow
-              tag={t('student.f3tag')}
-              title={t('student.f3title')}
-              text={t('student.f3text')}
-              mockup={
-                <div className="space-y-2">
-                  {[[t('student.att1'), t('student.att1s'), 'ok'], [t('student.att2'), t('student.att2s'), 'no'], [t('student.att3'), t('student.att3s'), 'wait']].map(([tt, s, k]) => (
-                    <div key={tt} className="flex items-center justify-between rounded-lg bg-white border border-[#EAECEF] px-3 py-2.5">
-                      <span className="text-[13px] text-[#334155]">{tt}</span>
-                      <span className={`text-[11px] px-2 py-1 rounded-md font-medium ${
-                        k === 'ok' ? 'bg-emerald-50 text-emerald-700' : k === 'no' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700'
-                      }`}>{s}</span>
-                    </div>
-                  ))}
-                </div>
-              }
-            />
+              icon={IconAttendance} tone="peach"
+              tag={t('student.f3tag')} title={t('student.f3title')} text={t('student.f3text')}
+            >
+              <div className="p-4 space-y-2">
+                {[[t('student.att1'), t('student.att1s'), 'ok'], [t('student.att2'), t('student.att2s'), 'no'], [t('student.att3'), t('student.att3s'), 'wait']].map(([tt, s, k]) => (
+                  <div key={tt} className="flex items-center justify-between gap-3 rounded-lg bg-white border border-[#EAECEF] px-3 py-2.5">
+                    <span className="text-[13px] text-[#3D4C5C]">{tt}</span>
+                    <span className={`text-[11px] px-2 py-1 rounded-md font-medium shrink-0 ${
+                      k === 'ok' ? 'bg-emerald-50 text-emerald-700' : k === 'no' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700'
+                    }`}>{s}</span>
+                  </div>
+                ))}
+              </div>
+            </FeatureRow>
           </div>
-        </section>
+        </SectionShell>
 
         {/* ── Ещё коротко ── */}
-        <section className="border-t border-[#26262B] bg-[#1D1D22]">
+        <section className="bg-[#F7FAFB]">
           <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16">
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
@@ -267,9 +202,9 @@ export default function StudentLandingPage() {
                 [t('student.short3t'), t('student.short3d')],
                 [t('student.short4t'), t('student.short4d')],
               ].map(([tag, text]) => (
-                <div key={tag} className="rounded-2xl border border-[#303036] bg-[#18181C] p-5">
-                  <p className="font-mono text-[11px] text-brand-400 mb-2">// {tag}</p>
-                  <p className="text-sm text-[#B4B4BA] leading-relaxed">{text}</p>
+                <div key={tag} className="soft-card p-5">
+                  <p className="eyebrow mb-2">{tag}</p>
+                  <p className="text-[15px] text-[#5A6B7C] leading-relaxed">{text}</p>
                 </div>
               ))}
             </div>
@@ -277,35 +212,41 @@ export default function StudentLandingPage() {
         </section>
 
         {/* ── Как начать ── */}
-        <section id="how" className="border-t border-[#26262B]">
-          <div className="max-w-4xl mx-auto px-5 sm:px-8 py-20 sm:py-24">
-            <p className="mono-label mb-4">{t('student.howLabel')}</p>
-            <h2 className="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-12">{t('student.howTitle')}</h2>
-            <div className="space-y-8">
+        <SectionShell id="how">
+          <div className="max-w-4xl mx-auto">
+            <p className="eyebrow mb-3">{t('student.howLabel')}</p>
+            <h2 className="font-display font-bold text-[#0E1726] text-3xl sm:text-4xl tracking-tight mb-12 leading-[1.15]">
+              {t('student.howTitle')}
+            </h2>
+            <div className="space-y-4">
               {[
-                ['01', t('student.step1t'), t('student.step1d')],
-                ['02', t('student.step2t'), t('student.step2d')],
-                ['03', t('student.step3t'), t('student.step3d')],
+                [1, t('student.step1t'), t('student.step1d')],
+                [2, t('student.step2t'), t('student.step2d')],
+                [3, t('student.step3t'), t('student.step3d')],
               ].map(([n, title, text]) => (
-                <div key={n} className="flex gap-5 items-start">
-                  <div className="font-mono text-brand-400 text-xl shrink-0 w-10">{n}</div>
-                  <div className="border-b border-[#303036] pb-6 flex-1">
-                    <h3 className="font-semibold text-[#EDEDED] text-lg">{title}</h3>
-                    <p className="text-[#8A8A8F] mt-1.5 leading-relaxed max-w-xl">{text}</p>
+                <div key={n} className="flex gap-5 items-start soft-card p-6">
+                  <span className="w-9 h-9 rounded-xl bg-teal-500 text-white font-semibold inline-flex items-center justify-center shrink-0">
+                    {n}
+                  </span>
+                  <div>
+                    <h3 className="font-display font-bold text-[#0E1726] text-lg">{title}</h3>
+                    <p className="text-[#5A6B7C] mt-1.5 leading-relaxed max-w-xl">{text}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </section>
+        </SectionShell>
 
         {/* ── FAQ ── */}
-        <section id="faq" className="border-t border-[#26262B] bg-[#1D1D22]">
+        <section id="faq" className="bg-[#F7FAFB]">
           <div className="max-w-3xl mx-auto px-5 sm:px-8 py-20 sm:py-24">
-            <p className="mono-label mb-4">{t('student.faqLabel')}</p>
-            <h2 className="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-10">{t('student.faqTitle')}</h2>
-            <div className="divide-y divide-[#303036] border-t border-[#303036]">
-              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+            <p className="eyebrow mb-3">{t('student.faqLabel')}</p>
+            <h2 className="font-display font-bold text-[#0E1726] text-3xl sm:text-4xl tracking-tight mb-10">
+              {t('student.faqTitle')}
+            </h2>
+            <div className="space-y-3">
+              {[1, 2, 3, 4, 5, 6, 7].map(i => (
                 <FaqItem key={i} q={t(`student.sq${i}`)} a={t(`student.sa${i}`)} />
               ))}
             </div>
@@ -313,30 +254,43 @@ export default function StudentLandingPage() {
         </section>
 
         {/* ── Финальный CTA ── */}
-        <section className="border-t border-[#26262B] relative overflow-hidden">
-          <div className="relative max-w-3xl mx-auto px-5 sm:px-8 py-24 text-center">
-            <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight leading-[1.05]">
-              {t('student.ctaTitle1')}<br />{t('student.ctaTitle2')}
-            </h2>
-            <div className="mt-9 flex flex-wrap gap-3 justify-center">
-              <button onClick={toRegister}
-                className="h-12 px-7 rounded-lg bg-white text-[#18181C] text-[15px] font-semibold hover:bg-[#EDEDED] transition-colors cursor-pointer">
-                {t('student.createAccount')}
-              </button>
-              <button onClick={toLogin}
-                className="h-12 px-7 rounded-lg border border-[#3C3C43] text-[#EDEDED] text-[15px] hover:bg-white/[0.04] hover:border-[#48484F] transition-colors cursor-pointer">
-                {tc('login')}
-              </button>
+        <section className="bg-white">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-24">
+            <div className="relative overflow-hidden rounded-3xl bg-teal-500 px-6 sm:px-12 py-16 sm:py-20 text-center">
+              <div aria-hidden className="absolute inset-0 pointer-events-none">
+                <div className="blob absolute -top-24 -left-16 w-80 h-80 bg-white/10" />
+                <div className="blob-b absolute -bottom-28 -right-10 w-96 h-96 bg-white/10" />
+              </div>
+              <div className="relative">
+                <h2 className="font-display font-bold text-white text-3xl sm:text-[2.7rem] tracking-tight leading-[1.12]">
+                  {t('student.ctaTitle1')}<br />{t('student.ctaTitle2')}
+                </h2>
+                <div className="mt-9 flex flex-wrap gap-3 justify-center">
+                  <button
+                    onClick={toRegister}
+                    className="inline-flex items-center gap-2 h-13 px-8 rounded-xl bg-white text-teal-700 text-[15px] font-semibold hover:bg-teal-50 transition-colors cursor-pointer shadow-[0_14px_30px_-14px_rgba(0,0,0,0.4)]"
+                  >
+                    {t('student.createAccount')}
+                    <IconArrow size={18} strokeWidth={2.2} />
+                  </button>
+                  <button
+                    onClick={toLogin}
+                    className="inline-flex items-center h-13 px-8 rounded-xl border-[1.5px] border-white/60 text-white text-[15px] font-semibold hover:bg-white/10 transition-colors cursor-pointer"
+                  >
+                    {tc('login')}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </section>
       </main>
 
       {/* ── Footer + кросс-переход ── */}
-      <footer className="border-t border-[#26262B]">
+      <footer className="bg-[#F7FAFB] border-t border-[#EDF1F4]">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="font-mono text-[12px] text-[#5A5A60]">{t('student.footerBrand')}</span>
-          <Link to="/" className="font-mono text-[13px] text-brand-400 hover:text-brand-300">
+          <span className="text-[13px] text-[#8FA0AE]">{t('student.footerBrand')}</span>
+          <Link to="/" className="text-[14px] font-semibold text-teal-600 hover:text-teal-700 transition-colors">
             {t('student.footerCross')}
           </Link>
         </div>
@@ -346,18 +300,17 @@ export default function StudentLandingPage() {
 }
 
 /* Ряд «текст + макет», чередование через reverse */
-function FeatureRow({ tag, title, text, mockup, reverse }) {
+function FeatureRow({ icon, tone, tag, title, text, children, reverse }) {
   return (
-    <div className="grid lg:grid-cols-2 gap-8 lg:gap-14 items-center">
+    <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
       <div className={reverse ? 'lg:order-2' : ''}>
-        <p className="font-mono text-[11px] text-brand-400 mb-3">// {tag}</p>
-        <h3 className="font-display font-bold text-2xl sm:text-3xl tracking-tight">{title}</h3>
-        <p className="mt-4 text-[#8A8A8F] leading-relaxed max-w-md">{text}</p>
+        <IconTile icon={icon} tone={tone} />
+        <p className="eyebrow mt-5 mb-2">{tag}</p>
+        <h3 className="font-display font-bold text-[26px] sm:text-[30px] tracking-tight text-[#0E1726] leading-[1.2]">{title}</h3>
+        <p className="mt-4 text-[#5A6B7C] leading-relaxed max-w-md">{text}</p>
       </div>
       <div className={reverse ? 'lg:order-1' : ''}>
-        <div className="rounded-2xl border border-[#303036] bg-[#18181C] p-4 sm:p-5">
-          <div className="rounded-xl bg-[#F7F8FA] p-3 sm:p-4">{mockup}</div>
-        </div>
+        <BrowserFrame tone={tone === 'mint' ? 'teal' : tone}>{children}</BrowserFrame>
       </div>
     </div>
   )
@@ -367,13 +320,17 @@ function FeatureRow({ tag, title, text, mockup, reverse }) {
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false)
   return (
-    <div>
-      <button onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between gap-4 py-4 text-left cursor-pointer group">
-        <span className="text-[#EDEDED] font-medium group-hover:text-white transition-colors">{q}</span>
-        <span className={`font-mono text-[#5A5A60] shrink-0 transition-transform ${open ? 'rotate-45 text-brand-400' : ''}`}>+</span>
+    <div className="soft-card overflow-hidden">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between gap-4 px-5 sm:px-6 py-4.5 text-left cursor-pointer"
+      >
+        <span className="text-[15px] font-semibold text-[#0E1726]">{q}</span>
+        <span className={`shrink-0 w-7 h-7 rounded-full inline-flex items-center justify-center text-lg leading-none transition-transform ${
+          open ? 'rotate-45 bg-teal-500 text-white' : 'bg-[#F1F5F6] text-[#5A6B7C]'
+        }`}>+</span>
       </button>
-      {open && <p className="pb-4 -mt-1 text-sm text-[#8A8A8F] leading-relaxed max-w-2xl">{a}</p>}
+      {open && <p className="px-5 sm:px-6 pb-5 -mt-1 text-[15px] text-[#5A6B7C] leading-relaxed">{a}</p>}
     </div>
   )
 }

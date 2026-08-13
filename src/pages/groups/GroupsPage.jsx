@@ -114,8 +114,8 @@ function StudentInvitations({ onAccepted }) {
   if (loading || !invites?.length) return null
 
   return (
-    <div className="mb-6 p-4 rounded-2xl border border-blue-200 bg-blue-600/10">
-      <h2 className="text-sm font-semibold text-blue-600 mb-3">
+    <div className="mb-6 p-4 rounded-2xl border border-teal-200 bg-teal-500/10">
+      <h2 className="text-sm font-semibold text-teal-600 mb-3">
         {t('groups.invitesTitle', { n: invites.length })}
       </h2>
       <div className="space-y-2">
@@ -154,13 +154,13 @@ function GroupCard({ group, onClick }) {
     <Tooltip text={t('groups.tipCard')} side="top" className="w-full">
     <button
       onClick={onClick}
-      className="w-full text-left p-5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white hover:shadow-sm hover:border-blue-200 transition-all duration-200 group"
+      className="w-full text-left p-5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white hover:shadow-sm hover:border-teal-200 transition-all duration-200 group"
     >
       <div className="flex items-start justify-between gap-2 mb-3">
-        <h3 className="font-semibold text-slate-900 group-hover:text-blue-700 transition-colors">
+        <h3 className="font-semibold text-slate-900 group-hover:text-teal-700 transition-colors">
           {group.name}
         </h3>
-        <IconNext size={16} className="text-slate-400 group-hover:text-blue-700 mt-0.5" />
+        <IconNext size={16} className="text-slate-400 group-hover:text-teal-700 mt-0.5" />
       </div>
       {schedule && (
         <p className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
@@ -243,7 +243,7 @@ function CreateGroupModal({ open, onClose, onCreated }) {
             <div className="flex items-center justify-between mb-2 gap-2">
               <span className="text-xs font-medium text-slate-600">{t('groups.scheduleLabel')}</span>
               <button type="button" onClick={addSlot}
-                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 cursor-pointer shrink-0">
+                className="flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700 cursor-pointer shrink-0">
                 <IconAdd size={13} /> {t('groups.addSlot')}
               </button>
             </div>
@@ -253,7 +253,7 @@ function CreateGroupModal({ open, onClose, onCreated }) {
                   <select
                     value={sl.day}
                     onChange={e => updateSlot(i, 'day', e.target.value)}
-                    className="flex-1 h-10 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
+                    className="flex-1 h-10 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500"
                   >
                     {DAY_VALUES.map(v => <option key={v} value={v}>{weekdays[v]}</option>)}
                   </select>
@@ -261,7 +261,7 @@ function CreateGroupModal({ open, onClose, onCreated }) {
                     type="time"
                     value={sl.time}
                     onChange={e => updateSlot(i, 'time', e.target.value)}
-                    className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
+                    className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500"
                   />
                   <button type="button" onClick={() => removeSlot(i)} aria-label={tc('delete')}
                     className="text-slate-400 hover:text-red-600 cursor-pointer p-1.5">

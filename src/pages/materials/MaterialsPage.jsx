@@ -43,7 +43,7 @@ export default function MaterialsPage() {
           <div className="relative mb-5 max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input value={q} onChange={e => setQ(e.target.value)} placeholder={t('materials.searchPh')}
-              className="w-full h-10 pl-10 pr-4 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15" />
+              className="w-full h-10 pl-10 pr-4 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15" />
           </div>
 
           {!lessons.length ? (
@@ -85,13 +85,13 @@ function MaterialRow({ m }) {
 
   const inner = (
     <div className="flex items-center gap-3 px-4 py-3">
-      <span className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+      <span className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
         <Icon className="w-4 h-4" />
       </span>
       <div className="min-w-0 flex-1">
         <div className="text-sm text-slate-800 truncate">{title}</div>
         {m.type === 'text' && m.content && <div className="text-xs text-slate-500 mt-0.5 line-clamp-2">{m.content}</div>}
-        {href && <div className="text-xs text-blue-500 truncate">{m.url}</div>}
+        {href && <div className="text-xs text-teal-600 truncate">{m.url}</div>}
       </div>
     </div>
   )

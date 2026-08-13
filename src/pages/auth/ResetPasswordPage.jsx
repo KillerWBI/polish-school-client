@@ -40,7 +40,7 @@ export default function ResetPasswordPage() {
           <>
             <h1 className="text-xl font-semibold text-slate-900">{t('auth.resetNoTokenTitle')}</h1>
             <p className="mt-2 text-sm text-slate-500">{t('auth.resetNoTokenBody')}</p>
-            <Link to="/forgot-password" className="mt-6 inline-block text-sm text-blue-600 hover:text-blue-700 font-medium">
+            <Link to="/forgot-password" className="mt-6 inline-block text-sm text-teal-600 hover:text-teal-700 font-medium">
               {t('auth.resetRequestLink')}
             </Link>
           </>
@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
 
               <button
                 type="submit" disabled={submitting}
-                className="w-full h-11 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full h-11 rounded-lg bg-teal-500 text-white text-sm font-medium hover:bg-teal-600 transition-colors disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
               >
                 {submitting && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                 {t('auth.resetBtn')}
@@ -81,7 +81,7 @@ function PwdField({ label, value, onChange, autoComplete, placeholder }) {
       <input
         type="password" value={value} autoComplete={autoComplete} placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-11 px-3.5 rounded-lg bg-white border border-slate-200 text-slate-900 text-sm placeholder:text-slate-400 outline-none transition-colors focus:ring-2 focus:ring-blue-500/15 focus:border-blue-500"
+        className="w-full h-11 px-3.5 rounded-lg bg-white border border-slate-200 text-slate-900 text-sm placeholder:text-slate-400 outline-none transition-colors focus:ring-2 focus:ring-teal-500/15 focus:border-teal-500"
       />
     </div>
   )

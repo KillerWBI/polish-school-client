@@ -37,7 +37,7 @@ export default function AvatarUpload({ url, name, editable = false, onChange, si
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       {/* Круг — аватар или инициал */}
       <div
-        className="w-full h-full rounded-full bg-gradient-to-br from-blue-500 to-blue-600 border-4 border-white overflow-hidden flex items-center justify-center text-white font-semibold"
+        className="w-full h-full rounded-full bg-gradient-to-br from-teal-500 to-teal-500 border-4 border-white overflow-hidden flex items-center justify-center text-white font-semibold"
         style={{ fontSize: size / 2.5 }}
       >
         {url

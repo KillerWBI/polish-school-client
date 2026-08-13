@@ -1,6 +1,6 @@
 // Универсальная кнопка (светлый SaaS-стиль)
 const VARIANTS = {
-  primary:   'text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800',
+  primary:   'text-white bg-teal-500 hover:bg-teal-600 active:bg-teal-700',
   secondary: 'text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300',
   ghost:     'text-slate-600 hover:text-slate-900 hover:bg-slate-100',
   danger:    'text-white bg-red-600 hover:bg-red-700',

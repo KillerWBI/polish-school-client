@@ -62,7 +62,7 @@ export default function NotificationsPage() {
                   {n.body && <span className="block text-xs text-slate-500 mt-0.5">{n.body}</span>}
                 </span>
                 <span className="text-[11px] text-slate-400 shrink-0 tabular-nums">{fmt(n.createdAt)}</span>
-                {!n.readAt && <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 mt-1.5" />}
+                {!n.readAt && <span className="w-2 h-2 rounded-full bg-teal-500 shrink-0 mt-1.5" />}
               </button>
             )
           })}

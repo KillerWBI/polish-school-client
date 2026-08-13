@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
           <>
             <h1 className="text-xl font-semibold text-slate-900">{t('auth.forgotSentTitle')}</h1>
             <p className="mt-2 text-sm text-slate-500">{t('auth.forgotSentBody', { email })}</p>
-            <Link to="/login" className="mt-6 inline-block text-sm text-blue-600 hover:text-blue-700 font-medium">
+            <Link to="/login" className="mt-6 inline-block text-sm text-teal-600 hover:text-teal-700 font-medium">
               {t('auth.backToLogin')}
             </Link>
           </>
@@ -48,8 +48,8 @@ export default function ForgotPasswordPage() {
                 <input
                   type="email" value={email} autoComplete="email" placeholder="you@mail.com"
                   onChange={(e) => { setEmail(e.target.value); setError('') }}
-                  className={`w-full h-11 px-3.5 rounded-lg bg-white border text-slate-900 text-sm placeholder:text-slate-400 outline-none transition-colors focus:ring-2 focus:ring-blue-500/15 ${
-                    error ? 'border-red-300 focus:border-red-500' : 'border-slate-200 focus:border-blue-500'
+                  className={`w-full h-11 px-3.5 rounded-lg bg-white border text-slate-900 text-sm placeholder:text-slate-400 outline-none transition-colors focus:ring-2 focus:ring-teal-500/15 ${
+                    error ? 'border-red-300 focus:border-red-500' : 'border-slate-200 focus:border-teal-500'
                   }`}
                 />
                 {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
 
               <button
                 type="submit" disabled={submitting}
-                className="w-full h-11 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full h-11 rounded-lg bg-teal-500 text-white text-sm font-medium hover:bg-teal-600 transition-colors disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
               >
                 {submitting && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                 {t('auth.forgotBtn')}

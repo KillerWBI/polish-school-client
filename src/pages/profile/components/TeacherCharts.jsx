@@ -51,15 +51,15 @@ export default function TeacherCharts({ userId }) {
           <AreaChart data={data?.studentsByMonth || []}>
             <defs>
               <linearGradient id="studentsGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor="#2563EB" stopOpacity={0.5} />
-                <stop offset="100%" stopColor="#2563EB" stopOpacity={0}   />
+                <stop offset="0%"   stopColor="#1E9391" stopOpacity={0.5} />
+                <stop offset="100%" stopColor="#1E9391" stopOpacity={0}   />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#EEF1F4" />
             <XAxis dataKey="bucket" stroke="#64748b" fontSize={11} />
             <YAxis stroke="#64748b" fontSize={11} allowDecimals={false} />
             <Tooltip {...tooltipStyle} />
-            <Area type="monotone" dataKey="count" name={t('profile.students')} stroke="#2563EB" fill="url(#studentsGrad)" strokeWidth={2} />
+            <Area type="monotone" dataKey="count" name={t('profile.students')} stroke="#1E9391" fill="url(#studentsGrad)" strokeWidth={2} />
           </AreaChart>
         </ResponsiveContainer>
       </ChartPanel>
@@ -93,7 +93,7 @@ function PeriodSwitcher({ value, onChange }) {
           onClick={() => onChange(it.id)}
           className={`px-3 py-1 text-xs rounded-md transition-colors cursor-pointer ${
             value === it.id
-              ? 'bg-blue-600 text-white'
+              ? 'bg-teal-500 text-white'
               : 'text-slate-500 hover:text-slate-900'
           }`}
         >

@@ -27,7 +27,7 @@ export default function IdeasModal({ onClose }) {
           {IDEA_KEYS.map(([Icon, k]) => (
             <div key={k} className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
               <div className="text-sm font-medium text-slate-900 flex items-center gap-1.5">
-                <Icon size={15} className="text-blue-500" /> {t(`ideas.${k}Title`)}
+                <Icon size={15} className="text-teal-600" /> {t(`ideas.${k}Title`)}
               </div>
               <div className="text-xs text-slate-500 mt-1">{t(`ideas.${k}Text`)}</div>
             </div>
