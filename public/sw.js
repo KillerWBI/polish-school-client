@@ -20,6 +20,60 @@ self.addEventListener('activate', (event) => {
   )
 })
 
+// ── Push-уведомления ────────────────────────────────────────────────────────
+// Событие приходит, даже когда вкладка закрыта — service worker будит push-сервис.
+self.addEventListener('push', (event) => {
+  // Данных может не быть вовсе: спецификация позволяет push без тела.
+  let payload
+  try {
+    payload = event.data ? event.data.json() : {}
+  } catch {
+    payload = {} // не JSON — не повод промолчать, см. ниже
+  }
+
+  const title = payload.title || 'Peravenor'
+  const options = {
+    body: payload.body || '',
+    icon: '/icon.svg',
+    badge: '/icon.svg',           // монохромный значок в статус-баре Android
+    data: { link: payload.link || '/' },
+    // tag схлопывает уведомления одного типа: пять оценок подряд покажутся одной
+    // строкой, а не пятью. Без него экран телефона превращается в ленту.
+    tag: payload.type || 'peravenor',
+    renotify: true,               // но звук/вибрация всё же срабатывают при замене
+  }
+
+  // Показать уведомление ОБЯЗАТЕЛЬНО. Если промолчать, Chrome через несколько тихих
+  // push сам покажет «Этот сайт обновлён в фоновом режиме», а затем может отозвать
+  // разрешение. Поэтому showNotification вызывается и когда тело не разобралось.
+  //
+  // waitUntil продлевает жизнь service worker до конца промиса: без него браузер
+  // вправе усыпить воркер сразу после обработчика, и уведомление не успеет появиться.
+  event.waitUntil(self.registration.showNotification(title, options))
+})
+
+// Клик по уведомлению: не открываем новую вкладку, если приложение уже открыто.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const link = event.notification.data?.link || '/'
+  const target = new URL(link, self.location.origin).href
+
+  event.waitUntil(
+    // includeUncontrolled: true — важно. Вкладка, открытая до установки этого воркера,
+    // им не управляется, и без флага она в список не попадёт: человек увидел бы вторую
+    // копию приложения вместо перехода в уже открытой.
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const client of list) {
+        if (client.url === target && 'focus' in client) return client.focus()
+      }
+      // Приложение открыто, но на другой странице — переводим её, а не плодим вкладки
+      const open = list.find((c) => c.url.startsWith(self.location.origin))
+      if (open && 'navigate' in open) return open.navigate(target).then((c) => c && c.focus())
+      return self.clients.openWindow(target)
+    }),
+  )
+})
+
 self.addEventListener('fetch', (event) => {
   const { request } = event
   if (request.method !== 'GET') return

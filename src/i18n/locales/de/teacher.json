@@ -832,7 +832,19 @@
     "calResetTitle": "Neuen Link ausstellen?",
     "calResetText": "Der alte funktioniert sofort nicht mehr. Kalender, die ihn abonniert haben, bekommen keine Updates mehr — sie müssen neu abonniert werden.",
     "calFail": "Der Link konnte nicht geholt werden",
-    "calReset": "Neuer Link ausgestellt"
+    "calReset": "Neuer Link ausgestellt",
+    "pushTitle": "Benachrichtigungen aufs Handy",
+    "pushIntro": "Sie kommen auch bei geschlossener App: neue Note, Zahlung, Aufgabe, Rechnung.",
+    "pushEnable": "Benachrichtigungen einschalten",
+    "pushDisable": "Benachrichtigungen ausschalten",
+    "pushHint": "Die Einstellung gilt für diesen Browser. Auf anderen Geräten separat einschalten.",
+    "pushOn": "Benachrichtigungen eingeschaltet",
+    "pushOff": "Benachrichtigungen ausgeschaltet",
+    "pushDenied": "Benachrichtigungen sind in den Browsereinstellungen blockiert — erlauben Sie sie für diese Seite",
+    "pushDismissed": "Die Abfrage wurde ohne Antwort geschlossen. Klicken Sie erneut und erlauben Sie Benachrichtigungen",
+    "pushUnsupported": "Dieser Browser unterstützt keine Benachrichtigungen",
+    "pushInstallFirst": "Auf dem iPhone funktionieren Benachrichtigungen erst nach der Installation: Teilen → Zum Home-Bildschirm.",
+    "pushFail": "Einstellung konnte nicht geändert werden"
   },
   "profile": {
     "tabProfile": "Profil",
