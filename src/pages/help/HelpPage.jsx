@@ -274,7 +274,7 @@ const teacherSections = (v) => [
       </div></Shot>,
       <Shot><Mark label={v('inAddressBar')}>
         <div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56">
-          <span className="flex-1">diklario.com</span><span className="text-blue-600">⊕</span>
+          <span className="flex-1">peravenor.com</span><span className="text-blue-600">⊕</span>
         </div>
       </Mark></Shot>,
       <Shot><div className="w-52 rounded-xl bg-white border border-slate-200 p-3 space-y-1">
@@ -395,7 +395,7 @@ const studentSections = (v) => [
       </div></Shot>,
       <Shot><Mark label={v('inAddressBar')}>
         <div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56">
-          <span className="flex-1">diklario.com</span><span className="text-blue-600">⊕</span>
+          <span className="flex-1">peravenor.com</span><span className="text-blue-600">⊕</span>
         </div>
       </Mark></Shot>,
     ],

@@ -109,10 +109,10 @@
     },
     "pwa": {
       "title": "Als App installieren",
-      "q0": "Wie installiere ich Diklario auf dem Handy (Android / iPhone)?",
+      "q0": "Wie installiere ich Peravenor auf dem Handy (Android / iPhone)?",
       "a0": "Android: Website in Chrome öffnen → drei Punkte (⋮) → „Zum Startbildschirm hinzufügen“ → „Installieren“. iPhone: in Safari öffnen → Schaltfläche „Teilen“ (Rechteck mit Pfeil) → „Zum Home-Bildschirm“.",
       "q1": "Wie installiere ich es auf dem Computer?",
-      "a1": "In Chrome/Edge erscheint in der Adressleiste ein Symbol „Installieren“ (Bildschirm mit Pfeil) — anklicken und bestätigen. Oder über das Menü: „Diklario installieren“. Nach der Installation öffnet es sich als eigenes Fenster ohne Browser.",
+      "a1": "In Chrome/Edge erscheint in der Adressleiste ein Symbol „Installieren“ (Bildschirm mit Pfeil) — anklicken und bestätigen. Oder über das Menü: „Peravenor installieren“. Nach der Installation öffnet es sich als eigenes Fenster ohne Browser.",
       "q2": "Funktioniert es offline?",
       "a2": "Teilweise: bereits geöffnete Seiten werden aus dem Cache geladen. Stunden anlegen oder Daten eintragen geht ohne Verbindung nicht — dafür ist die Synchronisation mit dem Server nötig."
     }
@@ -175,10 +175,10 @@
     },
     "pwa": {
       "title": "Als App installieren",
-      "q0": "Wie installiere ich Diklario auf dem Handy (Android / iPhone)?",
+      "q0": "Wie installiere ich Peravenor auf dem Handy (Android / iPhone)?",
       "a0": "Android: Website in Chrome öffnen → drei Punkte (⋮) → „Zum Startbildschirm hinzufügen“ → „Installieren“. iPhone: in Safari öffnen → Schaltfläche „Teilen“ (Rechteck mit Pfeil) → „Zum Home-Bildschirm“.",
       "q1": "Wie installiere ich es auf dem Computer?",
-      "a1": "In Chrome/Edge erscheint in der Adressleiste ein Symbol „Installieren“ — anklicken und bestätigen. Nach der Installation öffnet sich Diklario als eigenes Fenster."
+      "a1": "In Chrome/Edge erscheint in der Adressleiste ein Symbol „Installieren“ — anklicken und bestätigen. Nach der Installation öffnet sich Peravenor als eigenes Fenster."
     }
   },
   "viz": {

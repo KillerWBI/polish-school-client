@@ -386,8 +386,8 @@
     "tipMyDebt": "Wie viel Sie Lehrkräften für Stunden schulden. Klicken Sie, um die Zahlungen zu öffnen.",
     "tipCreate": "Schnell eine Stunde oder Hausaufgabe erstellen oder Lernende hinzufügen.",
     "tipMonthChip": "Die Kennzahlen unten sind für den laufenden Monat berechnet.",
-    "invitedBy": "{{name}} hat Sie zu Diklario eingeladen — diese Person führt hier bereits Buch über Ihren Unterricht.",
-    "invitedByWithSubject": "{{name}} hat Sie zu Diklario eingeladen — diese Person führt hier bereits Buch über Ihren Unterricht im Fach „{{subject}}“.",
+    "invitedBy": "{{name}} hat Sie zu Peravenor eingeladen — diese Person führt hier bereits Buch über Ihren Unterricht.",
+    "invitedByWithSubject": "{{name}} hat Sie zu Peravenor eingeladen — diese Person führt hier bereits Buch über Ihren Unterricht im Fach „{{subject}}“.",
     "invitedByCta": "Lernende hinzufügen"
   },
   "materials": {

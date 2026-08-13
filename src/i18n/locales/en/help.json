@@ -109,10 +109,10 @@
     },
     "pwa": {
       "title": "Install as an app",
-      "q0": "How do I install Diklario on a phone (Android / iPhone)?",
+      "q0": "How do I install Peravenor on a phone (Android / iPhone)?",
       "a0": "Android: open the site in Chrome → three dots (⋮) → \"Add to home screen\" → \"Install\". iPhone: open in Safari → \"Share\" button (rectangle with an arrow) → \"Add to Home Screen\".",
       "q1": "How do I install on a computer?",
-      "a1": "In Chrome/Edge an \"Install\" icon (a screen with an arrow) appears in the address bar — click it and confirm. Or via the menu: \"Install Diklario\". After installation it opens as a separate window without the browser.",
+      "a1": "In Chrome/Edge an \"Install\" icon (a screen with an arrow) appears in the address bar — click it and confirm. Or via the menu: \"Install Peravenor\". After installation it opens as a separate window without the browser.",
       "q2": "Will it work offline?",
       "a2": "Partially: pages you've already opened load from cache. You can't create lessons or enter data without a connection — syncing with the server is required."
     }
@@ -175,10 +175,10 @@
     },
     "pwa": {
       "title": "Install as an app",
-      "q0": "How do I install Diklario on a phone (Android / iPhone)?",
+      "q0": "How do I install Peravenor on a phone (Android / iPhone)?",
       "a0": "Android: open the site in Chrome → three dots (⋮) → \"Add to home screen\" → \"Install\". iPhone: open in Safari → \"Share\" button (rectangle with an arrow) → \"Add to Home Screen\".",
       "q1": "How do I install on a computer?",
-      "a1": "In Chrome/Edge an \"Install\" icon appears in the address bar — click it and confirm. After installation Diklario opens as a separate window."
+      "a1": "In Chrome/Edge an \"Install\" icon appears in the address bar — click it and confirm. After installation Peravenor opens as a separate window."
     }
   },
   "viz": {

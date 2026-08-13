@@ -386,8 +386,8 @@
     "tipMyDebt": "Cuánto debes a los docentes por las clases. Pulsa para abrir los pagos.",
     "tipCreate": "Crea rápidamente una clase, unos deberes o añade un estudiante.",
     "tipMonthChip": "Las cifras de abajo están calculadas para el mes en curso.",
-    "invitedBy": "{{name}} le ha invitado a Diklario — este alumno ya lleva aquí el registro de sus clases.",
-    "invitedByWithSubject": "{{name}} le ha invitado a Diklario — este alumno ya lleva aquí el registro de sus clases de {{subject}}.",
+    "invitedBy": "{{name}} le ha invitado a Peravenor — este alumno ya lleva aquí el registro de sus clases.",
+    "invitedByWithSubject": "{{name}} le ha invitado a Peravenor — este alumno ya lleva aquí el registro de sus clases de {{subject}}.",
     "invitedByCta": "Añadir alumno"
   },
   "materials": {

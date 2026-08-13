@@ -109,10 +109,10 @@
     },
     "pwa": {
       "title": "Instalacja jako aplikacja",
-      "q0": "Jak zainstalować Diklario na telefonie (Android / iPhone)?",
+      "q0": "Jak zainstalować Peravenor na telefonie (Android / iPhone)?",
       "a0": "Android: otwórz stronę w Chrome → trzy kropki (⋮) → „Dodaj do ekranu głównego” → „Zainstaluj”. iPhone: otwórz w Safari → przycisk „Udostępnij” (prostokąt ze strzałką) → „Do ekranu początkowego”.",
       "q1": "Jak zainstalować na komputerze?",
-      "a1": "W Chrome/Edge w pasku adresu pojawia się ikona „Zainstaluj” (ekran ze strzałką) — kliknij i potwierdź. Lub przez menu: „Zainstaluj Diklario”. Po instalacji otworzy się jako osobne okno bez przeglądarki.",
+      "a1": "W Chrome/Edge w pasku adresu pojawia się ikona „Zainstaluj” (ekran ze strzałką) — kliknij i potwierdź. Lub przez menu: „Zainstaluj Peravenor”. Po instalacji otworzy się jako osobne okno bez przeglądarki.",
       "q2": "Czy zadziała bez internetu?",
       "a2": "Częściowo: strony, które już były otwarte, wczytają się z pamięci podręcznej. Tworzenie lekcji i wprowadzanie danych bez sieci jest niemożliwe — potrzebna jest synchronizacja z serwerem."
     }
@@ -175,10 +175,10 @@
     },
     "pwa": {
       "title": "Instalacja jako aplikacja",
-      "q0": "Jak zainstalować Diklario na telefonie (Android / iPhone)?",
+      "q0": "Jak zainstalować Peravenor na telefonie (Android / iPhone)?",
       "a0": "Android: otwórz stronę w Chrome → trzy kropki (⋮) → „Dodaj do ekranu głównego” → „Zainstaluj”. iPhone: otwórz w Safari → przycisk „Udostępnij” (prostokąt ze strzałką) → „Do ekranu początkowego”.",
       "q1": "Jak zainstalować na komputerze?",
-      "a1": "W Chrome/Edge w pasku adresu pojawia się ikona „Zainstaluj” — kliknij i potwierdź. Po instalacji Diklario otworzy się jako osobne okno."
+      "a1": "W Chrome/Edge w pasku adresu pojawia się ikona „Zainstaluj” — kliknij i potwierdź. Po instalacji Peravenor otworzy się jako osobne okno."
     }
   },
   "viz": {

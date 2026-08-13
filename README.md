@@ -1,16 +1,56 @@
-# React + Vite
+# Peravenor — фронтенд
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-приложение [peravenor.com](https://peravenor.com): рабочее место преподавателя и кабинет
+ученика по любому предмету — группы, уроки, домашние задания, посещаемость и финансы.
+Ученик может учиться и без преподавателя: свои темы, адаптивные AI-тесты, словарь, заметки.
 
-Currently, two official plugins are available:
+Бэкенд — в репозитории [polish-school](https://github.com/KillerWBI/polish-school).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Стек
 
-## React Compiler
+React 19 · Vite 8 · TailwindCSS 4 · React Router 7 · TanStack Query · i18next · Vitest
+Хостинг — Cloudflare Workers.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Запуск
 
-## Expanding the ESLint configuration
+```bash
+npm install
+cp .env.example .env      # VITE_API_URL и прочее
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Команды
+
+| Команда | Что делает |
+|---|---|
+| `npm run dev` | Дев-сервер |
+| `npm run build` | Продакшен-сборка |
+| `npm run lint` | ESLint по всему репозиторию |
+| `npm test` | Vitest |
+
+## Домен живёт в одной переменной
+
+`VITE_SITE_URL` — из неё на сборке подставляются `canonical`, `og:url`, `og:image`,
+`hreflang` и генерируются `sitemap.xml` с `robots.txt` (см. `vite.config.js`).
+При смене домена больше во фронте править нечего.
+
+## Локализация
+
+7 языков (ru/en/pl/uk/de/es/fr) × 7 словарей. Файлы подключаются через `import.meta.glob` —
+новый словарь регистрировать руками не нужно. Полнота проверяется тестом
+`src/i18n/locales.test.js`: пропущенный ключ роняет CI.
+
+## Ассеты бренда
+
+Знак абстрактный (пузырь + звезда + галочка), буквы в нём нет — при смене названия
+перерисовывать не требуется. Картинка для соцсетей собирается из
+[`docs/og-source.svg`](docs/og-source.svg):
+
+```bash
+node -e "const s=require('sharp'),f=require('fs');s(f.readFileSync('docs/og-source.svg')).resize(1200,630,{fit:'fill'}).png().toFile('public/og.png')"
+```
+
+## Ветки
+
+`main` — продакшен (деплой автоматом при push), `dev` — работа.
+Выкатка через PR `dev` → `main`.

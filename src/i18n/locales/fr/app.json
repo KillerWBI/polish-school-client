@@ -386,8 +386,8 @@
     "tipMyDebt": "Combien vous devez aux enseignants pour les cours. Cliquez pour ouvrir les paiements.",
     "tipCreate": "Créez rapidement un cours, un devoir, ou ajoutez un élève.",
     "tipMonthChip": "Les indicateurs ci-dessous sont calculés pour le mois en cours.",
-    "invitedBy": "{{name}} vous a invité(e) sur Diklario — cet élève y tient déjà le suivi de vos cours.",
-    "invitedByWithSubject": "{{name}} vous a invité(e) sur Diklario — cet élève y tient déjà le suivi de vos cours de {{subject}}.",
+    "invitedBy": "{{name}} vous a invité(e) sur Peravenor — cet élève y tient déjà le suivi de vos cours.",
+    "invitedByWithSubject": "{{name}} vous a invité(e) sur Peravenor — cet élève y tient déjà le suivi de vos cours de {{subject}}.",
     "invitedByCta": "Ajouter un élève"
   },
   "materials": {

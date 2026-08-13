@@ -16,7 +16,7 @@ export default function AuthLayout({ panelLabel, panelTitle, panelBullets = [], 
 
         <Link to="/" className="relative flex items-center gap-2 w-fit">
           <span className="w-2 h-2 rounded-[2px] bg-brand-500" />
-          <span className="font-mono text-sm font-semibold">Diklario</span>
+          <span className="font-mono text-sm font-semibold">Peravenor</span>
         </Link>
 
         <div className="relative">
@@ -42,7 +42,7 @@ export default function AuthLayout({ panelLabel, panelTitle, panelBullets = [], 
         <div className="lg:hidden flex items-center justify-between px-6 h-16 border-b border-[#EAECEF]">
           <Link to="/" className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-[2px] bg-brand-500" />
-            <span className="font-mono text-sm font-semibold text-[#0F172A]">Diklario</span>
+            <span className="font-mono text-sm font-semibold text-[#0F172A]">Peravenor</span>
           </Link>
           <Link to="/" className="text-sm text-[#64748B] hover:text-[#0F172A]">{t('authPage.backHome')}</Link>
         </div>

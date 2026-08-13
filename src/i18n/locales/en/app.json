@@ -386,8 +386,8 @@
     "tipMyDebt": "How much you owe teachers for lessons. Click to open payments.",
     "tipCreate": "Quickly create a lesson, homework, or add a student.",
     "tipMonthChip": "The metrics below are calculated for the current month.",
-    "invitedBy": "{{name}} invited you to Diklario — this student already keeps a record of your lessons here.",
-    "invitedByWithSubject": "{{name}} invited you to Diklario — this student already keeps a record of your {{subject}} lessons here.",
+    "invitedBy": "{{name}} invited you to Peravenor — this student already keeps a record of your lessons here.",
+    "invitedByWithSubject": "{{name}} invited you to Peravenor — this student already keeps a record of your {{subject}} lessons here.",
     "invitedByCta": "Add a student"
   },
   "materials": {

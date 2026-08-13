@@ -386,8 +386,8 @@
     "minutesShort": "{{n}} min",
     "hoursShort": "{{n}} godzin",
     "yesterday": "wczoraj",
-    "invitedBy": "{{name}} zaprosił(a) Państwa do Diklario — ten uczeń już prowadzi tu ewidencję Państwa zajęć.",
-    "invitedByWithSubject": "{{name}} zaprosił(a) Państwa do Diklario — ten uczeń już prowadzi tu ewidencję zajęć z przedmiotu „{{subject}}”.",
+    "invitedBy": "{{name}} zaprosił(a) Państwa do Peravenor — ten uczeń już prowadzi tu ewidencję Państwa zajęć.",
+    "invitedByWithSubject": "{{name}} zaprosił(a) Państwa do Peravenor — ten uczeń już prowadzi tu ewidencję zajęć z przedmiotu „{{subject}}”.",
     "invitedByCta": "Dodaj ucznia"
   },
   "materials": {
