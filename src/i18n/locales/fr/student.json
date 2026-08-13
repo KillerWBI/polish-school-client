@@ -358,6 +358,17 @@
     "savedToast": "Enregistré",
     "deletedToast": "Enseignant supprimé",
     "deleteTitle": "Supprimer cet enseignant ?",
-    "deleteMsg": "La fiche est supprimée, mais les cours restent dans le journal — le nom y est conservé."
+    "deleteMsg": "La fiche est supprimée, mais les cours restent dans le journal — le nom y est conservé.",
+    "inviteBtn": "Inviter sur la plateforme",
+    "inviteResend": "Invitation envoyée — renvoyer",
+    "inviteTitle": "Inviter {{name}} sur Peravenor",
+    "inviteHint": "Nous enverrons une invitation par e-mail. Une fois le compte créé, vos cours et paiements deviennent partagés.",
+    "inviteSend": "Envoyer l’invitation",
+    "inviteSent": "Invitation envoyée",
+    "inviteLinked": "L’enseignant est déjà là — la fiche est liée",
+    "inviteError": "Impossible d’envoyer l’invitation",
+    "onPlatform": "Sur la plateforme",
+    "fEmail": "E-mail de l’enseignant",
+    "errEmail": "Saisissez une adresse valide"
   }
 }

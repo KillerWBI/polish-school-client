@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import useAuth from '../../hooks/useAuth'
 import { login as apiLogin, register as apiRegister, registerTeacher as apiRegisterTeacher, fetchMe } from '../../api/auth.api'
@@ -18,6 +18,10 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
   const [submitting, setSubmitting] = useState(false)
   const navigate = useNavigate()
   const { login } = useAuth()
+  // Токен приглашения приходит в адресе (?invite=…) и молча уходит на сервер:
+  // человеку про него знать незачем — он видит обычную форму регистрации.
+  const [params] = useSearchParams()
+  const invite = params.get('invite') || undefined
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
 
@@ -36,7 +40,7 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
     setSubmitting(true)
     try {
       const data = isRegister
-        ? (isTeacher ? await apiRegisterTeacher(form) : await apiRegister(form))
+        ? (isTeacher ? await apiRegisterTeacher({ ...form, invite }) : await apiRegister({ ...form, invite }))
         : await apiLogin({ email: form.email, password: form.password })
       setToken(data.token)
       const me = await fetchMe()

@@ -74,7 +74,7 @@ function siteUrlPlugin(siteUrl) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   // Хвостовой слэш срезаем: в шаблонах пути всегда начинаются со слэша
-  const siteUrl = (env.VITE_SITE_URL || 'https://diklario.com').replace(/\/+$/, '')
+  const siteUrl = (env.VITE_SITE_URL || 'https://peravenor.com').replace(/\/+$/, '')
 
   return {
     // cloudflare() подставляет каталог сборки в wrangler.jsonc и поднимает воркер

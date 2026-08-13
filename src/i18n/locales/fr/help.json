@@ -109,10 +109,10 @@
     },
     "pwa": {
       "title": "Installer comme application",
-      "q0": "Comment installer Diklario sur un téléphone (Android / iPhone) ?",
+      "q0": "Comment installer Peravenor sur un téléphone (Android / iPhone) ?",
       "a0": "Android : ouvrez le site dans Chrome → trois points (⋮) → « Ajouter à l'écran d'accueil » → « Installer ». iPhone : ouvrez dans Safari → bouton « Partager » (rectangle avec une flèche) → « Sur l'écran d'accueil ».",
       "q1": "Comment l'installer sur un ordinateur ?",
-      "a1": "Dans Chrome/Edge, une icône « Installer » (un écran avec une flèche) apparaît dans la barre d'adresse — cliquez et confirmez. Ou via le menu : « Installer Diklario ». Après l'installation, il s'ouvre dans une fenêtre à part, sans navigateur.",
+      "a1": "Dans Chrome/Edge, une icône « Installer » (un écran avec une flèche) apparaît dans la barre d'adresse — cliquez et confirmez. Ou via le menu : « Installer Peravenor ». Après l'installation, il s'ouvre dans une fenêtre à part, sans navigateur.",
       "q2": "Est-ce que cela fonctionne hors connexion ?",
       "a2": "En partie : les pages déjà ouvertes se chargent depuis le cache. Créer des cours ou saisir des données sans connexion n'est pas possible — la synchronisation avec le serveur est nécessaire."
     }
@@ -175,10 +175,10 @@
     },
     "pwa": {
       "title": "Installer comme application",
-      "q0": "Comment installer Diklario sur un téléphone (Android / iPhone) ?",
+      "q0": "Comment installer Peravenor sur un téléphone (Android / iPhone) ?",
       "a0": "Android : ouvre le site dans Chrome → trois points (⋮) → « Ajouter à l'écran d'accueil » → « Installer ». iPhone : ouvre dans Safari → bouton « Partager » (rectangle avec une flèche) → « Sur l'écran d'accueil ».",
       "q1": "Comment l'installer sur un ordinateur ?",
-      "a1": "Dans Chrome/Edge, une icône « Installer » apparaît dans la barre d'adresse — clique et confirme. Après l'installation, Diklario s'ouvre dans une fenêtre à part."
+      "a1": "Dans Chrome/Edge, une icône « Installer » apparaît dans la barre d'adresse — clique et confirme. Après l'installation, Peravenor s'ouvre dans une fenêtre à part."
     }
   },
   "viz": {

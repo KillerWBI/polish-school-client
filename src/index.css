@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Печать: на бумаге нужен только документ. Сайдбар и шапки — навигация,
+   в распечатанном счёте им делать нечего. Обёртки сайдбара занимают ширину
+   даже пустыми, поэтому убираем и отступ слева. */
+@media print {
+  aside, header { display: none !important; }
+  body { background: #fff; }
+  .lg\:block.w-16 { display: none !important; }
+}
+
 /* Цвета бренда (фиолетово-розовый градиент) */
 @theme {
   --color-brand-50:  #FAF5FF;

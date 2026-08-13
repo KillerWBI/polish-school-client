@@ -358,6 +358,17 @@
     "savedToast": "Guardado",
     "deletedToast": "Docente eliminado",
     "deleteTitle": "¿Eliminar este docente?",
-    "deleteMsg": "La ficha se elimina, pero las clases se quedan en el registro — el nombre en ellas se conserva."
+    "deleteMsg": "La ficha se elimina, pero las clases se quedan en el registro — el nombre en ellas se conserva.",
+    "inviteBtn": "Invitar a la plataforma",
+    "inviteResend": "Invitación enviada — enviar de nuevo",
+    "inviteTitle": "Invitar a {{name}} a Peravenor",
+    "inviteHint": "Enviaremos una invitación por correo. Cuando el profesor tenga cuenta, las clases y los pagos serán compartidos.",
+    "inviteSend": "Enviar invitación",
+    "inviteSent": "Invitación enviada",
+    "inviteLinked": "El profesor ya está aquí — la ficha ha quedado vinculada",
+    "inviteError": "No se ha podido enviar la invitación",
+    "onPlatform": "En la plataforma",
+    "fEmail": "Correo del profesor",
+    "errEmail": "Introduzca una dirección válida"
   }
 }

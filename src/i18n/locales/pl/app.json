@@ -177,7 +177,7 @@
     "rowDate": "Data",
     "rowTime": "Godzina",
     "rowStudent": "Uczeń",
-    "rowDesc": "Opis",
+    "rowDesc": "Notatka",
     "goToLesson": "Przejdź na lekcję",
     "chatGroup": "Czat grupy",
     "legendOwn": "Moje zajęcia",
@@ -385,7 +385,10 @@
     "justNow": "przed chwilą",
     "minutesShort": "{{n}} min",
     "hoursShort": "{{n}} godzin",
-    "yesterday": "wczoraj"
+    "yesterday": "wczoraj",
+    "invitedBy": "{{name}} zaprosił(a) Państwa do Peravenor — ten uczeń już prowadzi tu ewidencję Państwa zajęć.",
+    "invitedByWithSubject": "{{name}} zaprosił(a) Państwa do Peravenor — ten uczeń już prowadzi tu ewidencję zajęć z przedmiotu „{{subject}}”.",
+    "invitedByCta": "Dodaj ucznia"
   },
   "materials": {
     "title": "Materiały",

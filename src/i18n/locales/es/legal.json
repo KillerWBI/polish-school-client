@@ -7,7 +7,7 @@
   "updated": "19 de julio de 2026",
   "privacy": {
     "title": "Política de privacidad",
-    "intro": "Esta Política describe cómo Artem Proskurovskyi (persona física, Poznań, Polonia) (el «Operador», «nosotros») recoge, utiliza y protege los datos personales de los usuarios del servicio Diklario, disponible en diklario.com (el «Servicio»). Al utilizar el Servicio, usted acepta esta Política.",
+    "intro": "Esta Política describe cómo Artem Proskurovskyi (persona física, Poznań, Polonia) (el «Operador», «nosotros») recoge, utiliza y protege los datos personales de los usuarios del servicio Peravenor, disponible en peravenor.com (el «Servicio»). Al utilizar el Servicio, usted acepta esta Política.",
     "s1t": "Qué datos recogemos",
     "s1": [
       "Datos de la cuenta: nombre, correo electrónico, nombre de usuario, contraseña (cifrada), rol (docente/estudiante), idioma de la interfaz, avatar.",
@@ -53,9 +53,9 @@
   },
   "terms": {
     "title": "Condiciones de uso",
-    "intro": "Estas Condiciones regulan el uso del servicio Diklario (diklario.com, el «Servicio»), prestado por Artem Proskurovskyi (persona física, Poznań, Polonia) (el «Operador», «nosotros»). Al registrarse o utilizar el Servicio, usted acepta estas Condiciones. Si no está de acuerdo, no utilice el Servicio.",
+    "intro": "Estas Condiciones regulan el uso del servicio Peravenor (peravenor.com, el «Servicio»), prestado por Artem Proskurovskyi (persona física, Poznań, Polonia) (el «Operador», «nosotros»). Al registrarse o utilizar el Servicio, usted acepta estas Condiciones. Si no está de acuerdo, no utilice el Servicio.",
     "s1t": "Descripción del Servicio",
-    "s1": "Diklario es una plataforma en línea para docentes y estudiantes de cualquier materia: gestión de grupos, clases, deberes, asistencia y finanzas, así como estudio autónomo con herramientas de IA adaptativas (tests, vocabulario, rutas de aprendizaje). Las funcionalidades pueden cambiar y ampliarse.",
+    "s1": "Peravenor es una plataforma en línea para docentes y estudiantes de cualquier materia: gestión de grupos, clases, deberes, asistencia y finanzas, así como estudio autónomo con herramientas de IA adaptativas (tests, vocabulario, rutas de aprendizaje). Las funcionalidades pueden cambiar y ampliarse.",
     "s2t": "Registro y cuenta",
     "s2": "Usted se compromete a facilitar datos veraces, mantenerlos actualizados y no compartir el acceso con terceros. Es responsable de las acciones realizadas desde su cuenta y de custodiar su contraseña. Comuníquenos cualquier acceso no autorizado.",
     "s3t": "Planes, suscripción y pago",
@@ -91,7 +91,7 @@
   },
   "refund": {
     "title": "Política de reembolsos",
-    "intro": "En esta página se explica cómo cancelar una suscripción y obtener el reembolso de los planes de pago de Diklario. Los pagos los procesa Paddle.com Market Ltd, que actúa como merchant of record, por lo que los reembolsos se emiten a través suyo.",
+    "intro": "En esta página se explica cómo cancelar una suscripción y obtener el reembolso de los planes de pago de Peravenor. Los pagos los procesa Paddle.com Market Ltd, que actúa como merchant of record, por lo que los reembolsos se emiten a través suyo.",
     "s1t": "Primero, gratis",
     "s1": "El plan gratuito es indefinido y no requiere tarjeta. Recomendamos comprobar que el servicio le encaja antes de contratar un plan de pago.",
     "s2t": "Reembolso en 14 días",

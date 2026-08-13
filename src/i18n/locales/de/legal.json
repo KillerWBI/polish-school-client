@@ -7,7 +7,7 @@
   "updated": "19. Juli 2026",
   "privacy": {
     "title": "Datenschutzerklärung",
-    "intro": "Diese Erklärung beschreibt, wie Artem Proskurovskyi (Privatperson, Poznań, Polen) (der „Betreiber“, „wir“) personenbezogene Daten der Nutzerinnen und Nutzer des Dienstes Diklario unter diklario.com (der „Dienst“) erhebt, verwendet und schützt. Mit der Nutzung des Dienstes stimmen Sie dieser Erklärung zu.",
+    "intro": "Diese Erklärung beschreibt, wie Artem Proskurovskyi (Privatperson, Poznań, Polen) (der „Betreiber“, „wir“) personenbezogene Daten der Nutzerinnen und Nutzer des Dienstes Peravenor unter peravenor.com (der „Dienst“) erhebt, verwendet und schützt. Mit der Nutzung des Dienstes stimmen Sie dieser Erklärung zu.",
     "s1t": "Welche Daten wir erheben",
     "s1": [
       "Kontodaten: Name, E-Mail, Nutzername, Passwort (verschlüsselt), Rolle (Lehrkraft/Lernende), Sprache der Oberfläche, Avatar.",
@@ -53,9 +53,9 @@
   },
   "terms": {
     "title": "Nutzungsbedingungen",
-    "intro": "Diese Bedingungen regeln die Nutzung des Dienstes Diklario (diklario.com, der „Dienst“), bereitgestellt von Artem Proskurovskyi (Privatperson, Poznań, Polen) (der „Betreiber“, „wir“). Mit der Registrierung oder Nutzung des Dienstes akzeptieren Sie diese Bedingungen. Sind Sie nicht einverstanden, nutzen Sie den Dienst nicht.",
+    "intro": "Diese Bedingungen regeln die Nutzung des Dienstes Peravenor (peravenor.com, der „Dienst“), bereitgestellt von Artem Proskurovskyi (Privatperson, Poznań, Polen) (der „Betreiber“, „wir“). Mit der Registrierung oder Nutzung des Dienstes akzeptieren Sie diese Bedingungen. Sind Sie nicht einverstanden, nutzen Sie den Dienst nicht.",
     "s1t": "Beschreibung des Dienstes",
-    "s1": "Diklario ist eine Online-Plattform für Lehrkräfte und Lernende in jedem Fach: Verwaltung von Gruppen, Unterricht, Hausaufgaben, Anwesenheit und Finanzen sowie selbstständiges Lernen mit adaptiven KI-Werkzeugen (Tests, Wörterbuch, Lernpfade). Der Funktionsumfang kann sich ändern und erweitern.",
+    "s1": "Peravenor ist eine Online-Plattform für Lehrkräfte und Lernende in jedem Fach: Verwaltung von Gruppen, Unterricht, Hausaufgaben, Anwesenheit und Finanzen sowie selbstständiges Lernen mit adaptiven KI-Werkzeugen (Tests, Wörterbuch, Lernpfade). Der Funktionsumfang kann sich ändern und erweitern.",
     "s2t": "Registrierung und Konto",
     "s2": "Sie verpflichten sich, zutreffende Daten anzugeben, sie aktuell zu halten und den Zugang nicht an Dritte weiterzugeben. Sie sind für Handlungen unter Ihrem Konto und für die sichere Aufbewahrung Ihres Passworts verantwortlich. Teilen Sie uns unbefugte Zugriffe mit.",
     "s3t": "Tarife, Abonnement und Zahlung",
@@ -91,7 +91,7 @@
   },
   "refund": {
     "title": "Rückerstattungsrichtlinie",
-    "intro": "Hier steht, wie Sie ein Abonnement kündigen und Geld für kostenpflichtige Diklario-Tarife zurückbekommen. Die Zahlungen wickelt Paddle.com Market Ltd ab — als Merchant of Record, weshalb Rückerstattungen über diesen Anbieter erfolgen.",
+    "intro": "Hier steht, wie Sie ein Abonnement kündigen und Geld für kostenpflichtige Peravenor-Tarife zurückbekommen. Die Zahlungen wickelt Paddle.com Market Ltd ab — als Merchant of Record, weshalb Rückerstattungen über diesen Anbieter erfolgen.",
     "s1t": "Zuerst kostenlos",
     "s1": "Der kostenlose Tarif gilt unbefristet und erfordert keine Karte. Wir empfehlen, sich zunächst zu vergewissern, dass der Dienst zu Ihnen passt, bevor Sie ein kostenpflichtiges Abo abschließen.",
     "s2t": "Rückerstattung binnen 14 Tagen",

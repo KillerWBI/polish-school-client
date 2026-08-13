@@ -109,10 +109,10 @@
     },
     "pwa": {
       "title": "Instalar como aplicación",
-      "q0": "¿Cómo instalo Diklario en el móvil (Android / iPhone)?",
+      "q0": "¿Cómo instalo Peravenor en el móvil (Android / iPhone)?",
       "a0": "Android: abre el sitio en Chrome → tres puntos (⋮) → «Añadir a pantalla de inicio» → «Instalar». iPhone: ábrelo en Safari → botón «Compartir» (rectángulo con flecha) → «Añadir a inicio».",
       "q1": "¿Cómo lo instalo en el ordenador?",
-      "a1": "En Chrome/Edge aparece un icono «Instalar» (una pantalla con una flecha) en la barra de direcciones — púlsalo y confirma. O desde el menú: «Instalar Diklario». Tras instalarlo se abre como una ventana aparte, sin navegador.",
+      "a1": "En Chrome/Edge aparece un icono «Instalar» (una pantalla con una flecha) en la barra de direcciones — púlsalo y confirma. O desde el menú: «Instalar Peravenor». Tras instalarlo se abre como una ventana aparte, sin navegador.",
       "q2": "¿Funcionará sin internet?",
       "a2": "En parte: las páginas que ya has abierto se cargan de la caché. Crear clases o introducir datos sin conexión no es posible — hace falta sincronizar con el servidor."
     }
@@ -175,10 +175,10 @@
     },
     "pwa": {
       "title": "Instalar como aplicación",
-      "q0": "¿Cómo instalo Diklario en el móvil (Android / iPhone)?",
+      "q0": "¿Cómo instalo Peravenor en el móvil (Android / iPhone)?",
       "a0": "Android: abre el sitio en Chrome → tres puntos (⋮) → «Añadir a pantalla de inicio» → «Instalar». iPhone: ábrelo en Safari → botón «Compartir» (rectángulo con flecha) → «Añadir a inicio».",
       "q1": "¿Cómo lo instalo en el ordenador?",
-      "a1": "En Chrome/Edge aparece un icono «Instalar» en la barra de direcciones — púlsalo y confirma. Tras instalarlo, Diklario se abre como una ventana aparte."
+      "a1": "En Chrome/Edge aparece un icono «Instalar» en la barra de direcciones — púlsalo y confirma. Tras instalarlo, Peravenor se abre como una ventana aparte."
     }
   },
   "viz": {

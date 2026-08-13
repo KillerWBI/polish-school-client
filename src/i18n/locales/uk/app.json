@@ -177,7 +177,7 @@
     "rowDate": "Дата",
     "rowTime": "Час",
     "rowStudent": "Студент",
-    "rowDesc": "Опис",
+    "rowDesc": "Нотатка",
     "goToLesson": "Перейти на урок",
     "chatGroup": "Чат групи",
     "legendOwn": "Мої заняття",
@@ -385,7 +385,10 @@
     "justNow": "щойно",
     "minutesShort": "{{n}} хвилин",
     "hoursShort": "{{n}} годин",
-    "yesterday": "вчора"
+    "yesterday": "вчора",
+    "invitedBy": "{{name}} запросив(ла) вас до Peravenor — цей учень уже веде тут облік ваших занять.",
+    "invitedByWithSubject": "{{name}} запросив(ла) вас до Peravenor — цей учень уже веде тут облік занять із предмета «{{subject}}».",
+    "invitedByCta": "Додати учня"
   },
   "materials": {
     "title": "Матеріали",

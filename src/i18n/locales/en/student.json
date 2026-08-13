@@ -358,6 +358,17 @@
     "savedToast": "Saved",
     "deletedToast": "Teacher deleted",
     "deleteTitle": "Delete this teacher?",
-    "deleteMsg": "The card is removed, but the lessons stay in the journal — the name in them is kept."
+    "deleteMsg": "The card is removed, but the lessons stay in the journal — the name in them is kept.",
+    "inviteBtn": "Invite to the platform",
+    "inviteResend": "Invitation sent — send again",
+    "inviteTitle": "Invite {{name}} to Peravenor",
+    "inviteHint": "We will send an invitation by email. Once the teacher has an account, your lessons and payments become shared.",
+    "inviteSend": "Send invitation",
+    "inviteSent": "Invitation sent",
+    "inviteLinked": "The teacher is already here — the card is linked",
+    "inviteError": "Could not send the invitation",
+    "onPlatform": "On the platform",
+    "fEmail": "Teacher’s email",
+    "errEmail": "Enter a valid address"
   }
 }

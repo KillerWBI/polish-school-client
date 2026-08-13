@@ -10,6 +10,7 @@ import {
 } from '../../api/individualLessons.api'
 import { getMyStudents } from '../../api/students.api'
 import { safeUrl } from '../../utils/safeUrl'
+import { formatMoney } from '../../utils/money'
 import { toast, errMsg } from '../../utils/toast'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
@@ -123,8 +124,9 @@ export default function IndividualLessonsPage() {
 }
 
 function LessonCard({ l, isTeacher, onEdit, onDelete }) {
-  const { t } = useTranslation('teacher')
+  const { t, i18n } = useTranslation('teacher')
   const { t: tc } = useTranslation('common')
+  const { user } = useAuth() // цена урока — в валюте преподавателя
   const isPast = l.date && new Date(`${l.date}T${l.time || '00:00'}`) < new Date()
   return (
     <div className="group flex items-start gap-3 p-4 rounded-2xl border border-slate-200 bg-white hover:border-blue-200 transition-colors">
@@ -142,7 +144,7 @@ function LessonCard({ l, isTeacher, onEdit, onDelete }) {
         </div>
         <div className="flex items-center gap-2 mt-1.5">
           {l.pricePerLesson > 0 && (
-            <span className="text-[11px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">{l.pricePerLesson} zł</span>
+            <span className="text-[11px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">{formatMoney(Number(l.pricePerLesson) || 0, user?.currency, i18n.language)}</span>
           )}
           {l.individualCourseId && (
             <span className="text-[11px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">{t('indLessons.series')}</span>
@@ -190,6 +192,9 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
     date: editing?.date || '', time: editing?.time || '18:00',
     topic: editing?.topic || '', pricePerLesson: editing?.pricePerLesson ?? '',
     lessonLink: editing?.lessonLink || '',
+    // Заметка к уроку. Поле было в базе, но в форму не выводилось — вписать адрес
+    // или код домофона для индивидуального урока было физически некуда.
+    description: editing?.description || '',
   }))
   const [saving, setSaving] = useState(false)
   const [error, setError]   = useState('')
@@ -206,6 +211,7 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
         await updateIndividualLesson(editing.id, {
           date: form.date, time: form.time,
           topic: form.topic.trim() || null,
+          description: form.description.trim() || null,
           pricePerLesson: parseFloat(form.pricePerLesson) || 0,
           lessonLink: form.lessonLink.trim() || null,
         })
@@ -218,6 +224,7 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
         const body = {
           date: form.date, time: form.time,
           topic: form.topic.trim() || null,
+          description: form.description.trim() || null,
           pricePerLesson: parseFloat(form.pricePerLesson) || 0,
           lessonLink: linkMode === 'custom' ? form.lessonLink.trim() : undefined,
         }
@@ -297,6 +304,8 @@ function LessonFormModal({ open, editing, students, onClose, onSaved }) {
           </div>
 
           <Input label={t('indLessons.fTopic')} value={form.topic} onChange={e => set('topic', e.target.value)} />
+          <Input label={t('indLessons.fNote')} placeholder={t('indLessons.fNotePh')}
+            value={form.description} onChange={e => set('description', e.target.value)} />
           <Input label={t('indLessons.fPrice')} type="number" value={form.pricePerLesson} onChange={e => set('pricePerLesson', e.target.value)} />
 
           {/* Ссылка на урок */}

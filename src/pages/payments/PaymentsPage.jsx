@@ -21,6 +21,7 @@ import { safeUrl } from '../../utils/safeUrl'
 import useAuth from '../../hooks/useAuth'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getStudentTeachers } from '../../api/studentTeachers.api'
+import InvoicesTab from './InvoicesTab'
 
 const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
 
@@ -176,11 +177,12 @@ function TeacherPayments() {
         value={tab}
         onChange={setTab}
         items={[
-          { key: 'debts',   label: t('payments.tabDebtsTeacher') },
-          { key: 'history', label: t('payments.tabHistory') },
+          { key: 'debts',    label: t('payments.tabDebtsTeacher') },
+          { key: 'invoices', label: t('invoices.tab') },
+          { key: 'history',  label: t('payments.tabHistory') },
         ]}
       />
-      {tab === 'debts' ? <TeacherDebts /> : <PaymentHistory />}
+      {tab === 'debts' ? <TeacherDebts /> : tab === 'invoices' ? <InvoicesTab /> : <PaymentHistory />}
     </>
   )
 }
@@ -228,11 +230,12 @@ function StudentPayments() {
         value={tab}
         onChange={setTab}
         items={[
-          { key: 'debts',   label: t('payments.tabMyDebt') },
-          { key: 'history', label: t('payments.tabHistory') },
+          { key: 'debts',    label: t('payments.tabMyDebt') },
+          { key: 'invoices', label: t('invoices.tab') },
+          { key: 'history',  label: t('payments.tabHistory') },
         ]}
       />
-      {tab === 'debts' ? <StudentDebts /> : <StudentPaymentHistory />}
+      {tab === 'debts' ? <StudentDebts /> : tab === 'invoices' ? <InvoicesTab /> : <StudentPaymentHistory />}
     </>
   )
 }

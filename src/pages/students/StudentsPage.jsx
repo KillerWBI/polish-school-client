@@ -5,12 +5,13 @@ import { toast, errMsg } from '../../utils/toast'
 import { Target, Sparkles, Share2 } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getMyStudents, getTrackInsights, generateTargetedQuiz, createStudent, getStudentOverview } from '../../api/students.api'
-import { getInvitations, cancelInvitation } from '../../api/invitations.api'
+import { getInvitations, cancelInvitation, bulkInviteToGroup } from '../../api/invitations.api'
+import { getGroups } from '../../api/groups.api'
 import { SkeletonCards } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
 import {
   IconStudents, IconAdd, IconInvite, IconIndividual, IconNext, IconPending,
-  IconSearch, IconInfo, IconProfile, IconGroups,
+  IconSearch, IconInfo, IconProfile, IconGroups, IconEmail,
 } from '../../components/ui/icons'
 import Pagination from '../../components/ui/Pagination'
 import Modal from '../../components/ui/Modal'
@@ -119,6 +120,12 @@ export default function StudentsPage() {
             onClick={() => { setAdding(null); navigate('/lessons') }}
           />
           <AddOption
+            icon={IconEmail}
+            title={t('students.addByEmail')}
+            hint={t('students.addByEmailHint')}
+            onClick={() => setAdding('email')}
+          />
+          <AddOption
             icon={IconIndividual}
             title={t('students.addWithoutAccount')}
             hint={t('students.addWithoutAccountHint')}
@@ -130,6 +137,11 @@ export default function StudentsPage() {
       {/* Шаг 2 — карточка ученика без аккаунта */}
       {adding === 'placeholder' && (
         <AddStudentModal onClose={() => setAdding(null)} onAdded={() => { setAdding(null); reload() }} />
+      )}
+
+      {/* Шаг 2 — приглашения по email в выбранную группу */}
+      {adding === 'email' && (
+        <BulkInviteModal onClose={() => setAdding(null)} />
       )}
     </PageContainer>
   )
@@ -191,6 +203,89 @@ function AddStudentModal({ onClose, onAdded }) {
   )
 }
 
+/* ── Приглашение по email: группа + список адресов ──
+   Разделители — запятая, точка с запятой, перенос строки и пробел: учитель
+   обычно копирует адреса из журнала или чата, а там формат какой угодно. */
+const parseEmails = (raw) =>
+  raw.split(/[\s,;]+/).map(s => s.trim()).filter(Boolean)
+
+function BulkInviteModal({ onClose }) {
+  const { t } = useTranslation('teacher')
+  const { t: tc } = useTranslation('common')
+  const { data: groups } = useApiQuery(['groups'], getGroups)
+  const [groupId, setGroupId] = useState('')
+  const [raw, setRaw] = useState('')
+  const [error, setError] = useState('')
+  const [sending, setSending] = useState(false)
+  const [results, setResults] = useState(null)
+
+  const emails = useMemo(() => parseEmails(raw), [raw])
+
+  const submit = async (e) => {
+    e.preventDefault()
+    if (!groupId) return setError(t('students.chooseGroupFirst'))
+    if (!emails.length) return setError(t('students.enterEmails'))
+    setSending(true); setError('')
+    try {
+      setResults(await bulkInviteToGroup(groupId, emails))
+    } catch (e) {
+      setError(errMsg(e, t('students.inviteError')))
+    } finally {
+      setSending(false)
+    }
+  }
+
+  // Показываем построчный итог: из десяти адресов один почти всегда с опечаткой,
+  // и учителю нужно видеть — какой именно, а не «отправлено 9 из 10».
+  if (results) {
+    return (
+      <Modal open onClose={onClose} title={t('students.inviteResultTitle')}>
+        <ul className="space-y-1 max-h-72 overflow-y-auto">
+          {results.map(r => (
+            <li key={r.email} className="flex items-center justify-between gap-3 text-sm py-1.5 border-b border-slate-100 last:border-0">
+              <span className="truncate text-slate-700">{r.email}</span>
+              <span className={`shrink-0 text-xs ${r.status === 'sent' || r.status === 'notified' ? 'text-emerald-600' : 'text-slate-500'}`}>
+                {t(`students.inviteStatus.${r.status}`)}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <Button className="w-full mt-4" onClick={onClose}>{tc('close')}</Button>
+      </Modal>
+    )
+  }
+
+  return (
+    <Modal open onClose={onClose}
+      title={t('students.addByEmail')} subtitle={t('students.addByEmailHint')}>
+      <form onSubmit={submit} className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('students.groupLabel')}</label>
+          <select value={groupId} onChange={e => { setGroupId(e.target.value); setError('') }}
+            className="w-full h-10 px-3 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 outline-none focus:border-blue-500">
+            <option value="">{t('students.chooseGroup')}</option>
+            {(groups || []).map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('students.emailsLabel')}</label>
+          <textarea value={raw} onChange={e => { setRaw(e.target.value); setError('') }} rows={5}
+            placeholder={t('students.emailsPlaceholder')}
+            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 resize-y" />
+          {/* переменная намеренно n, а не count: count включает у i18next
+              множественные формы и потребовал бы ключи _one/_other на 7 языков */}
+          <p className="text-xs text-slate-500 mt-1">{t('students.emailsCount', { n: emails.length })}</p>
+        </div>
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        <div className="flex gap-2 pt-1">
+          <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>{tc('cancel')}</Button>
+          <Button type="submit" loading={sending} className="flex-1">{t('students.sendInvites')}</Button>
+        </div>
+      </form>
+    </Modal>
+  )
+}
+
 /* ── Отправленные приглашения: видно, кто ещё не ответил, и можно отозвать ── */
 function SentInvitations() {
   const { t } = useTranslation('teacher')
@@ -222,9 +317,10 @@ function SentInvitations() {
       <div className="space-y-2">
         {invites.map(inv => (
           <div key={inv.id} className="flex items-center gap-3 rounded-xl bg-white border border-slate-200 px-3 py-2.5">
-            <Avatar url={inv.invitee?.avatar} name={inv.invitee?.name} />
+            {/* Позвали по email — аккаунта ещё нет, поэтому вместо имени показываем адрес */}
+            <Avatar url={inv.invitee?.avatar} name={inv.invitee?.name || inv.inviteeEmail} />
             <div className="min-w-0 flex-1">
-              <div className="text-sm text-slate-900 truncate">{inv.invitee?.name}</div>
+              <div className="text-sm text-slate-900 truncate">{inv.invitee?.name || inv.inviteeEmail}</div>
               <div className="text-xs text-slate-400 truncate">
                 {inv.invitee?.username && `@${inv.invitee.username} · `}
                 {t('invites.toGroup', { group: inv.Group?.name ?? '—' })}
@@ -245,7 +341,7 @@ function SentInvitations() {
         onClose={() => setCancelling(null)}
         onConfirm={doCancel}
         title={t('invites.cancelTitle')}
-        message={cancelling ? t('invites.cancelMsg', { name: cancelling.invitee?.name ?? '' }) : ''}
+        message={cancelling ? t('invites.cancelMsg', { name: cancelling.invitee?.name || cancelling.inviteeEmail || '' }) : ''}
         confirmLabel={t('invites.cancel')}
         busy={busy}
       />
