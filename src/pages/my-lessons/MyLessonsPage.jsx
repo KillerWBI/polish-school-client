@@ -6,6 +6,7 @@ import useApiQuery from '../../hooks/useApiQuery'
 import { getMyLessons, getMyLessonsStats, createMyLesson, payMyLesson, deleteMyLesson } from '../../api/myLessons.api'
 import {
   getStudentTeachers, createStudentTeacher, updateStudentTeacher, deleteStudentTeacher,
+  inviteStudentTeacher,
 } from '../../api/studentTeachers.api'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
@@ -13,7 +14,7 @@ import Modal from '../../components/ui/Modal'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { SkeletonList } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
-import { IconNotes, IconProgress, IconSuccess, IconAdd, IconEdit } from '../../components/ui/icons'
+import { IconNotes, IconProgress, IconSuccess, IconAdd, IconEdit, IconEmail } from '../../components/ui/icons'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
 import Tabs from '../../components/ui/Tabs'
@@ -182,6 +183,7 @@ function TeachersTab({ teachers, onRefresh }) {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing]   = useState(null)
   const [confirmDel, setConfirmDel] = useState(null)
+  const [inviting, setInviting] = useState(null)
   const [busy, setBusy] = useState(false)
 
   const doDelete = async () => {
@@ -234,6 +236,20 @@ function TeachersTab({ teachers, onRefresh }) {
                   </span>
                 )}
                 <div className="flex items-center gap-1 shrink-0">
+                  {/* Позвать на платформу — только пока преподавателя тут нет.
+                      Связался аккаунт → показываем это фактом, а не кнопкой. */}
+                  {tch.linkedUserId ? (
+                    <span className="hidden sm:inline text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      {t('myTeachers.onPlatform')}
+                    </span>
+                  ) : (
+                    <Tooltip text={tch.inviteSentAt ? t('myTeachers.inviteResend') : t('myTeachers.inviteBtn')}>
+                      <button onClick={() => setInviting(tch)}
+                        className={`transition-colors p-1 ${tch.inviteSentAt ? 'text-blue-400 hover:text-blue-600' : 'text-slate-300 hover:text-blue-600'}`}>
+                        <IconEmail size={16} />
+                      </button>
+                    </Tooltip>
+                  )}
                   <button onClick={() => openEdit(tch)} className="text-slate-300 hover:text-slate-600 transition-colors p-1">
                     <IconEdit size={16} />
                   </button>
@@ -256,6 +272,14 @@ function TeachersTab({ teachers, onRefresh }) {
         />
       )}
 
+      {inviting && (
+        <InviteTeacherModal
+          teacher={inviting}
+          onClose={() => setInviting(null)}
+          onSent={() => { setInviting(null); onRefresh() }}
+        />
+      )}
+
       <ConfirmDialog
         open={!!confirmDel}
         onClose={() => setConfirmDel(null)}
@@ -266,6 +290,48 @@ function TeachersTab({ teachers, onRefresh }) {
         busy={busy}
       />
     </div>
+  )
+}
+
+/* ── Позвать своего преподавателя на платформу ── */
+function InviteTeacherModal({ teacher, onClose, onSent }) {
+  const { t } = useTranslation('student')
+  const { t: tc } = useTranslation('common')
+  const [email, setEmail] = useState(teacher.inviteEmail || '')
+  const [error, setError] = useState('')
+  const [sending, setSending] = useState(false)
+
+  const submit = async (e) => {
+    e.preventDefault()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return setError(t('myTeachers.errEmail'))
+    setSending(true); setError('')
+    try {
+      const res = await inviteStudentTeacher(teacher.id, email.trim())
+      // Два исхода: письмо ушло или преподаватель уже здесь и карточка связана —
+      // второй случай не ошибка, и говорить о нём надо отдельными словами.
+      toast.success(res.status === 'linked' ? t('myTeachers.inviteLinked') : t('myTeachers.inviteSent'))
+      onSent()
+    } catch (e) {
+      setError(errMsg(e, t('myTeachers.inviteError')))
+    } finally {
+      setSending(false)
+    }
+  }
+
+  return (
+    <Modal open onClose={onClose}
+      title={t('myTeachers.inviteTitle', { name: teacher.name })}
+      subtitle={t('myTeachers.inviteHint')}>
+      <form onSubmit={submit} className="space-y-3">
+        <Input label={t('myTeachers.fEmail')} type="email" value={email}
+          onChange={e => { setEmail(e.target.value); setError('') }}
+          error={error} placeholder="teacher@example.com" />
+        <div className="flex gap-2 pt-1">
+          <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>{tc('cancel')}</Button>
+          <Button type="submit" loading={sending} className="flex-1">{t('myTeachers.inviteSend')}</Button>
+        </div>
+      </form>
+    </Modal>
   )
 }
 

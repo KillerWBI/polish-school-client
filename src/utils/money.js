@@ -83,6 +83,45 @@ export function formatMoney(amount, code, locale) {
   }
 }
 
+// Перевод суммы между валютами. Курсы от open.er-api.com даны к USD, поэтому
+// кросс-курс считаем через доллар: сумма → USD → целевая валюта.
+// Нет курса (сеть не ответила) → null, и вызывающий просто не покажет «≈».
+export function convert(amount, from, to, rates) {
+  if (!rates || !from || !to) return null
+  if (from === to) return amount
+  const fromRate = rates[from]
+  const toRate   = rates[to]
+  if (!fromRate || !toRate) return null
+  return (amount / fromRate) * toRate
+}
+
+// Свести долг, разложенный по валютам ({ PLN: 500, EUR: 40 }), к одной цифре.
+// Бэкенд намеренно не складывает валюты сам — сложение имеет смысл только по курсу,
+// а курс это уже показ. Возвращает { value, code, approx }:
+//   approx=false — валюта была одна, цифра точная;
+//   approx=true  — считали по курсу, показываем со знаком «≈».
+export function sumByCurrency(byCurrency, viewerCode, rates) {
+  const entries = Object.entries(byCurrency || {}).filter(([, amt]) => amt > 0)
+  if (!entries.length) return { value: 0, code: viewerCode || 'PLN', approx: false }
+  if (entries.length === 1) {
+    const [code, value] = entries[0]
+    return { value, code, approx: false } // одна валюта — не пересчитываем и не врём «≈»
+  }
+  // Несколько валют: приводим к валюте смотрящего. Если курса нет — показываем
+  // самую крупную корзину как есть, чтобы цифра осталась правдивой.
+  const target = viewerCode || entries[0][0]
+  let total = 0
+  for (const [code, amount] of entries) {
+    const c = convert(amount, code, target, rates)
+    if (c == null) {
+      const biggest = entries.sort((a, b) => b[1] - a[1])[0]
+      return { value: biggest[1], code: biggest[0], approx: false }
+    }
+    total += c
+  }
+  return { value: total, code: target, approx: true }
+}
+
 // Хук: локальная валюта + курсы. Пока грузятся — cur из кэша (или USD), rates=null.
 export function useCurrency() {
   const [state, setState] = useState({ cur: cachedCurrency(), rates: null })

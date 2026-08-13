@@ -13,6 +13,7 @@ import { getMyLessons } from '../../api/myLessons.api'
 import useAuth from '../../hooks/useAuth'
 import { formatDate } from '../../utils/formatDate'
 import { safeUrl } from '../../utils/safeUrl'
+import { formatMoney } from '../../utils/money'
 import Modal from '../../components/ui/Modal'
 import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
@@ -24,6 +25,22 @@ import { IconChat } from '../../components/ui/icons'
 const CAL_PLUGINS = [dayGridPlugin, interactionPlugin]
 const CAL_LOCALES = [ruLocale, plLocale, ukLocale] // en встроен в FullCalendar
 const CAL_HEADER  = { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek' }
+
+// Своя отрисовка события: вторая строка — заметка к уроку (адрес, код домофона,
+// что принести). Раньше её было видно только после клика по уроку, то есть
+// «под рукой в календаре» она не была. Тоже на уровне модуля — см. комментарий выше.
+const renderEvent = ({ event, timeText }) => {
+  const { note } = event.extendedProps
+  return (
+    <div className="overflow-hidden leading-tight px-0.5">
+      <div className="truncate">
+        {timeText && <span className="opacity-75 mr-1">{timeText}</span>}
+        {event.title}
+      </div>
+      {note && <div className="truncate opacity-80 text-[0.9em]" title={note}>{note}</div>}
+    </div>
+  )
+}
 
 export default function CalendarPage() {
   const { t, i18n } = useTranslation('app')
@@ -54,13 +71,15 @@ export default function CalendarPage() {
         isStudent ? getMyLessons({ from, to }).catch(() => []) : Promise.resolve([]),
       ])
 
+      // note — заметка к уроку прямо в ячейке (адрес, код домофона, «принести учебник»).
+      // У уроков платформы это description, у своих занятий ученика — notes.
       const groupEvents = (group || []).map(l => ({
         id:    `g-${l.id}`,
         title: l.topic || l.Group?.name || t('calendar.lessonFallback'),
         start: `${l.date}T${l.time}:00`,
         backgroundColor: '#2563EB',
         borderColor: '#2563EB',
-        extendedProps: { type: 'group', lesson: l },
+        extendedProps: { type: 'group', lesson: l, note: l.description },
       }))
 
       const indivEvents = (indiv || []).map(l => ({
@@ -69,7 +88,7 @@ export default function CalendarPage() {
         start: `${l.date}T${l.time}:00`,
         backgroundColor: '#BE185D',
         borderColor: '#BE185D',
-        extendedProps: { type: 'individual', lesson: l },
+        extendedProps: { type: 'individual', lesson: l, note: l.description },
       }))
 
       // Время у своих занятий не обязательно — без него ставим событие на весь день
@@ -80,7 +99,7 @@ export default function CalendarPage() {
         allDay: !l.time,
         backgroundColor: '#0D9488',
         borderColor: '#0D9488',
-        extendedProps: { type: 'own', lesson: l },
+        extendedProps: { type: 'own', lesson: l, note: l.notes },
       }))
 
       setEvents([...groupEvents, ...indivEvents, ...ownEvents])
@@ -135,6 +154,7 @@ export default function CalendarPage() {
           events={events}
           datesSet={handleDatesSet}
           eventClick={handleEventClick}
+          eventContent={renderEvent}
           height="auto"
           dayMaxEvents={3}
         />
@@ -149,7 +169,12 @@ export default function CalendarPage() {
 }
 
 function LessonDetail({ props: { type, lesson }, onClose }) {
-  const { t } = useTranslation('app')
+  const { t, i18n } = useTranslation('app')
+  const lang = i18n.language
+  // Своё занятие ученик заводит сам и цену ставит сам — значит в своей валюте.
+  // У уроков платформы цена принадлежит преподавателю, но здесь она не показывается.
+  const { user } = useAuth()
+  const currency = user?.currency
   // Ссылки вводит учитель вручную — пропускаем только http/https, иначе кнопка не рисуется
   const linkUrl = safeUrl(lesson.lessonLink || lesson.Group?.lessonLink)
   const chatUrl = safeUrl(lesson.Group?.chatLink)
@@ -195,7 +220,7 @@ function LessonDetail({ props: { type, lesson }, onClose }) {
             {lesson.durationMin && <Row label={t('calendar.rowDuration')} value={`${lesson.durationMin} ${t('calendar.minShort')}`} />}
             {Number(lesson.pricePerLesson) > 0 && (
               <Row label={t('calendar.rowPrice')}
-                value={`${Math.round(Number(lesson.pricePerLesson))} zł · ${lesson.isPaid ? t('calendar.paid') : t('calendar.notPaid')}`} />
+                value={`${formatMoney(Number(lesson.pricePerLesson) || 0, currency, lang)} · ${lesson.isPaid ? t('calendar.paid') : t('calendar.notPaid')}`} />
             )}
             {lesson.notes && <Row label={t('calendar.rowNotes')} value={lesson.notes} />}
           </>

@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   CalendarDays, FileText, Wallet, CheckCircle2, Plus, Award, Clock,
-  ChevronRight, CalendarClock, Inbox, AlertCircle,
+  ChevronRight, CalendarClock, Inbox, AlertCircle, UserPlus,
 } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import useAuth from '../../hooks/useAuth'
@@ -13,6 +13,7 @@ import { getGroups } from '../../api/groups.api'
 import { getMyStudents } from '../../api/students.api'
 import { getHomework } from '../../api/homework.api'
 import { formatDate } from '../../utils/formatDate'
+import { formatMoney, sumByCurrency, useCurrency } from '../../utils/money'
 import { SkeletonDashboard } from '../../components/ui/Skeleton'
 import Tooltip from '../../components/ui/Tooltip'
 import PageContainer from '../../components/ui/PageContainer'
@@ -25,7 +26,7 @@ export default function DashboardPage() {
 
 /* ══════════════════ УЧИТЕЛЬ ══════════════════ */
 function TeacherDashboard() {
-  const { t } = useTranslation('app')
+  const { t, i18n } = useTranslation('app')
   const { user } = useAuth()
   const navigate = useNavigate()
   const { data, loading }  = useApiQuery(['dashboard'], getDashboard)
@@ -50,13 +51,16 @@ function TeacherDashboard() {
       { label: t('dashboard.itemHomework'), path: '/homework' },
       { label: t('dashboard.itemStudent'), path: '/students' },
     ]}>
+      {/* Преподавателя позвал его ученик — первое, что он должен увидеть,
+          это кто и зачем. Бэкенд отдаёт подсказку только пока учеников нет. */}
+      {data?.invitedBy && <InvitedByHint info={data.invitedBy} navigate={navigate} />}
       {!user?.paymentDetails && <PaymentDetailsBanner navigate={navigate} />}
       {!hideChecklist && <StartChecklist navigate={navigate} onDone={dismissChecklist} />}
 
       <div data-tour="kpi" className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <Kpi Icon={CalendarDays} accent="blue"    tip={t('dashboard.tipLessonsToday')} label={t('dashboard.lessonsToday')}  value={kpi.lessonsToday ?? 0} pill={kpi.lessonsToday > 0 ? { t: t('dashboard.pillToday'), tone: 'info' } : { t: t('dashboard.pillEmpty'), tone: 'muted' }} onClick={() => navigate('/calendar')} />
         <Kpi Icon={FileText}     accent="amber"   tip={t('dashboard.tipUngraded')}     label={t('dashboard.ungradedLabel')} value={kpi.ungradedSubmissions ?? 0} pill={kpi.ungradedSubmissions > 0 ? { t: t('dashboard.pillWaitYou'), tone: 'warn' } : { t: t('dashboard.pillDone'), tone: 'good' }} onClick={() => navigate('/homework')} />
-        <Kpi Icon={Wallet}       accent="slate"   tip={t('dashboard.tipDebt')}         label={t('dashboard.debtStudents')}   value={fmtMoney(kpi.totalDebt)} pill={kpi.totalDebt > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
+        <Kpi Icon={Wallet}       accent="slate"   tip={t('dashboard.tipDebt')}         label={t('dashboard.debtStudents')}   value={fmtMoney(kpi.totalDebt, user?.currency, i18n.language)} pill={kpi.totalDebt > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
         <Kpi Icon={CheckCircle2} accent="emerald" tip={t('dashboard.tipAttendance')}   label={t('dashboard.attendance')}    value={kpi.attendancePercent != null ? `${kpi.attendancePercent}%` : '—'} pill={{ t: t('dashboard.pillMonth'), tone: 'muted' }} onClick={() => navigate('/attendance')} />
       </div>
 
@@ -81,11 +85,12 @@ function TeacherDashboard() {
 
 /* ══════════════════ СТУДЕНТ ══════════════════ */
 function StudentDashboard() {
-  const { t } = useTranslation('app')
+  const { t, i18n } = useTranslation('app')
   const { user } = useAuth()
   const navigate = useNavigate()
   const { data, loading }  = useApiQuery(['dashboard'], getDashboard)
   const { data: activity } = useApiQuery(['dashboard-activity'], getActivity)
+  const money = useCurrency() // валюта смотрящего + курсы, для пересчёта «≈»
   if (loading) return <SkeletonDashboard />
 
   const kpi     = data?.kpi ?? {}
@@ -93,13 +98,19 @@ function StudentDashboard() {
   const pending = data?.pendingHomework ?? []
   const events  = activity ?? []
 
+  // myDebt приходит корзиной валют: { PLN: 500, EUR: 40 } — у разных преподавателей
+  // разные валюты. Одна валюта → показываем точно; несколько → сводим по курсу и
+  // помечаем «≈», чтобы не выдавать пересчёт за точную сумму.
+  const debt = sumByCurrency(kpi.myDebt, money.cur?.code, money.rates)
+  const debtText = (debt.approx ? '≈ ' : '') + formatMoney(debt.value, debt.code, i18n.language)
+
   return (
     <Page firstName={user?.name?.split(' ')[0]} navigate={navigate}>
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <Kpi Icon={CalendarDays} accent="blue"    tip={t('dashboard.tipLessonsWeek')}        label={t('dashboard.lessonsWeek')} value={kpi.lessonsThisWeek ?? 0} pill={{ t: t('dashboard.pill7days'), tone: 'info' }} onClick={() => navigate('/calendar')} />
         <Kpi Icon={FileText}     accent="amber"   tip={t('dashboard.tipHwPending')}          label={t('dashboard.hwToSubmit')}       value={kpi.pendingHomework ?? 0} pill={kpi.pendingHomework > 0 ? { t: t('dashboard.pillNotSubmitted'), tone: 'warn' } : { t: t('dashboard.pillAllSubmitted'), tone: 'good' }} onClick={() => navigate('/homework')} />
         <Kpi Icon={CheckCircle2} accent="emerald" tip={t('dashboard.tipAttendanceStudent')} label={t('dashboard.attendance')}     value={kpi.attendancePercent != null ? `${kpi.attendancePercent}%` : '—'} pill={{ t: t('dashboard.pillMonth'), tone: 'muted' }} onClick={() => navigate('/attendance')} />
-        <Kpi Icon={Wallet}       accent="slate"   tip={t('dashboard.tipMyDebt')}             label={t('dashboard.myDebt')}         value={fmtMoney(kpi.myDebt)} pill={kpi.myDebt > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
+        <Kpi Icon={Wallet}       accent="slate"   tip={t('dashboard.tipMyDebt')}             label={t('dashboard.myDebt')}         value={debtText} pill={debt.value > 0 ? { t: t('dashboard.pillToPay'), tone: 'warn' } : { t: t('dashboard.pillNoDebt'), tone: 'good' }} onClick={() => navigate('/payments')} />
       </div>
 
       <AnalyticsChart userId={user?.id} />
@@ -133,6 +144,25 @@ function PaymentDetailsBanner({ navigate }) {
       <button onClick={() => navigate('/settings?tab=payment')}
         className="shrink-0 text-sm font-medium text-amber-700 hover:text-amber-900 underline underline-offset-2 transition-colors">
         {t('dashboard.bannerPayFill')}
+      </button>
+    </div>
+  )
+}
+
+/* Кто позвал преподавателя на платформу — видно, пока у него нет учеников */
+function InvitedByHint({ info, navigate }) {
+  const { t } = useTranslation('app')
+  return (
+    <div className="mb-4 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 flex items-center gap-3">
+      <UserPlus className="w-5 h-5 text-blue-500 shrink-0" />
+      <p className="text-sm text-blue-900 flex-1">
+        {info.subject
+          ? t('dashboard.invitedByWithSubject', { name: info.name, subject: info.subject })
+          : t('dashboard.invitedBy', { name: info.name })}
+      </p>
+      <button onClick={() => navigate('/students')}
+        className="shrink-0 text-sm font-medium text-blue-700 hover:text-blue-900 underline underline-offset-2 transition-colors">
+        {t('dashboard.invitedByCta')}
       </button>
     </div>
   )
@@ -410,7 +440,11 @@ function Empty({ Icon, text }) {
   )
 }
 
-function fmtMoney(v) { return v > 0 ? `${v} zł` : '0 zł' }
+// Сумма в конкретной валюте. `zł` тут был захардкожен — теперь код валюты приходит
+// извне: у учителя это его собственная валюта, у ученика — валюта его преподавателя.
+function fmtMoney(v, code, locale) {
+  return formatMoney(v > 0 ? v : 0, code || 'PLN', locale)
+}
 function relativeTime(dateStr, t, lng = 'ru') {
   if (!dateStr) return ''
   const diff = (Date.now() - new Date(dateStr).getTime()) / 1000

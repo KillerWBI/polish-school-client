@@ -1,14 +1,15 @@
 import client from './client'
 
-// POST /auth/register — публичная регистрация (student)
-export const register = async ({ name, email, password }) => {
-  const { data } = await client.post('/auth/register', { name, email, password })
+// POST /auth/register — публичная регистрация (student).
+// invite — токен из ссылки в письме: сервер сразу зачислит в группу, куда звали.
+export const register = async ({ name, email, password, invite }) => {
+  const { data } = await client.post('/auth/register', { name, email, password, invite })
   return data.data
 }
 
-// POST /auth/register-teacher — открытая регистрация учителя
-export const registerTeacher = async ({ name, email, password }) => {
-  const { data } = await client.post('/auth/register-teacher', { name, email, password })
+// POST /auth/register-teacher — открытая регистрация учителя (invite — если позвал ученик)
+export const registerTeacher = async ({ name, email, password, invite }) => {
+  const { data } = await client.post('/auth/register-teacher', { name, email, password, invite })
   return data.data
 }
 

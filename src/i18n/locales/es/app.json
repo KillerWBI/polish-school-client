@@ -177,7 +177,7 @@
     "rowDate": "Fecha",
     "rowTime": "Hora",
     "rowStudent": "Estudiante",
-    "rowDesc": "Descripción",
+    "rowDesc": "Nota",
     "goToLesson": "Ir a la clase",
     "chatGroup": "Chat del grupo",
     "legendOwn": "Mis clases",
@@ -385,7 +385,10 @@
     "tipAttendanceStudent": "Proporción de clases a las que has asistido este mes. Pulsa para abrir el registro de asistencia.",
     "tipMyDebt": "Cuánto debes a los docentes por las clases. Pulsa para abrir los pagos.",
     "tipCreate": "Crea rápidamente una clase, unos deberes o añade un estudiante.",
-    "tipMonthChip": "Las cifras de abajo están calculadas para el mes en curso."
+    "tipMonthChip": "Las cifras de abajo están calculadas para el mes en curso.",
+    "invitedBy": "{{name}} le ha invitado a Diklario — este alumno ya lleva aquí el registro de sus clases.",
+    "invitedByWithSubject": "{{name}} le ha invitado a Diklario — este alumno ya lleva aquí el registro de sus clases de {{subject}}.",
+    "invitedByCta": "Añadir alumno"
   },
   "materials": {
     "title": "Materiales",

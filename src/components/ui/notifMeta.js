@@ -13,6 +13,7 @@ export const NOTIF_META = {
   payment_submitted:  { Icon: IconMoney,    cls: 'bg-amber-50 text-amber-600' },
   payment_approved:   { Icon: IconSuccess,  cls: 'bg-emerald-50 text-emerald-600' },
   payment_rejected:   { Icon: IconError,    cls: 'bg-red-50 text-red-600' },
+  invoice_issued:     { Icon: IconMoney,    cls: 'bg-blue-50 text-blue-600' },
   review_due:         { Icon: IconDeadline, cls: 'bg-blue-50 text-blue-600' },
   _default:           { Icon: IconNotifications, cls: 'bg-slate-100 text-slate-500' },
 }

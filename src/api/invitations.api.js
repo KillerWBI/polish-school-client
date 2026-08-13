@@ -14,6 +14,13 @@ export const inviteToGroup = async (groupId, inviteeUserId) => {
   return data.data
 }
 
+// POST /groups/:id/invitations/bulk — позвать по email тех, кого ещё нет на платформе.
+// Ответ — массив по каждому адресу: sent | notified | already | failed | limit.
+export const bulkInviteToGroup = async (groupId, emails) => {
+  const { data } = await client.post(`/groups/${groupId}/invitations/bulk`, { emails })
+  return data.data
+}
+
 // GET /invitations — список приглашений (роль-свитч на бэке); опциональный фильтр по статусу.
 export const getInvitations = async (status) => {
   const { data } = await client.get('/invitations', { params: status ? { status } : {} })

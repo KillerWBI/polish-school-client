@@ -27,6 +27,7 @@ const HomeworkPage               = lazy(() => import('./pages/homework/HomeworkP
 const AttendancePage             = lazy(() => import('./pages/attendance/AttendancePage'))
 const PaymentsPage               = lazy(() => import('./pages/payments/PaymentsPage'))
 const PayPage                    = lazy(() => import('./pages/payments/PayPage'))
+const InvoicePage                = lazy(() => import('./pages/payments/InvoicePage'))
 const SettingsPage               = lazy(() => import('./pages/settings/SettingsPage'))
 const IndividualCourseDetailPage = lazy(() => import('./pages/individual-courses/IndividualCourseDetailPage'))
 const IndividualLessonsPage      = lazy(() => import('./pages/individual-lessons/IndividualLessonsPage'))
@@ -95,6 +96,8 @@ export default function App() {
           {/* Только ученик — страница оплаты */}
           <Route path="/pay/:teacherId"
             element={<RoleRoute role="student"><PayPage /></RoleRoute>} />
+          {/* Печатный документ — обеим ролям; кто чей счёт видит, решает бэкенд */}
+          <Route path="/invoices/:id" element={<InvoicePage />} />
 
           {/* Только ученик — личный словарь */}
           <Route path="/vocab"

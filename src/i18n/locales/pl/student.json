@@ -360,6 +360,17 @@
     "savedToast": "Zapisano",
     "deletedToast": "Nauczyciel usunięty",
     "deleteTitle": "Usunąć nauczyciela?",
-    "deleteMsg": "Karta zniknie, a zajęcia z nim zostaną w dzienniku — imię w nich się zachowa."
+    "deleteMsg": "Karta zniknie, a zajęcia z nim zostaną w dzienniku — imię w nich się zachowa.",
+    "inviteBtn": "Zaproś na platformę",
+    "inviteResend": "Zaproszenie wysłane — wyślij ponownie",
+    "inviteTitle": "Zaproś {{name}} do Diklario",
+    "inviteHint": "Wyślemy zaproszenie na pocztę. Gdy nauczyciel założy konto, zajęcia i płatności staną się wspólne.",
+    "inviteSend": "Wyślij zaproszenie",
+    "inviteSent": "Zaproszenie wysłane",
+    "inviteLinked": "Nauczyciel jest już na platformie — karta powiązana",
+    "inviteError": "Nie udało się wysłać zaproszenia",
+    "onPlatform": "Na platformie",
+    "fEmail": "E-mail nauczyciela",
+    "errEmail": "Podaj poprawny adres"
   }
 }

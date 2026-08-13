@@ -17,6 +17,13 @@ export const updateStudentTeacher = async (id, payload) => {
   return data.data
 }
 
+// POST /student-teachers/:id/invite — позвать своего офлайн-преподавателя на платформу.
+// Ответ: { status: 'sent' } — письмо ушло, { status: 'linked' } — он уже здесь, карточка связана.
+export const inviteStudentTeacher = async (id, email) => {
+  const { data } = await client.post(`/student-teachers/${id}/invite`, { email })
+  return data.data
+}
+
 export const deleteStudentTeacher = async (id) => {
   const { data } = await client.delete(`/student-teachers/${id}`)
   return data.data

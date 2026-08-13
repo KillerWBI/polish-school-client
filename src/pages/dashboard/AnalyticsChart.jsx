@@ -6,6 +6,8 @@ import {
 } from 'recharts'
 import { TrendingUp, Users, CalendarCheck, Award } from 'lucide-react'
 import { getTeacherAnalytics, getStudentAnalytics } from '../../api/analytics.api'
+import useAuth from '../../hooks/useAuth'
+import { formatMoney } from '../../utils/money'
 import useApiQuery from '../../hooks/useApiQuery'
 
 const tip = {
@@ -55,7 +57,8 @@ function Stat({ Icon, cls, label, value }) {
 }
 
 function ProfitCard({ pp, loading }) {
-  const { t } = useTranslation('app')
+  const { t, i18n } = useTranslation('app')
+  const { user } = useAuth() // суммы — в валюте преподавателя
   const p = pp ?? { paid: 0, owed: 0, potential: 0 }
   const total = p.paid + p.owed + p.potential
   const parts = [
@@ -74,7 +77,7 @@ function ProfitCard({ pp, loading }) {
         {parts.map(x => (
           <div key={x.key}>
             <div className="flex items-center gap-1.5 text-xs text-slate-500"><span className={`w-2 h-2 rounded-full ${x.dot}`} />{x.label}</div>
-            <div className={`mt-1 text-[22px] font-semibold ${x.text}`}>{x.value} <span className="text-sm text-slate-400 font-normal">zł</span></div>
+            <div className={`mt-1 text-[22px] font-semibold ${x.text}`}>{formatMoney(x.value, user?.currency, i18n.language)}</div>
             <div className="text-[11px] text-slate-400">{x.hint}</div>
           </div>
         ))}
@@ -85,7 +88,7 @@ function ProfitCard({ pp, loading }) {
           <div className="flex h-2.5 rounded-full overflow-hidden bg-slate-100">
             {parts.map(x => x.value > 0 && <div key={x.key} className={x.dot} style={{ width: `${(x.value / total) * 100}%` }} />)}
           </div>
-          <p className="text-xs text-slate-400 mt-2">{t('analytics.totalPossible')} <b className="text-slate-700 font-semibold">{total} zł</b></p>
+          <p className="text-xs text-slate-400 mt-2">{t('analytics.totalPossible')} <b className="text-slate-700 font-semibold">{formatMoney(total, user?.currency, i18n.language)}</b></p>
         </>
       ) : (
         <p className="text-xs text-slate-400">{loading ? t('analytics.loading') : t('analytics.noData')}</p>
@@ -109,7 +112,8 @@ export default function AnalyticsChart({ isTeacher, userId }) {
 
 /* ══════════ УЧИТЕЛЬ ══════════ */
 function TeacherAnalytics({ userId }) {
-  const { t } = useTranslation('app')
+  const { t, i18n } = useTranslation('app')
+  const { user } = useAuth()
   const [period, setPeriod] = useState('month')
   const { data, loading } = useApiQuery(
     ['teacher-analytics', userId, period],
@@ -141,7 +145,7 @@ function TeacherAnalytics({ userId }) {
               <BarChart data={rev} barGap={2} barCategoryGap="22%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#EEF1F4" vertical={false} />
                 <XAxis dataKey="bucket" {...AX} tickFormatter={fmtX} minTickGap={4} /><YAxis {...AX} width={40} />
-                <Tooltip {...tip} labelFormatter={fmtX} formatter={(v, n) => [`${v} zł`, n]} />
+                <Tooltip {...tip} labelFormatter={fmtX} formatter={(v, n) => [formatMoney(v, user?.currency, i18n.language), n]} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 6 }} />
                 <Bar dataKey="paid"      name={t('analytics.paid')}      fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={16} />
                 <Bar dataKey="owed"      name={t('analytics.owed')}      fill="#F59E0B" radius={[4, 4, 0, 0]} maxBarSize={16} />

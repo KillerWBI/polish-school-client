@@ -177,7 +177,7 @@
     "rowDate": "Date",
     "rowTime": "Heure",
     "rowStudent": "Élève",
-    "rowDesc": "Description",
+    "rowDesc": "Note",
     "goToLesson": "Aller au cours",
     "chatGroup": "Messagerie du groupe",
     "legendOwn": "Mes cours",
@@ -385,7 +385,10 @@
     "tipAttendanceStudent": "Part des cours que vous avez suivis ce mois-ci. Cliquez pour ouvrir le registre de présence.",
     "tipMyDebt": "Combien vous devez aux enseignants pour les cours. Cliquez pour ouvrir les paiements.",
     "tipCreate": "Créez rapidement un cours, un devoir, ou ajoutez un élève.",
-    "tipMonthChip": "Les indicateurs ci-dessous sont calculés pour le mois en cours."
+    "tipMonthChip": "Les indicateurs ci-dessous sont calculés pour le mois en cours.",
+    "invitedBy": "{{name}} vous a invité(e) sur Diklario — cet élève y tient déjà le suivi de vos cours.",
+    "invitedByWithSubject": "{{name}} vous a invité(e) sur Diklario — cet élève y tient déjà le suivi de vos cours de {{subject}}.",
+    "invitedByCta": "Ajouter un élève"
   },
   "materials": {
     "title": "Supports",

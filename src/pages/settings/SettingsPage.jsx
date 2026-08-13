@@ -6,6 +6,7 @@ import { User, CreditCard, Shield } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import { fetchMe, changePassword } from '../../api/auth.api'
 import { updateMyProfile } from '../../api/profile.api'
+import { getCalendarSubscription, resetCalendarSubscription } from '../../api/calendar.api'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
@@ -72,6 +73,7 @@ function PersonalTab({ user, isTeacher, updateUser }) {
     socialWhatsApp: user.socialWhatsApp || '',
     socialLinkedIn: user.socialLinkedIn || '',
     languages:      user.languages      || [],
+    currency:       user.currency       || 'PLN',
   }), [user])
 
   const [form, setForm]     = useState(initial)
@@ -104,6 +106,20 @@ function PersonalTab({ user, isTeacher, updateUser }) {
           <ReadField label={t('settings.emailStatus')} value={user.emailVerified ? t('settings.verified') : t('settings.notVerified')} accent={user.emailVerified ? 'text-emerald-600' : 'text-amber-600'} />
         </div>
         <p className="text-[11px] text-slate-400 mt-2">{t('settings.emailRoleNote')}</p>
+      </Section>
+
+      {/* Валюта: в ней хранятся и считаются все суммы преподавателя */}
+      <Section title={t('settings.currencyTitle')}>
+        <CurrencyPicker
+          value={form.currency}
+          hasHistory={Boolean(user.paymentDetails)}
+          onChange={(code) => set({ currency: code })}
+        />
+      </Section>
+
+      {/* Подписка на календарь — уроки уезжают в Google/Apple и обновляются сами */}
+      <Section title={t('settings.calTitle')}>
+        <CalendarSubscription />
       </Section>
 
       {/* Изменяемые: имя, username, телефон */}
@@ -401,5 +417,137 @@ function Section({ title, children }) {
       <h2 className="text-sm font-medium text-slate-600 mb-3">{title}</h2>
       {children}
     </div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Выбор валюты преподавателя.
+
+   Валюта — это ЯРЛЫК к суммам, а не пересчёт: все цены и долги хранятся числом
+   без валюты, и она лишь подписывает их. Поэтому смена валюты у преподавателя,
+   у которого уже есть история, не конвертирует старые суммы — 500 просто начнёт
+   показываться как 500 EUR вместо 500 PLN. Молча это допускать нельзя, поэтому
+   при наличии истории спрашиваем подтверждение и прямо называем последствие.
+   ═══════════════════════════════════════════════════════════ */
+const CURRENCIES = ['PLN', 'EUR', 'USD', 'GBP', 'CZK', 'UAH', 'CHF', 'SEK', 'NOK', 'DKK', 'HUF', 'RON', 'BGN', 'KZT', 'GEL', 'TRY']
+
+function CurrencyPicker({ value, hasHistory, onChange }) {
+  const { t, i18n } = useTranslation('teacher')
+  const [pending, setPending] = useState(null) // валюта, ждущая подтверждения
+
+  // Intl сам знает символ и название валюты в языке интерфейса — свой справочник не нужен
+  const label = (code) => {
+    try {
+      const name = new Intl.DisplayNames([i18n.language], { type: 'currency' }).of(code)
+      return `${code} — ${name}`
+    } catch { return code }
+  }
+
+  const apply = (code) => {
+    if (code === value) return
+    // Истории нет — менять безопасно, спрашивать не о чем
+    if (!hasHistory) return onChange(code)
+    setPending(code)
+  }
+
+  return (
+    <>
+      <div className="max-w-xs">
+        <label className="block text-xs font-medium text-slate-600 mb-1.5">{t('settings.currencyLabel')}</label>
+        <select
+          value={value}
+          onChange={(e) => apply(e.target.value)}
+          className="w-full h-11 px-3 rounded-lg bg-white border border-slate-200 text-sm outline-none focus:border-blue-500">
+          {CURRENCIES.map(code => <option key={code} value={code}>{label(code)}</option>)}
+        </select>
+        <p className="text-[11px] text-slate-400 mt-1.5">{t('settings.currencyHint')}</p>
+      </div>
+
+      <ConfirmDialog
+        open={Boolean(pending)}
+        onClose={() => setPending(null)}
+        onConfirm={() => { onChange(pending); setPending(null) }}
+        title={t('settings.currencyConfirmTitle')}
+        message={t('settings.currencyConfirmText', { from: value, to: pending })}
+        confirmLabel={t('settings.currencyConfirmCta')}
+      />
+    </>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Подписка на календарь (.ics).
+
+   Не «экспорт файла», а именно подписка: календарь Google/Apple сам ходит по
+   ссылке раз в час и подтягивает изменения. Поэтому ссылку не скачивают, а
+   отдают своему календарю один раз.
+
+   Ссылка = секрет: за файлом приходит сервер Google, без куки, и единственная
+   защита — что 48-символьный токен в пути никто не угадает. Отсюда кнопка
+   «Выпустить новую»: если ссылка утекла, старая должна перестать работать.
+   ═══════════════════════════════════════════════════════════ */
+function CalendarSubscription() {
+  const { t } = useTranslation('teacher')
+  const [sub, setSub] = useState(null)
+  const [busy, setBusy] = useState(false)
+  const [confirmReset, setConfirmReset] = useState(false)
+
+  // Ссылку запрашиваем по кнопке, а не при открытии страницы: запрос создаёт
+  // токен, и делать это тем, кто просто зашёл в настройки, незачем.
+  const load = async () => {
+    setBusy(true)
+    try { setSub(await getCalendarSubscription()) }
+    catch (e) { toast.error(errMsg(e, t('settings.calFail'))) }
+    finally { setBusy(false) }
+  }
+
+  const reset = async () => {
+    setBusy(true)
+    try {
+      const fresh = await resetCalendarSubscription()
+      setSub(s => ({ ...s, ...fresh, url: s.url.replace(s.token, fresh.token), webcalUrl: s.webcalUrl.replace(s.token, fresh.token) }))
+      toast.success(t('settings.calReset'))
+    } catch (e) { toast.error(errMsg(e, t('settings.calFail'))) }
+    finally { setBusy(false); setConfirmReset(false) }
+  }
+
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(sub.url); toast.success(t('settings.calCopied')) }
+    catch { toast.error(t('settings.calFail')) }
+  }
+
+  if (!sub) {
+    return (
+      <>
+        <p className="text-sm text-slate-500 mb-3">{t('settings.calIntro')}</p>
+        <Button onClick={load} loading={busy}>{t('settings.calGet')}</Button>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <p className="text-sm text-slate-500 mb-3">{t('settings.calReady')}</p>
+      <div className="flex flex-wrap items-center gap-2 mb-2">
+        {/* webcal:// — операционная система сама предложит добавить в календарь */}
+        <a href={sub.webcalUrl} className="h-10 px-4 inline-flex items-center rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">
+          {t('settings.calAdd')}
+        </a>
+        <Button variant="secondary" size="sm" onClick={copy}>{t('settings.calCopy')}</Button>
+        <Button variant="secondary" size="sm" onClick={() => setConfirmReset(true)} disabled={busy}>{t('settings.calNewLink')}</Button>
+      </div>
+      <code className="block text-[11px] text-slate-400 break-all">{sub.url}</code>
+      <p className="text-[11px] text-slate-400 mt-2">{t('settings.calHint')}</p>
+
+      <ConfirmDialog
+        open={confirmReset}
+        onClose={() => setConfirmReset(false)}
+        onConfirm={reset}
+        title={t('settings.calResetTitle')}
+        message={t('settings.calResetText')}
+        confirmLabel={t('settings.calNewLink')}
+        busy={busy}
+      />
+    </>
   )
 }
