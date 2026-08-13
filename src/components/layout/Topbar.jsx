@@ -65,7 +65,7 @@ export function ProfileMenu({ navigate, onNavigate }) {
     <div ref={ref} className="relative">
       <button onClick={() => setOpen(v => !v)} aria-expanded={open}
         className="flex items-center gap-2.5 h-10 pl-1 pr-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer">
-        <span className="relative w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-semibold overflow-hidden">
+        <span className="relative w-7 h-7 rounded-lg bg-teal-500 flex items-center justify-center text-white text-xs font-semibold overflow-hidden">
           {user?.avatar
             ? <img src={safeUrl(user.avatar)} alt="" className="w-full h-full object-cover" />
             : (user?.name?.[0]?.toUpperCase() ?? '?')}
@@ -112,7 +112,7 @@ export function ProfileMenu({ navigate, onNavigate }) {
                 {SUPPORTED.map((lng) => (
                   <button key={lng} onClick={() => chooseLang(lng)}
                     className={`w-full flex items-center justify-between pl-10 pr-3 py-1.5 text-sm text-left transition-colors ${
-                      currentLang === lng ? 'text-blue-700 font-medium' : 'text-slate-600 hover:text-slate-900'
+                      currentLang === lng ? 'text-teal-700 font-medium' : 'text-slate-600 hover:text-slate-900'
                     }`}>
                     {LANG_NAMES[lng]}
                     {currentLang === lng && <IconCheck size={14} />}
@@ -122,7 +122,7 @@ export function ProfileMenu({ navigate, onNavigate }) {
             )}
             {installPrompt && (
               <button onClick={() => { installPrompt.prompt(); setInstallPrompt(null); setOpen(false) }}
-                className={`${rowCls} text-blue-600`}>
+                className={`${rowCls} text-teal-600`}>
                 <IconInstall size={16} /> {t('sidebar.install')}
               </button>
             )}
@@ -199,7 +199,7 @@ export function NotifBell({ navigate }) {
           <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
             <span className="text-sm font-semibold text-slate-900">{t('topbar.notifications')}</span>
             {unread > 0 && (
-              <button onClick={readAll} className="text-[11px] text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+              <button onClick={readAll} className="text-[11px] text-teal-600 hover:text-teal-700 transition-colors cursor-pointer">
                 {t('topbar.markAllRead')}
               </button>
             )}
@@ -215,13 +215,13 @@ export function NotifBell({ navigate }) {
                 const meta = notifMeta(n.type)
                 return (
                   <button key={n.id} onClick={() => openItem(n)}
-                    className={`w-full flex items-start gap-3 px-4 py-2.5 hover:bg-slate-50 cursor-pointer text-left ${!n.readAt ? 'bg-blue-50/40' : ''}`}>
+                    className={`w-full flex items-start gap-3 px-4 py-2.5 hover:bg-slate-50 cursor-pointer text-left ${!n.readAt ? 'bg-teal-50/40' : ''}`}>
                     <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${meta.cls}`}><meta.Icon size={16} /></span>
                     <span className="flex-1 min-w-0">
                       <span className="block text-sm font-medium text-slate-800">{n.title}</span>
                       {n.body && <span className="block text-xs text-slate-500 truncate">{n.body}</span>}
                     </span>
-                    {!n.readAt && <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 mt-1.5" />}
+                    {!n.readAt && <span className="w-2 h-2 rounded-full bg-teal-500 shrink-0 mt-1.5" />}
                   </button>
                 )
               })}
@@ -230,7 +230,7 @@ export function NotifBell({ navigate }) {
 
           {/* Прочитанное уходит из колокольчика через час — но не пропадает совсем */}
           <button onClick={() => { setOpen(false); navigate('/notifications') }}
-            className="w-full px-4 py-2.5 border-t border-slate-100 text-[11px] text-blue-600 hover:bg-slate-50 transition-colors cursor-pointer">
+            className="w-full px-4 py-2.5 border-t border-slate-100 text-[11px] text-teal-600 hover:bg-slate-50 transition-colors cursor-pointer">
             {t('topbar.allNotifications')}
           </button>
         </div>

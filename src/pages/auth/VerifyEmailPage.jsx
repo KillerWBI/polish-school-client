@@ -40,7 +40,7 @@ export default function VerifyEmailPage() {
       <div className="text-center">
         {status === 'loading' && (
           <>
-            <div className="inline-flex w-10 h-10 mb-4 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
+            <div className="inline-flex w-10 h-10 mb-4 border-2 border-teal-300 border-t-teal-500 rounded-full animate-spin" />
             <h1 className="text-xl font-semibold text-slate-900">{t('auth.verifyLoading')}</h1>
           </>
         )}
@@ -56,7 +56,7 @@ export default function VerifyEmailPage() {
             <p className="text-sm text-slate-400 mb-6">{t('auth.verifySuccessSub')}</p>
             <button
               onClick={() => navigate(user ? '/dashboard' : '/login')}
-              className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors cursor-pointer"
+              className="h-11 px-6 rounded-xl bg-teal-500 hover:bg-teal-600 text-white text-sm font-medium transition-colors cursor-pointer"
             >
               {user ? t('auth.toDashboard') : t('auth.login')}
             </button>
@@ -65,7 +65,7 @@ export default function VerifyEmailPage() {
 
         {status === 'already' && (
           <>
-            <div className="inline-flex w-14 h-14 mb-4 rounded-full bg-blue-500/15 border border-blue-500/30 items-center justify-center">
+            <div className="inline-flex w-14 h-14 mb-4 rounded-full bg-teal-500/15 border border-teal-500/30 items-center justify-center">
               <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="rgb(96 165 250)" strokeWidth="2">
                 <circle cx="12" cy="12" r="9"/>
                 <path d="M12 8v4M12 16v0" strokeLinecap="round"/>

@@ -14,13 +14,13 @@ export default function Tabs({ items, value, onChange, className = '' }) {
               onClick={() => onChange(key)}
               aria-current={active ? 'page' : undefined}
               className={`flex items-center gap-1.5 whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                active ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                active ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
               }`}>
               {Icon && <Icon size={15} />}
               {label}
               {count > 0 && (
                 <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${
-                  active ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'
+                  active ? 'bg-teal-100 text-teal-700' : 'bg-slate-100 text-slate-500'
                 }`}>
                   {count}
                 </span>

@@ -44,7 +44,7 @@ export default function MyLessonsPage({ embedded = false }) {
     <>
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <Kpi Icon={CalendarDays} label={t('myLessons.kpiLessons')} value={stats?.lessons ?? 0} color="bg-blue-50 text-blue-600" />
+        <Kpi Icon={CalendarDays} label={t('myLessons.kpiLessons')} value={stats?.lessons ?? 0} color="bg-teal-50 text-teal-600" />
         <Kpi Icon={Clock}        label={t('myLessons.kpiHours')}   value={stats?.hours ?? 0}   color="bg-violet-50 text-violet-600" />
         <Kpi Icon={Wallet}       label={t('myLessons.kpiDebt')}    value={fmt(stats?.debt)}    color="bg-amber-50 text-amber-600" />
         <Kpi Icon={Check}        label={t('myLessons.kpiPaid')}    value={fmt(stats?.paid)}    color="bg-emerald-50 text-emerald-600" />
@@ -218,7 +218,7 @@ function TeachersTab({ teachers, onRefresh }) {
           <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
             {teachers.map(tch => (
               <div key={tch.id} className="flex items-center gap-3 px-4 py-3.5">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shrink-0">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-500 flex items-center justify-center text-white shrink-0">
                   <GraduationCap className="w-5 h-5" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -245,7 +245,7 @@ function TeachersTab({ teachers, onRefresh }) {
                   ) : (
                     <Tooltip text={tch.inviteSentAt ? t('myTeachers.inviteResend') : t('myTeachers.inviteBtn')}>
                       <button onClick={() => setInviting(tch)}
-                        className={`transition-colors p-1 ${tch.inviteSentAt ? 'text-blue-400 hover:text-blue-600' : 'text-slate-300 hover:text-blue-600'}`}>
+                        className={`transition-colors p-1 ${tch.inviteSentAt ? 'text-teal-500 hover:text-teal-600' : 'text-slate-300 hover:text-teal-600'}`}>
                         <IconEmail size={16} />
                       </button>
                     </Tooltip>
@@ -406,7 +406,7 @@ function BreakdownTab({ map }) {
     <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
       {entries.map(([name, v]) => (
         <div key={name} className="flex items-center gap-3 px-4 py-3.5">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shrink-0">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-500 flex items-center justify-center text-white shrink-0">
             <span className="text-sm font-semibold">{name[0]?.toUpperCase()}</span>
           </div>
           <div className="min-w-0 flex-1">
@@ -504,7 +504,7 @@ function CreateModal({ teachers, lessons, onClose, onCreated, onTeacherAdded }) 
         <div className="flex gap-2 mb-4">
           {[['external', t('myLessons.modeExternal')], ['self_study', t('myLessons.modeSelf')]].map(([k, label]) => (
             <button key={k} type="button" onClick={() => setF(s => ({ ...s, type: k }))}
-              className={`flex-1 h-10 rounded-xl border text-sm font-medium transition-colors ${f.type === k ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'}`}>
+              className={`flex-1 h-10 rounded-xl border text-sm font-medium transition-colors ${f.type === k ? 'border-teal-500 bg-teal-50 text-teal-700' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'}`}>
               {label}
             </button>
           ))}
@@ -515,7 +515,7 @@ function CreateModal({ teachers, lessons, onClose, onCreated, onTeacherAdded }) 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">{t('myLessons.fTeacher')}</label>
               <select value={f.studentTeacherId} onChange={pickTeacher}
-                className="w-full h-11 px-3 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15">
+                className="w-full h-11 px-3 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none hover:border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15">
                 <option value="">{t('myLessons.teacherNone')}</option>
                 {teachers.map(x => (
                   <option key={x.id} value={x.id}>{x.name} · {x.subject}</option>
@@ -525,7 +525,7 @@ function CreateModal({ teachers, lessons, onClose, onCreated, onTeacherAdded }) 
                 <>
                   <Input className="mt-2" value={f.teacherLabel} onChange={set('teacherLabel')} placeholder={t('myLessons.fTeacherPh')} />
                   <button type="button" onClick={() => setTeacherFormOpen(true)}
-                    className="mt-1.5 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+                    className="mt-1.5 inline-flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700 transition-colors cursor-pointer">
                     <IconAdd size={13} /> {t('myTeachers.addBtn')}
                   </button>
                 </>
@@ -554,13 +554,13 @@ function CreateModal({ teachers, lessons, onClose, onCreated, onTeacherAdded }) 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">{t('myLessons.fNotes')}</label>
             <textarea value={f.notes} onChange={set('notes')} rows={2}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 resize-none" />
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 resize-none" />
           </div>
 
           {/* Регулярное занятие: создаём это и две следующие недели, дальше ученик добавит сам */}
           <label className="flex items-start gap-2 text-sm text-slate-600">
             <input type="checkbox" checked={f.repeatWeekly} onChange={e => setF(s => ({ ...s, repeatWeekly: e.target.checked }))}
-              className="w-4 h-4 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+              className="w-4 h-4 mt-0.5 rounded border-slate-300 text-teal-600 focus:ring-teal-500" />
             <span>
               {t('myLessons.repeatWeekly')}
               <span className="block text-xs text-slate-400">{t('myLessons.repeatHint')}</span>
@@ -570,7 +570,7 @@ function CreateModal({ teachers, lessons, onClose, onCreated, onTeacherAdded }) 
           {Number(f.pricePerLesson) > 0 && !f.repeatWeekly && (
             <label className="flex items-center gap-2 text-sm text-slate-600">
               <input type="checkbox" checked={f.isPaid} onChange={e => setF(s => ({ ...s, isPaid: e.target.checked }))}
-                className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                className="w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500" />
               {t('myLessons.alreadyPaid')}
             </label>
           )}

@@ -32,7 +32,7 @@ export default function LanguageSelect({ value, onChange, placeholder = 'Выб�
   return (
     <div className="relative" ref={boxRef}>
       <button type="button" id={id} onClick={() => setOpen((o) => !o)}
-        className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-left flex items-center justify-between outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-shadow">
+        className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-left flex items-center justify-between outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 transition-shadow">
         <span className={selected ? 'text-slate-900 truncate' : 'text-slate-400 truncate'}>
           {selected ? `${selected.name} · ${selected.native}` : placeholder}
         </span>
@@ -45,7 +45,7 @@ export default function LanguageSelect({ value, onChange, placeholder = 'Выб�
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск языка…"
-                className="w-full h-9 pl-8 pr-3 rounded-lg border border-slate-200 text-sm text-slate-900 outline-none focus:border-blue-500" />
+                className="w-full h-9 pl-8 pr-3 rounded-lg border border-slate-200 text-sm text-slate-900 outline-none focus:border-teal-500" />
             </div>
           </div>
           <div className="max-h-64 overflow-y-auto py-1">
@@ -55,7 +55,7 @@ export default function LanguageSelect({ value, onChange, placeholder = 'Выб�
               <button type="button" key={l.code} onClick={() => pick(l.code)}
                 className="w-full px-3 py-2 text-left text-sm flex items-center justify-between hover:bg-slate-50 transition-colors">
                 <span className="text-slate-900 truncate">{l.name} <span className="text-slate-400">· {l.native}</span></span>
-                {value === l.code && <Check className="w-4 h-4 text-blue-600 shrink-0" />}
+                {value === l.code && <Check className="w-4 h-4 text-teal-600 shrink-0" />}
               </button>
             ))}
           </div>

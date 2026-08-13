@@ -60,7 +60,7 @@ export default function SupportPage() {
     }
   }
 
-  const inputCls = 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-shadow'
+  const inputCls = 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 transition-shadow'
 
   // Залогиненного возвращаем в кабинет, гостя — на лендинг
   const backTo = user ? '/dashboard' : '/'
@@ -74,7 +74,7 @@ export default function SupportPage() {
         </Link>
 
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center shrink-0">
             <LifeBuoy className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -88,7 +88,7 @@ export default function SupportPage() {
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
             <h2 className="text-lg font-semibold text-slate-900 mb-1">{t('support.sentTitle')}</h2>
             <p className="text-sm text-slate-500 mb-5">{t('support.sentText', { email: form.email })}</p>
-            <Link to={backTo} className="inline-flex h-10 items-center px-5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
+            <Link to={backTo} className="inline-flex h-10 items-center px-5 rounded-xl bg-teal-500 text-white text-sm font-medium hover:bg-teal-600 transition-colors">
               {t('support.doneBtn')}
             </Link>
           </div>
@@ -111,7 +111,7 @@ export default function SupportPage() {
                 {CATEGORIES.map(([key, labelKey]) => (
                   <button key={key} type="button" onClick={() => setForm(f => ({ ...f, category: key }))}
                     className={`h-10 px-2 rounded-xl border text-sm font-medium transition-colors ${
-                      form.category === key ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                      form.category === key ? 'border-teal-500 bg-teal-50 text-teal-700' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
                     }`}>
                     {t('support.' + labelKey)}
                   </button>
@@ -131,7 +131,7 @@ export default function SupportPage() {
               </label>
               <textarea rows={isIdea ? 4 : 5} value={form.message} onChange={set('message')}
                 placeholder={isIdea ? t('support.msgPhIdea') : t('support.msgPh')}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-shadow resize-none" />
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 transition-shadow resize-none" />
             </div>
 
             {isIdea && (
@@ -139,13 +139,13 @@ export default function SupportPage() {
                 <label className="block text-xs font-medium text-slate-500 mb-1">{t('support.reasonLabel')}</label>
                 <textarea rows={3} value={form.reason} onChange={set('reason')}
                   placeholder={t('support.reasonPh')}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-shadow resize-none" />
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 transition-shadow resize-none" />
                 <p className="mt-1 text-[11px] text-slate-400">{t('support.reasonHint')}</p>
               </div>
             )}
 
             <button type="submit" disabled={busy}
-              className="w-full h-11 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
+              className="w-full h-11 rounded-xl bg-teal-500 text-white text-sm font-medium hover:bg-teal-600 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
               {busy && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
               {t('support.submit')}
             </button>

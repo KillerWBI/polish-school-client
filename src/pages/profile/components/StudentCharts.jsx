@@ -76,7 +76,7 @@ export default function StudentCharts({ studentId }) {
         </div>
         <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all"
+            className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all"
             style={{ width: `${data.homeworkStats?.percent ?? 0}%` }}
           />
         </div>

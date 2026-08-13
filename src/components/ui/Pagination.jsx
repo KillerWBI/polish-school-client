@@ -53,7 +53,7 @@ function PageBtn({ active, onClick, children }) {
       onClick={onClick}
       className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-colors cursor-pointer ${
         active
-          ? 'bg-blue-600 text-white shadow-sm'
+          ? 'bg-teal-500 text-white shadow-sm'
           : 'text-slate-600 hover:bg-slate-100'
       }`}
     >

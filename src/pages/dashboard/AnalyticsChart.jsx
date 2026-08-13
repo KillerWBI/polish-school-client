@@ -64,7 +64,7 @@ function ProfitCard({ pp, loading }) {
   const parts = [
     { key: 'paid', label: t('analytics.paid'),    hint: t('analytics.paidHint'),      value: p.paid,      dot: 'bg-emerald-500', text: 'text-emerald-600' },
     { key: 'owed', label: t('analytics.owedNeg'), hint: t('analytics.owedHint'),      value: p.owed,      dot: 'bg-amber-500',   text: 'text-amber-600' },
-    { key: 'pot',  label: t('analytics.potential'), hint: t('analytics.potentialHint'), value: p.potential, dot: 'bg-blue-500',    text: 'text-blue-600' },
+    { key: 'pot',  label: t('analytics.potential'), hint: t('analytics.potentialHint'), value: p.potential, dot: 'bg-teal-500',    text: 'text-teal-600' },
   ]
   return (
     <div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm p-5">
@@ -149,7 +149,7 @@ function TeacherAnalytics({ userId }) {
                 <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 6 }} />
                 <Bar dataKey="paid"      name={t('analytics.paid')}      fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={16} />
                 <Bar dataKey="owed"      name={t('analytics.owed')}      fill="#F59E0B" radius={[4, 4, 0, 0]} maxBarSize={16} />
-                <Bar dataKey="potential" name={t('analytics.potential')} fill="#3B82F6" radius={[4, 4, 0, 0]} maxBarSize={16} />
+                <Bar dataKey="potential" name={t('analytics.potential')} fill="#2BB0AE" radius={[4, 4, 0, 0]} maxBarSize={16} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -235,7 +235,7 @@ function StudentAnalytics({ userId }) {
           <div className="text-2xl font-semibold text-slate-900">{hs?.percent ?? 0}%</div>
         </div>
         <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
-          <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all" style={{ width: `${hs?.percent ?? 0}%` }} />
+          <div className="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all" style={{ width: `${hs?.percent ?? 0}%` }} />
         </div>
         <p className="text-xs text-slate-400 mt-2">{t('analytics.submittedOf', { done: hs?.submitted ?? 0, total: hs?.total ?? 0 })}</p>
       </div>

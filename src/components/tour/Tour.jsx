@@ -129,7 +129,7 @@ export default function Tour({ autoStart = true }) {
         className="absolute rounded-2xl bg-white shadow-xl border border-slate-200 p-4 transition-opacity duration-150"
         style={{ top: pos?.top ?? -9999, left: pos?.left ?? -9999, width: TT_W, maxWidth: 'calc(100vw - 24px)', opacity: pos ? 1 : 0 }}
       >
-        <div className="text-xs font-medium text-blue-600 mb-1">Шаг {i + 1} из {steps.length}</div>
+        <div className="text-xs font-medium text-teal-600 mb-1">Шаг {i + 1} из {steps.length}</div>
         <h3 className="text-base font-semibold text-slate-900 mb-1">{step.title}</h3>
         <p className="text-sm text-slate-600 mb-4 leading-relaxed">{step.text}</p>
         <div className="flex items-center justify-between">
@@ -138,7 +138,7 @@ export default function Tour({ autoStart = true }) {
             {i > 0 && (
               <button onClick={prev} className="h-8 px-3 rounded-lg border border-slate-200 text-sm text-slate-700 hover:bg-slate-50 transition-colors">Назад</button>
             )}
-            <button onClick={next} className="h-8 px-4 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
+            <button onClick={next} className="h-8 px-4 rounded-lg bg-teal-500 text-white text-sm font-medium hover:bg-teal-600 transition-colors">
               {i === steps.length - 1 ? 'Готово' : 'Далее'}
             </button>
           </div>

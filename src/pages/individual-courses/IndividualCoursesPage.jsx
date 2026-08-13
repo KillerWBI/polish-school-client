@@ -100,12 +100,12 @@ function CourseCard({ course, student, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="text-left p-5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white hover:shadow-sm hover:border-blue-200 transition-all duration-200 group">
+      className="text-left p-5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white hover:shadow-sm hover:border-teal-200 transition-all duration-200 group">
       <div className="flex items-start justify-between gap-2 mb-3">
-        <h3 className="font-semibold text-slate-900 group-hover:text-blue-700 transition-colors">
+        <h3 className="font-semibold text-slate-900 group-hover:text-teal-700 transition-colors">
           {course.name || (student?.name ? `${t('indCourses.cardPrefix')}${student.name}` : t('indCourses.noName'))}
         </h3>
-        <svg className="w-4 h-4 text-slate-500 group-hover:text-blue-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <svg className="w-4 h-4 text-slate-500 group-hover:text-teal-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
@@ -183,7 +183,7 @@ function CreateCourseModal({ open, onClose, onCreated, students }) {
             <select
               value={form.studentId}
               onChange={e => set('studentId', e.target.value)}
-              className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500">
+              className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500">
               <option value="">{t('indCourses.choose')}</option>
               {students.map(s => (
                 <option key={s.id} value={s.id}>{s.name}{s.username ? ` (@${s.username})` : ''}</option>
@@ -203,7 +203,7 @@ function CreateCourseModal({ open, onClose, onCreated, students }) {
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-slate-400 uppercase tracking-wider">{t('indCourses.scheduleLabel')}</span>
               <button type="button" onClick={addSlot}
-                className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
+                className="text-xs text-teal-600 hover:text-teal-700 cursor-pointer">
                 {t('indCourses.addSlot')}
               </button>
             </div>
@@ -213,14 +213,14 @@ function CreateCourseModal({ open, onClose, onCreated, students }) {
                   <select
                     value={sl.day}
                     onChange={e => updateSlot(i, 'day', e.target.value)}
-                    className="flex-1 h-10 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500">
+                    className="flex-1 h-10 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500">
                     {DAY_VALUES.map(v => <option key={v} value={v}>{weekdays[v]}</option>)}
                   </select>
                   <input
                     type="time"
                     value={sl.time}
                     onChange={e => updateSlot(i, 'time', e.target.value)}
-                    className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
+                    className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500"
                   />
                   <button type="button" onClick={() => removeSlot(i)}
                     className="text-slate-500 hover:text-red-600 cursor-pointer p-1"><IconClose size={14} /></button>

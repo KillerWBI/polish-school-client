@@ -92,7 +92,7 @@ function ProfileHeader({ user, isTeacher, updateUser }) {
         <div className="pb-3 flex-1 min-w-0">
           <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 truncate">{user.name}</h1>
           <p className="text-xs text-slate-400">@{user.username}</p>
-          <p className="text-[11px] text-blue-600 mt-0.5">{isTeacher ? t('settings.roleTeacher') : t('settings.roleStudent')}</p>
+          <p className="text-[11px] text-teal-600 mt-0.5">{isTeacher ? t('settings.roleTeacher') : t('settings.roleStudent')}</p>
         </div>
       </div>
     </div>
@@ -165,7 +165,7 @@ function ProfileTab({ user, isTeacher, updateUser }) {
           <Input label={t('profile.usernameLabel')} value={form.username} onChange={e => set({ username: e.target.value.toLowerCase() })} />
         </div>
         <p className="text-[11px] text-slate-600 mt-2">
-          {t('profile.usernameNote')} <code className="text-blue-600">@{form.username || t('profile.usernamePlaceholder')}</code>
+          {t('profile.usernameNote')} <code className="text-teal-600">@{form.username || t('profile.usernamePlaceholder')}</code>
         </p>
       </Section>
 
@@ -176,7 +176,7 @@ function ProfileTab({ user, isTeacher, updateUser }) {
           onChange={e => set({ bio: e.target.value.slice(0, 300) })}
           rows={4}
           placeholder={t('profile.bioPlaceholder')}
-          className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 resize-none"
+          className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 resize-none"
         />
         <div className="text-right text-[11px] text-slate-600 mt-1">{form.bio.length} / 300</div>
       </Section>
@@ -285,7 +285,7 @@ function CompletionBar({ percent }) {
       </div>
       <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all"
+          className="h-full bg-gradient-to-r from-teal-500 to-teal-500 transition-all"
           style={{ width: `${percent}%` }}
         />
       </div>

@@ -4,7 +4,7 @@
 export default function Card({ title, subtitle, actions, icon: Icon, padded = true, className = '', children }) {
   const hasHead = title || actions
   return (
-    <div className={`bg-white border border-slate-200 rounded-2xl ${className}`}>
+    <div className={`bg-white border border-slate-200 rounded-2xl shadow-[0_1px_2px_rgba(16,24,40,0.04),0_10px_24px_-18px_rgba(16,24,40,0.16)] ${className}`}>
       {hasHead && (
         <div className="flex items-start justify-between gap-3 px-5 pt-4 pb-3">
           <div className="min-w-0 flex items-start gap-2.5">

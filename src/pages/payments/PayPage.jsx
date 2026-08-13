@@ -206,7 +206,7 @@ export default function PayPage() {
                 {methodOptions.map(({ k, l }) => (
                   <button key={k} type="button" onClick={() => setMethod(k)}
                     className={`h-8 px-2 rounded-lg border text-xs font-medium transition-colors ${
-                      effectiveMethod === k ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                      effectiveMethod === k ? 'border-teal-500 bg-teal-50 text-teal-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'
                     }`}>{l}</button>
                 ))}
               </div>
@@ -284,7 +284,7 @@ function PayRow({ label, value, copy }) {
       <div className="flex items-center gap-1.5 min-w-0">
         <span className="text-slate-900 font-mono text-xs break-all text-right">{value}</span>
         {copy && (
-          <button onClick={handleCopy} className="shrink-0 text-slate-400 hover:text-blue-600 transition-colors">
+          <button onClick={handleCopy} className="shrink-0 text-slate-400 hover:text-teal-600 transition-colors">
             <Copy className="w-3.5 h-3.5" />
           </button>
         )}

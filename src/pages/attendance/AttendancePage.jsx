@@ -320,8 +320,8 @@ function DisputedView({ items, loading, isTeacher, reload }) {
                       <button
                         disabled={busy[r.id]}
                         onClick={() => handleResolve(r.id, true)}
-                        className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium
-                                   hover:bg-blue-100 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap">
+                        className="px-3 py-1.5 rounded-lg bg-teal-50 text-teal-700 text-xs font-medium
+                                   hover:bg-teal-100 transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap">
                         {t('attendance.acceptStudent')}
                       </button>
                     </Tooltip>
@@ -539,8 +539,8 @@ function JournalTable({ groupId, month, onSaved }) {
     <div className="space-y-3">
       {/* Панель сохранения */}
       {dirtyLessons.length > 0 && (
-        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-blue-50 border border-blue-200">
-          <span className="text-sm text-blue-800 flex-1">
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-teal-50 border border-teal-200">
+          <span className="text-sm text-teal-700 flex-1">
             {t('attendance.unsavedChanges', { n: dirtyLessons.length })}
           </span>
           <button onClick={() => setEdits({})}
@@ -582,9 +582,9 @@ function JournalTable({ groupId, month, onSaved }) {
               const pct = studentPct(s.id)
               return (
                 <tr key={s.id} className="group/row">
-                  <td className={`sticky left-0 z-10 border-b border-r border-slate-100 px-4 py-2 ${ri % 2 ? 'bg-slate-50/60' : 'bg-white'} group-hover/row:bg-blue-50/40`}>
+                  <td className={`sticky left-0 z-10 border-b border-r border-slate-100 px-4 py-2 ${ri % 2 ? 'bg-slate-50/60' : 'bg-white'} group-hover/row:bg-teal-50/40`}>
                     <div className="flex items-center gap-2.5 min-w-[160px]">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xs font-semibold shrink-0 overflow-hidden">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-500 to-teal-500 flex items-center justify-center text-white text-xs font-semibold shrink-0 overflow-hidden">
                         {s.avatar ? <img src={s.avatar} alt="" className="w-full h-full object-cover" /> : (s.name?.[0]?.toUpperCase() || '?')}
                       </div>
                       <div className="min-w-0">
@@ -601,7 +601,7 @@ function JournalTable({ groupId, month, onSaved }) {
                       </td>
                     )
                   })}
-                  <td className={`sticky right-0 z-10 border-b border-l border-slate-100 px-3 text-center ${ri % 2 ? 'bg-slate-50/60' : 'bg-white'} group-hover/row:bg-blue-50/40`}>
+                  <td className={`sticky right-0 z-10 border-b border-l border-slate-100 px-3 text-center ${ri % 2 ? 'bg-slate-50/60' : 'bg-white'} group-hover/row:bg-teal-50/40`}>
                     <span className={`text-sm font-semibold ${pct === null ? 'text-slate-300' : pct >= 75 ? 'text-emerald-600' : pct >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
                       {pct === null ? '—' : `${pct}%`}
                     </span>
@@ -624,7 +624,7 @@ function JournalTable({ groupId, month, onSaved }) {
    спор дополнительно с красной рамкой; несохранённое — синяя рамка. */
 function JournalCell({ marked, present, status, dirty, onClick }) {
   const { t } = useTranslation('teacher')
-  let cls = 'text-slate-200 hover:bg-blue-50'
+  let cls = 'text-slate-200 hover:bg-teal-50'
   let content = '·'
   if (marked) {
     content = present ? '✓' : t('attendance.cellAbsent')
@@ -639,7 +639,7 @@ function JournalCell({ marked, present, status, dirty, onClick }) {
     }
   }
   const ring =
-    dirty                 ? 'ring-2 ring-blue-500 ring-inset' :
+    dirty                 ? 'ring-2 ring-teal-500 ring-inset' :
     status === 'disputed' ? 'ring-1 ring-red-400 ring-inset'  : ''
   return (
     <button onClick={onClick}
@@ -666,9 +666,9 @@ function JournalLegend({ loading }) {
       <LegendItem box="bg-red-50 border border-red-200" label={t('attendance.legNotConfirmed')} />
       <LegendItem box="bg-amber-50 border border-amber-200" label={t('attendance.legPending')} />
       <LegendItem box="bg-amber-50 ring-1 ring-red-400" label={t('attendance.legDispute')} />
-      <LegendItem box="ring-2 ring-blue-500" label={t('attendance.legUnsaved')} />
+      <LegendItem box="ring-2 ring-teal-500" label={t('attendance.legUnsaved')} />
       <span className="text-slate-400">{t('attendance.legClickDate')}</span>
-      {loading && <span className="text-blue-600">{t('attendance.legUpdating')}</span>}
+      {loading && <span className="text-teal-600">{t('attendance.legUpdating')}</span>}
     </div>
   )
 }
@@ -775,7 +775,7 @@ function GroupPills({ groups, value, onChange }) {
         <button key={g.id} onClick={() => onChange(g.id)}
           className={`px-3.5 h-9 rounded-xl text-sm font-medium border transition-colors cursor-pointer ${
             value === g.id
-              ? 'bg-blue-600 text-white border-blue-600'
+              ? 'bg-teal-500 text-white border-teal-500'
               : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}`}>
           {g.name}
         </button>
@@ -918,7 +918,7 @@ function StudentView({ onDisputed }) {
       <div className="grid grid-cols-3 gap-4 mb-6">
         <Stat label={t('attendance.statTotal')} value={total} />
         <Stat label={t('attendance.statAttended')} value={attended} color="text-emerald-600" />
-        <Stat label={t('attendance.statPercent')} value={`${percent}%`} color="text-blue-600" />
+        <Stat label={t('attendance.statPercent')} value={`${percent}%`} color="text-teal-600" />
       </div>
 
       <LessonTypeSwitcher tab={tab} onChange={(t) => { setTab(t); setExpandedId(null); setPeriod('all') }} />
@@ -964,7 +964,7 @@ function StudentView({ onDisputed }) {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {lessonHw.length > 0 && (
-                      <span className="text-xs bg-blue-600/20 text-blue-600 px-2 py-0.5 rounded-full">
+                      <span className="text-xs bg-teal-500/20 text-teal-600 px-2 py-0.5 rounded-full">
                         {t('attendance.hwBadge', { n: lessonHw.length })}
                       </span>
                     )}

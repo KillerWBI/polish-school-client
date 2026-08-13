@@ -51,7 +51,7 @@ export default function SocialsEditor({ values, onChange, readOnly = false }) {
             <div className="text-xs text-slate-500 truncate">{f.prefix}{values[f.key]}</div>
           </div>
           <button type="button" onClick={() => setEditing(f)} aria-label={tc('edit')}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-50 transition-colors cursor-pointer">
+            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-slate-50 transition-colors cursor-pointer">
             <IconEdit size={15} />
           </button>
           <button type="button" onClick={() => setRemoving(f)} aria-label={tc('delete')}
@@ -72,7 +72,7 @@ export default function SocialsEditor({ values, onChange, readOnly = false }) {
         <div className="space-y-2">
           {notYet.map(f => (
             <button key={f.key} type="button" onClick={() => { setPicking(false); setEditing(f) }}
-              className="w-full flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-left hover:border-blue-300 hover:bg-blue-50/40 transition-colors cursor-pointer">
+              className="w-full flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-left hover:border-teal-300 hover:bg-teal-50/40 transition-colors cursor-pointer">
               <span className="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
                 <f.icon size={17} />
               </span>

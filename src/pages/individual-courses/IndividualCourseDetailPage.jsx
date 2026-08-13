@@ -99,7 +99,7 @@ export default function IndividualCourseDetailPage() {
         <InfoCard
           label={t('indCourseDetail.infoLink')}
           value={safeUrl(course.lessonLink)
-            ? <a href={safeUrl(course.lessonLink)} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline break-all">{course.lessonLink}</a>
+            ? <a href={safeUrl(course.lessonLink)} target="_blank" rel="noreferrer" className="text-teal-600 hover:underline break-all">{course.lessonLink}</a>
             : '—'}
         />
       </div>
@@ -221,12 +221,12 @@ function AddLessonModal({ open, onClose, course, onCreated }) {
             <div>
               <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">{t('indCourseDetail.dateLabel')}</label>
               <input type="date" value={form.date} onChange={e => set('date', e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
             </div>
             <div>
               <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">{t('indCourseDetail.timeLabel')}</label>
               <input type="time" value={form.time} onChange={e => set('time', e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
             </div>
           </div>
           <Input label={t('indCourseDetail.topicLabel')} value={form.topic} onChange={e => set('topic', e.target.value)} />
@@ -298,7 +298,7 @@ function EditCourseModal({ open, onClose, course, onUpdated }) {
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-slate-400 uppercase tracking-wider">{t('indCourseDetail.scheduleLabel')}</span>
               <button type="button" onClick={addSlot}
-                className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer">
+                className="text-xs text-teal-600 hover:text-teal-700 cursor-pointer">
                 {t('indCourseDetail.addSlot')}
               </button>
             </div>
@@ -308,14 +308,14 @@ function EditCourseModal({ open, onClose, course, onUpdated }) {
                   <select
                     value={sl.day}
                     onChange={e => updateSlot(i, 'day', e.target.value)}
-                    className="flex-1 h-10 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500">
+                    className="flex-1 h-10 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500">
                     {DAY_VALUES.map(v => <option key={v} value={v}>{weekdays[v]}</option>)}
                   </select>
                   <input
                     type="time"
                     value={sl.time}
                     onChange={e => updateSlot(i, 'time', e.target.value)}
-                    className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
+                    className="flex-1 h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500"
                   />
                   <button type="button" onClick={() => removeSlot(i)}
                     className="text-slate-500 hover:text-red-600 cursor-pointer p-1"><IconClose size={14} /></button>
@@ -376,13 +376,13 @@ function GenerateLessonsModal({ open, onClose, courseId, onGenerated }) {
             <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">{t('indCourseDetail.dateFrom')}</label>
             <input
               type="date" value={from} onChange={e => setFrom(e.target.value)}
-              className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+              className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
           </div>
           <div>
             <label className="block text-xs text-slate-400 uppercase tracking-wider mb-1.5">{t('indCourseDetail.dateTo')}</label>
             <input
               type="date" value={to} onChange={e => setTo(e.target.value)}
-              className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+              className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
           </div>
           <div className="flex gap-2 pt-1">
             <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>{tc('cancel')}</Button>

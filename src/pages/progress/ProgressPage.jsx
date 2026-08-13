@@ -44,7 +44,7 @@ export default function ProgressPage({ embedded = false }) {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <Stat Icon={Flame}        cls="bg-orange-50 text-orange-600"   value={`${streak} ${t('progress.daysShort', 'дн')}`}  label={t('progress.statStreak')} tip={t('progress.statStreakTip')} />
         <Stat Icon={CalendarCheck} cls="bg-emerald-50 text-emerald-600" value={attended}         label={t('progress.statAttended')} />
-        <Stat Icon={Award}        cls="bg-blue-50 text-blue-600"        value={gradesAvg || '—'} label={t('progress.statGrade')} />
+        <Stat Icon={Award}        cls="bg-teal-50 text-teal-600"        value={gradesAvg || '—'} label={t('progress.statGrade')} />
         <Stat Icon={Clock}        cls="bg-violet-50 text-violet-600"    value={`${extHours} ${t('progress.hoursShort', 'ч')}`}  label={t('progress.statExternal')} />
       </div>
 
@@ -84,7 +84,7 @@ export default function ProgressPage({ embedded = false }) {
                 <XAxis dataKey="at" {...AX} tickFormatter={(v) => new Date(v).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' })} />
                 <YAxis {...AX} domain={[0, 100]} />
                 <Tooltip {...tip} labelFormatter={(v) => new Date(v).toLocaleDateString(i18n.language)} formatter={(v) => [v, t('progress.gradeName')]} />
-                <Line type="monotone" dataKey="grade" stroke="#2563eb" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="grade" stroke="#1E9391" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           ) : <Blank />}
@@ -201,7 +201,7 @@ function HwProgress({ stats }) {
         <span className="text-sm text-slate-400">{t('progress.hwSubmitted', { done: s.submitted, total: s.total })}</span>
       </div>
       <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
-        <div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${s.percent}%` }} />
+        <div className="h-full rounded-full bg-teal-500 transition-all" style={{ width: `${s.percent}%` }} />
       </div>
       <p className="text-xs text-slate-400 mt-2">{t('progress.hwNote')}</p>
     </div>

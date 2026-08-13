@@ -83,7 +83,7 @@ export default function StudentsPage() {
                 placeholder={t('students.searchPlaceholder')}
                 value={search}
                 onChange={e => { setSearch(e.target.value); setPage(1) }}
-                className="w-full h-10 pl-10 pr-4 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-shadow"
+                className="w-full h-10 pl-10 pr-4 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm placeholder:text-slate-400 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 transition-shadow"
               />
             </div>
             <span className="text-sm text-slate-500 whitespace-nowrap shrink-0">
@@ -150,7 +150,7 @@ export default function StudentsPage() {
 function AddOption({ icon: Icon, title, hint, onClick }) {
   return (
     <button onClick={onClick}
-      className="w-full flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-left hover:border-blue-300 hover:bg-blue-50/40 transition-colors cursor-pointer">
+      className="w-full flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-left hover:border-teal-300 hover:bg-teal-50/40 transition-colors cursor-pointer">
       <span className="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
         <Icon size={17} />
       </span>
@@ -262,7 +262,7 @@ function BulkInviteModal({ onClose }) {
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">{t('students.groupLabel')}</label>
           <select value={groupId} onChange={e => { setGroupId(e.target.value); setError('') }}
-            className="w-full h-10 px-3 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 outline-none focus:border-blue-500">
+            className="w-full h-10 px-3 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 outline-none focus:border-teal-500">
             <option value="">{t('students.chooseGroup')}</option>
             {(groups || []).map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
@@ -271,7 +271,7 @@ function BulkInviteModal({ onClose }) {
           <label className="block text-sm font-medium text-slate-700 mb-1">{t('students.emailsLabel')}</label>
           <textarea value={raw} onChange={e => { setRaw(e.target.value); setError('') }} rows={5}
             placeholder={t('students.emailsPlaceholder')}
-            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 resize-y" />
+            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-teal-500 resize-y" />
           {/* переменная намеренно n, а не count: count включает у i18next
               множественные формы и потребовал бы ключи _one/_other на 7 языков */}
           <p className="text-xs text-slate-500 mt-1">{t('students.emailsCount', { n: emails.length })}</p>
@@ -310,9 +310,9 @@ function SentInvitations() {
   }
 
   return (
-    <div className="mb-6 rounded-2xl border border-blue-200 bg-blue-50/60 p-4">
-      <h2 className="text-sm font-semibold text-blue-800">{t('invites.title')}</h2>
-      <p className="text-xs text-blue-700/80 mt-0.5 mb-3">{t('invites.subtitle')}</p>
+    <div className="mb-6 rounded-2xl border border-teal-200 bg-teal-50/60 p-4">
+      <h2 className="text-sm font-semibold text-teal-700">{t('invites.title')}</h2>
+      <p className="text-xs text-teal-700/80 mt-0.5 mb-3">{t('invites.subtitle')}</p>
 
       <div className="space-y-2">
         {invites.map(inv => (
@@ -372,7 +372,7 @@ function StudentCard({ s }) {
   const [insightsOpen, setInsightsOpen] = useState(false)
   const [cardOpen, setCardOpen] = useState(false)
   return (
-    <div className="p-4 rounded-2xl border border-slate-200 bg-white hover:border-blue-200 hover:shadow-sm transition-all">
+    <div className="p-4 rounded-2xl border border-slate-200 bg-white hover:border-teal-200 hover:shadow-sm transition-all">
       <div className="flex items-center gap-3">
         <Avatar url={s.avatar} name={s.name} />
         <div className="min-w-0 flex-1">
@@ -395,7 +395,7 @@ function StudentCard({ s }) {
 
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
         <button onClick={() => setCardOpen(true)}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors cursor-pointer">
           <IconProfile size={14} /> {t('students.openCard')}
         </button>
 
@@ -403,7 +403,7 @@ function StudentCard({ s }) {
         {!s.isPlaceholder && (
           <Tooltip text={t('students.tipWeakSpots')} side="top">
             <button onClick={() => setInsightsOpen(true)}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors cursor-pointer">
               <Target className="w-3.5 h-3.5" /> {t('students.weakBtn')}
             </button>
           </Tooltip>
@@ -561,13 +561,13 @@ function WeakSpotsModal({ student, onClose }) {
     } finally { setGen(false) }
   }
 
-  const barColor = (m) => m >= 40 ? 'bg-blue-500' : 'bg-amber-500'
+  const barColor = (m) => m >= 40 ? 'bg-teal-500' : 'bg-amber-500'
 
   return (
     <Modal open onClose={onClose} maxWidth="max-w-lg">
       <div className="p-6">
         <h3 className="text-base font-semibold text-slate-900 mb-1 flex items-center gap-2">
-          <Target className="w-4 h-4 text-blue-600" /> {t('students.weakTitle')} · {student.name}
+          <Target className="w-4 h-4 text-teal-600" /> {t('students.weakTitle')} · {student.name}
         </h3>
         <p className="text-xs text-slate-500 mb-4">{t('students.weakSub')}</p>
 
@@ -605,9 +605,9 @@ function WeakSpotsModal({ student, onClose }) {
               {spots.map((s) => {
                 const k = spotKey(s)
                 return (
-                  <label key={k} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 cursor-pointer hover:border-blue-300 transition-colors">
+                  <label key={k} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 cursor-pointer hover:border-teal-300 transition-colors">
                     <input type="checkbox" checked={selected.has(k)} onChange={() => toggle(s)}
-                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500/30 shrink-0" />
+                      className="w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500/30 shrink-0" />
                     <div className="min-w-0 flex-1">
                       <div className="text-sm text-slate-900 truncate">{s.stepTitle}</div>
                       <div className="text-xs text-slate-400 truncate">{s.topicTitle}</div>
@@ -632,7 +632,7 @@ function WeakSpotsModal({ student, onClose }) {
 
 function Avatar({ url, name }) {
   return (
-    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
+    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-teal-500 to-teal-500 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
       {url ? <img src={url} alt={name} className="w-full h-full object-cover" /> : (name?.[0]?.toUpperCase() ?? '?')}
     </div>
   )

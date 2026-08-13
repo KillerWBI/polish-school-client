@@ -72,7 +72,7 @@ export default function Sidebar({ onClose, collapsible = true }) {
   const linkClass = ({ isActive }) =>
     `w-full flex items-center gap-2.5 h-9 rounded-lg text-[13px] transition-colors ${
       open ? 'px-2.5' : 'px-0 justify-center'
-    } ${isActive ? 'bg-blue-50 text-blue-700 font-medium' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`
+    } ${isActive ? 'bg-teal-50 text-teal-700 font-medium' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`
 
   // В свёрнутом виде подпись не рендерим вовсе, иначе она съедает отступ и сбивает центровку иконок
   const label = (text) => open ? <span className="truncate">{text}</span> : null
@@ -98,7 +98,7 @@ export default function Sidebar({ onClose, collapsible = true }) {
       <div className={`py-3 shrink-0 ${open ? 'px-3' : 'flex justify-center'}`}>
         <Tooltip text={t('sidebar.openProfile')} side="right">
           <Link to="/profile" onClick={onClose}
-            className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold overflow-hidden ring-2 ring-transparent hover:ring-blue-200 transition-all">
+            className="w-9 h-9 rounded-full bg-teal-500 flex items-center justify-center text-white text-sm font-semibold overflow-hidden ring-2 ring-transparent hover:ring-teal-200 transition-all">
             {user?.avatar
               ? <img src={safeUrl(user.avatar)} alt="" className="w-full h-full object-cover" />
               : (user?.name?.[0]?.toUpperCase() ?? '?')}
@@ -131,13 +131,13 @@ export default function Sidebar({ onClose, collapsible = true }) {
       <div className={`shrink-0 border-t border-[#EAECEF] ${open ? 'p-3' : 'p-2 flex justify-center'}`}>
         <Tooltip side="right" text={open ? '' : t('sidebar.planTooltip', { plan: PLAN_LABEL[user?.plan] ?? 'Free' })}>
           <Link to="/plans" onClick={onClose}
-            className={`flex items-center rounded-xl border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors ${
+            className={`flex items-center rounded-xl border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors ${
               open ? 'w-full gap-2.5 px-3 py-2.5' : 'w-10 h-10 justify-center'
             }`}>
             <IconPlan size={17} />
             {open && (
               <span className="min-w-0 flex-1 text-left">
-                <span className="block text-[11px] text-blue-500 leading-tight truncate">
+                <span className="block text-[11px] text-teal-600 leading-tight truncate">
                   {t('sidebar.planCurrent', { plan: PLAN_LABEL[user?.plan] ?? 'Free' })}
                 </span>
                 <span className="block text-[13px] font-semibold leading-tight truncate">{t('sidebar.planUpgrade')}</span>

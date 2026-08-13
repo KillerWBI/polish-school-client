@@ -74,7 +74,7 @@ export default function MyQuizzesPage({ embedded, onCreate }) {
       ) : (
         <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3 items-start">
           {shown.map((q) => (
-            <div key={q.id} className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-4 hover:border-blue-200 transition-colors">
+            <div key={q.id} className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-4 hover:border-teal-200 transition-colors">
               <button onClick={() => navigate(`/quizzes/${q.id}`)} className="flex-1 min-w-0 text-left">
                 <div className="text-sm font-medium text-slate-900 truncate">{q.topic}</div>
                 <div className="text-xs text-slate-400 mt-0.5">
@@ -84,7 +84,7 @@ export default function MyQuizzesPage({ embedded, onCreate }) {
 
               {q.taken && q.total != null && q.total > 0 && (
                 <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${
-                  q.score === q.total ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700'
+                  q.score === q.total ? 'bg-emerald-50 text-emerald-700' : 'bg-teal-50 text-teal-700'
                 }`}>
                   {q.score}/{q.total}
                 </span>

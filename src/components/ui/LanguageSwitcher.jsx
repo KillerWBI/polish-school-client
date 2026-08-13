@@ -58,7 +58,7 @@ export default function LanguageSwitcher({ variant = 'light', className = '' }) 
             {SUPPORTED.map((lng) => (
               <button key={lng} onClick={() => choose(lng)}
                 className={`w-full flex items-center justify-between px-3 py-2 text-sm text-left transition-colors ${
-                  current === lng ? 'bg-blue-50 text-blue-700 font-medium' : 'text-slate-700 hover:bg-slate-50'
+                  current === lng ? 'bg-teal-50 text-teal-700 font-medium' : 'text-slate-700 hover:bg-slate-50'
                 }`}>
                 {LANG_NAMES[lng]}
                 {current === lng && <Check className="w-4 h-4" />}

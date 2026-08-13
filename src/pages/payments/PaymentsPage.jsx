@@ -28,7 +28,7 @@ const fmt = (n) => `${Math.round(Number(n) || 0)} zł`
 // Способы оплаты — единый справочник (ключ лейбла + цвет бейджа + цвет точки).
 const METHOD = {
   cash:     { labelKey: 'payments.mCash',     cls: 'bg-emerald-50 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500' },
-  card:     { labelKey: 'payments.mCard',     cls: 'bg-blue-50 text-blue-700 border-blue-200',          dot: 'bg-blue-500' },
+  card:     { labelKey: 'payments.mCard',     cls: 'bg-teal-50 text-teal-700 border-teal-200',          dot: 'bg-teal-500' },
   transfer: { labelKey: 'payments.mTransfer', cls: 'bg-violet-50 text-violet-700 border-violet-200',    dot: 'bg-violet-500' },
   blik:     { labelKey: 'payments.mBlik',     cls: 'bg-rose-50 text-rose-700 border-rose-200',          dot: 'bg-rose-500' },
   paypal:   { labelKey: 'payments.mPaypal',   cls: 'bg-indigo-50 text-indigo-700 border-indigo-200',    dot: 'bg-indigo-500' },
@@ -64,7 +64,7 @@ function MethodCard({ m, amount, active, onClick }) {
   return (
     <button onClick={onClick}
       className={`text-left p-4 rounded-2xl border transition-all cursor-pointer ${
-        active ? 'border-blue-500 ring-2 ring-blue-500/15 bg-white' : 'border-slate-200 bg-white hover:border-slate-300'
+        active ? 'border-teal-500 ring-2 ring-teal-500/15 bg-white' : 'border-slate-200 bg-white hover:border-slate-300'
       }`}>
       <div className="flex items-center gap-2 mb-2">
         <span className={`w-2 h-2 rounded-full ${meta.dot}`} />
@@ -87,7 +87,7 @@ function breakdownMethods(byMethod, extras = []) {
 function MethodBreakdown({ methods, byMethod, method, setMethod, from, setFrom, to, setTo, total, totalLabel }) {
   const { t } = useTranslation('teacher')
   const label = totalLabel ?? t('payments.totalReceived')
-  const inputCls = 'h-9 px-3 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15'
+  const inputCls = 'h-9 px-3 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15'
   return (
     <>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
@@ -146,7 +146,7 @@ function ShotButton({ url, onShot }) {
   if (!url) return null
   return (
     <button onClick={() => onShot(url)}
-      className="shrink-0 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-colors">
+      className="shrink-0 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-600 transition-colors">
       <IconAttach size={13} /> {t('payments.shot')}
     </button>
   )
@@ -327,7 +327,7 @@ function StudentHistoryRow({ rec, onShot, onCancel, busy }) {
   return (
     <div className="px-4 py-3.5">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-semibold shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-500 flex items-center justify-center text-white text-sm font-semibold shrink-0">
           {(rec.teacher?.name || '?')[0].toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">
@@ -498,7 +498,7 @@ function TeacherDebts() {
                 <button key={m} type="button" onClick={() => setMethod(m)}
                   className={`h-10 rounded-xl border text-sm font-medium transition-colors ${
                     method === m
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      ? 'border-teal-500 bg-teal-50 text-teal-700'
                       : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
                   }`}>
                   {methodMeta(m, t).label}
@@ -587,7 +587,7 @@ function PendingReview({ items, loading, reload, onShot }) {
           return (
             <div key={r.id} className="rounded-2xl border border-amber-200 bg-amber-50/40 p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-semibold shrink-0">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-500 flex items-center justify-center text-white text-sm font-semibold shrink-0">
                   {(r.student?.name || '?')[0].toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -614,7 +614,7 @@ function PendingReview({ items, loading, reload, onShot }) {
           <label className="block text-xs font-medium text-slate-500 mb-1">{t('payments.rejectReasonLabel')}</label>
           <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={3}
             placeholder={t('payments.rejectReasonPlaceholder')}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 resize-none mb-4" />
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 resize-none mb-4" />
           <div className="flex gap-2">
             <Button variant="secondary" className="flex-1" onClick={() => { setRejecting(null); setReason('') }}>{tc('cancel')}</Button>
             <Button className="flex-1" onClick={doReject} loading={busy === rejecting?.id}>{t('payments.reject')}</Button>
@@ -676,7 +676,7 @@ function HistoryRow({ rec, onShot }) {
   return (
     <div className="px-4 py-3.5">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-semibold shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-500 flex items-center justify-center text-white text-sm font-semibold shrink-0">
           {(rec.student?.name || '?')[0].toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">
@@ -705,7 +705,7 @@ function DebtCard({ name, sub, charged, paid, balance, action }) {
   return (
     <div className="p-4 rounded-2xl border border-slate-200 bg-white">
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-semibold shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-500 flex items-center justify-center text-white text-sm font-semibold shrink-0">
           {(name || '?')[0].toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">

@@ -124,7 +124,7 @@ function TeacherHWCard({ hw, onView, onDelete }) {
   return (
     <div
       onClick={onView}
-      className="flex items-start gap-4 px-5 py-4 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-blue-200 transition-all cursor-pointer group"
+      className="flex items-start gap-4 px-5 py-4 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-teal-200 transition-all cursor-pointer group"
     >
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-slate-900 truncate">{hw.description}</p>
@@ -135,7 +135,7 @@ function TeacherHWCard({ hw, onView, onDelete }) {
           </p>
         )}
         {hw.quiz && (
-          <p className="inline-flex items-center gap-1.5 text-xs text-blue-600 mt-1">
+          <p className="inline-flex items-center gap-1.5 text-xs text-teal-600 mt-1">
             <IconTests size={13} /> {t('homework.quizAttached')}
           </p>
         )}
@@ -155,7 +155,7 @@ function TeacherHWCard({ hw, onView, onDelete }) {
             </svg>
           </button>
         </Tooltip>
-        <svg className="w-4 h-4 text-slate-500 group-hover:text-blue-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <svg className="w-4 h-4 text-slate-500 group-hover:text-teal-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path d="M9 18l6-6-6-6" strokeLinecap="round"/>
         </svg>
       </div>
@@ -258,7 +258,7 @@ function StudentHWCard({ hw, onSubmitted }) {
               <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700"><IconCheck size={14} /> {t('homework.quizDone')}</span>
             ) : (
               <button onClick={() => setQuizOpen(true)}
-                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
+                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-teal-500 text-white text-sm font-medium hover:bg-teal-600 transition-colors">
                 <IconTests size={15} /> {t('homework.takeQuiz')}
               </button>
             )}
@@ -270,7 +270,7 @@ function StudentHWCard({ hw, onSubmitted }) {
           <div className="mt-3 p-3 rounded-xl bg-white border border-slate-200 space-y-1.5">
             {submission.fileUrl && (
               <a href={submission.fileUrl} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-700">
+                className="flex items-center gap-2 text-xs text-teal-600 hover:text-teal-700">
                 <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.41 17.17a2 2 0 0 1-2.83-2.83l8.49-8.48" strokeLinecap="round"/>
                 </svg>
@@ -287,7 +287,7 @@ function StudentHWCard({ hw, onSubmitted }) {
         {/* Кнопка сдать */}
         {!submission && (
           <button onClick={() => setOpen(o => !o)}
-            className="mt-3 text-xs text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-medium">
+            className="mt-3 text-xs text-teal-600 hover:text-teal-700 transition-colors cursor-pointer font-medium">
             {open ? t('homework.hideForm') : t('homework.submitAssignment')}
           </button>
         )}
@@ -303,7 +303,7 @@ function StudentHWCard({ hw, onSubmitted }) {
             </label>
             <label className={`flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-colors ${
               file
-                ? 'border-blue-200 bg-blue-50'
+                ? 'border-teal-200 bg-teal-50'
                 : 'border-slate-200 bg-white hover:bg-slate-50'
             }`}>
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" className="shrink-0 text-slate-400">
@@ -326,7 +326,7 @@ function StudentHWCard({ hw, onSubmitted }) {
             <label className="text-xs text-slate-400 block mb-1.5">{t('homework.commentLabel')}</label>
             <textarea value={comment} onChange={e => setComment(e.target.value)}
               rows={2} placeholder={t('homework.commentPlaceholder')}
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none" />
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-teal-500 resize-none" />
           </div>
 
           {error && <p className="text-xs text-red-600">{error}</p>}
@@ -372,7 +372,7 @@ function StatusBadge({ submission, isOverdue }) {
   }
   if (submission.status === 'graded') {
     return (
-      <span className="shrink-0 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+      <span className="shrink-0 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
         <IconCheck size={12} /> {t('homework.gradedBadge', { grade: submission.grade })}
       </span>
     )
@@ -446,7 +446,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
               onChange={e => set('description', e.target.value)}
               rows={3}
               placeholder={t('homework.descPlaceholder')}
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-blue-500 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm placeholder:text-slate-500 outline-none focus:border-teal-500 resize-none"
             />
           </div>
 
@@ -457,7 +457,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
                 onClick={() => set('lessonType', lt)}
                 className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-all ${
                   form.lessonType === lt
-                    ? 'bg-blue-50 border-blue-200 text-blue-700'
+                    ? 'bg-teal-50 border-teal-200 text-teal-700'
                     : 'bg-white border-slate-200 text-slate-400 hover:text-slate-900'
                 }`}>
                 {lt === 'group' ? t('homework.typeGroup') : t('homework.typeIndividual')}
@@ -473,7 +473,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
                 <select
                   value={form.groupId}
                   onChange={e => setGroup(e.target.value)}
-                  className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
+                  className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500"
                 >
                   <option value="">{t('homework.chooseGroup')}</option>
                   {(groups || []).map(g => (
@@ -488,7 +488,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
                   value={form.lessonId}
                   onChange={e => set('lessonId', e.target.value)}
                   disabled={!form.groupId}
-                  className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-400"
+                  className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500 disabled:bg-slate-50 disabled:text-slate-400"
                 >
                   <option value="">
                     {!form.groupId ? t('homework.chooseGroupFirst')
@@ -512,7 +512,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
               <select
                 value={form.individualLessonId}
                 onChange={e => set('individualLessonId', e.target.value)}
-                className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
+                className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500"
               >
                 <option value="">{t('homework.chooseLesson')}</option>
                 {(indLessons || []).map(l => (
@@ -527,7 +527,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
           <div>
             <label className="text-xs text-slate-400 block mb-1">{t('homework.deadlineLabel')}</label>
             <input type="date" value={form.deadline} onChange={e => set('deadline', e.target.value)}
-              className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500" />
+              className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500" />
           </div>
 
           {/* Прикрепить тест (необязательно) */}
@@ -536,7 +536,7 @@ function CreateHWModal({ open, onClose, onCreated }) {
               <label className="text-xs text-slate-400 mb-1 inline-flex items-center gap-1 cursor-help border-b border-dotted border-slate-300">{t('homework.attachQuiz')}</label>
             </Tooltip>
             <select value={form.quizId} onChange={e => set('quizId', e.target.value)}
-              className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500">
+              className="w-full h-11 px-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500">
               <option value="">{t('homework.noQuiz')}</option>
               {libraryQuizzes.map(q => (
                 <option key={q.id} value={q.id}>{q.topic} · {t('homework.questionsShort', { n: q.count })}</option>
@@ -566,9 +566,9 @@ function QuizAttempts({ hw }) {
   const [openId, setOpenId] = useState(null)
 
   return (
-    <div className="mb-6 rounded-2xl border border-blue-100 bg-blue-50/40 p-4">
+    <div className="mb-6 rounded-2xl border border-teal-100 bg-teal-50/40 p-4">
       <div className="text-sm font-semibold text-slate-900 mb-2 flex items-center gap-1.5">
-        <IconTests size={15} className="text-blue-600" /> {t('homework.resultsTitle', { topic: hw.quiz.topic })}
+        <IconTests size={15} className="text-teal-600" /> {t('homework.resultsTitle', { topic: hw.quiz.topic })}
       </div>
       {loading ? (
         <div className="text-sm text-slate-400">{tc('loading')}</div>
@@ -583,10 +583,10 @@ function QuizAttempts({ hw }) {
                 <span className="text-sm font-medium text-slate-900 flex-1 truncate">{a.student?.name ?? '—'}</span>
                 {a.total != null && a.total > 0 && (
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                    a.score === a.total ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700'
+                    a.score === a.total ? 'bg-emerald-50 text-emerald-700' : 'bg-teal-50 text-teal-700'
                   }`}>{a.score}/{a.total}</span>
                 )}
-                <span className="text-xs text-blue-600 shrink-0">{openId === a.id ? t('homework.hide') : t('homework.answers')}</span>
+                <span className="text-xs text-teal-600 shrink-0">{openId === a.id ? t('homework.hide') : t('homework.answers')}</span>
               </button>
               {openId === a.id && (
                 <div className="px-3.5 pb-3.5 border-t border-slate-100 pt-3">
@@ -646,7 +646,7 @@ function SubmissionsModal({ hw, onClose }) {
                     <span className="text-sm font-medium text-slate-900 truncate">{s.student?.name ?? s.studentId}</span>
                     {isGraded ? (
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-sm font-semibold text-blue-600">{s.grade}/100</span>
+                        <span className="text-sm font-semibold text-teal-600">{s.grade}/100</span>
                         {!editing[s.id] && (
                           <button
                             onClick={() => {
@@ -664,7 +664,7 @@ function SubmissionsModal({ hw, onClose }) {
                   </div>
                   {s.comment && <p className="text-xs text-slate-400 mb-2">{s.comment}</p>}
                   <a href={s.fileUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-xs text-blue-600 hover:text-blue-700 underline break-all">
+                    className="text-xs text-teal-600 hover:text-teal-700 underline break-all">
                     {t('homework.openFile')}
                   </a>
                   {isEditing && (
@@ -673,7 +673,7 @@ function SubmissionsModal({ hw, onClose }) {
                         type="number" min="0" max="100" placeholder={t('homework.gradePlaceholder')}
                         value={grades[s.id] || ''}
                         onChange={e => setGrades(g => ({ ...g, [s.id]: e.target.value }))}
-                        className="w-28 h-8 px-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-blue-500"
+                        className="w-28 h-8 px-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:border-teal-500"
                       />
                       <Button size="sm" loading={saving === s.id} onClick={() => handleGrade(s.id)}>
                         {isGraded ? tc('save') : t('homework.setGrade')}

@@ -78,7 +78,7 @@ export default function QuizRunner({ quiz, savedAnswers, onCheck }) {
         ) : (
           <>
             {isObjective(type) ? (
-              <span className="inline-flex items-center h-9 px-3 rounded-lg bg-blue-50 text-blue-700 text-sm font-medium">
+              <span className="inline-flex items-center h-9 px-3 rounded-lg bg-teal-50 text-teal-700 text-sm font-medium">
                 {t('quiz.result', { c: correctCount, t: total })}
               </span>
             ) : (
@@ -122,7 +122,7 @@ function QuestionItem({ q, qi, type, sel, reveal, onPick, onOpen }) {
         <>
           <textarea rows={2} value={typeof sel === 'string' ? sel : ''} onChange={(e) => onOpen(qi, e.target.value)}
             placeholder={t('quiz.yourAnswer')}
-            className="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15" />
+            className="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-200 rounded-lg outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15" />
           {reveal && q.sampleAnswer && (
             <div className="mt-2 text-sm text-emerald-800 bg-emerald-50 rounded-lg px-3 py-2">
               <span className="text-xs text-emerald-600">{t('quiz.sample')}</span>{q.sampleAnswer}
@@ -140,7 +140,7 @@ function QuestionItem({ q, qi, type, sel, reveal, onPick, onOpen }) {
               else if (selected) cls = 'border-red-300 bg-red-50 text-red-700'
               else cls = 'border-slate-200'
             } else if (selected) {
-              cls = 'border-blue-500 bg-blue-50 text-blue-700'
+              cls = 'border-teal-500 bg-teal-50 text-teal-700'
             }
             return (
               <li key={oi}>
@@ -149,7 +149,7 @@ function QuestionItem({ q, qi, type, sel, reveal, onPick, onOpen }) {
                   <span className={`w-4 h-4 shrink-0 flex items-center justify-center ${multiple ? 'rounded' : 'rounded-full'} border ${
                     reveal && correct ? 'border-emerald-500 bg-emerald-500 text-white'
                       : reveal && selected ? 'border-red-400 bg-red-400 text-white'
-                        : selected ? 'border-blue-500 bg-blue-500 text-white' : 'border-slate-300'
+                        : selected ? 'border-teal-500 bg-teal-500 text-white' : 'border-slate-300'
                   }`}>
                     {reveal && correct ? <Check className="w-3 h-3" />
                       : reveal && selected && !correct ? <X className="w-3 h-3" />

@@ -86,7 +86,7 @@ export default function LanguagesEditor({ value = [], onChange, withLevel = fals
               key={l.code}
               type="button"
               onClick={() => addLanguage(l.code)}
-              className="px-2.5 py-1 rounded-full bg-white hover:bg-blue-100 text-xs text-slate-700 cursor-pointer transition-colors"
+              className="px-2.5 py-1 rounded-full bg-white hover:bg-teal-100 text-xs text-slate-700 cursor-pointer transition-colors"
             >
               {l.native}
             </button>

@@ -41,7 +41,7 @@ export default function AppLayout() {
             <IconMenu size={20} />
           </button>
           <Link to="/dashboard" className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-[2px] bg-blue-600" />
+            <span className="w-2 h-2 rounded-[2px] bg-teal-500" />
             <span className="font-mono text-sm font-semibold text-[#0F172A]">Peravenor</span>
           </Link>
           <div className="ml-auto flex items-center gap-1">

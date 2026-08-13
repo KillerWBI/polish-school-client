@@ -91,7 +91,7 @@ function ReviewTab({ onEmptyAdd }) {
         {flipped ? (
           <>
             <div className="w-full border-t border-slate-100 my-4" />
-            <div className="text-xl text-blue-700">{item.translation}</div>
+            <div className="text-xl text-teal-700">{item.translation}</div>
             {item.example && <div className="text-sm text-slate-400 mt-3 italic">{item.example}</div>}
           </>
         ) : (
@@ -154,7 +154,7 @@ function AllTab() {
         <div className="flex items-center gap-2 mb-4">
           <span className="text-sm text-slate-500">{t('vocab.langLabel')}</span>
           <select value={langFilter} onChange={(e) => setLangFilter(e.target.value)}
-            className="h-9 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500">
+            className="h-9 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-teal-500">
             <option value="">{t('vocab.allLangs')}</option>
             {codes.map((c) => <option key={c} value={c}>{langName(c)}</option>)}
             {hasNoLang && <option value="none">{t('vocab.noLang')}</option>}
@@ -185,7 +185,7 @@ function AllTab() {
                 <div className="text-sm text-slate-500 truncate">{v.translation}</div>
               </div>
               {v.language && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100 shrink-0">
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-50 text-teal-600 border border-teal-100 shrink-0">
                   {langName(v.language)}
                 </span>
               )}
@@ -293,7 +293,7 @@ function OneForm({ lang, native, onAdded }) {
         <label className="block text-sm font-medium text-slate-700 mb-1">{t('vocab.exampleLabel')}</label>
         <textarea value={example} onChange={e => setExample(e.target.value)} rows={2}
           placeholder={t('vocab.examplePh')}
-          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 resize-none" />
+          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 resize-none" />
       </div>
       <Button type="submit" loading={busy} className="w-full">
         <Plus className="w-4 h-4 mr-1" /> {t('vocab.addToVocab')}
@@ -331,7 +331,7 @@ function BulkForm({ lang, native, onAdded }) {
         <label className="block text-sm font-medium text-slate-700 mb-2">{t('vocab.listLabel')}</label>
         <textarea value={text} onChange={(e) => setText(e.target.value)} rows={10}
           placeholder={t('vocab.bulkPh')}
-          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 resize-y font-mono" />
+          className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15 resize-y font-mono" />
         <div className="flex items-center justify-between mt-3">
           <span className="text-xs text-slate-400">{t('vocab.recognized')} <b className="text-slate-600">{parsed.length}</b></span>
           <Button size="sm" onClick={submit} loading={busy} disabled={!parsed.length}>
@@ -341,9 +341,9 @@ function BulkForm({ lang, native, onAdded }) {
       </div>
 
       {/* Инструкция сбоку */}
-      <aside className="rounded-2xl border border-blue-100 bg-blue-50/50 p-4 text-sm">
+      <aside className="rounded-2xl border border-teal-100 bg-teal-50/50 p-4 text-sm">
         <div className="flex items-center gap-1.5 font-medium text-slate-700 mb-2">
-          <Lightbulb className="w-4 h-4 text-blue-500" /> {t('vocab.howToFill')}
+          <Lightbulb className="w-4 h-4 text-teal-600" /> {t('vocab.howToFill')}
         </div>
         <ul className="space-y-1.5 text-slate-600 text-[13px] leading-relaxed">
           <li>• {t('vocab.rule1')}</li>
@@ -398,12 +398,12 @@ function AiForm({ lang, native, onAdded }) {
             <label className="block text-sm font-medium text-slate-700 mb-1">{t('vocab.countLabel')}</label>
             <input type="number" min={1} max={100} value={count}
               onChange={(e) => setCount(e.target.value)}
-              className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15" />
+              className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15" />
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">{t('vocab.levelLabel')}</label>
             <select value={level} onChange={(e) => setLevel(e.target.value)}
-              className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-blue-500">
+              className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:border-teal-500">
               {LEVELS.map((l) => <option key={l.v} value={l.v}>{t('vocab.' + l.key)}</option>)}
             </select>
           </div>
@@ -416,9 +416,9 @@ function AiForm({ lang, native, onAdded }) {
       </div>
 
       {/* Подсказка по темам сбоку */}
-      <aside className="rounded-2xl border border-blue-100 bg-blue-50/50 p-4 text-sm">
+      <aside className="rounded-2xl border border-teal-100 bg-teal-50/50 p-4 text-sm">
         <div className="flex items-center gap-1.5 font-medium text-slate-700 mb-2">
-          <Lightbulb className="w-4 h-4 text-blue-500" /> {t('vocab.howToTopic')}
+          <Lightbulb className="w-4 h-4 text-teal-600" /> {t('vocab.howToTopic')}
         </div>
         <p className="text-[13px] text-slate-600 mb-2">{t('vocab.topicIntro')}</p>
         <ul className="space-y-1.5 text-slate-600 text-[13px] leading-relaxed">

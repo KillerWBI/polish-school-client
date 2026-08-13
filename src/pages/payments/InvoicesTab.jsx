@@ -162,7 +162,7 @@ function NewInvoiceModal({ onClose, onCreated }) {
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">{t('invoices.studentLabel')}</label>
           <select value={f.studentId} onChange={set('studentId')}
-            className="w-full h-10 px-3 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 outline-none focus:border-blue-500">
+            className="w-full h-10 px-3 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 outline-none focus:border-teal-500">
             <option value="">{t('invoices.chooseStudent')}</option>
             {(students || []).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>

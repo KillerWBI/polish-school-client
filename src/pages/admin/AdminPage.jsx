@@ -14,7 +14,7 @@ import Tabs from '../../components/ui/Tabs'
 
 // Ключи лейблов ролей/статусов; цвета — в коде. Резолвятся t() при рендере.
 const ROLE_KEY    = { teacher: 'admin.roleTeacher', student: 'admin.roleStudent', admin: 'admin.roleAdmin' }
-const ROLE_COLOR  = { teacher: 'bg-blue-100 text-blue-700', student: 'bg-emerald-100 text-emerald-700', admin: 'bg-purple-100 text-purple-700' }
+const ROLE_COLOR  = { teacher: 'bg-teal-100 text-teal-700', student: 'bg-emerald-100 text-emerald-700', admin: 'bg-purple-100 text-purple-700' }
 const PLAN_LABEL  = { free: 'Free', pro: 'Pro', school: 'School' }
 const PLAN_COLOR  = { free: 'bg-slate-100 text-slate-600', pro: 'bg-amber-100 text-amber-700', school: 'bg-indigo-100 text-indigo-700' }
 
@@ -50,7 +50,7 @@ function OverviewTab() {
   if (!stats)  return null
 
   const cards = [
-    { icon: GraduationCap, label: t('admin.cardTeachers'), value: stats.teachers, color: 'bg-blue-50 text-blue-600' },
+    { icon: GraduationCap, label: t('admin.cardTeachers'), value: stats.teachers, color: 'bg-teal-50 text-teal-600' },
     { icon: Users,          label: t('admin.cardStudents'), value: stats.students, color: 'bg-emerald-50 text-emerald-600' },
     { icon: LayoutGrid,     label: t('admin.cardGroups'),   value: stats.groups,   color: 'bg-amber-50 text-amber-600' },
     { icon: DollarSign,     label: t('admin.cardRevenue'),  value: stats.revenue.toFixed(0), color: 'bg-purple-50 text-purple-600' },
@@ -179,11 +179,11 @@ function UsersTab() {
           <input
             type="text" placeholder={t('admin.searchPlaceholder')} value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
-            className="w-full h-10 pl-9 pr-3 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500/15 focus:border-blue-500"
+            className="w-full h-10 pl-9 pr-3 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-teal-500/15 focus:border-teal-500"
           />
         </div>
         <select value={roleFilter} onChange={e => { setRoleFilter(e.target.value); setPage(1) }}
-          className="h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/15 focus:border-blue-500">
+          className="h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:ring-2 focus:ring-teal-500/15 focus:border-teal-500">
           <option value="">{t('admin.allRoles')}</option>
           <option value="teacher">{t('admin.teachers')}</option>
           <option value="student">{t('admin.students')}</option>
@@ -436,9 +436,9 @@ function MenuBtn({ children, onClick, active, danger }) {
   return (
     <button type="button" onClick={onClick}
       className={`w-full text-left px-2 py-1.5 rounded-lg text-sm transition-colors flex items-center justify-between
-        ${active ? 'bg-blue-50 text-blue-700 font-medium' : danger ? 'text-red-600 hover:bg-red-50' : 'text-slate-700 hover:bg-slate-50'}`}>
+        ${active ? 'bg-teal-50 text-teal-700 font-medium' : danger ? 'text-red-600 hover:bg-red-50' : 'text-slate-700 hover:bg-slate-50'}`}>
       {children}
-      {active && <Check className="w-4 h-4 text-blue-500" />}
+      {active && <Check className="w-4 h-4 text-teal-600" />}
     </button>
   )
 }
@@ -469,7 +469,7 @@ function ChoiceModal({ open, title, userName, options, value, unchanged, onSelec
       <div className="space-y-2">
         {options.map(([val, label, desc]) => (
           <button key={val} type="button" onClick={() => onSelect(val)}
-            className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${value === val ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}>
+            className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${value === val ? 'border-teal-400 bg-teal-50' : 'border-slate-200 hover:border-slate-300'}`}>
             <div className="font-medium text-sm text-slate-900">{label}</div>
             <div className="text-xs text-slate-500 mt-0.5">{desc}</div>
           </button>
@@ -483,7 +483,7 @@ function ChoiceModal({ open, title, userName, options, value, unchanged, onSelec
 
 const TICKET_STATUS = {
   open:        { key: 'admin.ticketOpen',       cls: 'bg-amber-100 text-amber-700' },
-  in_progress: { key: 'admin.ticketInProgress', cls: 'bg-blue-100 text-blue-700' },
+  in_progress: { key: 'admin.ticketInProgress', cls: 'bg-teal-100 text-teal-700' },
   resolved:    { key: 'admin.ticketResolved',   cls: 'bg-emerald-100 text-emerald-700' },
 }
 const TICKET_CATEGORY_KEY = {
@@ -601,7 +601,7 @@ function TicketModal({ ticket, onClose, onSaved }) {
 
         <label className="block text-xs font-medium text-slate-500 mb-1">{t('admin.statusLabel')}</label>
         <select value={status} onChange={e => setStatus(e.target.value)}
-          className="w-full h-10 px-3 mb-4 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/15 focus:border-blue-500">
+          className="w-full h-10 px-3 mb-4 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:ring-2 focus:ring-teal-500/15 focus:border-teal-500">
           <option value="open">{t('admin.ticketOpen')}</option>
           <option value="in_progress">{t('admin.ticketInProgress')}</option>
           <option value="resolved">{t('admin.ticketResolved')}</option>
@@ -610,7 +610,7 @@ function TicketModal({ ticket, onClose, onSaved }) {
         <label className="block text-xs font-medium text-slate-500 mb-1">{t('admin.replyLabel', { email: ticket.email })}</label>
         <textarea value={reply} onChange={e => setReply(e.target.value)} rows={4}
           placeholder={t('admin.replyPlaceholder')}
-          className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/15 focus:border-blue-500 resize-none mb-4" />
+          className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 outline-none focus:ring-2 focus:ring-teal-500/15 focus:border-teal-500 resize-none mb-4" />
 
         <div className="flex gap-2">
           <Button variant="secondary" className="flex-1" onClick={() => save(false)} loading={busy}>

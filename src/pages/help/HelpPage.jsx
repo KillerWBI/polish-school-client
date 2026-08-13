@@ -12,9 +12,9 @@ import { IconChat, IconAI, IconUpload, IconCheck, IconAdd } from '../../componen
 function Mark({ label, children }) {
   return (
     <div className="relative inline-flex">
-      <div className="rounded-xl ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-50">{children}</div>
+      <div className="rounded-xl ring-2 ring-teal-500 ring-offset-2 ring-offset-slate-50">{children}</div>
       {label && (
-        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium bg-blue-600 text-white px-2 py-0.5 rounded-full shadow-sm z-10">
+        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium bg-teal-500 text-white px-2 py-0.5 rounded-full shadow-sm z-10">
           {label}
         </span>
       )}
@@ -29,7 +29,7 @@ function Shot({ children }) {
   )
 }
 const Btn = ({ children, tone = 'primary' }) => {
-  const cls = tone === 'primary' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700 border border-slate-200'
+  const cls = tone === 'primary' ? 'bg-teal-500 text-white' : 'bg-white text-slate-700 border border-slate-200'
   return <span className={`inline-flex h-9 px-4 items-center gap-1.5 rounded-xl text-sm font-medium ${cls}`}>{children}</span>
 }
 const Cell = ({ ch, tone }) => {
@@ -43,7 +43,7 @@ const Kpi = ({ label, value, tone = 'text-slate-900' }) => (
   </div>
 )
 const Tab = ({ children, active }) => (
-  <span className={`px-3 py-1 rounded-lg text-xs ${active ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500'}`}>{children}</span>
+  <span className={`px-3 py-1 rounded-lg text-xs ${active ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-500'}`}>{children}</span>
 )
 
 /* ─── Структура справки ──────────────────────────────────────
@@ -64,7 +64,7 @@ const teacherSections = (v) => [
       </div></Shot>,
       <Shot><Mark label={v('incomeDebtPotential')}>
         <div className="flex items-end gap-1.5 h-20 rounded-lg bg-white border border-slate-200 px-3 py-2">
-          {[50, 70, 45, 85, 60].map((h, i) => <div key={i} className="w-3 rounded-t bg-blue-500/80" style={{ height: `${h}%` }} />)}
+          {[50, 70, 45, 85, 60].map((h, i) => <div key={i} className="w-3 rounded-t bg-teal-500/80" style={{ height: `${h}%` }} />)}
         </div>
       </Mark></Shot>,
       <Shot><Mark label={v('quickCreate')}><Btn><IconAdd size={14} /> {v('createBtn')}</Btn></Mark></Shot>,
@@ -88,13 +88,13 @@ const teacherSections = (v) => [
         <Tab>{v('tabSettings')}</Tab>
       </div></Shot>,
       <Shot><Mark label={v('externalChat')}>
-        <span className="inline-flex h-9 px-4 items-center gap-1.5 rounded-xl bg-white border border-slate-200 text-sm text-blue-600">
+        <span className="inline-flex h-9 px-4 items-center gap-1.5 rounded-xl bg-white border border-slate-200 text-sm text-teal-600">
           <IconChat size={14} /> {v('groupChat')}
         </span>
       </Mark></Shot>,
       <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2">
         <span className="text-xs text-slate-900 flex-1">{v('samplePersonNoAccount')}</span>
-        <Mark label={v('historyTransfer')}><span className="text-xs text-blue-600 font-medium">{v('transfer')}</span></Mark>
+        <Mark label={v('historyTransfer')}><span className="text-xs text-teal-600 font-medium">{v('transfer')}</span></Mark>
       </div></Shot>,
     ],
   },
@@ -144,7 +144,7 @@ const teacherSections = (v) => [
     id: 'payments',
     visuals: [
       <Shot><div className="w-60 rounded-2xl bg-white border border-slate-200 p-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600" />
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-500 to-teal-500" />
         <div className="flex-1">
           <div className="text-xs font-medium text-slate-900">{v('samplePerson2')}</div>
           <div className="text-[10px] text-amber-600">{v('debtAmount')}</div>
@@ -163,7 +163,7 @@ const teacherSections = (v) => [
     id: 'students',
     visuals: [
       <Shot><div className="w-60 rounded-2xl bg-white border border-slate-200 p-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600" />
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-500 to-teal-500" />
         <div className="flex-1"><div className="text-xs font-medium text-slate-900">{v('samplePerson3')}</div></div>
         <Mark label={v('noAccount')}>
           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">{v('noAccountBadge')}</span>
@@ -175,7 +175,7 @@ const teacherSections = (v) => [
     id: 'calendar',
     visuals: [
       <Shot><div className="flex gap-2">
-        <Mark label={v('groupLesson')}><span className="text-[11px] px-2 py-1 rounded bg-blue-600 text-white">{v('groupLessonSample')}</span></Mark>
+        <Mark label={v('groupLesson')}><span className="text-[11px] px-2 py-1 rounded bg-teal-500 text-white">{v('groupLessonSample')}</span></Mark>
         <span className="text-[11px] px-2 py-1 rounded bg-pink-700 text-white">{v('indLessonSample')}</span>
       </div></Shot>,
     ],
@@ -201,10 +201,10 @@ const teacherSections = (v) => [
       <Shot><div className="flex gap-1 border-b border-slate-200">
         <span className="px-3 py-1.5 text-xs text-slate-500">{v('tabProfile')}</span>
         <span className="px-3 py-1.5 text-xs text-slate-500">{v('tabAnalytics')}</span>
-        <Mark label={v('changePassword')}><span className="px-3 py-1.5 text-xs text-blue-700 border-b-2 border-blue-600">{v('tabSecurity')}</span></Mark>
+        <Mark label={v('changePassword')}><span className="px-3 py-1.5 text-xs text-teal-700 border-b-2 border-teal-500">{v('tabSecurity')}</span></Mark>
       </div></Shot>,
       <Shot><Mark label={v('uploadPhoto')}>
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white">
+        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-500 to-teal-500 flex items-center justify-center text-white">
           <IconUpload size={20} />
         </div>
       </Mark></Shot>,
@@ -220,7 +220,7 @@ const teacherSections = (v) => [
       <Shot><Mark label={v('toLibrary')}><Btn>{v('saveQuizBtn')}</Btn></Mark></Shot>,
       <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2">
         <span className="text-xs text-slate-900 flex-1">{v('quizSample')}</span>
-        <Mark label={v('openAndTake')}><span className="text-xs text-blue-600 font-medium">→</span></Mark>
+        <Mark label={v('openAndTake')}><span className="text-xs text-teal-600 font-medium">→</span></Mark>
       </div></Shot>,
     ],
   },
@@ -228,7 +228,7 @@ const teacherSections = (v) => [
     id: 'video-calls',
     visuals: [
       <Shot><Mark label={v('opensMeeting')}>
-        <span className="inline-flex h-9 px-4 items-center rounded-xl bg-blue-600 text-white text-sm font-medium">{v('joinLesson')}</span>
+        <span className="inline-flex h-9 px-4 items-center rounded-xl bg-teal-500 text-white text-sm font-medium">{v('joinLesson')}</span>
       </Mark></Shot>,
       <Shot><div className="w-60 rounded-xl bg-white border border-slate-200 p-3 space-y-2">
         <div className="text-[10px] text-slate-500">{v('onJitsiEntry')}</div>
@@ -248,11 +248,11 @@ const teacherSections = (v) => [
     visuals: [
       <Shot><div className="flex gap-2">
         <Mark label={v('current')}><span className="text-[10px] px-2 py-1 rounded-full border border-slate-200 text-slate-600 font-medium">{v('planFree')}</span></Mark>
-        <span className="text-[10px] px-2 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-600 font-medium">{v('planStandard')}</span>
+        <span className="text-[10px] px-2 py-1 rounded-full border border-teal-200 bg-teal-50 text-teal-600 font-medium">{v('planStandard')}</span>
         <span className="text-[10px] px-2 py-1 rounded-full border border-purple-200 bg-purple-50 text-purple-600 font-medium">{v('planMax')}</span>
       </div></Shot>,
       <Shot><div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-full bg-blue-500" />
+        <div className="w-8 h-8 rounded-full bg-teal-500" />
         <div className="text-xs text-slate-900">{v('sampleTeacher')}</div>
         <Mark label={v('clickToPlans')}><span className="text-[9px] px-1.5 py-0.5 rounded border border-slate-200 text-slate-500">{v('planFree')}</span></Mark>
       </div></Shot>,
@@ -274,7 +274,7 @@ const teacherSections = (v) => [
       </div></Shot>,
       <Shot><Mark label={v('inAddressBar')}>
         <div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56">
-          <span className="flex-1">peravenor.com</span><span className="text-blue-600">⊕</span>
+          <span className="flex-1">peravenor.com</span><span className="text-teal-600">⊕</span>
         </div>
       </Mark></Shot>,
       <Shot><div className="w-52 rounded-xl bg-white border border-slate-200 p-3 space-y-1">
@@ -310,7 +310,7 @@ const studentSections = (v) => [
     visuals: [
       <Shot><Mark label={v('attachAndSend')}><Btn><IconUpload size={14} /> {v('submitHwBtn')}</Btn></Mark></Shot>,
       <Shot><Mark label={v('gradeAfterReview')}>
-        <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+        <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
           <IconCheck size={12} /> {v('gradedSample')}
         </span>
       </Mark></Shot>,
@@ -338,7 +338,7 @@ const studentSections = (v) => [
     id: 'calendar',
     visuals: [
       <Shot><Mark label={v('callLink')}>
-        <span className="inline-flex h-9 px-4 items-center rounded-xl bg-blue-600 text-white text-sm">{v('goToLesson')}</span>
+        <span className="inline-flex h-9 px-4 items-center rounded-xl bg-teal-500 text-white text-sm">{v('goToLesson')}</span>
       </Mark></Shot>,
     ],
   },
@@ -350,7 +350,7 @@ const studentSections = (v) => [
       </Mark></Shot>,
       <Shot><div className="flex gap-1 border-b border-slate-200">
         <span className="px-3 py-1.5 text-xs text-slate-500">{v('tabProfile')}</span>
-        <Mark label={v('changePassword')}><span className="px-3 py-1.5 text-xs text-blue-700 border-b-2 border-blue-600">{v('tabSecurity')}</span></Mark>
+        <Mark label={v('changePassword')}><span className="px-3 py-1.5 text-xs text-teal-700 border-b-2 border-teal-500">{v('tabSecurity')}</span></Mark>
       </div></Shot>,
     ],
   },
@@ -359,7 +359,7 @@ const studentSections = (v) => [
     visuals: [
       <Shot><Mark label={v('topicToQuiz')}><Btn><IconAI size={14} /> {v('generateBtn')}</Btn></Mark></Shot>,
       <Shot><Mark label={v('gradeAndSave')}>
-        <span className="inline-flex items-center h-8 px-3 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium">{v('resultSample')}</span>
+        <span className="inline-flex items-center h-8 px-3 rounded-lg bg-teal-50 text-teal-700 text-xs font-medium">{v('resultSample')}</span>
       </Mark></Shot>,
       <Shot><div className="w-56 rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-2">
         <span className="text-xs text-slate-900 flex-1">{v('quizSample')}</span>
@@ -371,7 +371,7 @@ const studentSections = (v) => [
     id: 'video-calls',
     visuals: [
       <Shot><Mark label={v('opensMeeting')}>
-        <span className="inline-flex h-9 px-4 items-center rounded-xl bg-blue-600 text-white text-sm font-medium">{v('joinLesson')}</span>
+        <span className="inline-flex h-9 px-4 items-center rounded-xl bg-teal-500 text-white text-sm font-medium">{v('joinLesson')}</span>
       </Mark></Shot>,
       <Shot><div className="flex items-center gap-2 text-xs text-slate-600">
         <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 inline-flex items-center justify-center"><IconCheck size={12} /></span>
@@ -395,7 +395,7 @@ const studentSections = (v) => [
       </div></Shot>,
       <Shot><Mark label={v('inAddressBar')}>
         <div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-500 w-56">
-          <span className="flex-1">peravenor.com</span><span className="text-blue-600">⊕</span>
+          <span className="flex-1">peravenor.com</span><span className="text-teal-600">⊕</span>
         </div>
       </Mark></Shot>,
     ],
@@ -436,7 +436,7 @@ export default function HelpPage() {
         subtitle={t('subtitle')}
         actions={isTeacher && (
           <button onClick={startTour}
-            className="shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-sm font-medium hover:bg-blue-100 transition-colors cursor-pointer">
+            className="shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl border border-teal-200 bg-teal-50 text-teal-700 text-sm font-medium hover:bg-teal-100 transition-colors cursor-pointer">
             {t('startTour')}
           </button>
         )}
@@ -456,7 +456,7 @@ export default function HelpPage() {
         {sections.map(s => (
           <section key={s.id} id={s.id} className="scroll-mt-24">
             <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />{t(`${role}.${s.id}.title`)}
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />{t(`${role}.${s.id}.title`)}
             </h2>
             <div className="space-y-4">
               {s.visuals.map((visual, i) => (
