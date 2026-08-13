@@ -832,7 +832,19 @@
     "calResetTitle": "Wygenerować nowy link?",
     "calResetText": "Stary przestanie działać od razu. Kalendarze zapisane na niego przestaną dostawać aktualizacje — trzeba będzie zapisać je ponownie.",
     "calFail": "Nie udało się pobrać linku",
-    "calReset": "Nowy link wygenerowany"
+    "calReset": "Nowy link wygenerowany",
+    "pushTitle": "Powiadomienia na telefon",
+    "pushIntro": "Przychodzą nawet przy zamkniętej aplikacji: nowa ocena, płatność, zadanie, rachunek.",
+    "pushEnable": "Włącz powiadomienia",
+    "pushDisable": "Wyłącz powiadomienia",
+    "pushHint": "Ustawienie dotyczy tej przeglądarki. Na innym urządzeniu włącz je osobno.",
+    "pushOn": "Powiadomienia włączone",
+    "pushOff": "Powiadomienia wyłączone",
+    "pushDenied": "Powiadomienia są zablokowane w ustawieniach przeglądarki — zezwól na nie dla tej strony",
+    "pushDismissed": "Okno zamknięto bez odpowiedzi. Kliknij ponownie i zezwól na powiadomienia",
+    "pushUnsupported": "Ta przeglądarka nie obsługuje powiadomień",
+    "pushInstallFirst": "Na iPhonie powiadomienia działają dopiero po zainstalowaniu aplikacji: Udostępnij → Do ekranu początkowego.",
+    "pushFail": "Nie udało się zmienić ustawienia"
   },
   "profile": {
     "tabProfile": "Profil",

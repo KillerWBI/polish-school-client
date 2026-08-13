@@ -832,7 +832,19 @@
     "calResetTitle": "Générer un nouveau lien ?",
     "calResetText": "L ancien cessera de fonctionner immédiatement. Les calendriers qui y sont abonnés ne recevront plus de mises à jour — il faudra les réabonner.",
     "calFail": "Impossible d obtenir le lien",
-    "calReset": "Nouveau lien généré"
+    "calReset": "Nouveau lien généré",
+    "pushTitle": "Notifications sur le téléphone",
+    "pushIntro": "Elles arrivent même application fermée : une nouvelle note, un paiement, un devoir, une facture.",
+    "pushEnable": "Activer les notifications",
+    "pushDisable": "Désactiver les notifications",
+    "pushHint": "Ce réglage vaut pour ce navigateur. Activez-le séparément sur vos autres appareils.",
+    "pushOn": "Notifications activées",
+    "pushOff": "Notifications désactivées",
+    "pushDenied": "Les notifications sont bloquées dans votre navigateur — autorisez-les pour ce site",
+    "pushDismissed": "La demande a été fermée sans réponse. Cliquez à nouveau et autorisez les notifications",
+    "pushUnsupported": "Ce navigateur ne prend pas en charge les notifications",
+    "pushInstallFirst": "Sur iPhone, les notifications ne fonctionnent qu’après installation : Partager → Sur l’écran d’accueil.",
+    "pushFail": "Impossible de modifier le réglage"
   },
   "profile": {
     "tabProfile": "Profil",

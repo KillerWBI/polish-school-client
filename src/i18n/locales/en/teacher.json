@@ -832,7 +832,19 @@
     "calResetTitle": "Issue a new link?",
     "calResetText": "The old one stops working immediately. Calendars subscribed to it will stop receiving updates — you will have to subscribe them again.",
     "calFail": "Couldn't get the link",
-    "calReset": "New link issued"
+    "calReset": "New link issued",
+    "pushTitle": "Phone notifications",
+    "pushIntro": "They arrive even when the app is closed: a new grade, a payment, an assignment, an invoice.",
+    "pushEnable": "Enable notifications",
+    "pushDisable": "Disable notifications",
+    "pushHint": "This setting applies to this browser. Enable it separately on other devices.",
+    "pushOn": "Notifications enabled",
+    "pushOff": "Notifications disabled",
+    "pushDenied": "Notifications are blocked in your browser settings — allow them for this site",
+    "pushDismissed": "The prompt was closed without an answer. Click again and allow notifications",
+    "pushUnsupported": "This browser does not support notifications",
+    "pushInstallFirst": "On iPhone, notifications work only after installing the app: Share → Add to Home Screen.",
+    "pushFail": "Could not change the setting"
   },
   "profile": {
     "tabProfile": "Profile",

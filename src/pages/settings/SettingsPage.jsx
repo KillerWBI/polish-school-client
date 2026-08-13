@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast, errMsg } from '../../utils/toast'
@@ -7,6 +7,7 @@ import useAuth from '../../hooks/useAuth'
 import { fetchMe, changePassword } from '../../api/auth.api'
 import { updateMyProfile } from '../../api/profile.api'
 import { getCalendarSubscription, resetCalendarSubscription } from '../../api/calendar.api'
+import { pushSupported, isStandalone, subscribeToPush, unsubscribeFromPush, currentSubscription } from '../../utils/push'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
@@ -120,6 +121,11 @@ function PersonalTab({ user, isTeacher, updateUser }) {
       {/* Подписка на календарь — уроки уезжают в Google/Apple и обновляются сами */}
       <Section title={t('settings.calTitle')}>
         <CalendarSubscription />
+      </Section>
+
+      {/* Push — уведомления доходят на телефон при закрытом приложении */}
+      <Section title={t('settings.pushTitle')}>
+        <PushToggle />
       </Section>
 
       {/* Изменяемые: имя, username, телефон */}
@@ -486,6 +492,76 @@ function CurrencyPicker({ value, hasHistory, onChange }) {
    защита — что 48-символьный токен в пути никто не угадает. Отсюда кнопка
    «Выпустить новую»: если ссылка утекла, старая должна перестать работать.
    ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   Push-уведомления.
+
+   Подписка принадлежит браузеру и устройству, а не аккаунту: с телефона и
+   ноутбука человек подписывается дважды. Поэтому тумблер показывает состояние
+   ИМЕННО этого браузера — сервер знает лишь общее число устройств.
+   ═══════════════════════════════════════════════════════════ */
+function PushToggle() {
+  const { t } = useTranslation('teacher')
+  const supported = pushSupported()   // возможности браузера, за жизнь компонента не меняются
+  const [on, setOn] = useState(false)
+  const [busy, setBusy] = useState(false)
+  // Ждать нечего, если push не поддерживается — выводим начальное состояние из supported,
+  // а не проставляем его эффектом: это лишний рендер на ровном месте.
+  const [ready, setReady] = useState(!supported)
+  // iPhone выдаёт push только приложению, установленному на экран «Домой».
+  // В обычной вкладке Safari подписки не будет вовсе — честнее сказать это заранее,
+  // чем дать нажать кнопку и показать пустую ошибку.
+  const needsInstall = supported && /iP(hone|ad)/.test(navigator.userAgent) && !isStandalone()
+
+  useEffect(() => {
+    if (!supported) return
+    let alive = true
+    currentSubscription()
+      .then((s) => { if (alive) setOn(Boolean(s)) })
+      .catch(() => {})
+      .finally(() => { if (alive) setReady(true) })
+    return () => { alive = false }
+  }, [supported])
+
+  // Именно из обработчика клика: без пользовательского жеста браузеры
+  // не показывают запрос разрешения, а Safari отклоняет его молча.
+  const toggle = async () => {
+    setBusy(true)
+    try {
+      if (on) {
+        await unsubscribeFromPush()
+        setOn(false)
+        toast.success(t('settings.pushOff'))
+      } else {
+        await subscribeToPush()
+        setOn(true)
+        toast.success(t('settings.pushOn'))
+      }
+    } catch (e) {
+      // Причину отказа разделяем: «запретили навсегда» лечится только руками
+      // в настройках сайта, и человеку надо сказать об этом прямо.
+      if (e.message === 'denied') toast.error(t('settings.pushDenied'))
+      else if (e.message === 'default') toast.error(t('settings.pushDismissed'))
+      else if (e.message === 'unsupported') toast.error(t('settings.pushUnsupported'))
+      else toast.error(errMsg(e, t('settings.pushFail')))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  if (!supported) return <p className="text-sm text-slate-500">{t('settings.pushUnsupported')}</p>
+  if (needsInstall) return <p className="text-sm text-slate-500">{t('settings.pushInstallFirst')}</p>
+
+  return (
+    <>
+      <p className="text-sm text-slate-500 mb-3">{t('settings.pushIntro')}</p>
+      <Button onClick={toggle} loading={busy} disabled={!ready} variant={on ? 'secondary' : 'primary'}>
+        {on ? t('settings.pushDisable') : t('settings.pushEnable')}
+      </Button>
+      <p className="text-[11px] text-slate-400 mt-2">{t('settings.pushHint')}</p>
+    </>
+  )
+}
+
 function CalendarSubscription() {
   const { t } = useTranslation('teacher')
   const [sub, setSub] = useState(null)
