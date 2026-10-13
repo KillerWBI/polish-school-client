@@ -25,5 +25,6 @@
   "login": "Iniciar sesión",
   "register": "Empezar",
   "logout": "Cerrar sesión",
-  "noConnection": "Sin conexión con el servidor"
+  "noConnection": "Sin conexión con el servidor",
+  "signUp": "Registrarse"
 }

@@ -25,6 +25,14 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
 
+  // Смена роли на форме регистрации: ?invite и прочие параметры уезжают вместе с человеком,
+  // введённое в поля не теряется (компонент тот же, меняется только адрес).
+  const switchRole = (to) => {
+    if (to === role) return
+    const qs = params.toString()
+    navigate((to === 'teacher' ? '/register' : '/register-student') + (qs ? `?${qs}` : ''), { replace: true })
+  }
+
   const validate = () => {
     const e = {}
     if (isRegister && form.name.trim().length < 2) e.name = t('authPage.validName')
@@ -72,7 +80,26 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
                 : t('authPage.subLogin')}
             </p>
 
-            <form onSubmit={handleSubmit} className="mt-7 space-y-4">
+            {/* Кто регистрируется — выбор на виду, а не ссылкой мелким шрифтом под формой:
+                раньше человек не понимал, в какой аккаунт он сейчас регистрируется. */}
+            {isRegister && (
+              <div className="mt-6">
+                <p className="text-xs font-medium text-[#475569] mb-2">{t('authPage.chooseRole')}</p>
+                <div className="grid grid-cols-2 gap-2" role="radiogroup">
+                  <RoleCard active={isTeacher} onClick={() => switchRole('teacher')}
+                    title={t('authPage.roleTeacher')} hint={t('authPage.roleTeacherHint')} />
+                  <RoleCard active={!isTeacher} onClick={() => switchRole('student')}
+                    title={t('authPage.roleStudent')} hint={t('authPage.roleStudentHint')} />
+                </div>
+              </div>
+            )}
+            {!isRegister && (
+              <p className="mt-4 text-xs text-[#64748B] bg-[#F1F5F9] border border-[#E2E8F0] rounded-lg px-3 py-2">
+                {t('authPage.loginHint')}
+              </p>
+            )}
+
+            <form onSubmit={handleSubmit} className={`${isRegister ? 'mt-5' : 'mt-6'} space-y-4`}>
               {isRegister && (
                 <Field label={t('authPage.labelName')} value={form.name} onChange={(v) => set('name', v)} error={errors.name} autoComplete="name" placeholder={t('authPage.placeholderName')} />
               )}
@@ -102,14 +129,8 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
             </form>
 
             {isRegister ? (
-              <div className="mt-6 space-y-1.5 text-sm text-center text-[#64748B]">
+              <div className="mt-6 text-sm text-center text-[#64748B]">
                 <p>{t('authPage.haveAccount')} <Link to="/login" className="text-brand-600 hover:text-brand-700 font-medium">{t('authPage.login')}</Link></p>
-                <p>
-                  {isTeacher ? `${t('authPage.youAreStudent')} ` : `${t('authPage.youAreTeacher')} `}
-                  <Link to={isTeacher ? '/register-student' : '/register'} className="text-brand-600 hover:text-brand-700 font-medium">
-                    {isTeacher ? t('authPage.regStudent') : t('authPage.regTeacher')}
-                  </Link>
-                </p>
               </div>
             ) : (
               <p className="mt-6 text-sm text-center text-[#64748B]">
@@ -121,6 +142,28 @@ export default function AuthPage({ mode = 'login', role = 'teacher' }) {
             )}
       </>
     </AuthLayout>
+  )
+}
+
+function RoleCard({ active, onClick, title, hint }) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={active}
+      onClick={onClick}
+      className={`text-left rounded-xl border px-3 py-2.5 transition-colors cursor-pointer ${
+        active
+          ? 'border-teal-500 bg-teal-50 ring-2 ring-teal-500/20'
+          : 'border-[#E2E5EA] bg-white hover:border-[#CBD5E1]'
+      }`}
+    >
+      <span className="flex items-center gap-2">
+        <span className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 ${active ? 'border-teal-500 bg-teal-500 shadow-[inset_0_0_0_2px_#fff]' : 'border-[#CBD5E1]'}`} />
+        <span className={`text-sm font-semibold ${active ? 'text-teal-800' : 'text-[#0F172A]'}`}>{title}</span>
+      </span>
+      <span className="block mt-1 text-[11.5px] leading-snug text-[#64748B]">{hint}</span>
+    </button>
   )
 }
 

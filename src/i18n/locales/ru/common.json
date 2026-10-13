@@ -22,9 +22,9 @@
   "success": "Готово",
   "noData": "Нет данных",
   "networkError": "Нет связи с сервером",
-  "serverError": "Ошибка сервера",
   "language": "Язык",
   "login": "Войти",
   "register": "Начать",
-  "logout": "Выйти"
+  "logout": "Выйти",
+  "signUp": "Регистрация"
 }

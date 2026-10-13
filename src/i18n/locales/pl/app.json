@@ -161,7 +161,13 @@
     "regTeacher": "Rejestracja nauczyciela",
     "noAccount": "Nie masz konta? Rejestracja —",
     "asTeacher": "nauczyciel",
-    "asStudent": "uczeń"
+    "asStudent": "uczeń",
+    "chooseRole": "Kim jesteś?",
+    "roleTeacher": "Jestem nauczycielem",
+    "roleStudent": "Jestem uczniem",
+    "roleTeacherHint": "Prowadzę uczniów, grupy, zadania i płatności",
+    "roleStudentHint": "Uczę się sam lub u swojego nauczyciela",
+    "loginHint": "Jedno logowanie dla nauczycieli i uczniów — właściwy panel otworzy się sam."
   },
   "calendar": {
     "title": "Plan",
@@ -451,5 +457,10 @@
     "subtitle": "Wszystkie powiadomienia, także dawno przeczytane",
     "emptyTitle": "Nie ma jeszcze zdarzeń",
     "emptyText": "Pojawią się tu zadania, oceny, płatności i zaproszenia — wszystko, o czym informowała platforma."
+  },
+  "cabinet": {
+    "teacher": "Panel nauczyciela",
+    "student": "Panel ucznia",
+    "admin": "Administrator"
   }
 }

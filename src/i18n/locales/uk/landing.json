@@ -241,7 +241,9 @@
   },
   "roleSwitch": {
     "teacher": "викладач",
-    "student": "учень"
+    "student": "учень",
+    "iTeacher": "Я викладач",
+    "iStudent": "Я учень"
   },
   "finalCta": {
     "title": "П’ять хвилин — і перша група вже в системі",

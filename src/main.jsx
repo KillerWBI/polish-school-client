@@ -8,7 +8,7 @@ import { AuthProvider } from './store/authStore.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { initSentry } from './utils/sentry.js'
 import { queryClient } from './queryClient.js'
-import i18n from './i18n'
+import i18n, { i18nReady } from './i18n'
 import { runGeoDetect } from './i18n/detectLocale.js'
 
 // Sentry грузится динамически только при наличии DSN (экономит ~50KB бандла в dev и без DSN).
@@ -29,7 +29,9 @@ if ('serviceWorker' in navigator) {
   }
 }
 
-createRoot(document.getElementById('root')).render(
+// Словари грузятся отдельными чанками — рендерим, когда пришёл язык посетителя.
+// catch: даже при сбое сети показываем приложение (с ключами), а не белый экран.
+i18nReady.catch(() => {}).then(() => createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -45,4 +47,4 @@ createRoot(document.getElementById('root')).render(
       </QueryClientProvider>
     </ErrorBoundary>
   </StrictMode>
-)
+))

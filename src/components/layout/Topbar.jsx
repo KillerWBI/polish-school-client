@@ -19,6 +19,7 @@ export default function Topbar() {
   return (
     <header className="hidden lg:flex items-center h-16 px-6 bg-white border-b border-slate-200">
       <div className="ml-auto flex items-center gap-2">
+        <RoleBadge />
         <NotifBell navigate={navigate} />
         <ProfileMenu navigate={navigate} />
       </div>
@@ -26,7 +27,25 @@ export default function Topbar() {
   )
 }
 
-/* ── Меню профиля: единственное место, где показаны имя и роль ── */
+/* ── Чей это кабинет — на виду, а не только в выпадающем меню профиля:
+      без этого человек не понимал, вошёл он как преподаватель или как ученик. ── */
+export function RoleBadge({ className = '' }) {
+  const { t } = useTranslation('app')
+  const { user } = useAuth()
+  if (!user?.role) return null
+  const tone = user.role === 'student'
+    ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+    : user.role === 'admin'
+      ? 'bg-amber-50 text-amber-700 border-amber-200'
+      : 'bg-teal-50 text-teal-700 border-teal-200'
+  return (
+    <span className={`inline-flex items-center h-7 px-2.5 rounded-lg border text-[12px] font-semibold whitespace-nowrap ${tone} ${className}`}>
+      {t(`cabinet.${user.role}`)}
+    </span>
+  )
+}
+
+/* ── Меню профиля: имя, роль и email ── */
 export function ProfileMenu({ navigate, onNavigate }) {
   const { t } = useTranslation('app')
   const { t: tc } = useTranslation('common')

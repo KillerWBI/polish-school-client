@@ -19,15 +19,15 @@ export default function RoleSwitch({ active }) {
     }
   }
 
-  const base = 'h-8 px-3 rounded-lg text-[12.5px] font-medium transition-colors cursor-pointer'
+  const base = 'h-8 px-3 whitespace-nowrap rounded-lg text-[12.5px] font-medium transition-colors cursor-pointer'
   const on   = 'bg-white text-[#0E1726] shadow-[0_1px_3px_rgba(16,24,40,0.12)]'
   const off  = 'text-[#5A6B7C] hover:text-[#0E1726]'
   return (
-    <div className="hidden sm:inline-flex items-center gap-0.5 p-1 rounded-xl border border-[#EDF1F4] bg-[#F1F5F6]">
+    <div className="hidden xl:inline-flex items-center gap-0.5 p-1 rounded-xl border border-[#EDF1F4] bg-[#F1F5F6]">
       <button onClick={() => active !== 'teacher' && go('/')}
-        className={`${base} ${active === 'teacher' ? on : off}`}>{t('roleSwitch.teacher')}</button>
+        className={`${base} ${active === 'teacher' ? on : off}`}>{t('roleSwitch.iTeacher')}</button>
       <button onClick={() => active !== 'student' && go('/for-students')}
-        className={`${base} ${active === 'student' ? on : off}`}>{t('roleSwitch.student')}</button>
+        className={`${base} ${active === 'student' ? on : off}`}>{t('roleSwitch.iStudent')}</button>
     </div>
   )
 }

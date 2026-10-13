@@ -161,7 +161,13 @@
     "regTeacher": "Inscription enseignant",
     "noAccount": "Pas de compte ? Inscrivez-vous en tant que —",
     "asTeacher": "enseignant",
-    "asStudent": "élève"
+    "asStudent": "élève",
+    "chooseRole": "Qui êtes-vous ?",
+    "roleTeacher": "Je suis enseignant",
+    "roleStudent": "Je suis élève",
+    "roleTeacherHint": "J'enseigne : élèves, groupes, devoirs, paiements",
+    "roleStudentHint": "J'apprends seul ou avec mon enseignant",
+    "loginHint": "Une seule connexion pour enseignants et élèves — le bon espace s’ouvre automatiquement."
   },
   "calendar": {
     "title": "Planning",
@@ -451,5 +457,10 @@
     "subtitle": "Toutes les notifications, y compris celles lues il y a longtemps",
     "emptyTitle": "Pas encore d'événements",
     "emptyText": "Devoirs, notes, paiements et invitations apparaîtront ici — tout ce dont la plateforme vous a informé."
+  },
+  "cabinet": {
+    "teacher": "Espace enseignant",
+    "student": "Espace élève",
+    "admin": "Administrateur"
   }
 }

@@ -25,5 +25,6 @@
   "login": "Anmelden",
   "register": "Loslegen",
   "logout": "Abmelden",
-  "noConnection": "Keine Verbindung zum Server"
+  "noConnection": "Keine Verbindung zum Server",
+  "signUp": "Registrieren"
 }
