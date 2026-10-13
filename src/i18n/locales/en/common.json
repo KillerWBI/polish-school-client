@@ -22,9 +22,9 @@
   "success": "Done",
   "noData": "No data",
   "networkError": "No connection to the server",
-  "serverError": "Server error",
   "language": "Language",
   "login": "Log in",
   "register": "Get started",
-  "logout": "Log out"
+  "logout": "Log out",
+  "signUp": "Sign up"
 }

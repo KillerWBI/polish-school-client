@@ -47,14 +47,14 @@ export default function Header({ role = 'teacher', onLogin, onRegister }) {
           : 'bg-transparent border-b border-transparent'
       }`}
     >
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-[72px] flex items-center justify-between gap-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 h-[72px] flex items-center justify-between gap-3 sm:gap-4">
         {/* Лого */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="flex items-center gap-2.5 cursor-pointer shrink-0"
         >
           <Logo size={30} />
-          <span className="font-display text-[19px] font-bold text-[#0E1726] tracking-tight">Peravenor</span>
+          <span className="hidden min-[440px]:inline font-display text-[19px] font-bold text-[#0E1726] tracking-tight">Peravenor</span>
         </button>
 
         {/* Нав */}
@@ -71,7 +71,7 @@ export default function Header({ role = 'teacher', onLogin, onRegister }) {
         </nav>
 
         {/* Действия */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
           <LanguageSwitcher />
           <RoleSwitch active={role} />
           {isAuthenticated ? (
@@ -83,17 +83,20 @@ export default function Header({ role = 'teacher', onLogin, onRegister }) {
             </button>
           ) : (
             <>
+              {/* «Войти» — настоящая кнопка и на телефоне: раньше это был бледный текст,
+                  спрятанный на узком экране, и вернувшийся человек не находил, где войти.
+                  Регистрация подписана прямо, а не «Начать» — так понятно, что это она. */}
               <button
                 onClick={onLogin}
-                className="hidden sm:inline-flex h-10 px-3 items-center rounded-lg text-[14px] text-[#5A6B7C] hover:text-[#0E1726] transition-colors cursor-pointer"
+                className="inline-flex h-10 px-3.5 sm:px-4 items-center rounded-xl border border-[#D5DEE5] bg-white text-[14px] font-semibold text-[#0E1726] hover:border-teal-400 hover:text-teal-700 transition-colors cursor-pointer whitespace-nowrap"
               >
                 {tc('login')}
               </button>
               <button
                 onClick={onRegister}
-                className="h-10 px-5 rounded-xl bg-teal-500 hover:bg-teal-600 text-white text-[14px] font-semibold transition-colors cursor-pointer shadow-[0_8px_20px_-10px_rgba(43,176,174,0.9)]"
+                className="h-10 px-3.5 sm:px-5 rounded-xl bg-teal-500 hover:bg-teal-600 text-white text-[14px] font-semibold transition-colors cursor-pointer whitespace-nowrap shadow-[0_8px_20px_-10px_rgba(43,176,174,0.9)]"
               >
-                {tc('register')}
+                {tc('signUp')}
               </button>
             </>
           )}

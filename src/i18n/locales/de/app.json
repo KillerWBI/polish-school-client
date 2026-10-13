@@ -161,7 +161,13 @@
     "regTeacher": "Registrierung für Lehrkräfte",
     "noAccount": "Kein Konto? Registrieren als —",
     "asTeacher": "Lehrkraft",
-    "asStudent": "Lernende"
+    "asStudent": "Lernende",
+    "chooseRole": "Wer sind Sie?",
+    "roleTeacher": "Ich bin Lehrkraft",
+    "roleStudent": "Ich lerne",
+    "roleTeacherHint": "Ich unterrichte: Lernende, Gruppen, Hausaufgaben, Zahlungen",
+    "roleStudentHint": "Ich lerne allein oder mit meiner Lehrkraft",
+    "loginHint": "Ein Login für Lehrkräfte und Lernende — der passende Bereich öffnet sich automatisch."
   },
   "calendar": {
     "title": "Zeitplan",
@@ -451,5 +457,10 @@
     "subtitle": "Alle Benachrichtigungen, auch längst gelesene",
     "emptyTitle": "Noch keine Ereignisse",
     "emptyText": "Hier erscheinen Aufgaben, Noten, Zahlungen und Einladungen — alles, worüber die Plattform Sie informiert hat."
+  },
+  "cabinet": {
+    "teacher": "Bereich für Lehrkräfte",
+    "student": "Bereich für Lernende",
+    "admin": "Administrator"
   }
 }

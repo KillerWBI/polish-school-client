@@ -161,7 +161,13 @@
     "regTeacher": "Registro de docente",
     "noAccount": "¿Sin cuenta? Regístrate como —",
     "asTeacher": "docente",
-    "asStudent": "estudiante"
+    "asStudent": "estudiante",
+    "chooseRole": "¿Quién eres?",
+    "roleTeacher": "Soy docente",
+    "roleStudent": "Soy estudiante",
+    "roleTeacherHint": "Doy clases: estudiantes, grupos, deberes y pagos",
+    "roleStudentHint": "Estudio por mi cuenta o con mi docente",
+    "loginHint": "Un solo acceso para docentes y estudiantes: se abre el panel correcto automáticamente."
   },
   "calendar": {
     "title": "Horario",
@@ -451,5 +457,10 @@
     "subtitle": "Todas las notificaciones, incluidas las leídas hace tiempo",
     "emptyTitle": "Todavía no hay eventos",
     "emptyText": "Aquí aparecerán tareas, notas, pagos e invitaciones — todo aquello de lo que te ha informado la plataforma."
+  },
+  "cabinet": {
+    "teacher": "Panel del docente",
+    "student": "Panel del estudiante",
+    "admin": "Administrador"
   }
 }

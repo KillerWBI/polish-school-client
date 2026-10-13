@@ -161,7 +161,13 @@
     "regTeacher": "Teacher registration",
     "noAccount": "No account? Sign up —",
     "asTeacher": "teacher",
-    "asStudent": "student"
+    "asStudent": "student",
+    "chooseRole": "Who are you?",
+    "roleTeacher": "I'm a teacher",
+    "roleStudent": "I'm a student",
+    "roleTeacherHint": "I teach students, groups, homework, payments",
+    "roleStudentHint": "I study on my own or with my teacher",
+    "loginHint": "One sign-in for teachers and students — the right dashboard opens automatically."
   },
   "calendar": {
     "title": "Schedule",
@@ -451,5 +457,10 @@
     "subtitle": "Every notification, including ones read long ago",
     "emptyTitle": "No events yet",
     "emptyText": "Assignments, grades, payments and invitations will show up here — everything the platform has told you about."
+  },
+  "cabinet": {
+    "teacher": "Teacher dashboard",
+    "student": "Student dashboard",
+    "admin": "Administrator"
   }
 }

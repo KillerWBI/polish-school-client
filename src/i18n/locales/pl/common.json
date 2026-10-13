@@ -22,9 +22,9 @@
   "success": "Gotowe",
   "noData": "Brak danych",
   "networkError": "Brak połączenia z serwerem",
-  "serverError": "Błąd serwera",
   "language": "Język",
   "login": "Zaloguj się",
   "register": "Rozpocznij",
-  "logout": "Wyloguj się"
+  "logout": "Wyloguj się",
+  "signUp": "Rejestracja"
 }

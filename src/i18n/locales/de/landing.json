@@ -241,7 +241,9 @@
   },
   "roleSwitch": {
     "teacher": "lehrkraft",
-    "student": "lernende"
+    "student": "lernende",
+    "iTeacher": "Ich bin Lehrkraft",
+    "iStudent": "Ich lerne"
   },
   "finalCta": {
     "title": "Fünf Minuten und die erste Gruppe steht",

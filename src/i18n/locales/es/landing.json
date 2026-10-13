@@ -241,7 +241,9 @@
   },
   "roleSwitch": {
     "teacher": "docente",
-    "student": "estudiante"
+    "student": "estudiante",
+    "iTeacher": "Soy docente",
+    "iStudent": "Soy estudiante"
   },
   "finalCta": {
     "title": "Cinco minutos y su primer grupo está dentro",

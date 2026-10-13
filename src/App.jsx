@@ -16,9 +16,10 @@ import AppLayout          from './components/layout/AppLayout'
 import CookieBanner       from './components/ui/CookieBanner'
 import PrivateRoute       from './components/layout/PrivateRoute'
 import RoleRoute          from './components/layout/RoleRoute'
-import DashboardPage      from './pages/dashboard/DashboardPage'
 
 // Lazy — грузятся только при переходе на страницу (экономит ~300KB+ начального бандла)
+// Дашборд тянет recharts (~400 КБ) — в главном бандле он тормозил даже лендинг.
+const DashboardPage              = lazy(() => import('./pages/dashboard/DashboardPage'))
 const CalendarPage               = lazy(() => import('./pages/calendar/CalendarPage'))
 const GroupsPage                 = lazy(() => import('./pages/groups/GroupsPage'))
 const GroupDetailPage            = lazy(() => import('./pages/groups/GroupDetailPage'))

@@ -241,7 +241,9 @@
   },
   "roleSwitch": {
     "teacher": "enseignant",
-    "student": "élève"
+    "student": "élève",
+    "iTeacher": "Je suis enseignant",
+    "iStudent": "Je suis élève"
   },
   "finalCta": {
     "title": "Cinq minutes et votre premier groupe est en place",

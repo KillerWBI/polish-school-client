@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { PageSpinner } from '../ui/Spinner'
 import useAuth from '../../hooks/useAuth'
 import Sidebar from './Sidebar'
-import Topbar, { NotifBell, ProfileMenu } from './Topbar'
+import Topbar, { NotifBell, ProfileMenu, RoleBadge } from './Topbar'
 import Tour from '../tour/Tour'
 import EmailVerificationBanner from '../auth/EmailVerificationBanner'
 import { IconMenu } from '../ui/icons'
@@ -44,6 +44,7 @@ export default function AppLayout() {
             <span className="w-2 h-2 rounded-[2px] bg-teal-500" />
             <span className="font-mono text-sm font-semibold text-[#0F172A]">Peravenor</span>
           </Link>
+          <RoleBadge className="hidden min-[420px]:inline-flex !h-6 !px-2 !text-[11px]" />
           <div className="ml-auto flex items-center gap-1">
             <NotifBell navigate={navigate} />
             <ProfileMenu navigate={navigate} onNavigate={() => setMobileOpen(false)} />
