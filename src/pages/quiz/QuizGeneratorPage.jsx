@@ -38,8 +38,8 @@ export default function QuizGeneratorPage({ embedded }) {
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
 
-  const submit = async (e) => {
-    e.preventDefault()
+  // Из формы и из «Новый тест» в панели под тестом — с теми же параметрами
+  const generate = async () => {
     if (form.topic.trim().length < 2) { toast.error(t('quiz.specifyTopic')); return }
     setLoading(true)
     setQuiz(null)
@@ -52,6 +52,7 @@ export default function QuizGeneratorPage({ embedded }) {
       setLoading(false)
     }
   }
+  const submit = (e) => { e.preventDefault(); generate() }
 
   const meta = () => ({
     topic: quiz.topic, type: quiz.type, difficulty: quiz.difficulty, language: quiz.language, questions: quiz.questions,
@@ -121,17 +122,21 @@ export default function QuizGeneratorPage({ embedded }) {
       {/* Результат. Учитель — сохраняет тест в библиотеку; ученик — проходит и сохраняет результат */}
       {quiz && !loading && (
         <div>
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <h2 className="text-lg font-semibold text-slate-900 min-w-0 truncate">{quiz.topic}</h2>
-            {isTeacher && (
-              <Button size="sm" onClick={handleSaveTest} loading={saving} className="shrink-0">{t('quiz.saveTest')}</Button>
-            )}
-          </div>
+          <h2 className="text-lg font-semibold text-slate-900 min-w-0 truncate mb-2">{quiz.topic}</h2>
           <p className="text-sm text-slate-500 mb-3">
             {t('quiz.resultHint')}
             {isTeacher && t('quiz.resultHintTeacher')}
           </p>
-          <QuizRunner quiz={quiz} onCheck={saveAttempt} />
+          <QuizRunner quiz={quiz} onCheck={saveAttempt} actions={
+            <>
+              <Button size="sm" variant="secondary" onClick={generate}>
+                <Sparkles className="w-4 h-4" /> {t('quiz.newTest')}
+              </Button>
+              {isTeacher && (
+                <Button size="sm" onClick={handleSaveTest} loading={saving}>{t('quiz.saveTest')}</Button>
+              )}
+            </>
+          } />
         </div>
       )}
     </Wrap>

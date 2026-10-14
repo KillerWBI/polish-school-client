@@ -229,6 +229,7 @@
     "fType": "Type de question",
     "generate": "Générer",
     "saveTest": "Enregistrer le test",
+    "newTest": "Nouveau test",
     "resultHint": "«Vérifier» affiche le résultat et enregistre la tentative dans «Mes tests».",
     "resultHintTeacher": "Et «Enregistrer le test» le place dans votre bibliothèque (pour le joindre à un devoir).",
     "notLoaded": "Test non chargé.",

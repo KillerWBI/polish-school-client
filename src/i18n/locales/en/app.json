@@ -229,6 +229,7 @@
     "fType": "Question type",
     "generate": "Generate",
     "saveTest": "Save test",
+    "newTest": "New test",
     "resultHint": "«Check» shows the result and saves the attempt to My tests.",
     "resultHintTeacher": "And «Save test» puts it in your library (to attach to homework).",
     "notLoaded": "Test not loaded.",

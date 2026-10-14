@@ -229,6 +229,7 @@
     "fType": "Fragetyp",
     "generate": "Erzeugen",
     "saveTest": "Test speichern",
+    "newTest": "Neuer Test",
     "resultHint": "«Prüfen» zeigt das Ergebnis und speichert den Versuch in «Meine Tests».",
     "resultHintTeacher": "Und «Test speichern» legt ihn in Ihre Bibliothek (zum Anhängen an Hausaufgaben).",
     "notLoaded": "Test nicht geladen.",

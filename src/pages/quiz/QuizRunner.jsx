@@ -13,7 +13,9 @@ const sameSet = (a = [], b = []) =>
 // Интерактивный тест: выбираешь ответы → «Проверить» → результат + подсветка.
 // Плюс «Показать ключ», «Копировать» и (если передан onSave) «Сохранить результат».
 // savedAnswers — открыть уже пройденным (история): показываем ответы + результат, а не с нуля.
-export default function QuizRunner({ quiz, savedAnswers, onCheck }) {
+// actions — кнопки страницы («Новый тест», «Сохранить тест», «Выйти»): встают в ту же панель,
+// чтобы все действия с тестом были в одном месте, а не сверху и снизу.
+export default function QuizRunner({ quiz, savedAnswers, onCheck, actions }) {
   const { t } = useTranslation('app')
   const questions = Array.isArray(quiz?.questions) ? quiz.questions : []
   const type = quiz?.type
@@ -65,8 +67,17 @@ export default function QuizRunner({ quiz, savedAnswers, onCheck }) {
 
   return (
     <div>
-      {/* Панель управления */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
+      {/* Вопросы */}
+      <div className="space-y-3">
+        {questions.map((q, qi) => (
+          <QuestionItem key={qi} q={q} qi={qi} type={type} sel={sel[qi]} reveal={reveal}
+            onPick={pick} onOpen={setOpen} />
+        ))}
+      </div>
+
+      {/* Панель управления — прилипает к низу экрана: «Проверить» под рукой после последнего
+          вопроса и видна с любого места теста, листать к началу не нужно */}
+      <QuizActionBar>
         {!checked ? (
           <>
             <Button size="sm" onClick={check}>{t('quiz.check')}</Button>
@@ -92,19 +103,23 @@ export default function QuizRunner({ quiz, savedAnswers, onCheck }) {
             </button>
           </>
         )}
-        <button onClick={copy}
-          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors ml-auto">
-          <Copy className="w-4 h-4" /> {t('quiz.copy')}
-        </button>
-      </div>
+        <div className="flex flex-wrap items-center gap-2 ml-auto">
+          <button onClick={copy}
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
+            <Copy className="w-4 h-4" /> {t('quiz.copy')}
+          </button>
+          {actions}
+        </div>
+      </QuizActionBar>
+    </div>
+  )
+}
 
-      {/* Вопросы */}
-      <div className="space-y-3">
-        {questions.map((q, qi) => (
-          <QuestionItem key={qi} q={q} qi={qi} type={type} sel={sel[qi]} reveal={reveal}
-            onPick={pick} onOpen={setOpen} />
-        ))}
-      </div>
+// Общая нижняя панель действий с тестом (её же использует открытый ответ на треке).
+export function QuizActionBar({ children }) {
+  return (
+    <div className="sticky bottom-3 z-10 mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white/95 backdrop-blur px-3 py-2.5 shadow-[0_4px_20px_rgba(15,23,42,0.08)]">
+      {children}
     </div>
   )
 }

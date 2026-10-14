@@ -44,7 +44,11 @@ export default function AppLayout() {
             <span className="w-2 h-2 rounded-[2px] bg-teal-500" />
             <span className="font-mono text-sm font-semibold text-[#0F172A]">Peravenor</span>
           </Link>
-          <RoleBadge className="hidden min-[420px]:inline-flex !h-6 !px-2 !text-[11px]" />
+          {/* Прятать через обёртку: `hidden` на самом бейдже проигрывает его `inline-flex`,
+              и на узком телефоне бейдж выталкивал меню профиля за край экрана */}
+          <span className="hidden min-[420px]:inline-flex">
+            <RoleBadge className="!h-6 !px-2 !text-[11px]" />
+          </span>
           <div className="ml-auto flex items-center gap-1">
             <NotifBell navigate={navigate} />
             <ProfileMenu navigate={navigate} onNavigate={() => setMobileOpen(false)} />
@@ -54,7 +58,11 @@ export default function AppLayout() {
         <Topbar />
         <EmailVerificationBanner />
 
-        <main className="flex-1 overflow-y-auto">
+        {/* Без overflow: прокручивается окно, а не main (каркас min-h-screen, высота main не ограничена).
+            overflow-y-auto здесь ничего не прокручивал, но делал main опорой для sticky — и панели
+            «прилипнуть к низу/верху» (тест, сохранение профиля, сводка оплаты) не прилипали никогда.
+            Заодно горизонтальное переполнение больше не прячется в полосу прокрутки внутри main. */}
+        <main className="flex-1">
           {/* Центрируем контент и ограничиваем ширину — чтобы страницы не «растягивались» на весь монитор */}
           <div className="mx-auto w-full max-w-[1320px]">
             <Suspense fallback={<PageSpinner />}>

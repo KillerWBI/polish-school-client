@@ -229,6 +229,7 @@
     "fType": "Tipo de pregunta",
     "generate": "Generar",
     "saveTest": "Guardar test",
+    "newTest": "Nuevo test",
     "resultHint": "«Comprobar» muestra el resultado y guarda el intento en «Mis tests».",
     "resultHintTeacher": "Y «Guardar test» lo coloca en tu biblioteca (para adjuntarlo a los deberes).",
     "notLoaded": "El test no se ha cargado.",

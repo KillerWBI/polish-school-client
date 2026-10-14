@@ -4,11 +4,12 @@ import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
 import { ArrowLeft, Sparkles, Lightbulb, Lock, Check, History, Target, Layers, Repeat, PenLine, FileText, BookOpen, Link2, Grid3x3, Trash2, Share2 } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
-import { getTopic, nextTopicQuiz, submitTopicAttempt, gradeOpenAnswers, suggestSources, getSources, deleteSource, importCardsFromText, shareTopic } from '../../api/topics.api'
+import { getTopic, nextTopicQuiz, submitTopicAttempt, gradeOpenAnswers, suggestSources, suggestModuleSources, getSources, deleteSource, importCardsFromText, shareTopic } from '../../api/topics.api'
+import { groupModules, isStepLocked, GATE } from './modules'
 import { safeUrl } from '../../utils/safeUrl'
 import { getCards, getDueCards, generateCards, reviewCard } from '../../api/topicCards.api'
 import { getQuiz } from '../../api/quizzes.api'
-import QuizRunner from '../quiz/QuizRunner'
+import QuizRunner, { QuizActionBar } from '../quiz/QuizRunner'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import { SkeletonList } from '../../components/ui/Skeleton'
@@ -20,7 +21,6 @@ import IdeasModal from './IdeasModal'
 import CardReview from './CardReview'
 
 const DIFF_KEY = { easy: 'diffEasy', medium: 'diffMedium', hard: 'diffHard' }
-const GATE = 50 // шаг открывается, когда предыдущий освоен на ≥50%
 
 const masteryColor = (m) => m >= 70 ? 'bg-emerald-500' : m >= 40 ? 'bg-teal-500' : 'bg-amber-500'
 const masteryText  = (m) => m >= 70 ? 'text-emerald-600' : m >= 40 ? 'text-teal-600' : 'text-amber-600'
@@ -57,6 +57,7 @@ export default function TopicDetailPage() {
 
   const { topic, attempts } = data
   const roadmap = (Array.isArray(topic.roadmap) ? topic.roadmap : []).slice().sort((a, b) => a.order - b.order)
+  const modules = groupModules(roadmap)
   const m = Math.round(topic.masteryPercent || 0)
 
   // Поделиться треком с учителем — учитель увидит слабые места и сможет дать адресный тест
@@ -84,6 +85,13 @@ export default function TopicDetailPage() {
     else toast(loose ? t('detail.noMore') : t('detail.noVerified'))
     reloadSources()
     return added
+  }
+  // Источники сразу ко всем подтемам модуля — один вызов ИИ, раскладываются по подтемам
+  const suggestForModule = async (moduleId) => {
+    const added = await suggestModuleSources(topic.id, moduleId)
+    if (added?.length) toast.success(t('detail.sourcesAdded', { count: added.length }))
+    else toast(t('detail.noVerified'))
+    reloadSources()
   }
   const delSource = async (sourceId) => {
     try { await deleteSource(topic.id, sourceId); reloadSources() }
@@ -163,22 +171,35 @@ export default function TopicDetailPage() {
       </div>
 
       {/* Карта знаний — компактный heatmap обладания по шагам (экспериментально) */}
-      <KnowledgeMap roadmap={roadmap} />
+      <KnowledgeMap modules={modules} />
 
       {/* Две колонки: роадмап (основное) + история практик (сайд) */}
       <div className="grid lg:grid-cols-[1fr_360px] gap-6 items-start">
-        {/* Роадмап */}
+        {/* Роадмап: модули → подтемы. Модуль один — шапки модуля нет, вид как до модулей */}
         <div>
-          <h2 className="text-sm font-semibold text-slate-900 mb-3">{t('detail.roadmap')} · {roadmap.length} {t('topics.steps', { count: roadmap.length })}</h2>
-          <div className="space-y-2.5">
-            {roadmap.map((step, i) => {
-              const prev = i === 0 ? null : roadmap[i - 1]
-              const locked = prev ? (Number(prev.mastery) || 0) < GATE : false
-              return <StepRow key={step.id} step={step} index={i} locked={locked}
-                onPractice={() => setPracticeStep(step)} onCards={() => setCardsStep(step)}
-                sources={sourcesByStep[step.id] || []}
-                onSuggest={(loose) => suggestForStep(step.id, loose)}
-                onDeleteSource={delSource} />
+          <h2 className="text-sm font-semibold text-slate-900 mb-3">
+            {t('detail.roadmap')}
+            {modules.length > 1 && <> · {modules.length} {t('topics.modules', { count: modules.length })}</>}
+            {' · '}{roadmap.length} {t('topics.steps', { count: roadmap.length })}
+          </h2>
+          <div className={modules.length > 1 ? 'space-y-5' : ''}>
+            {modules.map((mod, mi) => {
+              const rows = (
+                <div className="space-y-2.5">
+                  {mod.steps.map((step, si) => (
+                    <StepRow key={step.id} step={step} index={roadmap.indexOf(step)}
+                      locked={isStepLocked(modules, mi, si)}
+                      lockText={modules.length > 1 ? t('detail.lockedModule', { gate: GATE }) : t('detail.locked', { gate: GATE })}
+                      onPractice={() => setPracticeStep(step)} onCards={() => setCardsStep(step)}
+                      sources={sourcesByStep[step.id] || []}
+                      onSuggest={(loose) => suggestForStep(step.id, loose)}
+                      onDeleteSource={delSource} />
+                  ))}
+                </div>
+              )
+              return modules.length > 1
+                ? <ModuleSection key={mod.id} module={mod} index={mi} onSuggest={() => suggestForModule(mod.id)}>{rows}</ModuleSection>
+                : <div key={mod.id}>{rows}</div>
             })}
           </div>
         </div>
@@ -251,11 +272,12 @@ function BackLink({ onClick }) {
   )
 }
 
-/* ── Карта знаний: heatmap обладания по шагам (экспериментально) ── */
-function KnowledgeMap({ roadmap }) {
+/* ── Карта знаний: heatmap обладания по шагам, группами по модулям (экспериментально) ── */
+function KnowledgeMap({ modules }) {
   const { t } = useTranslation('student')
-  if (!roadmap?.length) return null
+  if (!modules?.length) return null
   const cell = (m) => m >= 70 ? 'bg-emerald-500' : m >= 40 ? 'bg-teal-500' : m > 0 ? 'bg-amber-400' : 'bg-slate-200'
+  let n = 0 // сквозная нумерация — та же, что в строках плана
   return (
     <div className="mb-6">
       <div className="flex items-center gap-1.5 mb-2">
@@ -263,22 +285,61 @@ function KnowledgeMap({ roadmap }) {
         <span className="text-xs font-semibold text-slate-500">{t('detail.knowledgeMap')}</span>
         <span className="text-[10px] text-slate-400 border border-slate-200 rounded px-1">{t('detail.exp')}</span>
       </div>
-      <div className="flex flex-wrap gap-1.5">
-        {roadmap.map((s, i) => {
-          const m = Math.round(Number(s.mastery) || 0)
-          return (
-            <div key={s.id} title={`${i + 1}. ${s.title} — ${m}%`}
-              className={`w-7 h-7 rounded-md ${cell(m)} flex items-center justify-center text-[10px] font-semibold ${m >= 40 ? 'text-white' : 'text-slate-500'}`}>
-              {i + 1}
-            </div>
-          )
-        })}
+      <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+        {modules.map((mod) => (
+          <div key={mod.id} className="flex flex-wrap gap-1.5" title={mod.title || undefined}>
+            {mod.steps.map((s) => {
+              const i = ++n
+              const m = Math.round(Number(s.mastery) || 0)
+              return (
+                <div key={s.id} title={`${i}. ${s.title} — ${m}%`}
+                  className={`w-7 h-7 rounded-md ${cell(m)} flex items-center justify-center text-[10px] font-semibold ${m >= 40 ? 'text-white' : 'text-slate-500'}`}>
+                  {i}
+                </div>
+              )
+            })}
+          </div>
+        ))}
       </div>
     </div>
   )
 }
 
-function StepRow({ step, index, locked, onPractice, onCards, sources = [], onSuggest, onDeleteSource }) {
+/* ── Модуль: шапка (номер, название, освоение, источники на весь модуль) + подтемы ── */
+function ModuleSection({ module, index, onSuggest, children }) {
+  const { t } = useTranslation('student')
+  const [busy, setBusy] = useState(false)
+  const m = Math.round(module.mastery)
+
+  const run = async () => {
+    setBusy(true)
+    try { await onSuggest() }
+    catch (e) { toast.error(e.response?.data?.error || t('detail.suggestError')) }
+    finally { setBusy(false) }
+  }
+
+  return (
+    <section>
+      <div className="flex items-start gap-3 mb-2.5">
+        <div className="min-w-0 flex-1">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-teal-600">{t('detail.moduleLabel', { n: index + 1 })}</div>
+          <h3 className="text-base font-semibold text-slate-900">{module.title}</h3>
+          <div className="mt-1.5 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+            <div className={`h-full rounded-full ${masteryColor(m)}`} style={{ width: `${m}%` }} />
+          </div>
+        </div>
+        <div className={`text-sm font-semibold shrink-0 tabular-nums ${masteryText(m)}`}>{m}%</div>
+      </div>
+      <button onClick={run} disabled={busy}
+        className="inline-flex items-center gap-1.5 mb-2.5 text-xs text-teal-600 hover:text-teal-700 disabled:text-slate-400 transition-colors">
+        <BookOpen className="w-3.5 h-3.5" /> {busy ? t('detail.picking') : t('detail.moduleSuggest')}
+      </button>
+      {children}
+    </section>
+  )
+}
+
+function StepRow({ step, index, locked, lockText, onPractice, onCards, sources = [], onSuggest, onDeleteSource }) {
   const { t } = useTranslation('student')
   const [unlocked, setUnlocked] = useState(false)
   const m = Math.round(Number(step.mastery) || 0)
@@ -306,7 +367,7 @@ function StepRow({ step, index, locked, onPractice, onCards, sources = [], onSug
         {isLocked ? (
           <button onClick={() => setUnlocked(true)}
             className="text-xs text-slate-500 hover:text-slate-700 transition-colors">
-            {t('detail.locked', { gate: GATE })}
+            {lockText}
           </button>
         ) : (
           <>
@@ -591,13 +652,12 @@ function StepPractice({ topicId, step, onBack }) {
           <Button onClick={load}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.moreTest')}</Button>
         </div>
       ) : quiz && mode === 'open' ? (
-        <>
-          <OpenRunner key={runKey} quiz={quiz} onGrade={onGrade} />
-          <div className="flex gap-2 mt-5">
-            <Button variant="secondary" className="flex-1" onClick={onBack}>{saved ? t('common:done') : t('detail.exit')}</Button>
-            <Button className="flex-1" onClick={load}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.newQuestions')}</Button>
-          </div>
-        </>
+        <OpenRunner key={runKey} quiz={quiz} onGrade={onGrade} actions={
+          <>
+            <Button size="sm" variant="secondary" onClick={onBack}>{saved ? t('common:done') : t('detail.exit')}</Button>
+            <Button size="sm" variant="secondary" onClick={load}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.newQuestions')}</Button>
+          </>
+        } />
       ) : quiz ? (
         <>
           {!saved && (
@@ -605,11 +665,12 @@ function StepPractice({ topicId, step, onBack }) {
               {t('detail.checkHintPre')} <b>{t('detail.checkBtn')}</b> {t('detail.checkHintPost')}
             </p>
           )}
-          <QuizRunner key={runKey} quiz={quiz} onCheck={onCheck} />
-          <div className="flex gap-2 mt-5">
-            <Button variant="secondary" className="flex-1" onClick={onBack}>{saved ? t('common:done') : t('detail.exit')}</Button>
-            <Button className="flex-1" onClick={load}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.moreTest')}</Button>
-          </div>
+          <QuizRunner key={runKey} quiz={quiz} onCheck={onCheck} actions={
+            <>
+              <Button size="sm" variant="secondary" onClick={onBack}>{saved ? t('common:done') : t('detail.exit')}</Button>
+              <Button size="sm" variant="secondary" onClick={load}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.moreTest')}</Button>
+            </>
+          } />
         </>
       ) : (
         <div className="py-10 text-center">
@@ -622,7 +683,7 @@ function StepPractice({ topicId, step, onBack }) {
 }
 
 /* ── Открытый ответ: textarea на каждый вопрос → ИИ-оценка + фидбек ── */
-function OpenRunner({ quiz, onGrade }) {
+function OpenRunner({ quiz, onGrade, actions }) {
   const { t } = useTranslation('student')
   const questions = Array.isArray(quiz?.questions) ? quiz.questions : []
   const [answers, setAnswers] = useState({})
@@ -666,9 +727,12 @@ function OpenRunner({ quiz, onGrade }) {
         )
       })}
 
-      {!results && (
-        <Button onClick={submit} loading={busy}>{t('detail.checkAnswers')}</Button>
-      )}
+      <QuizActionBar>
+        {!results && (
+          <Button size="sm" onClick={submit} loading={busy}>{t('detail.checkAnswers')}</Button>
+        )}
+        <div className="flex flex-wrap items-center gap-2 ml-auto">{actions}</div>
+      </QuizActionBar>
     </div>
   )
 }

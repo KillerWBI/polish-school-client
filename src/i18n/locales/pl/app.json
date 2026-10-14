@@ -230,6 +230,7 @@
     "fType": "Typ pytań",
     "generate": "Generuj",
     "saveTest": "Zapisz test",
+    "newTest": "Nowy test",
     "resultHint": "«Sprawdź» pokaże wynik i zapisze podejście w Moich testach.",
     "resultHintTeacher": "A «Zapisz test» odłoży go do biblioteki (do dołączenia do zadania).",
     "notLoaded": "Test nie wczytany.",

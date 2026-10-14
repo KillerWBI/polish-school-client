@@ -53,6 +53,12 @@ export const suggestSources = async (id, stepId, loose = false) => {
   return data.data // [{ id, type, title, author?, url, verified }]
 }
 
+// Источники сразу ко всем подтемам модуля (один вызов ИИ) — каждый сохранён под своим stepId
+export const suggestModuleSources = async (id, moduleId) => {
+  const { data } = await client.post(`/topics/${id}/sources/module`, { moduleId })
+  return data.data // [{ id, stepId, type, title, author?, url, verified }]
+}
+
 export const deleteSource = async (id, sourceId) => {
   const { data } = await client.delete(`/topics/${id}/sources/${sourceId}`)
   return data.data
