@@ -13,6 +13,8 @@ export default function RoleRoute({ role, children }) {
     )
   }
 
-  if (user?.role !== role) return <Navigate to="/calendar" replace />
+  // У админа user.role — текущий режим (учитель/ученик), поэтому админку проверяем по isAdmin
+  const allowed = role === 'admin' ? user?.isAdmin : user?.role === role
+  if (!allowed) return <Navigate to="/calendar" replace />
   return children
 }

@@ -15,8 +15,8 @@ import Tabs from '../../components/ui/Tabs'
 // Ключи лейблов ролей/статусов; цвета — в коде. Резолвятся t() при рендере.
 const ROLE_KEY    = { teacher: 'admin.roleTeacher', student: 'admin.roleStudent', admin: 'admin.roleAdmin' }
 const ROLE_COLOR  = { teacher: 'bg-teal-100 text-teal-700', student: 'bg-emerald-100 text-emerald-700', admin: 'bg-purple-100 text-purple-700' }
-const PLAN_LABEL  = { free: 'Free', pro: 'Pro', school: 'School' }
-const PLAN_COLOR  = { free: 'bg-slate-100 text-slate-600', pro: 'bg-amber-100 text-amber-700', school: 'bg-indigo-100 text-indigo-700' }
+const PLAN_LABEL  = { free: 'Free', basic: 'Basic', pro: 'Pro', school: 'School' }
+const PLAN_COLOR  = { free: 'bg-slate-100 text-slate-600', basic: 'bg-teal-100 text-teal-700', pro: 'bg-amber-100 text-amber-700', school: 'bg-indigo-100 text-indigo-700' }
 
 export default function AdminPage() {
   const { t } = useTranslation('teacher')
@@ -349,13 +349,11 @@ function UserRow({ user, onDeactivate, onActivate, onRole, onPlan }) {
         </span>
       </td>
 
-      {/* Тариф (только у учителей) */}
+      {/* Тариф — у учителей и учеников (лимиты у каждой роли свои) */}
       <td className="px-4 py-3">
-        {user.role === 'teacher' || user.role === 'admin' ? (
-          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${PLAN_COLOR[user.plan] ?? 'bg-slate-100 text-slate-600'}`}>
-            {PLAN_LABEL[user.plan] ?? user.plan ?? '—'}
-          </span>
-        ) : <span className="text-slate-300 text-xs">—</span>}
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${PLAN_COLOR[user.plan] ?? 'bg-slate-100 text-slate-600'}`}>
+          {PLAN_LABEL[user.plan] ?? user.plan ?? '—'}
+        </span>
       </td>
 
       {/* Статус */}
@@ -396,16 +394,14 @@ function UserRow({ user, onDeactivate, onActivate, onRole, onPlan }) {
                 ))}
               </MenuSection>
 
-              {(user.role === 'teacher' || user.role === 'admin') && (
-                <MenuSection label={t('admin.menuPlan')}>
-                  {['free', 'basic', 'pro', 'school'].map(p => (
-                    <MenuBtn key={p} active={user.plan === p}
-                      onClick={() => { setOpen(false); onPlan(p) }}>
-                      {PLAN_LABEL[p]}
-                    </MenuBtn>
-                  ))}
-                </MenuSection>
-              )}
+              <MenuSection label={t('admin.menuPlan')}>
+                {['free', 'basic', 'pro', 'school'].map(p => (
+                  <MenuBtn key={p} active={user.plan === p}
+                    onClick={() => { setOpen(false); onPlan(p) }}>
+                    {PLAN_LABEL[p]}
+                  </MenuBtn>
+                ))}
+              </MenuSection>
 
               <div className="border-t border-slate-100 mt-1 pt-1">
                 {user.active ? (

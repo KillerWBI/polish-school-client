@@ -65,7 +65,8 @@ export default function Sidebar({ onClose, collapsible = true }) {
   const [hovered, setHovered] = useState(false)
   const open = !collapsible || hovered
 
-  const isAdmin = user?.role === 'admin'
+  const isAdmin = !!user?.isAdmin
+  const planName = isAdmin ? t('sidebar.planUnlimited') : (PLAN_LABEL[user?.plan] ?? 'Free')
   const baseSections = isTeacher ? TEACHER_SECTIONS : STUDENT_SECTIONS
   const sections = isAdmin ? [...baseSections, ADMIN_EXTRA_SECTION] : baseSections
 
@@ -129,7 +130,7 @@ export default function Sidebar({ onClose, collapsible = true }) {
 
       {/* Тариф — заметная точка входа к оплате */}
       <div className={`shrink-0 border-t border-[#EAECEF] ${open ? 'p-3' : 'p-2 flex justify-center'}`}>
-        <Tooltip side="right" text={open ? '' : t('sidebar.planTooltip', { plan: PLAN_LABEL[user?.plan] ?? 'Free' })}>
+        <Tooltip side="right" text={open ? '' : t('sidebar.planTooltip', { plan: planName })}>
           <Link to="/plans" onClick={onClose}
             className={`flex items-center rounded-xl border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors ${
               open ? 'w-full gap-2.5 px-3 py-2.5' : 'w-10 h-10 justify-center'
@@ -138,7 +139,7 @@ export default function Sidebar({ onClose, collapsible = true }) {
             {open && (
               <span className="min-w-0 flex-1 text-left">
                 <span className="block text-[11px] text-teal-600 leading-tight truncate">
-                  {t('sidebar.planCurrent', { plan: PLAN_LABEL[user?.plan] ?? 'Free' })}
+                  {t('sidebar.planCurrent', { plan: planName })}
                 </span>
                 <span className="block text-[13px] font-semibold leading-tight truncate">{t('sidebar.planUpgrade')}</span>
               </span>

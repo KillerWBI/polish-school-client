@@ -52,7 +52,9 @@
     "openProfile": "Відкрити мій профіль",
     "planTooltip": "Тариф {{plan}}. Порівняти тарифи та збільшити ліміти",
     "planUpgrade": "Розширити можливості",
-    "planCurrent": "Ваш тариф — {{plan}}"
+    "planCurrent": "Ваш тариф — {{plan}}",
+    "adminMode": "Режим адміністратора",
+    "planUnlimited": "без лімітів"
   },
   "role": {
     "teacher": "Викладач",

@@ -11,6 +11,7 @@ import {
   IconLanguage, IconInstall, IconLogout, IconCheck,
 } from '../ui/icons'
 import { notifMeta } from '../ui/notifMeta'
+import { switchActAs } from '../../utils/actAs'
 
 // Левая часть шапки намеренно пустая: развёрнутый сайдбар накрывает её краем,
 // поэтому ничего интерактивного слева не держим.
@@ -33,14 +34,14 @@ export function RoleBadge({ className = '' }) {
   const { t } = useTranslation('app')
   const { user } = useAuth()
   if (!user?.role) return null
-  const tone = user.role === 'student'
-    ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
-    : user.role === 'admin'
-      ? 'bg-amber-50 text-amber-700 border-amber-200'
+  const tone = user.isAdmin
+    ? 'bg-amber-50 text-amber-700 border-amber-200'
+    : user.role === 'student'
+      ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
       : 'bg-teal-50 text-teal-700 border-teal-200'
   return (
     <span className={`inline-flex items-center h-7 px-2.5 rounded-lg border text-[12px] font-semibold whitespace-nowrap ${tone} ${className}`}>
-      {t(`cabinet.${user.role}`)}
+      {user.isAdmin && `${t('cabinet.admin')} · `}{t(`cabinet.${user.role}`)}
     </span>
   )
 }
@@ -118,6 +119,19 @@ export function ProfileMenu({ navigate, onNavigate }) {
               <IconSupport size={16} className="text-slate-400" /> {t('sidebar.support')}
             </button>
           </div>
+
+          {/* Админ переключается между кабинетами учителя и ученика — тестировать платформу целиком */}
+          {user?.isAdmin && (
+            <div className="py-1 border-t border-slate-100">
+              <p className="px-3 pt-1.5 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-600">{t('sidebar.adminMode')}</p>
+              {['teacher', 'student'].map((mode) => (
+                <button key={mode} onClick={() => { if (user.role !== mode) switchActAs(mode) }} className={rowCls}>
+                  <span className="flex-1">{t(`cabinet.${mode}`)}</span>
+                  {user.role === mode && <IconCheck size={14} className="text-teal-600" />}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="py-1 border-t border-slate-100">
             <button onClick={() => setLangOpen(v => !v)} className={rowCls} aria-expanded={langOpen}>

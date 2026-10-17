@@ -2,6 +2,7 @@ import axios from 'axios'
 import { getToken, setToken, removeToken, getCsrfToken, setCsrfToken } from '../utils/token'
 import { toast } from '../utils/toast'
 import i18n from '../i18n'
+import { getActAs } from '../utils/actAs'
 
 const baseURL = import.meta.env.VITE_API_URL
 
@@ -15,6 +16,7 @@ const client = axios.create({
 client.interceptors.request.use((cfg) => {
   const token = getToken()
   if (token) cfg.headers.Authorization = `Bearer ${token}`
+  cfg.headers['X-Act-As'] = getActAs() // режим админа; у остальных сервер его игнорирует
   // CSRF: только на мутирующие методы — на них сервер и проверяет
   const method = (cfg.method || 'get').toUpperCase()
   if (method !== 'GET' && method !== 'HEAD') {

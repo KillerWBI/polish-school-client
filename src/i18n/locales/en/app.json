@@ -52,7 +52,9 @@
     "openProfile": "Open my profile",
     "planTooltip": "Plan {{plan}}. Compare plans and raise your limits",
     "planUpgrade": "Get more capacity",
-    "planCurrent": "Your plan — {{plan}}"
+    "planCurrent": "Your plan — {{plan}}",
+    "adminMode": "Admin mode",
+    "planUnlimited": "Unlimited"
   },
   "role": {
     "teacher": "Teacher",

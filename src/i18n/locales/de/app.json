@@ -52,7 +52,9 @@
     "openProfile": "Mein Profil öffnen",
     "planTooltip": "Tarif {{plan}}. Tarife vergleichen und Limits erhöhen",
     "planUpgrade": "Mehr Kapazität holen",
-    "planCurrent": "Ihr Tarif — {{plan}}"
+    "planCurrent": "Ihr Tarif — {{plan}}",
+    "adminMode": "Admin-Modus",
+    "planUnlimited": "unbegrenzt"
   },
   "role": {
     "teacher": "Lehrkraft",

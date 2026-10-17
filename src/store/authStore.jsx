@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { fetchMe, logoutServer } from '../api/auth.api'
 import { getToken, setToken, removeToken } from '../utils/token'
+import { getActAs } from '../utils/actAs'
 import { AuthContext } from './authContext'
 
 export function AuthProvider({ children }) {
@@ -49,8 +50,15 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('auth:logout', logout)
   }, [logout])
 
+  // Админ видит кабинет выбранного режима: роль подменяется здесь, и весь интерфейс
+  // (меню, маршруты, isTeacher/isStudent) работает как у учителя или ученика. isAdmin — что это админ.
+  const viewUser = useMemo(
+    () => (user?.role === 'admin' ? { ...user, role: getActAs(), isAdmin: true } : user),
+    [user],
+  )
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user: viewUser, loading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   )
