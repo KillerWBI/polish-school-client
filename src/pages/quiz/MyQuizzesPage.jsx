@@ -23,7 +23,7 @@ export default function MyQuizzesPage({ embedded, onCreate }) {
   const navigate = useNavigate()
   const [confirmId, setConfirmId] = useState(null)
   const [tab, setTab] = useState('passed') // только учитель: passed | saved
-  const TYPE_LABEL = { single: t('quiz.typeSingleShort'), multiple: t('quiz.typeMultipleShort'), truefalse: t('quiz.typeTrueFalseShort'), open: t('quiz.typeOpenShort') }
+  const TYPE_LABEL = { single: t('quiz.typeSingleShort'), multiple: t('quiz.typeMultipleShort'), truefalse: t('quiz.typeTrueFalseShort'), open: t('quiz.typeOpenShort'), mixed: t('quiz.typeMixedShort') }
 
   const del = async (id) => {
     try { await deleteQuiz(id); toast.success(t('quiz.deleted')); setConfirmId(null); reload() }

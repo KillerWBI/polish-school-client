@@ -23,15 +23,20 @@ export default function QuizGeneratorPage({ embedded }) {
     { v: 'hard', label: t('quiz.diffHard') },
   ]
   const TYPES = [
+    { v: 'mixed', label: t('quiz.typeMixed') },
     { v: 'single', label: t('quiz.typeSingle') },
     { v: 'multiple', label: t('quiz.typeMultiple') },
     { v: 'truefalse', label: t('quiz.typeTrueFalse') },
     { v: 'open', label: t('quiz.typeOpen') },
   ]
-  const [form, setForm] = useState({ topic: '', count: 5, difficulty: 'medium', type: 'single', language: t('quiz.defaultLanguage') })
+  const [form, setForm] = useState({ topic: '', count: 5, difficulty: 'medium', type: 'mixed', language: t('quiz.defaultLanguage') })
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [quiz, setQuiz] = useState(null)
+  const [checked, setChecked] = useState(false) // текущий тест проверен
+  // Ученик не может сменить тест, не пройдя текущий. Учитель собирает тест для библиотеки,
+  // а не проходит его — ему перегенерировать неудачный вариант можно всегда.
+  const locked = !isTeacher && !!quiz && !checked
 
   // Вкладкой внутри «Тестов» страница не рисует свой контейнер — его даёт TestsPage
   const Wrap = embedded ? Fragment : PageContainer
@@ -41,8 +46,10 @@ export default function QuizGeneratorPage({ embedded }) {
   // Из формы и из «Новый тест» в панели под тестом — с теми же параметрами
   const generate = async () => {
     if (form.topic.trim().length < 2) { toast.error(t('quiz.specifyTopic')); return }
+    if (locked) { toast(t('quiz.finishFirst')); return }
     setLoading(true)
     setQuiz(null)
+    setChecked(false)
     try {
       const data = await generateQuiz({ ...form, count: Number(form.count) })
       setQuiz(data)
@@ -74,6 +81,7 @@ export default function QuizGeneratorPage({ embedded }) {
 
   // Прохождение (после «Проверить»): сохраняем ответы+результат в «Мои тесты», остаёмся на странице.
   const saveAttempt = async (answers, score, total) => {
+    setChecked(true)
     try {
       await saveQuiz({ ...meta(), answers, score, total })
       toast.success(t('quiz.savedToMy'))
@@ -112,9 +120,12 @@ export default function QuizGeneratorPage({ embedded }) {
           <Select label={t('quiz.fType')} value={form.type} onChange={set('type')} options={TYPES} />
         </div>
 
-        <Button type="submit" className="mt-5" loading={loading}>
-          <Sparkles className="w-4 h-4" /> {t('quiz.generate')}
-        </Button>
+        <div className="flex flex-wrap items-center gap-3 mt-5">
+          <Button type="submit" loading={loading} disabled={locked}>
+            <Sparkles className="w-4 h-4" /> {t('quiz.generate')}
+          </Button>
+          {locked && <span className="text-sm text-slate-500">{t('quiz.finishFirst')}</span>}
+        </div>
       </form>
 
       {loading && <PageSpinner />}
@@ -129,7 +140,7 @@ export default function QuizGeneratorPage({ embedded }) {
           </p>
           <QuizRunner quiz={quiz} onCheck={saveAttempt} actions={
             <>
-              <Button size="sm" variant="secondary" onClick={generate}>
+              <Button size="sm" variant="secondary" onClick={generate} disabled={locked} title={locked ? t('quiz.finishFirst') : undefined}>
                 <Sparkles className="w-4 h-4" /> {t('quiz.newTest')}
               </Button>
               {isTeacher && (

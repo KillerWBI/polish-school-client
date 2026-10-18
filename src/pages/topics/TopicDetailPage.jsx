@@ -590,9 +590,19 @@ function StepPractice({ topicId, step, onBack }) {
   const saved = savedState?.at === updatedAt ? savedState : null
   const runKey = updatedAt
 
+  // Сменить тест (Ещё тест / Новые вопросы / другой режим) можно только пройдя текущий:
+  // иначе неудобный тест просто пролистывается. Отметка привязана к конкретной практике (updatedAt).
+  const [checkedAt, setCheckedAt] = useState(null)
+  const locked = !!quiz && checkedAt !== updatedAt
+  const switchMode = (m) => {
+    if (m !== mode && locked) { toast(t('app:quiz.finishFirst')); return }
+    setMode(m)
+  }
+
   // MCQ: «Проверить» в QuizRunner — сразу сохраняет попытку
   const onCheck = async (answers, score, total) => {
     if (score == null || total == null) return
+    setCheckedAt(updatedAt)
     try {
       const updated = await submitTopicAttempt(topicId, {
         stepId: step.id, questions: quiz.questions, answers, score, total, difficulty: quiz.difficulty,
@@ -611,6 +621,7 @@ function StepPractice({ topicId, step, onBack }) {
       stepId: step.id, questions: quiz.questions, answers, difficulty: quiz.difficulty,
     })
     const st = (res.topic?.roadmap || []).find((s) => s.id === step.id)
+    setCheckedAt(updatedAt)
     setSaved({ at: updatedAt, score: res.score, total: res.total, mastery: Math.round(st?.mastery || 0), label: t('detail.avgScore', { avg: res.avg }) })
     toast.success(t('detail.graded'))
     return res.results
@@ -627,7 +638,7 @@ function StepPractice({ topicId, step, onBack }) {
       <h1 className="text-xl font-semibold text-slate-900 mb-3">{step.title}</h1>
 
       {/* Переключатель режима практики */}
-      <Tabs className="mb-4" value={mode} onChange={setMode} items={[
+      <Tabs className="mb-4" value={mode} onChange={switchMode} items={[
         { key: 'test', label: t('detail.tabTest'), icon: Sparkles },
         { key: 'open', label: t('detail.tabOpen'), icon: PenLine },
       ]} />
@@ -655,7 +666,7 @@ function StepPractice({ topicId, step, onBack }) {
         <OpenRunner key={runKey} quiz={quiz} onGrade={onGrade} actions={
           <>
             <Button size="sm" variant="secondary" onClick={onBack}>{saved ? t('common:done') : t('detail.exit')}</Button>
-            <Button size="sm" variant="secondary" onClick={load}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.newQuestions')}</Button>
+            <Button size="sm" variant="secondary" onClick={load} disabled={locked} title={locked ? t('app:quiz.finishFirst') : undefined}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.newQuestions')}</Button>
           </>
         } />
       ) : quiz ? (
@@ -668,7 +679,7 @@ function StepPractice({ topicId, step, onBack }) {
           <QuizRunner key={runKey} quiz={quiz} onCheck={onCheck} actions={
             <>
               <Button size="sm" variant="secondary" onClick={onBack}>{saved ? t('common:done') : t('detail.exit')}</Button>
-              <Button size="sm" variant="secondary" onClick={load}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.moreTest')}</Button>
+              <Button size="sm" variant="secondary" onClick={load} disabled={locked} title={locked ? t('app:quiz.finishFirst') : undefined}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.moreTest')}</Button>
             </>
           } />
         </>

@@ -4,11 +4,22 @@ import { toast } from '../../utils/toast'
 import { Check, X, Copy, RotateCcw } from 'lucide-react'
 import Button from '../../components/ui/Button'
 import { IconIdea } from '../../components/ui/icons'
+import { exactMatch } from './answerMatch'
 
 const isObjective = (type) => type !== 'open'
 // равенство множеств индексов (для «несколько ответов»)
 const sameSet = (a = [], b = []) =>
   a.length === b.length && [...a].sort().join(',') === [...b].sort().join(',')
+
+// Смешанный тест: тип у вопроса (single | exact); у старых вопросов kind нет — берём тип теста
+const kindOf = (q, type) => q.kind || type
+
+const isCorrect = (q, given, kind) => {
+  if (kind === 'exact') return exactMatch(given, q.accepted)
+  const ans = Array.isArray(q.answer) ? q.answer : []
+  if (kind === 'multiple') return sameSet(given, ans)
+  return given === ans[0]
+}
 
 // Интерактивный тест: выбираешь ответы → «Проверить» → результат + подсветка.
 // Плюс «Показать ключ», «Копировать» и (если передан onSave) «Сохранить результат».
@@ -45,9 +56,7 @@ export default function QuizRunner({ quiz, savedAnswers, onCheck, actions }) {
   const total = isObjective(type) ? questions.length : 0
   const correctCount = questions.reduce((n, q, qi) => {
     if (!isObjective(type)) return n
-    const ans = Array.isArray(q.answer) ? q.answer : []
-    if (type === 'multiple') return n + (sameSet(sel[qi], ans) ? 1 : 0)
-    return n + (sel[qi] === ans[0] ? 1 : 0)
+    return n + (isCorrect(q, sel[qi], kindOf(q, type)) ? 1 : 0)
   }, 0)
 
   const copy = async () => {
@@ -70,7 +79,7 @@ export default function QuizRunner({ quiz, savedAnswers, onCheck, actions }) {
       {/* Вопросы */}
       <div className="space-y-3">
         {questions.map((q, qi) => (
-          <QuestionItem key={qi} q={q} qi={qi} type={type} sel={sel[qi]} reveal={reveal}
+          <QuestionItem key={qi} q={q} qi={qi} type={kindOf(q, type)} sel={sel[qi]} reveal={reveal}
             onPick={pick} onOpen={setOpen} />
         ))}
       </div>
@@ -133,7 +142,9 @@ function QuestionItem({ q, qi, type, sel, reveal, onPick, onOpen }) {
     <div className="rounded-2xl border border-slate-200 bg-white p-4">
       <div className="text-sm font-medium text-slate-900 mb-2.5">{qi + 1}. {q.question}</div>
 
-      {type === 'open' ? (
+      {type === 'exact' ? (
+        <ExactAnswer q={q} qi={qi} sel={sel} reveal={reveal} onOpen={onOpen} />
+      ) : type === 'open' ? (
         <>
           <textarea rows={2} value={typeof sel === 'string' ? sel : ''} onChange={(e) => onOpen(qi, e.target.value)}
             placeholder={t('quiz.yourAnswer')}
@@ -187,13 +198,43 @@ function QuestionItem({ q, qi, type, sel, reveal, onPick, onOpen }) {
   )
 }
 
+// «Впишите ответ»: поле ввода; после проверки — верно/неверно и правильный ответ со всеми формами
+function ExactAnswer({ q, qi, sel, reveal, onOpen }) {
+  const { t } = useTranslation('app')
+  const value = typeof sel === 'string' ? sel : ''
+  const [main, ...also] = Array.isArray(q.accepted) ? q.accepted : []
+  const ok = exactMatch(value, q.accepted)
+  const border = !reveal ? 'border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15'
+    : ok ? 'border-emerald-300 bg-emerald-50 text-emerald-800' : 'border-red-300 bg-red-50 text-red-700'
+  return (
+    <>
+      <div className="relative">
+        <input value={value} onChange={(e) => onOpen(qi, e.target.value)} disabled={reveal}
+          placeholder={t('quiz.exactPlaceholder')}
+          className={`w-full h-10 px-3 pr-9 text-sm text-slate-900 bg-white border rounded-lg outline-none disabled:cursor-default ${border}`} />
+        {reveal && value && (ok
+          ? <Check className="w-4 h-4 text-emerald-600 absolute right-3 top-3" />
+          : <X className="w-4 h-4 text-red-500 absolute right-3 top-3" />)}
+      </div>
+      {reveal && !ok && main && (
+        <div className="mt-2 text-sm text-emerald-800 bg-emerald-50 rounded-lg px-3 py-2">
+          <span className="text-xs text-emerald-600">{t('quiz.correctAnswer')} </span>{main}
+          {also.length > 0 && <span className="text-xs text-emerald-600"> · {t('quiz.alsoAccepted')} {also.join(', ')}</span>}
+        </div>
+      )}
+    </>
+  )
+}
+
 // Текстовая версия для копирования (вопросы + отмеченные ответы + пояснения)
 function quizToText(quiz, t) {
   const lines = [quiz.topic, '']
   quiz.questions.forEach((q, i) => {
     lines.push(`${i + 1}. ${q.question}`)
     const answer = Array.isArray(q.answer) ? q.answer : []
-    if (quiz.type === 'open') {
+    if (kindOf(q, quiz.type) === 'exact') {
+      lines.push(`   ${t('quiz.copyAnswer')}${(q.accepted || []).join(' / ')}`)
+    } else if (quiz.type === 'open') {
       if (q.sampleAnswer) lines.push(`   ${t('quiz.copyAnswer')}${q.sampleAnswer}`)
     } else {
       (q.options || []).forEach((opt, j) => lines.push(`   ${answer.includes(j) ? '✓' : '·'} ${opt}`))
