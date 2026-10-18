@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
-import { ArrowLeft, Sparkles, Lightbulb, Lock, Check, History, Target, Layers, Repeat, PenLine, FileText, BookOpen, Link2, Grid3x3, Trash2, Share2 } from 'lucide-react'
+import { ArrowLeft, Sparkles, Lightbulb, Lock, Check, History, Target, Layers, Repeat, PenLine, FileText, BookOpen, Link2, Grid3x3, Trash2, Share2, AlertTriangle } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
-import { getTopic, nextTopicQuiz, submitTopicAttempt, gradeOpenAnswers, suggestSources, suggestModuleSources, getSources, deleteSource, importCardsFromText, shareTopic } from '../../api/topics.api'
+import { getTopic, nextTopicQuiz, submitTopicAttempt, gradeOpenAnswers, suggestSources, suggestModuleSources, getSources, deleteSource, importCardsFromText, shareTopic, getTheory, createTheory } from '../../api/topics.api'
 import { groupModules, isStepLocked, GATE } from './modules'
 import { safeUrl } from '../../utils/safeUrl'
 import { getCards, getDueCards, generateCards, reviewCard } from '../../api/topicCards.api'
@@ -39,6 +39,7 @@ export default function TopicDetailPage() {
   const { data: cardsData, reload: reloadCards } = useApiQuery(['topic-cards', id], (s) => getCards(id, undefined, s))
   const { data: allSources, reload: reloadSources } = useApiQuery(['topic-sources', id], (s) => getSources(id, undefined, s))
   const [practiceStep, setPracticeStep] = useState(null) // шаг роадмапа, который практикуем
+  const [practiceTab, setPracticeTab]   = useState('test') // с какой вкладки открыть: theory | test
   const [cardsStep, setCardsStep]       = useState(null) // шаг, чьи карточки смотрим
   const [trackReview, setTrackReview]   = useState(false) // повторение due-карточек всего трека
   const [ideasOpen, setIdeasOpen]       = useState(false)
@@ -104,6 +105,10 @@ export default function TopicDetailPage() {
       <StepPractice
         topicId={topic.id}
         step={practiceStep}
+        initialTab={practiceTab}
+        sources={sourcesByStep[practiceStep.id] || []}
+        onSuggest={(loose) => suggestForStep(practiceStep.id, loose)}
+        onDeleteSource={delSource}
         onBack={() => { setPracticeStep(null); reload() }}
       />
     )
@@ -190,7 +195,9 @@ export default function TopicDetailPage() {
                     <StepRow key={step.id} step={step} index={roadmap.indexOf(step)}
                       locked={isStepLocked(modules, mi, si)}
                       lockText={modules.length > 1 ? t('detail.lockedModule', { gate: GATE }) : t('detail.locked', { gate: GATE })}
-                      onPractice={() => setPracticeStep(step)} onCards={() => setCardsStep(step)}
+                      onPractice={() => { setPracticeTab('test'); setPracticeStep(step) }}
+                      onTheory={() => { setPracticeTab('theory'); setPracticeStep(step) }}
+                      onCards={() => setCardsStep(step)}
                       sources={sourcesByStep[step.id] || []}
                       onSuggest={(loose) => suggestForStep(step.id, loose)}
                       onDeleteSource={delSource} />
@@ -339,7 +346,7 @@ function ModuleSection({ module, index, onSuggest, children }) {
   )
 }
 
-function StepRow({ step, index, locked, lockText, onPractice, onCards, sources = [], onSuggest, onDeleteSource }) {
+function StepRow({ step, index, locked, lockText, onPractice, onTheory, onCards, sources = [], onSuggest, onDeleteSource }) {
   const { t } = useTranslation('student')
   const [unlocked, setUnlocked] = useState(false)
   const m = Math.round(Number(step.mastery) || 0)
@@ -374,6 +381,9 @@ function StepRow({ step, index, locked, lockText, onPractice, onCards, sources =
             <div className="flex flex-wrap gap-2">
               <Button size="sm" variant={done ? 'secondary' : 'primary'} onClick={onPractice}>
                 <Sparkles className="w-4 h-4 mr-1" /> {step.attempts > 0 ? t('detail.practiceMore') : t('detail.practice')}
+              </Button>
+              <Button size="sm" variant="secondary" onClick={onTheory}>
+                <BookOpen className="w-4 h-4 mr-1" /> {t('detail.theory')}
               </Button>
               <Button size="sm" variant="secondary" onClick={onCards}>
                 <Layers className="w-4 h-4 mr-1" /> {t('detail.cards')}
@@ -573,16 +583,18 @@ function TrackReview({ topicId, onBack }) {
 }
 
 /* ── Практика шага ── */
-function StepPractice({ topicId, step, onBack }) {
+function StepPractice({ topicId, step, initialTab = 'test', sources, onSuggest, onDeleteSource, onBack }) {
   const { t } = useTranslation('student')
-  const [mode, setMode] = useState('test') // 'test' (MCQ) | 'open' (открытый ответ)
+  const [tab, setTab] = useState(initialTab) // 'theory' | 'test' | 'open'
+  const [mode, setMode] = useState(initialTab === 'open' ? 'open' : 'test') // какой тест: 'test' (варианты) | 'open'
 
   // Практику генерирует ИИ, поэтому держим её в кэше запросов: возврат к уже
   // сгенерированному шагу не сжигает лишний AI-запрос, а «Ещё тест» делает refetch.
   const { data: quiz, loading, error, reload: load, updatedAt } = useApiQuery(
     ['topic-practice', topicId, step.id, mode],
     () => nextTopicQuiz(topicId, step.id, mode),
-    { staleTime: Infinity, retry: false },
+    // На вкладке теории тест не генерируется — лимит ИИ не тратится на тест, который ещё не нужен
+    { staleTime: Infinity, retry: false, enabled: tab !== 'theory' },
   )
 
   // Результат привязан к конкретной сгенерированной практике: пришла новая — отчёт снят
@@ -594,9 +606,12 @@ function StepPractice({ topicId, step, onBack }) {
   // иначе неудобный тест просто пролистывается. Отметка привязана к конкретной практике (updatedAt).
   const [checkedAt, setCheckedAt] = useState(null)
   const locked = !!quiz && checkedAt !== updatedAt
-  const switchMode = (m) => {
-    if (m !== mode && locked) { toast(t('app:quiz.finishFirst')); return }
-    setMode(m)
+  // Теорию можно открыть всегда — она не меняет тест
+  const switchTab = (k) => {
+    if (k === 'theory') { setTab(k); return }
+    if (k !== mode && locked) { toast(t('app:quiz.finishFirst')); return }
+    setMode(k)
+    setTab(k)
   }
 
   // MCQ: «Проверить» в QuizRunner — сразу сохраняет попытку
@@ -638,11 +653,16 @@ function StepPractice({ topicId, step, onBack }) {
       <h1 className="text-xl font-semibold text-slate-900 mb-3">{step.title}</h1>
 
       {/* Переключатель режима практики */}
-      <Tabs className="mb-4" value={mode} onChange={switchMode} items={[
+      <Tabs className="mb-4" value={tab} onChange={switchTab} items={[
+        { key: 'theory', label: t('detail.tabTheory'), icon: BookOpen },
         { key: 'test', label: t('detail.tabTest'), icon: Sparkles },
         { key: 'open', label: t('detail.tabOpen'), icon: PenLine },
       ]} />
 
+      {tab === 'theory' ? (
+        <TheoryPanel topicId={topicId} step={step} sources={sources} onSuggest={onSuggest}
+          onDeleteSource={onDeleteSource} onToTest={() => switchTab(mode)} />
+      ) : <>
       {quiz && <p className="text-xs text-slate-400 mb-4">{t('detail.difficulty', { level: diffLabel(t, quiz.difficulty) })} · {mode === 'open' ? t('detail.openHint') : t('detail.testHint')}</p>}
 
       {saved && (
@@ -689,7 +709,91 @@ function StepPractice({ topicId, step, onBack }) {
           <Button onClick={load}>{t('detail.retry')}</Button>
         </div>
       )}
+      </>}
     </PageContainer>
+  )
+}
+
+/* ── Теория подтемы: пишется ИИ при первом открытии и хранится навсегда; под ней — источники ── */
+function TheoryPanel({ topicId, step, sources, onSuggest, onDeleteSource, onToTest }) {
+  const { t } = useTranslation('student')
+  // Сначала сохранённая; если её ещё нет — пишем один раз (повторно открывается мгновенно)
+  const { data: theory, loading, error, reload } = useApiQuery(
+    ['topic-theory', topicId, step.id],
+    async (s) => (await getTheory(topicId, step.id, s)) ?? createTheory(topicId, step.id),
+    { staleTime: Infinity, retry: false },
+  )
+
+  if (loading) {
+    return (
+      <div className="py-16 text-center text-sm text-slate-400">
+        <BookOpen className="w-6 h-6 mx-auto mb-2 text-teal-500 animate-pulse" />
+        {t('detail.genTheory')}
+      </div>
+    )
+  }
+  if (error || !theory) {
+    return (
+      <div className="py-10 text-center">
+        <p className="text-sm text-red-600 mb-4">{error || t('detail.theoryError')}</p>
+        <Button onClick={reload}>{t('detail.retry')}</Button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-5">
+      {theory.summary && <p className="text-[15px] leading-relaxed text-slate-700">{theory.summary}</p>}
+
+      {theory.sections.map((sec, i) => (
+        <section key={i}>
+          <h2 className="text-base font-semibold text-slate-900 mb-1.5">{sec.title}</h2>
+          {sec.text && <p className="text-sm leading-relaxed text-slate-700">{sec.text}</p>}
+          {sec.points.length > 0 && (
+            <ul className="mt-2 space-y-1">
+              {sec.points.map((p, j) => (
+                <li key={j} className="text-sm text-slate-700 flex gap-2">
+                  <Check className="w-4 h-4 mt-0.5 shrink-0 text-teal-500" /> <span>{p}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ))}
+
+      {theory.examples.length > 0 && (
+        <section>
+          <h2 className="text-base font-semibold text-slate-900 mb-2 flex items-center gap-1.5">
+            <Lightbulb className="w-4 h-4 text-amber-500" /> {t('detail.examples')}
+          </h2>
+          <div className="space-y-2.5">
+            {theory.examples.map((ex, i) => (
+              <div key={i} className="rounded-xl border border-slate-200 bg-white p-3.5 text-sm">
+                <div className="text-slate-900"><span className="text-xs font-semibold text-slate-400">{t('detail.exampleTask')} </span>{ex.task}</div>
+                <div className="mt-2 pt-2 border-t border-slate-100 text-slate-700 whitespace-pre-line">
+                  <span className="text-xs font-semibold text-teal-600">{t('detail.exampleSolution')} </span>{ex.solution}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {theory.mistakes.length > 0 && (
+        <section className="rounded-xl bg-amber-50/70 border border-amber-100 p-3.5">
+          <h2 className="text-sm font-semibold text-amber-800 mb-1.5 flex items-center gap-1.5">
+            <AlertTriangle className="w-4 h-4" /> {t('detail.mistakes')}
+          </h2>
+          <ul className="space-y-1 text-sm text-amber-900">
+            {theory.mistakes.map((m, i) => <li key={i}>— {m}</li>)}
+          </ul>
+        </section>
+      )}
+
+      <StepSourcesInline sources={sources} onSuggest={onSuggest} onDeleteSource={onDeleteSource} />
+
+      <Button onClick={onToTest}><Sparkles className="w-4 h-4 mr-1" /> {t('detail.toTest')}</Button>
+    </div>
   )
 }
 

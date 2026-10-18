@@ -53,6 +53,17 @@ export const suggestSources = async (id, stepId, loose = false) => {
   return data.data // [{ id, type, title, author?, url, verified }]
 }
 
+// Теория подтемы: сохранённая (или null — ещё не писалась) / написать ИИ один раз и сохранить
+export const getTheory = async (id, stepId, signal) => {
+  const { data } = await client.get(`/topics/${id}/theory/${stepId}`, { signal })
+  return data.data // { summary, sections: [{ title, text, points }], examples: [{ task, solution }], mistakes } | null
+}
+
+export const createTheory = async (id, stepId) => {
+  const { data } = await client.post(`/topics/${id}/theory`, { stepId })
+  return data.data
+}
+
 // Источники сразу ко всем подтемам модуля (один вызов ИИ) — каждый сохранён под своим stepId
 export const suggestModuleSources = async (id, moduleId) => {
   const { data } = await client.post(`/topics/${id}/sources/module`, { moduleId })
