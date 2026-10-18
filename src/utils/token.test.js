@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { getToken, setToken, removeToken, getCsrfToken, setCsrfToken } from './token'
+import { getToken, setToken, removeToken, getCsrfToken, setCsrfToken, getCachedUser, setCachedUser } from './token'
 
 describe('хранилище токенов', () => {
   beforeEach(() => localStorage.clear())
@@ -29,5 +29,15 @@ describe('хранилище токенов', () => {
     removeToken()
     expect(getToken()).toBeNull()
     expect(getCsrfToken()).toBeNull()
+  })
+
+  it('профиль для мгновенного старта: сохраняется, битый JSON не роняет, выход стирает', () => {
+    setCachedUser({ id: 1, role: 'student' })
+    expect(getCachedUser()).toEqual({ id: 1, role: 'student' })
+    localStorage.setItem('platform_user', '{битый')
+    expect(getCachedUser()).toBeNull()
+    setCachedUser({ id: 1 })
+    removeToken()
+    expect(getCachedUser()).toBeNull()
   })
 })
