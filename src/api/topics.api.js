@@ -12,8 +12,11 @@ export const getTopic = async (id, signal) => {
   return data.data // { topic, attempts }
 }
 
+// Создание трека — план от ИИ + подбор и проверка источников: 13–20 с, а на уснувшем сервере дольше.
+// Общий таймаут клиента 15 с обрывал запрос, хотя сервер трек дорабатывал и сохранял («нет связи»,
+// а при перезаходе трек есть). quiet — без тоста «нет связи»: обрыв страница обрабатывает сама.
 export const createTopic = async (payload) => {
-  const { data } = await client.post('/topics', payload)
+  const { data } = await client.post('/topics', payload, { timeout: 120000, quiet: true })
   return data.data
 }
 

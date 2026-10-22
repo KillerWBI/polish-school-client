@@ -2,9 +2,22 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
-import { Plus, Trash2, ChevronRight, Lightbulb, Map } from 'lucide-react'
+import { Plus, Trash2, ChevronRight, Lightbulb, Map, Loader2 } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
 import { getTopics, createTopic, deleteTopic } from '../../api/topics.api'
+
+// Обрыв связи при создании ≠ ошибка: сервер дорабатывает трек и сохраняет его. Ждём, пока новый трек
+// с этим названием появится в списке (до 2 минут), — и только если не появился, говорим об ошибке.
+const waitForNewTopic = async (title, knownIds) => {
+  for (let i = 0; i < 24; i++) {
+    await new Promise((ok) => setTimeout(ok, 5000))
+    try {
+      const list = await getTopics()
+      if (list.some((x) => !knownIds.has(x.id) && x.title === title)) return true
+    } catch { /* сервер ещё недоступен — пробуем дальше */ }
+  }
+  return false
+}
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Modal from '../../components/ui/Modal'
@@ -26,6 +39,26 @@ export default function TopicsPage() {
   const { data: topics, loading, reload } = useApiQuery(['topics'], getTopics)
   const [createOpen, setCreateOpen] = useState(false)
   const [ideasOpen, setIdeasOpen]   = useState(false)
+  const [pending, setPending]       = useState([]) // треки, которые сейчас создаются: [{ key, title, subject }]
+
+  // Модалка закрывается сразу, в списке крутится карточка «Создаём трек…», пока трек не появится
+  const startCreate = async ({ title, subject }) => {
+    setCreateOpen(false)
+    const key = Date.now()
+    setPending((p) => [...p, { key, title, subject }])
+    const knownIds = new Set((topics || []).map((x) => x.id))
+    try {
+      await createTopic({ title, subject })
+      toast.success(t('topics.trackCreated'))
+    } catch (e) {
+      if (e.response) toast.error(e.response.data?.error || t('common:error')) // настоящий ответ сервера: лимит, ИИ и т.п.
+      else if (await waitForNewTopic(title, knownIds)) toast.success(t('topics.trackCreated'))
+      else toast.error(t('topics.createLost'))
+    } finally {
+      setPending((p) => p.filter((x) => x.key !== key))
+      reload()
+    }
+  }
 
   return (
     <PageContainer>
@@ -47,17 +80,18 @@ export default function TopicsPage() {
 
       {loading ? (
         <SkeletonList />
-      ) : !topics?.length ? (
+      ) : !topics?.length && !pending.length ? (
         <EmptyState icon={IconTopics} title={t('topics.emptyTitle')}
           text={t('topics.emptyText')}
           action={<Button size="sm" onClick={() => setCreateOpen(true)}>{t('topics.createTrack')}</Button>} />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {topics.map(t => <TopicCard key={t.id} topic={t} onDeleted={reload} />)}
+          {pending.map((p) => <PendingCard key={p.key} title={p.title} subject={p.subject} />)}
+          {(topics || []).map(t => <TopicCard key={t.id} topic={t} onDeleted={reload} />)}
         </div>
       )}
 
-      {createOpen && <CreateModal onClose={() => setCreateOpen(false)} onCreated={() => { setCreateOpen(false); reload() }} />}
+      {createOpen && <CreateModal onClose={() => setCreateOpen(false)} onSubmit={startCreate} />}
       {ideasOpen && <IdeasModal onClose={() => setIdeasOpen(false)} />}
     </PageContainer>
   )
@@ -121,22 +155,31 @@ function TopicCard({ topic, onDeleted }) {
   )
 }
 
-function CreateModal({ onClose, onCreated }) {
+// Трек, который сейчас создаётся: ИИ составляет план и подбирает источники
+function PendingCard({ title, subject }) {
+  const { t } = useTranslation('student')
+  return (
+    <div className="rounded-2xl border border-dashed border-teal-300 bg-teal-50/40 p-4">
+      <div className="flex items-start gap-3">
+        <Loader2 className="w-5 h-5 mt-0.5 shrink-0 text-teal-500 animate-spin" />
+        <div className="min-w-0 flex-1">
+          <div className="font-medium text-slate-900 truncate">{title}</div>
+          <div className="text-xs text-slate-500 mt-0.5">{subject ? `${subject} · ` : ''}{t('topics.creating')}</div>
+        </div>
+      </div>
+      <p className="text-xs text-slate-400 mt-3">{t('topics.creatingHint')}</p>
+    </div>
+  )
+}
+
+function CreateModal({ onClose, onSubmit }) {
   const { t } = useTranslation('student')
   const [title, setTitle]     = useState('')
   const [subject, setSubject] = useState('')
-  const [busy, setBusy]       = useState(false)
 
-  const submit = async () => {
+  const submit = () => {
     if (!title.trim()) { toast.error(t('topics.enterTopic')); return }
-    setBusy(true)
-    try {
-      await createTopic({ title, subject: subject || null })
-      toast.success(t('topics.trackCreated'))
-      onCreated()
-    } catch (e) {
-      toast.error(e.response?.data?.error || t('common:error'))
-    } finally { setBusy(false) }
+    onSubmit({ title: title.trim(), subject: subject.trim() || null })
   }
 
   return (
@@ -149,8 +192,8 @@ function CreateModal({ onClose, onCreated }) {
           <Input label={t('topics.subjectLabel')} value={subject} onChange={e => setSubject(e.target.value)} placeholder={t('topics.subjectPh')} />
         </div>
         <div className="flex gap-3 mt-6">
-          <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>{t('common:cancel')}</Button>
-          <Button className="flex-1" onClick={submit} loading={busy}>{t('common:create')}</Button>
+          <Button variant="secondary" className="flex-1" onClick={onClose}>{t('common:cancel')}</Button>
+          <Button className="flex-1" onClick={submit}>{t('common:create')}</Button>
         </div>
       </div>
     </Modal>

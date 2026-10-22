@@ -79,7 +79,7 @@ client.interceptors.response.use(
     if (status === 401) {
       removeToken()
       window.dispatchEvent(new CustomEvent('auth:logout'))
-    } else if (!err.response) {
+    } else if (!err.response && !original?.quiet) { // quiet: обрыв обрабатывает вызывающий
       toast.error(i18n.t('common:noConnection'))
     } else if (status >= 500) {
       toast.error(err.response?.data?.error || i18n.t('common:serverError'))
