@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from '../../utils/toast'
 import { ArrowLeft, Sparkles, Lightbulb, Lock, Check, History, Target, Layers, Repeat, PenLine, FileText, BookOpen, Link2, Grid3x3, Trash2, Share2, AlertTriangle } from 'lucide-react'
 import useApiQuery from '../../hooks/useApiQuery'
+import { queryClient } from '../../queryClient'
 import { getTopic, nextTopicQuiz, submitTopicAttempt, gradeOpenAnswers, suggestSources, suggestModuleSources, getSources, deleteSource, importCardsFromText, shareTopic, getTheory, createTheory } from '../../api/topics.api'
 import { groupModules, isStepLocked, GATE } from './modules'
 import { safeUrl } from '../../utils/safeUrl'
@@ -587,15 +588,26 @@ function StepPractice({ topicId, step, initialTab = 'test', sources, onSuggest, 
   const { t } = useTranslation('student')
   const [tab, setTab] = useState(initialTab) // 'theory' | 'test' | 'open'
   const [mode, setMode] = useState(initialTab === 'open' ? 'open' : 'test') // какой тест: 'test' (варианты) | 'open'
+  // Тест генерируется только когда его впервые открыли (не на вкладке теории). Дальше запрос не
+  // выключается: иначе возврат с теории к пройденному тесту сразу генерировал бы новый.
+  const [testOpened, setTestOpened] = useState(initialTab !== 'theory')
 
   // Практику генерирует ИИ, поэтому держим её в кэше запросов: возврат к уже
   // сгенерированному шагу не сжигает лишний AI-запрос, а «Ещё тест» делает refetch.
-  const { data: quiz, loading, error, reload: load, updatedAt } = useApiQuery(
-    ['topic-practice', topicId, step.id, mode],
+  const practiceKey = ['topic-practice', topicId, step.id, mode]
+  const { data: quiz, loading: firstLoad, fetching, error, reload: load, updatedAt } = useApiQuery(
+    practiceKey,
     () => nextTopicQuiz(topicId, step.id, mode),
-    // На вкладке теории тест не генерируется — лимит ИИ не тратится на тест, который ещё не нужен
-    { staleTime: Infinity, retry: false, enabled: tab !== 'theory' },
+    // На вкладке теории тест не генерируется — лимит ИИ не тратится на тест, который ещё не нужен.
+    // Без перезапроса при возврате во вкладку браузера: он подменил бы тест посреди прохождения.
+    { staleTime: Infinity, retry: false, refetchOnWindowFocus: false, enabled: testOpened },
   )
+  // Колесо и при первой загрузке, и при «Ещё тест»: старый тест не висит на экране, пока грузится новый
+  const loading = firstLoad || fetching
+
+  // Пройденный тест помечаем устаревшим в кэше: он остаётся на экране (без перезапроса), но следующий
+  // заход в практику подтемы гарантированно даст новый тест, а не тот же самый.
+  const markPassed = () => queryClient.invalidateQueries({ queryKey: practiceKey, refetchType: 'none' })
 
   // Результат привязан к конкретной сгенерированной практике: пришла новая — отчёт снят
   const [savedState, setSaved] = useState(null) // { at, score, total, mastery, label? }
@@ -609,6 +621,7 @@ function StepPractice({ topicId, step, initialTab = 'test', sources, onSuggest, 
   // Теорию можно открыть всегда — она не меняет тест
   const switchTab = (k) => {
     if (k === 'theory') { setTab(k); return }
+    setTestOpened(true)
     if (k !== mode && locked) { toast(t('app:quiz.finishFirst')); return }
     setMode(k)
     setTab(k)
@@ -618,6 +631,7 @@ function StepPractice({ topicId, step, initialTab = 'test', sources, onSuggest, 
   const onCheck = async (answers, score, total) => {
     if (score == null || total == null) return
     setCheckedAt(updatedAt)
+    markPassed()
     try {
       const updated = await submitTopicAttempt(topicId, {
         stepId: step.id, questions: quiz.questions, answers, score, total, difficulty: quiz.difficulty,
@@ -637,6 +651,7 @@ function StepPractice({ topicId, step, initialTab = 'test', sources, onSuggest, 
     })
     const st = (res.topic?.roadmap || []).find((s) => s.id === step.id)
     setCheckedAt(updatedAt)
+    markPassed()
     setSaved({ at: updatedAt, score: res.score, total: res.total, mastery: Math.round(st?.mastery || 0), label: t('detail.avgScore', { avg: res.avg }) })
     toast.success(t('detail.graded'))
     return res.results
