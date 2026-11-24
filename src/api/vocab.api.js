@@ -6,9 +6,11 @@ export const getVocab = async (params = {}) => {
   return data // { data, meta:{ total, counts, ... } }
 }
 
-export const getDueVocab = async (signal) => {
-  const { data } = await client.get('/vocab/due', { signal })
-  return data.data
+// language: '' — все, 'none' — без языка, иначе ISO-код.
+// → { data:[слова], meta:{ languages:[{ language, count }] } }
+export const getDueVocab = async (language, signal) => {
+  const { data } = await client.get('/vocab/due', { params: language ? { language } : {}, signal })
+  return data
 }
 
 export const addVocab = async (payload) => {

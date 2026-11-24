@@ -46,13 +46,34 @@ export default function VocabPage() {
 }
 
 /* ── Повторение (флеш-карточки) ── */
+const REVIEW_LANG_KEY = 'vocab_review_lang' // последний выбранный язык повторения
+
 function ReviewTab({ onEmptyAdd }) {
   const { t } = useTranslation('student')
-  const { data: due, loading, reload } = useApiQuery(['vocab-due'], getDueVocab)
+  // '' — все языки, 'none' — без языка, иначе ISO-код. Помним последний выбор.
+  const [lang, setLang] = useState(() => localStorage.getItem(REVIEW_LANG_KEY) || '')
+  const { data, loading, reload } = useApiQuery(['vocab-due', lang], (signal) => getDueVocab(lang, signal))
   const [idx, setIdx]         = useState(0)
   const [flipped, setFlipped] = useState(false)
   const [busy, setBusy]       = useState(false)
   const [done, setDone]       = useState(0)
+
+  const due   = data?.data
+  const langs = data?.meta?.languages ?? [] // [{ language, count }] — к повторению по языкам
+  const keyOf = (l) => l.language ?? 'none'
+
+  // Запомненный язык больше нечего повторять → возвращаемся ко «всем»
+  if (data && lang && !langs.some((l) => keyOf(l) === lang)) {
+    setLang('')
+    localStorage.removeItem(REVIEW_LANG_KEY)
+  }
+
+  const pickLang = (value) => {
+    setLang(value)
+    if (value) localStorage.setItem(REVIEW_LANG_KEY, value)
+    else localStorage.removeItem(REVIEW_LANG_KEY)
+    setIdx(0); setDone(0); setFlipped(false)
+  }
 
   const answer = async (correct) => {
     const item = due[idx]
@@ -78,8 +99,26 @@ function ReviewTab({ onEmptyAdd }) {
   }
 
   const item = due[idx]
+  const total = langs.reduce((s, l) => s + l.count, 0)
+  const chip = (value, label, count) => (
+    <button key={value || 'all'} onClick={() => pickLang(value)}
+      className={`h-8 px-3 rounded-full border text-sm transition-colors ${lang === value
+        ? 'bg-teal-500 border-teal-500 text-white'
+        : 'bg-white border-slate-200 text-slate-600 hover:border-teal-300'}`}>
+      {label} <span className={lang === value ? 'text-teal-50' : 'text-slate-400'}>{count}</span>
+    </button>
+  )
+
   return (
     <div className="max-w-xl mx-auto">
+      {/* Выбор языка — только если к повторению слова двух и более языков */}
+      {langs.length > 1 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {chip('', t('vocab.allLangs'), total)}
+          {langs.map((l) => chip(keyOf(l), l.language ? langName(l.language) : t('vocab.noLang'), l.count))}
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-3 text-sm text-slate-500">
         <span>{t('vocab.left', { count: due.length - idx })}</span>
         <span>{t('vocab.passed', { count: done })}</span>
@@ -87,6 +126,7 @@ function ReviewTab({ onEmptyAdd }) {
 
       <button onClick={() => setFlipped(f => !f)}
         className="w-full min-h-[220px] rounded-2xl border border-slate-200 bg-white p-8 flex flex-col items-center justify-center text-center hover:border-slate-300 transition-colors cursor-pointer">
+        {!lang && item.language && <div className="text-xs text-slate-400 mb-2">{langName(item.language)}</div>}
         <div className="text-2xl font-semibold text-slate-900">{item.word}</div>
         {flipped ? (
           <>

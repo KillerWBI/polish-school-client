@@ -12,6 +12,7 @@ import PageContainer from '../../components/ui/PageContainer'
 import PageHeader from '../../components/ui/PageHeader'
 import Tooltip from '../../components/ui/Tooltip'
 import { Layers, BookMarked, AlertTriangle, ChevronRight } from 'lucide-react'
+import { langName } from '../../constants/isoLanguages'
 
 const weakColor = (m) => m >= 40 ? 'text-teal-600' : 'text-amber-600'
 
@@ -23,7 +24,9 @@ export default function DailySessionPage() {
   const { data: weak } = useApiQuery(['weak-spots'], getWeakSpots)
   const [started, setStarted] = useState(false)
 
-  const items = data?.data || []
+  // У слов из словаря в подписи карточки — язык, чтобы было видно, что повторяется
+  const items = (data?.data || []).map((i) =>
+    i.kind === 'vocab' && i.language ? { ...i, context: `${langName(i.language)} · ${i.context}` } : i)
   const meta  = data?.meta || { cards: 0, vocab: 0, total: 0 }
 
   if (loading) return <PageContainer width="form"><SkeletonList /></PageContainer>
